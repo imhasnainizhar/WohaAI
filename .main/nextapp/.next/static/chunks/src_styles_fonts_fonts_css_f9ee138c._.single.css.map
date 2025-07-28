@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/styles/fonts/fonts.css"],"sourcesContent":["@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');\r\n\r\n:root {\r\n  --montserrat: 'Montserrat', sans-serif;\r\n}\r\n\r\n@font-face {\r\n  font-family: 'Calton Elegance Sans';\r\n  src: url('/fonts/Calton Elegance Sans-Regular.otf') format('opentype');\r\n  font-weight: normal;\r\n  font-style: normal;\r\n}"],"names":[],"mappings":"AAEA;;;;AAIA"}}]
+}

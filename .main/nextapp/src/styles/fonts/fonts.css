@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+:root {
+  --montserrat: 'Montserrat', sans-serif;
+}
+
+@font-face {
+  font-family: 'Calton Elegance Sans';
+  src: url('/fonts/Calton Elegance Sans-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

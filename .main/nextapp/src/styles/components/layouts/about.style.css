@@ -1,0 +1,42 @@
+.about-section {
+    width: 100%;
+    height: auto;
+}
+
+.about-container{
+    height: auto;
+    width: 100%;
+    padding: 25px 10px;
+}
+
+.about-container > * {
+    padding: 8px 0px;
+}
+
+.about-heading{
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing-secondary);
+    font-family: Caalton Elegance Sans;
+}
+
+.about-content > *{
+    padding: 10px 0px;
+}
+
+.about-support-s > * {
+    padding: 10px 0px;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-color-hover);
+}
+
+a:active {
+    color: var(--theme-gray-primary);
+}
