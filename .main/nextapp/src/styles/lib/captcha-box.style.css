@@ -1,0 +1,4 @@
+.custom-theme-dark{
+    background-color: var(--theme-black-primary);
+    color: var(--white);
+}
