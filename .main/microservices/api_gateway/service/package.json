@@ -1,0 +1,17 @@
+{
+    "scripts": {
+        "dev": "nodemon src/server.ts",
+        "build": "tsc",
+        "start": "node dist/server.js"
+        },
+    "dependencies": {
+        "ejs": "^3.1.10",
+        "express": "^5.1.0",
+        "http-proxy-middleware": "^3.0.5"
+    },
+    "devDependencies": {
+        "@types/ejs": "^3.1.5",
+        "@types/express": "^5.0.3",
+        "nodemon": "^3.1.10"
+    }
+}

@@ -1,0 +1,189 @@
+version: "3.8"
+
+services:
+  api_gateway:
+    build:
+      context: ./microservices/api_gateway/service
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api_gateway/service:/src
+    environment:
+      - NODE_ENV=development
+    networks:
+      - my_network
+      
+  signin_service:
+    build:
+      context: ./microservices/signin_Service/service
+      dockerfile: Dockerfile
+    container_name: signin_service
+    ports:
+      - $SIGNIN_SERVICE_PORT:$SIGNIN_SERVICE_PORT
+    env_file:
+      .env.local
+    volumes:
+      - ./microservices/signin_Service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  signout_service:
+    build:
+      context: ./microservices/signout_service/service
+      dockerfile: Dockerfile
+    container_name: signout_service
+    ports:
+      - $SIGNOUT_SERVICE_PORT:$SIGNOUT_SERVICE_PORT
+    env_file:
+      .env.local
+    volumes:
+      - ./microservices/signout_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  verify_user_service:
+    build:
+      context: ./microservices/verify_user_service/service
+      dockerfile: Dockerfile
+    container_name: verify_user_service
+    ports:
+      - $VERIFY_USER_PORT:$VERIFY_USER_PORT
+    env_file:
+      .env.local
+    volumes:
+      - ./microservices/verify_user_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  verify_captcha_Service:
+    build:
+      context: ./microservices/captcha_verification_service/service
+      dockerfile: Dockerfile
+    container_name: verify_captcha_Service
+    ports:
+      - $VERIFY_CAPTCHA_PORT:$VERIFY_CAPTCHA_PORT
+    env_file:
+      .env.local
+    volumes:
+      - ./microservices/captcha_verification_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  code_mailer_service:
+    build:
+      context: ./microservices/code_mailer_service/service
+      dockerfile: Dockerfile
+    container_name: code_mailer_service
+    ports:
+      - $CODE_MAILER_PORT:$CODE_MAILER_PORT
+    env_file:
+      .env.local
+    volumes:
+      - ./microservices/code_mailer_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  signup_valiadtor_service:
+    build:
+      context: ./microservices/signup_valiadtor_service/service
+      dockerfile: Dockerfile
+    container_name: signup_valiadtor_service
+    ports:
+      - $SIGNUP_VALIDATOR_PORT:$SIGNUP_VALIDATOR_PORT
+    env_file:
+      .env.local
+    volumes:
+      - ./microservices/signup_valiadtor_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  me_service:
+    build:
+      context: ./microservices/me_service/service
+      dockerfile: Dockerfile
+    container_name: me_service
+    ports:
+      - $ME_SERVICE_PORT:$ME_SERVICE_PORT
+    env_file:
+      - .env.local
+    volumes:
+      - ./microservices/me_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  signup_service:
+    build:
+      context: ./microservices/signup_service/service
+      dockerfile: Dockerfile
+    container_name: signup_service
+    ports:
+      - $SIGNUP_SERVICE_PORT:$SIGNUP_SERVICE_PORT
+    env_file:
+      - .env.local
+    volumes:
+      - ./microservices/signup_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+
+  redis:
+    image: redis:7
+    container_name: verification_code_cache
+    ports:
+      - $REDIS_SERVER_PORT:REDIS_SERVER_PORT
+    restart: always
+    environment:
+      - NODE_ENV=development
+
+  # prisma-studio:
+  #   image: node:18
+  #   container_name: prisma_studio
+  #   working_dir: /app
+  #   volumes:
+  #     - .:/app
+  #   command: sh -c "npm install && npx prisma studio"
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - "5555:5555"
+  #   env_file:
+  #     - .env
+
+  # postgres:
+  #   image: postgres:14
+  #   container_name: postgres_db
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: mydb
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #   restart: always
+
+
+volumes:
+  pgdata:
+
+
+networks:
+  my_network:
+    driver: bridge
