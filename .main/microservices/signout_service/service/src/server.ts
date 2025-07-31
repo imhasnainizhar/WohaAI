@@ -1,8 +1,8 @@
 import express from 'express';
-import logoutRoute from 'app';
+import logoutRoute from './app';
 
 const app = express();
-const port = process.env.SIGNOUT_SERVICE_PORT;
+const port = process.env.SIGNOUT_SERVICE_PORT || 3000;
 
 app.use(logoutRoute);
 

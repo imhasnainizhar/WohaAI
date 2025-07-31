@@ -29,11 +29,13 @@ export default function SignIn() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [signInError, setSignInError] = useState<string>("");
 
+  const baseurl = process.env.NEXT_PUBLIC_GATEWAY_BASE_URL_01
+
   const onSignIn = async (SignInData: SignInInput) => {
-    setSignInError(""); // Clear previous error
+    setSignInError(""); 
 
     try {
-      const res = await fetch("/api/auth/signin", {
+      const res = await fetch(`${baseurl}/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

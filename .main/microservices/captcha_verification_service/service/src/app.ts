@@ -1,10 +1,8 @@
 import express from "express";
-import dotenv from "dotenv";
 
-dotenv.config();
 const router = express.Router();
 
-router.post("/api/verify-captcha", async (req, res) => {
+router.post("/", async (req, res) => {
   const { captchaToken } = req.body;
   const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 

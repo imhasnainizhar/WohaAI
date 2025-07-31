@@ -1,11 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
-import verifyCaptchaRoute from "app";
-import dotenv from "dotenv";
+import verifyCaptchaRoute from "./app";
 
-dotenv.config();
 const app = express();
-const port = process.env.VERIFY_CAPTCHA_PORT;
+const port = process.env.VERIFY_CAPTCHA_PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(verifyCaptchaRoute);

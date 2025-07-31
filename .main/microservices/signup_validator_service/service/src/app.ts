@@ -1,11 +1,10 @@
 import express from "express";
-import { z } from "zod";
 import { signUpSchema } from "@utils/signup_vlidation_schema";
 import { prisma } from "@utils/prisma_client"; // assuming default export
 
 const router = express.Router();
 
-router.post("/api/signup-check", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const parsed = signUpSchema.parse(req.body);
     const { email } = parsed;
@@ -15,13 +14,13 @@ router.post("/api/signup-check", async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(200).json({ emailExist: true });
+      return void res.status(200).json({ emailExist: true });
     }
 
-    return res.status(200).json({ ok: true });
+    return void res.status(200).json({ ok: true });
   } catch (err) {
     console.error("Signup validation error or DB failure:", err);
-    return res.status(400).json({ error: true });
+    return void res.status(400).json({ error: true });
   }
 });
 

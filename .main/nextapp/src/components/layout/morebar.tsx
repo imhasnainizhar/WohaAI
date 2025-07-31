@@ -17,14 +17,13 @@ export default function MoreBar({ onClickToggle }: Props) {
   const { darkTheme, toggleTheme } = useTheme();
   const moreBarRef = useRef<HTMLDivElement>(null);
 
-  // 🟡 Close on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         moreBarRef.current &&
         !moreBarRef.current.contains(event.target as Node)
       ) {
-        onClickToggle(); // 🔁 close menu
+        onClickToggle();
       }
     };
 
@@ -32,10 +31,9 @@ export default function MoreBar({ onClickToggle }: Props) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClickToggle]);
 
-  // ✅ Signout + close bar
   const signoutCall = async () => {
     try {
-      const res = await fetch("/api/auth/signout", {
+      const res = await fetch("https://api_gateway_01:4000/signout", {
         method: "POST",
         credentials: "include",
       });
@@ -43,7 +41,7 @@ export default function MoreBar({ onClickToggle }: Props) {
       const result = await res.json();
       if (result.ok) {
         setUser(null);
-        onClickToggle(); // ❗ Close MoreBar
+        onClickToggle();
         setTimeout(() => {
           router.push("/");
         }, 0);

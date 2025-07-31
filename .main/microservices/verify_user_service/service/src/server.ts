@@ -1,9 +1,9 @@
 import express from 'express';
-import verifyRoute from 'app';
+import verifyRoute from './app';
 import bodyParser from 'body-parser';
 
 const app = express();
-const port = process.env.VERIFY_USER_PORT;
+const port = process.env.VERIFY_USER_PORT || 3000;
 
 app.use(bodyParser.json()); 
 

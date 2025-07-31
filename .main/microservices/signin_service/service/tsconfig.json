@@ -1,42 +1,22 @@
 {
   "compilerOptions": {
-    "target": "ES2016",
-    "module": "commonjs",
+    "target": "ES2020",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "strict": true,
     "rootDir": "src",
     "outDir": "dist",
     "baseUrl": "src",
     "paths": {
-      "@routes/*": [
-        "routes/*"
-      ],
-      "@controllers/*": [
-        "controllers/*"
-      ],
-      "@services/*": [
-        "services/*"
-      ],
-      "@utils/*": [
-        "utils/*"
-      ],
-      "@config/*": [
-        "config/*"
-      ],
-      "@prisma/*": [
-        "prisma/*"
-      ]
+      "@routes/*": ["routes/*"],
+      "@controllers/*": ["controllers/*"],
+      "@services/*": ["services/*"],
+      "@utils/*": ["utils/*"],
+      "@config/*": ["config/*"],
+      "@lib/*": ["lib/*"]
     },
-    "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "types": [
-      "node"
-    ]
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

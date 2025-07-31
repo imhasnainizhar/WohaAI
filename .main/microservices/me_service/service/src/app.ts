@@ -7,17 +7,17 @@ const router: Router = express.Router();
 
 router.use(cookieParser());
 
-router.get("/api/me", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   const token = req.cookies?.odeysent_session;
 
   if (!token) {
-    return res.status(401).json({ user: null });
+    return void res.status(401).json({ user: null });
   }
 
   const JWT_SECRET = process.env.JWT_SECRET;
   if (!JWT_SECRET) {
     console.error("JWT_SECRET is not set");
-    return res.status(500).json({ user: null });
+    return void res.status(500).json({ user: null });
   }
 
   try {
@@ -25,7 +25,7 @@ router.get("/api/me", async (req: Request, res: Response) => {
 
     if (typeof decoded !== "object" || !decoded.sub) {
       console.error("Missing `sub` in JWT payload");
-      return res.status(401).json({ user: null });
+      return void res.status(401).json({ user: null });
     }
 
     const user = await prisma.user.findUnique({
@@ -33,10 +33,10 @@ router.get("/api/me", async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(401).json({ user: null });
+      return void res.status(401).json({ user: null });
     }
 
-    return res.status(200).json({
+    return void res.status(200).json({
       user: {
         userID: user.userID,
         email: user.email,
@@ -46,7 +46,7 @@ router.get("/api/me", async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("JWT decode error:", err);
-    return res.status(401).json({ user: null });
+    return void res.status(401).json({ user: null });
   }
 });
 

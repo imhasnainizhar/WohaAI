@@ -11,7 +11,6 @@ COPY package*.json ./
 FROM base AS development
 RUN npm install
 COPY . .
-RUN npm install -g ts-node typescript nodemon
 CMD ["npm", "run", "dev"]
 
 # ---------------------

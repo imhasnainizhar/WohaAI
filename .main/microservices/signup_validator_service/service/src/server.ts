@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import signupCheckRoute from "app"; // path to the file above
+import signupCheckRoute from "./app";
 
 const app = express();
 const port = process.env.SIGNUP_VALIDATOR_PORT;

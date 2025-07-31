@@ -1,19 +1,19 @@
 import { Request, Response} from 'express';
 import express from 'express';
-import { signUpSchema } from '@lib/signup_validation_schema';
-import { prisma } from '@lib/prisma_client';
+import { signUpSchema } from '@utils/signup_validation_schema';
+import { prisma } from '@utils/prisma_client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-router.post('/api/signup', async (req : Request, res : Response) => {
+router.post('/', async (req : Request, res : Response) => {
   try {
     const body = req.body;
 
     const parsed = signUpSchema.safeParse(body);
     if (!parsed.success) {
-      return res.status(400).json({ invalidInput: true });
+      return void res.status(400).json({ invalidInput: true });
     }
 
     const { email, password, FirstName, LastName, rememberMe } = parsed.data;
@@ -56,10 +56,10 @@ router.post('/api/signup', async (req : Request, res : Response) => {
       maxAge: cookieMaxAge * 1000,
     });
 
-    return res.status(201).json({ ok: true });
+    return void res.status(201).json({ ok: true });
   } catch (err: any) {
     console.error('Signup Error:', err.message);
-    return res.status(500).json({
+    return void res.status(500).json({
       error: 'internal_server_error',
       message: err?.message || 'Something went wrong',
       ok: false,

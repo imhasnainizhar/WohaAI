@@ -20,13 +20,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userInfo, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const baseurl = process.env.NEXT_PUBLIC_GATEWAY_BASE_URL_01
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("/api/me", {
+        const res = await fetch(`${baseurl}/me`, {
           method: "GET",
-          credentials: "include", // This includes the HTTP-only cookie
+          credentials: "include",
         });
 
         if (!res.ok) {
