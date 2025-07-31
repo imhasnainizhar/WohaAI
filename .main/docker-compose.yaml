@@ -1,189 +1,252 @@
-version: "3.8"
-
 services:
-  api_gateway:
+
+  nextapp_service_main:    ## Successfully Deployed
+    build:
+      context: ./nextapp
+      dockerfile: Dockerfile
+      target: development
+    container_name: nextapp_service_main
+    expose:
+      - ${NEXTAPP_MAIN_PORT}
+    ports:
+      - "${NEXTAPP_MAIN_PORT}:${NEXTAPP_MAIN_PORT}"
+    volumes:
+      - ./nextapp:/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+      - NEXT_PUBLIC_GATEWAY_BASE_URL_01=${NEXT_PUBLIC_GATEWAY_BASE_URL_01}
+
+  ## Backend Micro Services
+
+  api_gateway_01:
     build:
       context: ./microservices/api_gateway/service
       dockerfile: Dockerfile
       target: development
+    container_name: api_gateway_01
+    expose:
+      - "${API_GATEWAY_01}"
     ports:
-      - "3000:3000"
+      - "${API_GATEWAY_01}:${API_GATEWAY_01}"
     volumes:
-      - ./api_gateway/service:/src
+      - ./microservices/api_gateway/service:/src
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - API_GATEWAY_01=${API_GATEWAY_01}
+      - ME_SERVICE_PORT=${ME_SERVICE_PORT}
+      - SIGNIN_SERVICE_PORT=${SIGNIN_SERVICE_PORT}
+      - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
+      - VERIFY_USER_PORT=${VERIFY_USER_PORT}
+      - CODE_MAILER_PORT=${CODE_MAILER_PORT}
+      - VERIFY_CAPTCHA_PORT=${VERIFY_CAPTCHA_PORT}
+      - SIGNUP_VALIDATOR_PORT=${SIGNUP_VALIDATOR_PORT}
     networks:
-      - my_network
-      
-  signin_service:
+      - microservices_net_01
+
+  signin_service:    ## Successfully Deployed
     build:
-      context: ./microservices/signin_Service/service
+      context: ./microservices/signin_service/service
       dockerfile: Dockerfile
+      target: development
     container_name: signin_service
+    expose:
+      - "${SIGNIN_SERVICE_PORT}"
     ports:
-      - $SIGNIN_SERVICE_PORT:$SIGNIN_SERVICE_PORT
-    env_file:
-      .env.local
+      - "${SIGNIN_SERVICE_PORT}:${SIGNIN_SERVICE_PORT}"
     volumes:
-      - ./microservices/signin_Service/service:/src
+      - ./microservices/signin_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - SIGNIN_SERVICE_PORT=${SIGNIN_SERVICE_PORT}
+    networks:
+      - microservices_net_01
 
 
-  signout_service:
+  signout_service:   ## Successfully Deployed
     build:
       context: ./microservices/signout_service/service
       dockerfile: Dockerfile
+      target: development
     container_name: signout_service
+    expose:
+      - "${SIGNOUT_SERVICE_PORT}"
     ports:
-      - $SIGNOUT_SERVICE_PORT:$SIGNOUT_SERVICE_PORT
-    env_file:
-      .env.local
+      - "${SIGNOUT_SERVICE_PORT}:${SIGNOUT_SERVICE_PORT}"
     volumes:
       - ./microservices/signout_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - SIGNOUT_SERVICE_PORT=${SIGNOUT_SERVICE_PORT}
+    networks:
+      - microservices_net_01
 
 
-  verify_user_service:
+  verify_user_service:    ## Successfully Deployed
     build:
       context: ./microservices/verify_user_service/service
       dockerfile: Dockerfile
+      target: development
     container_name: verify_user_service
+    expose:
+      - "${VERIFY_USER_PORT}"
     ports:
-      - $VERIFY_USER_PORT:$VERIFY_USER_PORT
-    env_file:
-      .env.local
+      - "${VERIFY_USER_PORT}:${VERIFY_USER_PORT}"
     volumes:
       - ./microservices/verify_user_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - REDIS_CODE_C=${REDIS_CODE_C}
+      - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
+      - VERIFY_USER_PORT=${VERIFY_USER_PORT}
+    depends_on:
+      - redis_code_c
+    networks:
+      - microservices_net_01
 
 
-  verify_captcha_Service:
+  verify_captcha_service:    ## Successfully Deployed
     build:
       context: ./microservices/captcha_verification_service/service
       dockerfile: Dockerfile
-    container_name: verify_captcha_Service
+      target: development
+    container_name: verify_captcha_service
+    expose:
+      - "${VERIFY_CAPTCHA_PORT}"
     ports:
-      - $VERIFY_CAPTCHA_PORT:$VERIFY_CAPTCHA_PORT
-    env_file:
-      .env.local
+      - "${VERIFY_CAPTCHA_PORT}:${VERIFY_CAPTCHA_PORT}"
     volumes:
       - ./microservices/captcha_verification_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - VERIFY_CAPTCHA_PORT=${VERIFY_CAPTCHA_PORT}
+    networks:
+      - microservices_net_01
 
-
-  code_mailer_service:
+  code_mailer_service:  ## Successfully Deployed
     build:
       context: ./microservices/code_mailer_service/service
       dockerfile: Dockerfile
+      target: development
     container_name: code_mailer_service
+    expose:
+      - "${CODE_MAILER_PORT}"
     ports:
-      - $CODE_MAILER_PORT:$CODE_MAILER_PORT
-    env_file:
-      .env.local
+      - "${CODE_MAILER_PORT}:${CODE_MAILER_PORT}"
     volumes:
       - ./microservices/code_mailer_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - REDIS_CODE_C=${REDIS_CODE_C}
+      - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
+      - CODE_MAILER_PORT=${CODE_MAILER_PORT}
+    depends_on:
+      - redis_code_c
+    networks:
+      - microservices_net_01
 
-
-  signup_valiadtor_service:
+  signup_validator_service:  ## Successfully Deployed
     build:
-      context: ./microservices/signup_valiadtor_service/service
+      context: ./microservices/signup_validator_service/service
       dockerfile: Dockerfile
-    container_name: signup_valiadtor_service
+      target: development
+    container_name: signup_validator_service
+    expose:
+      - "${SIGNUP_VALIDATOR_PORT}"
     ports:
-      - $SIGNUP_VALIDATOR_PORT:$SIGNUP_VALIDATOR_PORT
-    env_file:
-      .env.local
+      - "${SIGNUP_VALIDATOR_PORT}:${SIGNUP_VALIDATOR_PORT}"
     volumes:
-      - ./microservices/signup_valiadtor_service/service:/src
+      - ./microservices/signup_validator_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - SIGNUP_VALIDATOR_PORT=${SIGNUP_VALIDATOR_PORT}
+    networks:
+      - microservices_net_01
 
 
-  me_service:
+  me_service:   ## Successfully Deployed
     build:
       context: ./microservices/me_service/service
       dockerfile: Dockerfile
+      target: development
     container_name: me_service
+    expose:
+      - "${ME_SERVICE_PORT}"
     ports:
-      - $ME_SERVICE_PORT:$ME_SERVICE_PORT
-    env_file:
-      - .env.local
+      - "${ME_SERVICE_PORT}:${ME_SERVICE_PORT}"
     volumes:
       - ./microservices/me_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - ME_SERVICE_PORT=${ME_SERVICE_PORT}
+    networks:
+      - microservices_net_01
 
-
-  signup_service:
+  signup_service:    ## Successfully Deployed
     build:
       context: ./microservices/signup_service/service
       dockerfile: Dockerfile
+      target: development
     container_name: signup_service
+    expose:
+      - "${SIGNUP_SERVICE_PORT}"
     ports:
-      - $SIGNUP_SERVICE_PORT:$SIGNUP_SERVICE_PORT
-    env_file:
-      - .env.local
+      - "${SIGNUP_SERVICE_PORT}:${SIGNUP_SERVICE_PORT}"
     volumes:
       - ./microservices/signup_service/service:/src
     restart: always
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
+    networks:
+      - microservices_net_01
 
 
-  redis:
+  ## Databases Servers
+
+  redis_code_c:    ## Successfully Deployed
     image: redis:7
     container_name: verification_code_cache
+    ## This service caches user verification codes 
+    ## on request for email verification in Redis server...
+    expose:
+      - "${REDIS_SERVER_PORT_01}"
     ports:
-      - $REDIS_SERVER_PORT:REDIS_SERVER_PORT
+      - "${REDIS_SERVER_PORT_01}:${REDIS_SERVER_PORT_01}"
+    command: >
+      redis-server --requirepass "${REDIS_PASSWORD_CODE_C}" --port ${REDIS_SERVER_PORT_01}
     restart: always
-    environment:
-      - NODE_ENV=development
+    networks:
+      - microservices_net_01
 
-  # prisma-studio:
-  #   image: node:18
-  #   container_name: prisma_studio
-  #   working_dir: /app
-  #   volumes:
-  #     - .:/app
-  #   command: sh -c "npm install && npx prisma studio"
-  #   depends_on:
-  #     - postgres
-  #   ports:
-  #     - "5555:5555"
-  #   env_file:
-  #     - .env
-
-  # postgres:
-  #   image: postgres:14
-  #   container_name: postgres_db
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #     POSTGRES_DB: mydb
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #   restart: always
-
+## Other Configs
 
 volumes:
   pgdata:
 
-
 networks:
-  my_network:
+  microservices_net_01:
     driver: bridge

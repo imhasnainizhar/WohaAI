@@ -1,9 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
-import verifyRouter from "app";
+import verifyRouter from "./app";
 
 const app = express();
-const port = process.env.CODE_MAILER_PORT;
+const port = process.env.CODE_MAILER_PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(verifyRouter);

@@ -1,10 +1,9 @@
-// server.ts or app.ts
 import express from 'express';
-import signupRoute from 'app';
+import signupRoute from './app';
 import cookieParser from 'cookie-parser';
 
 const app = express();
-const port = process.env.SIGNUP_SERVICE_PORT;
+const port = process.env.SIGNUP_SERVICE_PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());

@@ -11,7 +11,6 @@ COPY package*.json ./
 FROM base AS development
 RUN npm install
 COPY . .
-RUN npm install -g ts-node typescript nodemon
 CMD ["npm", "run", "dev"]
 
 # ---------------------
@@ -26,7 +25,7 @@ RUN npm run build
 # Production
 # ---------------------
 FROM node:20 AS production
-WORKDIR /app
+WORKDIR /dist
 COPY --from=build /app/dist ./dist
 COPY package*.json ./
 RUN npm install --omit=dev

@@ -3,6 +3,7 @@
     "target": "ES6",
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
     "rootDir": "src",
     "outDir": "dist",
     "baseUrl": "src",
@@ -12,7 +13,7 @@
       "@services/*": ["services/*"],
       "@utils/*": ["utils/*"],
       "@config/*": ["config/*"],
-      "@mailer/*": ["mailer/*"]
+      "@prisma/*": ["prisma/*"]
     },
     "esModuleInterop": true,
     "strict": true,

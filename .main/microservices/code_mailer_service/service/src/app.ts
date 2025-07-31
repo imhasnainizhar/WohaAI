@@ -8,7 +8,7 @@ dotenv.config();
 
 const router = express.Router();
 
-router.post("/api/verify", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { email } = req.body;
     console.log(req.body);
@@ -33,10 +33,10 @@ router.post("/api/verify", async (req, res) => {
 
     await sendVerificationEmail(email, verificationCode);
 
-    return res.status(200).json({ ok: true });
+    return void res.status(200).json({ ok: true });
   } catch (err) {
     console.error("Error sending verification email:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return void res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

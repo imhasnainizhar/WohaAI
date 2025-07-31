@@ -33,6 +33,8 @@ export default function SignUp() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [signUpError, setSignUpError] = useState<string>("");
 
+  const baseurl = process.env.NEXT_PUBLIC_GATEWAY_BASE_URL_01
+
   useEffect(() => {
     if (signUpError) {
       const timer = setTimeout(() => setSignUpError(""), 5000);
@@ -42,7 +44,7 @@ export default function SignUp() {
 
   const onSubmit = async (formData: SignUpInput) => {
     try {
-      const captchaRes = await fetch("/api/verifyCaptcha", {
+      const captchaRes = await fetch(`${baseurl}/verify_captcha"`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ captchaToken }),
@@ -59,7 +61,7 @@ export default function SignUp() {
 
       console.log("Sending signup data:", completeFormData);
 
-      const signUpRes = await fetch("/api/auth/signup/signupValidation", {
+      const signUpRes = await fetch(`${baseurl}/validate_signup"`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(completeFormData),

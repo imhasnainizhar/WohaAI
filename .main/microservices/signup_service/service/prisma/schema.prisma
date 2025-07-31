@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"        //Replacing these credentials by .env.local variables for security
+  provider = "postgresql"
   
-  url      = "postgresql://postgres:odey1212@localhost:5432/userDB"  //Replacing these credentials by .env.local variables for security
+  url      = env("DATABASE_URL")
 }
 
 model User {

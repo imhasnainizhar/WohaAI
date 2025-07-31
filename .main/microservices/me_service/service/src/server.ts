@@ -1,8 +1,6 @@
 import express from "express";
-import dotenv from "dotenv";
-import userRouter from "app";
+import userRouter from "./app";
 
-dotenv.config();
 
 const app = express();
 const port = process.env.ME_SERVICE_PORT;

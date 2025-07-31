@@ -7,7 +7,7 @@ const router = express.Router();
 
 type VerificationRequest = z.infer<typeof VerificationRequestSchema>;
 
-router.post('/api/verify', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const reqBody = req.body;
     const parsedReq: VerificationRequest = VerificationRequestSchema.parse(reqBody);
@@ -18,19 +18,19 @@ router.post('/api/verify', async (req, res) => {
     const storedCode = await redisClient.get(`verify:${email}`);
 
     if (!storedCode) {
-      return res.status(401).json({ EXPIRED_CODE: true });
+      return void res.status(401).json({ EXPIRED_CODE: true });
     }
 
     if (storedCode !== verificationCode) {
-      return res.status(400).json({ INVALID_CODE: true });
+      return void res.status(400).json({ INVALID_CODE: true });
     }
 
     await redisClient.del(`verify:${email}`);
 
-    return res.status(200).json({ ok: true });
+    return void res.status(200).json({ ok: true });
   } catch (error) {
     console.error('Verification failed:', error);
-    return res.status(400).json({ error: true });
+    return void res.status(400).json({ error: true });
   }
 });
 

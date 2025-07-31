@@ -9,6 +9,7 @@ COPY package*.json ./
 # Development
 # ---------------------
 FROM base AS development
+COPY prisma ./prisma
 RUN npm install
 COPY . .
 RUN npm install -g ts-node typescript nodemon

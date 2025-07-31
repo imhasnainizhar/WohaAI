@@ -29,6 +29,8 @@ export default function VerifyEmail() {
     resolver: zodResolver(VerificationCodeSchema),
   });
 
+  const baseurl = process.env.NEXT_PUBLIC_GATEWAY_BASE_URL_01
+
   useEffect(() => {
     const formDataStr = localStorage.getItem("tempSignupData");
     if (formDataStr) {
@@ -70,7 +72,7 @@ export default function VerifyEmail() {
     setResendCooldown(true);
     setCooldownSeconds(60);
 
-    fetch("/api/auth/signup/getVerificationCode", {
+    fetch(`${baseurl}/code_mailer`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: completeUserData.email }),
@@ -88,7 +90,7 @@ export default function VerifyEmail() {
     }
 
     try {
-      const verifyUserRes = await fetch("/api/auth/signup/verifyUser", {
+      const verifyUserRes = await fetch(`${baseurl}/verify_user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -104,7 +106,7 @@ export default function VerifyEmail() {
         return;
       }  
 
-      const signUpRes = await fetch("/api/auth/signup/userSignUp", {
+      const signUpRes = await fetch(`${baseurl}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(completeUserData),
