@@ -1,7 +1,8 @@
 {
   "app": {
     "[project]/src/app/_not-found/page": [],
-    "[project]/src/app/me/page": [],
+    "[project]/src/app/auth/signin/page": [],
+    "[project]/src/app/auth/signup/page": [],
     "[project]/src/app/page": []
   },
   "appUsingSizeAdjust": false,

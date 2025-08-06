@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "../components/layout/navbar";
-import Footer from "../components/layout/footer";
-import "@styles/main/layout.main.css"
-import "@styles/color-plates/color-plate.css"
-import "@styles/fonts/fonts.css"
-import "@styles/main/layout.config.css"
+import "@styles/theme/main.global.css";
+import "@styles/dist/main.global.css";
 import "@styles/theme/theme.style.css"
 import { ReactLenis } from "@utils/react-lenis";
 import PathChecker from "@lib/page-path-checker";
@@ -48,12 +45,6 @@ export default async function RootLayout({
                 <section className="app-page-view">
                   {children}
                 </section>
-                <section className="about-s">
-                  <About />
-                </section>
-                <footer className="footer-layout">
-                  <Footer />
-                </footer>
               </section>
             </main>
           </ReactLenis>

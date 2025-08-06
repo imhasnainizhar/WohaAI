@@ -47,4 +47,8 @@
   box-shadow: 0px 0px 50px 0px var(--theme-color-boxShadow-light);
 }
 
+.border-primary {
+  border: var(--theme-border-primary);
+}
+
 /*# sourceMappingURL=src_styles_theme_theme_style_css_f9ee138c._.single.css.map*/
