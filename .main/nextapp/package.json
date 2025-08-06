@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "tailwind:dev": "npx tailwindcss -i ./src/styles/theme/main.global.css -o ./src/styles/dist/main.global.css --watch",
+    "tailwind:build": "npx tailwindcss -i ./src/styles/theme/main.global.css -o ./src/styles/dist/main.global.css --minify"
   },
   "prisma": {
     "schema": "./src/prisma/schema.prisma"
@@ -15,6 +17,7 @@
     "@hookform/resolvers": "^5.1.1",
     "@prisma/client": "^6.11.0",
     "@studio-freight/react-lenis": "^0.0.47",
+    "@tailwindcss/cli": "^4.1.11",
     "bcryptjs": "^3.0.2",
     "boxicons": "^2.1.4",
     "clsx": "^2.1.1",
@@ -30,6 +33,8 @@
     "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.58.0",
     "redis": "^5.5.6",
+    "tailwindcss": "^4.1.11",
+    "uninstall": "^0.0.0",
     "zod": "^3.25.64"
   },
   "devDependencies": {

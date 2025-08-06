@@ -49,3 +49,7 @@
 .light-shadow {
   box-shadow: 0px 0px 50px 0px var(--theme-color-boxShadow-light);
 }
+
+.border-primary {
+  border: var(--theme-border-primary);
+}

@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import React, { AnchorHTMLAttributes } from "react";
 import Link from "next/link";
-import "@styles/utils/transitional-link.style.css";
 
 interface TransitionalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
@@ -30,9 +29,9 @@ const TransitionalLink: React.FC<TransitionalLinkProps> = ({
     e.preventDefault();
     if (onClick) onClick(e);
     MainPageView?.classList.add('app-page-transition');
-    await sleep(1100);
+    // await sleep(100);
     router.push(href);
-    await sleep(1100);
+    await sleep(100);
     MainPageView?.classList.remove('app-page-transition');
   };
 
