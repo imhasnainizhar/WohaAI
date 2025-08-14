@@ -1,57 +1,36 @@
 import type { Metadata } from "next";
-import Navbar from "../components/layout/navbar";
 import "@styles/theme/main.global.css";
 import "@styles/dist/main.global.css";
-import "@styles/theme/theme.style.css"
-import { ReactLenis } from "@utils/react-lenis";
-import PathChecker from "@lib/page-path-checker";
-import { ProductDataProvider } from "@providers/ProductDataProvider";
-import 'boxicons/css/boxicons.min.css';
-import { AuthProvider } from "@providers/AuthProvider"
-import About from "@components/layout/about";
+import "@styles/theme/theme.style.css";
+import "boxicons/css/boxicons.min.css";
+import { AuthProvider } from "@providers/AuthProvider";
 import { ThemeProvider } from "@providers/ThemeProvider";
+import { AppProvider } from "@providers/AppContext";
 
 export const metadata: Metadata = {
-  title: "Home || Barlon",
+  title: "WoahGPT",
   icons: {
     icon: "/favicon.ico",
   },
   description: "By Barlon Corporation.",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-    return (
+}) {
+  return (
     <html lang="en">
+      <AppProvider>
       <ThemeProvider>
-      <AuthProvider>
-      <ProductDataProvider>
-
-        <body className={`app-layout`}>
-          <ReactLenis root options={{
-            lerp: 0.1,
-            touchMultiplier: 1.25,
-          }}
-          >
-            <main className="main-layout">
-              <PathChecker />
-              <section className="layout-elements">
-                <nav className="navigation-bar">
-                  <Navbar />
-                </nav>
-                <section className="app-page-view">
-                  {children}
-                </section>
-              </section>
-            </main>
-          </ReactLenis>
-        </body>
-      </ProductDataProvider>
-      </AuthProvider>
+        <AuthProvider>
+          <body className="min-w-[380px] max-w-[2560px] no-underline font-montserrat-sans tracking-letter-spacing-primary shadow-[0_0_50px_0_var(--theme-color-boxShadow-dark)]">
+            {children}
+          </body>
+        </AuthProvider>
       </ThemeProvider>
+      </AppProvider>
     </html>
   );
 }

@@ -8,6 +8,7 @@ import Image from "next/image";
 import MoreBar from "@components/layout/morebar";
 import { useTheme } from "@providers/ThemeProvider";
 import clsx from "clsx";
+import { useAppContext } from "@providers/AppContext";
 
 function useHasMounted() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -28,19 +29,26 @@ export default function Navbar() {
   const darkTheme = theme === "dark";
 
   const [moreBarLeft, setMoreBarLeft] = useState<number | null>(null);
-  const [showMoreBar, setShowMoreBar] = useState(false);
   const hasMounted = useHasMounted();
+
+  const {
+    toggleSidebar,
+    searchActive,
+    toggleSearch,
+    moreBarVisible,
+    toggleMoreBar,
+    setMoreBarVisible
+  } = useAppContext();
 
   const updateMoreBarPosition = () => {
     if (moreBarToggleBtnRef.current) {
       const rect = moreBarToggleBtnRef.current.getBoundingClientRect();
       const distanceFromRight = window.innerWidth - rect.left - 100;
-      console.log(distanceFromRight);
       setMoreBarLeft(distanceFromRight);
     }
   };
 
-  const toggleSearch = () => {
+  const handleToggleSearch = () => {
     const isNowActive = searchInputRef.current?.classList.toggle(
       "search-input-appear"
     );
@@ -65,31 +73,34 @@ export default function Navbar() {
     }
 
     document.body.style.overflow = isNowActive ? "hidden" : "";
+    toggleSearch();
   };
 
-  const toggleMoreBar = () => {
-    if (showMoreBar) {
-      setShowMoreBar(false);
+  // Trigger search UI open when searchActive changes from context
+  useEffect(() => {
+    if (searchActive) {
+      handleToggleSearch();
+    }
+  }, [searchActive]);
+
+  const handleToggleMoreBar = () => {
+    if (moreBarVisible) {
+      setMoreBarVisible(false);
       return;
     }
-
     updateMoreBarPosition();
     requestAnimationFrame(() => {
-      setShowMoreBar(true);
+      setMoreBarVisible(true);
     });
-  };
-
-  const closeMoreBar = () => {
-    setShowMoreBar(false);
+    toggleMoreBar();
   };
 
   useEffect(() => {
     const handleResize = () => {
       if (searchInputRef.current?.classList.contains("search-input-appear")) {
-        toggleSearch();
+        handleToggleSearch();
       }
-
-      if (showMoreBar) updateMoreBarPosition();
+      if (moreBarVisible) updateMoreBarPosition();
     };
 
     window.addEventListener("resize", handleResize);
@@ -98,24 +109,24 @@ export default function Navbar() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", updateMoreBarPosition);
     };
-  }, [showMoreBar]);
+  }, [moreBarVisible]);
 
   useEffect(() => {
     const closeMoreBarIfClickedOutside = (e: MouseEvent) => {
       if (
-        showMoreBar &&
+        moreBarVisible &&
         moreBarRef.current &&
         !moreBarRef.current.contains(e.target as Node) &&
         !moreBarToggleBtnRef.current?.contains(e.target as Node)
       ) {
-        closeMoreBar();
+        setMoreBarVisible(false);
       }
     };
 
     window.addEventListener("click", closeMoreBarIfClickedOutside);
     return () =>
       window.removeEventListener("click", closeMoreBarIfClickedOutside);
-  }, [showMoreBar]);
+  }, [moreBarVisible]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -143,6 +154,7 @@ export default function Navbar() {
 
   return (
     <nav className="nav" ref={navRef}>
+      {/* Search input overlay */}
       <div
         className={clsx(
           "search-input",
@@ -160,80 +172,32 @@ export default function Navbar() {
         <p
           className="search-cancle-btn"
           ref={searchCancelBtnRef}
-          onClick={toggleSearch}
+          onClick={handleToggleSearch}
         >
           X
         </p>
       </div>
 
+      {/* Navbar content */}
       <div className="nav-items">
         <Link className="brand-logo" title="Barlon" href={"/"}>
-          {darkTheme ? (
-            <>
-              <Image
-                src={"/logos/White_triangle.png"}
-                alt="Brand Logo"
-                width={30}
-                height={30}
-              />
-            </>
-          ) : (
-            <>
-              <Image
-                src={"/logos/Black_triangle.png"}
-                alt="Brand Logo"
-                width={40}
-                height={40}
-              />
-            </>
-          )}
           <div
-            className={`brand-logo-text ${
-              darkTheme ? "dark-text-primary" : "light-text-primary"
+            className={`text-lg font-semibold ${
+              darkTheme ? "text-white" : "text-black"
             }`}
           >
-            Woah
+            WoahGPT
           </div>
         </Link>
-
         <div className="nav-right-side">
-          <div className="nav-icons" title="Search" onClick={toggleSearch}>
-            <i
-              className="bx bx-search"
-              style={{ fontSize: "24px", color: darkTheme ? "#fff" : "#000" }}
-            ></i>
-          </div>
-          <div
-            className="nav-icons"
-            title="More"
-            ref={moreBarToggleBtnRef}
-            onClick={toggleMoreBar}
-          >
-            <i
-              className="bx bx-user"
-              style={{ fontSize: "24px", color: darkTheme ? "#fff" : "#000" }}
-            ></i>
-          </div>
-          <div className="nav-icons" title="Cart">
+          {/* Sidebar toggle button */}
+          <div className="nav-icons" title="SideBar" onClick={toggleSidebar}>
             <i
               className="bx bx-menu"
               style={{ fontSize: "24px", color: darkTheme ? "#fff" : "#000" }}
             ></i>
           </div>
         </div>
-
-        {hasMounted && showMoreBar && moreBarLeft !== null && (
-          <div
-            className="more-options-box morebar-visible"
-            ref={moreBarRef}
-            style={{
-              top: "60px",
-              right: moreBarLeft <= 0 ? "40px" : `${moreBarLeft}px`,
-            }}
-          >
-            <MoreBar onClickToggle={closeMoreBar} />
-          </div>
-        )}
       </div>
     </nav>
   );
