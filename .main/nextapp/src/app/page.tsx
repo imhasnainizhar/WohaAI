@@ -1,96 +1,112 @@
-import { cookies } from "next/headers";
-import { Metadata } from "next";
-import Image from "next/image";
+"use client";
+
+import Navbar from "../components/layout/navbar";
+import SideBar from "@components/layout/sidebar";
+import { ReactLenis } from "@utils/react-lenis";
+import PathChecker from "@lib/page-path-checker";
+import TextArea from "@components/functional-comps/textareaa";
 import "@styles/theme/main.global.css";
 import "boxicons/css/boxicons.min.css";
-import TextArea from "@components/functional-comps/textareaa";
-import SideBar from "@components/layout/sidecart";
+import { useTheme } from "@providers/ThemeProvider";
+import SideBarSmall from "@components/layout/sidebar_small";
+import { useAppContext } from "@providers/AppContext";
 
-export const metadata: Metadata = {
-  title: "Woah AI",
-  description: "Chat with you AI Partner with Privacy.",
-};
+export default function Home() {
+  const { theme } = useTheme();
+  const darkTheme = theme === "dark";
 
-type Theme = "dark" | "light";
-
-export default async function Home() {
-  const cookieStore = await cookies();
-  const cookieTheme = cookieStore.get("theme")?.value;
-  console.log("SSR Theme Cookie:", cookieTheme);
-  const darkTheme = cookieTheme === "dark";
+  const { sidebarExpanded } = useAppContext();
 
   return (
-    <main
-      className={`home-page ${
-        darkTheme
-          ? "bg-dark-black-primary text-dark-white-secondary"
-          : "bg-light-white-primary text-light-black-secondary"
-      } h-[100vh] w-[100%]`}
+    <ReactLenis
+      root
+      options={{
+        lerp: 0.1,
+        touchMultiplier: 1.25,
+      }}
     >
-      <div className="h-full flex items-center justify-center w-[100%]">
-        <div className="w-[20%] h-[100%] max-[640px]:w-[0%]">  {/* transform max-[640px]:-translate-x-[100%] */}
-          <SideBar />
-        </div>
-        <div className="w-[80%] p-0.5 h-full flex items-center justify-center max-[640px]:w-[100%]">
-          <div className="flex flex-col h-[40%] min-h-[380px] max-h-[1980px] gap-7 items-center mt-[10%] w-[100%]">
-            <div className="flex items-center justify-center">
-              <span>
-                <Image
-                  src={`/logos/${darkTheme ? "logo-white" : "logo-black"}.png`}
-                  alt="Woah AI"
-                  width={60}
-                  height={60}
-                />
-              </span>
-            </div>
-            <div className="w-full max-w-[690px] px-[8px]">
-              <TextArea />
+      <main
+        className={`${
+          darkTheme
+            ? "bg-dark-black-primary text-dark-white-primary"
+            : "bg-light-white-primary text-light-black-primary"
+        }`}
+      >
+        <PathChecker />
+        <section className="flex h-[100vh] w-full">
+          {/* Sidebar */}
+          <aside
+            className={`flex-shrink-0 transition-all duration-750 ease-in-out max-[910px]:bg-dark-shade-1 max-[910px]:absolute max-[910px]:w-full max-[910px]:min-w-[380px]`}
+            style={{
+              width: sidebarExpanded ? "260px" : "60px",
+            }}
+          >
+            <div
+              className={`relative h-full transition-all duration-750 ease-in-out overflow-hidden z-[100]`}
+              style={{
+                width: sidebarExpanded ? "260px" : "60px",
+                opacity: sidebarExpanded ? 1 : 0,
+                backgroundColor: darkTheme
+                  ? "var(--theme-dark-black-secondary)"
+                  : "var(--theme-light-white-secondary)",
+              }}
+            >
+              <SideBar />
             </div>
             <div
-              className={`flex justify-center items-center gap-4 flex-wrap ${
-                darkTheme ? "text-white-primary" : "text-black-primary"
-              }`}
+              className="max-w-[60px] h-full overflow-hidden absolute"
+              style={{ left: 0, top: 0 }}
             >
-              <div
-                className={`border border-solid border-gray-dark rounded-[90px] w-[125px] h-[35px] flex items-center justify-center cursor-pointer ${
-                  darkTheme
-                    ? "text-dark-white-primary"
-                    : "text-light-black-primary"
-                }`}
-              >
-                Create Image
-              </div>
-              <div
-                className={`border border-solid border-gray-dark rounded-[90px] w-[125px] h-[35px] flex items-center justify-center cursor-pointer ${
-                  darkTheme
-                    ? "text-dark-white-primary"
-                    : "text-light-black-primary"
-                }`}
-              >
-                Edit Image
-              </div>
-              <div
-                className={`border border-gray-dark border-solid rounded-[90px] w-[125px] h-[35px] flex items-center justify-center cursor-pointer ${
-                  darkTheme
-                    ? "text-dark-white-primary"
-                    : "text-light-black-primary"
-                }`}
-              >
-                Create Music
-              </div>
-              <div
-                className={`border border-gray-dark border-solid rounded-[90px] w-[125px] h-[35px] flex items-center justify-center cursor-pointer ${
-                  darkTheme
-                    ? "text-dark-white-primary"
-                    : "text-light-black-primary"
-                }`}
-              >
-                Edit Music
-              </div>
+              <SideBarSmall />
             </div>
-          </div>
-        </div>
-      </div>
-    </main>
+          </aside>
+
+          {/* Main content */}
+          <section
+            className={`flex flex-col h-full transition-all duration-750 ease-in-out border-l border-solid border-gray-dark`}
+            style={{
+              width: `calc(100% - ${sidebarExpanded ? "260px" : "60px"})`,
+            }}
+          >
+            <nav className="z-[100] flex justify-center w-full h-[80px]">
+              <Navbar />
+            </nav>
+
+            {/* Home page content */}
+            <main
+              className={`home-page ${
+                darkTheme
+                  ? "bg-dark-black-primary text-dark-white-primary"
+                  : "bg-light-white-primary text-light-black-primary"
+              } h-full w-full`}
+            >
+              <div className="h-full flex flex-col w-full">
+                <div className="h-[50%] w-full flex flex-col justify-end items-center gap-3">
+                  <div className="min-w-[300px] max-w-[600px] w-full px-4 text-center font-bold font-sans text-[24px]">
+                    Introducing with WoahAI-2
+                  </div>
+                  <div
+                    className={`min-w-[300px] max-w-[600px] w-full px-4 text-center pb-2.5 text-[14px] ${
+                      darkTheme
+                        ? "text-dark-white-secondary"
+                        : "text-light-black-secondary"
+                    }`}
+                  >
+                    WoahGPT now has our smartest, fastest, most useful model yet,
+                    with thinking built in — so you get the best answer, every
+                    time.
+                  </div>
+                </div>
+                <div className="h-[50%] w-full flex flex-col justify-start items-center">
+                  <div className="min-w-[300px] max-w-[690px] w-full px-4">
+                    <TextArea />
+                  </div>
+                </div>
+              </div>
+            </main>
+          </section>
+        </section>
+      </main>
+    </ReactLenis>
   );
 }

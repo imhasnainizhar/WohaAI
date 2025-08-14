@@ -22,50 +22,55 @@ function TextArea() {
     const container = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
     const { theme } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$provider$2f$ThemeProvider$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useTheme"])();
     const darkTheme = theme === "dark";
-    const [height, setHeight] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(40); // Tracks textarea height
+    const [height, setHeight] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(40);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         const ta = textArea.current;
         const parent = container.current;
         if (!ta || !parent) return;
         const lineHeight = 24;
-        const maxHeight = lineHeight * 5;
+        const maxHeight = lineHeight * 6;
         const handleInput = ()=>{
-            ta.style.height = "auto"; // Reset
+            ta.style.height = "auto";
             const newHeight = Math.min(ta.scrollHeight, maxHeight);
             ta.style.height = `${newHeight}px`;
-            // Enable scroll if content is larger
             ta.style.overflowY = ta.scrollHeight > maxHeight ? "scroll" : "hidden";
-            // Adjust parent minHeight
             setHeight(newHeight);
         };
         ta.addEventListener("input", handleInput);
-        handleInput(); // Initial
+        handleInput();
         return ()=>ta.removeEventListener("input", handleInput);
     }, []);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         ref: container,
         style: {
             minHeight: `${height + 60}px`,
-            transition: "min-height 0.2s ease"
+            transition: "min-height 0.2s ease, max-height 0.2s ease"
         },
-        className: `flex flex-col justify-between gap-3.5 p-2 pb-1 rounded-[25px] w-full ${darkTheme ? "bg-dark-black-secondary" : "bg-light-white-secondary"}`,
+        className: `flex flex-col justify-between gap-3.5 p-2 pb-1 rounded-[25px] w-full relative border border-solid border-gray-dark ${darkTheme ? "bg-dark-black-secondary" : "bg-light-white-secondary"}`,
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
                 ref: textArea,
                 placeholder: "How Can We Help You?",
-                className: `w-full max-w-[700px] min-w-[280px] resize-none text-left text-[15px] font-montserrat-sans pl-[5px] whitespace-pre-wrap break-words leading-[24px] focus:outline-none rounded-md p-2 pb-[4px] ${darkTheme ? "bg-dark-secondary text-dark-white-primary" : "bg-light-secondary text-light-black-primary"}`,
+                className: `w-full max-w-[700px] min-w-[280px] resize-none text-left text-[15px] font-montserrat-sans pl-[5px] whitespace-pre-wrap break-words leading-[24px] focus:outline-none rounded-md p-2 pb-[4px] touch-auto [webkit-overflow-scrolling:touch] ${darkTheme ? "bg-dark-secondary text-dark-white-primary" : "bg-light-secondary text-light-black-primary"}`,
                 style: {
                     minHeight: "40px",
-                    maxHeight: "120px",
-                    overflowY: "hidden"
+                    maxHeight: "144px",
+                    overflowY: "auto"
                 }
             }, void 0, false, {
                 fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                lineNumber: 51,
+                lineNumber: 47,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex items-center justify-between",
+                className: `absolute bottom-[50px] left-0 w-full h-[50px] pointer-events-none z-0 ${darkTheme ? "bg-gradient-to-t from-dark-black-secondary/90 to-transparent" : "bg-gradient-to-t from-light-white-secondary/90 to-transparent"}`
+            }, void 0, false, {
+                fileName: "[project]/src/components/functional-comps/textareaa.tsx",
+                lineNumber: 63,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "relative flex items-center justify-between z-10",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex gap-3 items-center justify-start",
@@ -75,7 +80,7 @@ function TextArea() {
                                 children: "Tools"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                                lineNumber: 69,
+                                lineNumber: 74,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -88,18 +93,18 @@ function TextArea() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                                    lineNumber: 81,
+                                    lineNumber: 90,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                                lineNumber: 76,
+                                lineNumber: 83,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                        lineNumber: 68,
+                        lineNumber: 73,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -111,24 +116,24 @@ function TextArea() {
                             height: 30
                         }, void 0, false, {
                             fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                            lineNumber: 95,
+                            lineNumber: 104,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                        lineNumber: 90,
+                        lineNumber: 99,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-                lineNumber: 67,
+                lineNumber: 72,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/functional-comps/textareaa.tsx",
-        lineNumber: 41,
+        lineNumber: 37,
         columnNumber: 5
     }, this);
 }

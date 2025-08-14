@@ -1,18 +1,18 @@
 /* @language tailwindcss */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap");
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Calton Elegance Sans';
-  src: url('/fonts/Calton Elegance Sans-Regular.otf') format('opentype');
+  font-family: "Calton Elegance Sans";
+  src: url("/fonts/Calton Elegance Sans-Regular.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
 
 :root {
   /* === Dark Theme Group === */
-  --theme-dark-black-primary: hsl(220 6% 9%);
-  --theme-dark-black-secondary: hsl(220 5% 15%);
+  --theme-dark-black-primary: hsl(240, 4%, 10%);
+  --theme-dark-black-secondary: hsl(220, 4%, 16%);
   --theme-dark-black-third: hsl(0, 0%, 20%);
   --theme-dark-white-primary: hsl(0, 0%, 95%);
   --theme-dark-white-secondary: hsl(0, 0%, 70%);
@@ -26,15 +26,19 @@
   --theme-light-black-secondary: hsl(0, 0%, 30%);
   --theme-color-boxShadow-dark: rgba(0, 0, 0, 0.5);
 
+  /* Light Background Shades */
+
+  --dark-shade-1: hsla(240, 6%, 10%, 0.84);
+
   /* === Mix Theme Group === */
+
   --theme-gray-primary: hsl(0, 0%, 35%);
-  --theme-gray-dark:hsla(0, 0%, 99%, 0.102);
+  --theme-gray-dark: hsla(0, 0%, 99%, 0.102);
   --link-color: rgb(0, 154, 255);
   --link-color-hover: rgb(0, 89, 148);
 }
 
-@theme{
-
+@theme {
   /* === Fonts === */
   --font-montserrat-sans: "Montserrat", sans-serif;
   --font-calton-elegance-sans: "Calton Elegance Sans", sans-serif;
@@ -55,13 +59,16 @@
   --color-light-black-secondary: var(--theme-light-black-secondary);
   --color-light-boxShadow-dark: var(--theme-color-boxShadow-dark);
 
+  /* Light Background Shades */
+  --color-dark-shade-1: var(--dark-shade-1);
+
   /* === Mix Theme Colors === */
   --color-gray-primary: var(--theme-gray-primary);
   --color-gray-dark: var(--theme-gray-dark);
   --color-link: var(--link-color);
   --color-link-hover: var(--link-color-hover);
 
-    /* === Other Styles === */
+  /* === Other Styles === */
   --letter-spacing-primary: 0.06rem;
   --letter-spacing-secondary: 0.08rem;
   --hover-transition: all 0.65s;
@@ -92,7 +99,7 @@
 }
 
 ::-webkit-scrollbar-button {
-display: none;
+  display: none;
 }
 
 ::-webkit-scrollbar-corner {
@@ -104,42 +111,6 @@ display: none;
   outline: none;
 }
 
-body {
-  text-decoration: none;
-  font-family: var(--font-family-secondary);
-  letter-spacing: var(--letter-spacing-primary);
-  min-width: 340px;
-  height: auto;
-}
-
-.main-layout {
-  margin: 0 auto;
-  max-width: 2560px;
-  width: auto;
-  height: auto;
-}
-
-.layout-elements {
-  height: 100vh;     /* ----------------> For adjusting main height of web app */
-  width: auto;
-  box-shadow: 0px 0px 50px 0px var(--theme-color-boxShadow-dark);
-}
-
-.navigation-bar {
-  height: auto;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  position: fixed;
-  z-index: 99;
-}
-
-.app-page-view {
-  width: 100%;
-  transition: all 1.5s ease;
-}
-
-
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -149,10 +120,4 @@ input:-webkit-autofill:active {
   color: var(--white) !important;
   caret-color: var(--white);
   transition: background-color 9999s ease-out, color 9999s ease-out;
-}
-
-@media (max-width: 600px) {
-  body {
-    font-size: 13px;
-  }
 }

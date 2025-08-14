@@ -40,7 +40,7 @@ export default function TextArea() {
         minHeight: `${height + 60}px`,
         transition: "min-height 0.2s ease, max-height 0.2s ease",
       }}
-      className={`flex flex-col justify-between gap-3.5 p-2 pb-1 rounded-[25px] w-full relative ${
+      className={`flex flex-col justify-between gap-3.5 p-2 pb-1 rounded-[25px] w-full relative border border-solid border-gray-dark ${
         darkTheme ? "bg-dark-black-secondary" : "bg-light-white-secondary"
       }`}
     >

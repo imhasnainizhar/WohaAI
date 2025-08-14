@@ -1,14 +1,15 @@
 {
-  "name": "barlon",
+  "name": "WoahGPT",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "npm-run-all --parallel tailwind:dev next:dev",
+    "build": "npm-run-all tailwind:build next:build",
+    "next:dev": "next dev --turbopack",
+    "next:build": "next build",
     "tailwind:dev": "npx tailwindcss -i ./src/styles/theme/main.global.css -o ./src/styles/dist/main.global.css --watch",
-    "tailwind:build": "npx tailwindcss -i ./src/styles/theme/main.global.css -o ./src/styles/dist/main.global.css --minify"
+    "tailwind:build": "npx tailwindcss -i ./src/styles/theme/main.global.css -o ./src/styles/dist/main.global.css --minify",
+    "start": "next start"
   },
   "prisma": {
     "schema": "./src/prisma/schema.prisma"
@@ -44,6 +45,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.1.2",
     "@types/react-google-recaptcha": "^2.1.9",
+    "npm-run-all": "^4.1.5",
     "prisma": "^6.11.0",
     "typescript": "^5.8.3"
   }
