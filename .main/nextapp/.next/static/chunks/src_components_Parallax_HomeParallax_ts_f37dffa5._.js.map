@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///D:/Gen-AI_OPEN-AI/.main/nextapp/src/components/Parallax/HomeParallax.ts"],"sourcesContent":["'use client';\r\n\r\nimport { useEffect } from 'react';\r\n\r\nexport default function HomeParallax() {\r\n  useEffect(() => {\r\n    const handleScroll = () => {\r\n      const layers = document.querySelectorAll<HTMLElement>('.parallax-layer');\r\n      layers.forEach((layer) => {\r\n        const speed = parseFloat(layer.dataset.speed || '0');\r\n        layer.style.transform = `translateY(${window.scrollY * speed}px)`;\r\n      });\r\n    };\r\n\r\n    window.addEventListener('scroll', handleScroll);\r\n    return () => window.removeEventListener('scroll', handleScroll);\r\n  }, []);\r\n\r\n  return null;\r\n}\r\n"],"names":[],"mappings":";;;AAEA;;AAFA;;AAIe,SAAS;;IACtB,CAAA,GAAA,6JAAA,CAAA,YAAS,AAAD;kCAAE;YACR,MAAM;uDAAe;oBACnB,MAAM,SAAS,SAAS,gBAAgB,CAAc;oBACtD,OAAO,OAAO;+DAAC,CAAC;4BACd,MAAM,QAAQ,WAAW,MAAM,OAAO,CAAC,KAAK,IAAI;4BAChD,MAAM,KAAK,CAAC,SAAS,GAAG,CAAC,WAAW,EAAE,OAAO,OAAO,GAAG,MAAM,GAAG,CAAC;wBACnE;;gBACF;;YAEA,OAAO,gBAAgB,CAAC,UAAU;YAClC;0CAAO,IAAM,OAAO,mBAAmB,CAAC,UAAU;;QACpD;iCAAG,EAAE;IAEL,OAAO;AACT;GAfwB;KAAA","debugId":null}}]
-}

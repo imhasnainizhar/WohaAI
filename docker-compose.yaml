@@ -2,7 +2,7 @@ services:
 
   nextapp_service_main:    ## Successfully Deployed
     build:
-      context: ./nextapp
+      context: 
       dockerfile: Dockerfile
       target: development
     container_name: nextapp_service_main

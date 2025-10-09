@@ -1,8 +1,0 @@
-/* [project]/src/styles/utils/transitional-link.style.css [app-client] (css) */
-.app-page-transition {
-  opacity: 0;
-  filter: blur(25px);
-  transform: translateX(-100px);
-}
-
-/*# sourceMappingURL=src_styles_utils_transitional-link_style_css_f9ee138c._.single.css.map*/
