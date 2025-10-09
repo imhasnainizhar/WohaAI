@@ -1,0 +1,182 @@
+.signin-page {
+  width: 100%;
+  height: auto;
+  height: 750px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signin-page-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  height: 500px;
+  max-width: 500px;
+}
+
+.signin-decor {
+  scale: 1.5;
+}
+
+.signin-page-heading {
+  font-family: "Calton Elegance Sans";
+  font-weight: 600;
+  font-size: 26px;
+  text-align: center;
+}
+
+.signin-credential-box{
+  margin: 20px 0;
+  height: auto;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  height: 200px;
+}
+
+.input-group {
+  position: relative;
+  width: 250px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  border: 1px solid var(--theme-gray-primary);
+}
+
+.input-group input {
+  width: 235px;
+  height: 35px;
+  border-radius: 12px;
+  background-color: transparent;
+  border: none;
+  margin-left: 15px;
+  z-index: 1;
+}
+
+.input-group label {
+  color: var(--theme-gray-primary);
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  transition: 0.3s linear;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .input-group label {
+  background-color: var(--theme-dark-black-primary);
+}
+
+[data-theme="light"] .input-group label {
+  background-color: var(--theme-light-white-primary);
+}
+
+.input-group:focus-within label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -1px;
+  font-size: 10px;
+  border-radius: 20px;
+  padding: 0 6px;
+}
+
+[data-theme="dark"] .input-group:focus-within label,
+[data-theme="dark"] .input-group input:not(:placeholder-shown) + label {
+  color: white;
+}
+
+[data-theme="light"] .input-group:focus-within label,
+[data-theme="light"] .input-group input:not(:placeholder-shown) + label {
+  color: black;
+}
+
+.link-for-signup > * {
+  margin: 0px 4px;
+}
+
+a {
+  text-decoration: none;
+  color: var(--link-color);
+  transition: all 0.1s linear;
+}
+
+a:hover {
+  color: var(--link-color-hover);
+}
+
+a:active {
+  color: var(--theme-gray-primary);
+}
+
+.signupRemember {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+.signupRemember input {
+  width: 15px;
+  height: 20px;
+  background-color: transparent;
+  color: transparent;
+  border: 1px solid var(--light-dark-gray);
+  cursor: pointer;
+}
+
+.signin-submit-btn {
+  background-color: transparent;
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  border: none;
+}
+
+.signin-submit-btn button {
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Calton Elegance Sans;
+  width: 150px;
+  height: 40px;
+  border-radius: 99999px;
+  border: none;
+  transition: all 0.3s linear;
+  pointer-events: all;
+  touch-action: auto;
+  cursor: pointer;
+}
+
+.signin-submit-btn button:hover {
+  background-color: var(--theme-gray-primary);
+}
+
+.signin-submit-btn button:active{
+  background-color: var(--theme-dark-black-third);
+  transition: all 0s linear;
+}
+
+.has-error {
+  border: 1px solid rgb(255, 53, 53);
+}
+
+.error-text {
+  position: absolute;
+  top: 45;
+  left: 10;
+  width: auto;
+  font-size: 12px;
+  color: rgb(255, 53, 53);
+}

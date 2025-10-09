@@ -1,0 +1,123 @@
+/* @language tailwindcss */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap");
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Calton Elegance Sans";
+  src: url("/fonts/Calton Elegance Sans-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  /* === Dark Theme Group === */
+  --theme-dark-black-primary: hsl(240, 4%, 10%);
+  --theme-dark-black-secondary: hsl(220, 4%, 16%);
+  --theme-dark-black-third: hsl(0, 0%, 20%);
+  --theme-dark-white-primary: hsl(0, 0%, 95%);
+  --theme-dark-white-secondary: hsl(0, 0%, 70%);
+  --theme-color-boxShadow-light: rgba(204, 204, 204, 0.25);
+
+  /* === Light Theme Group === */
+  --theme-light-white-primary: hsl(0, 0%, 100%);
+  --theme-light-white-secondary: hsl(0, 0%, 95%);
+  --theme-light-white-third: hsl(0, 0%, 90%);
+  --theme-light-black-primary: hsl(0, 0%, 5%);
+  --theme-light-black-secondary: hsl(0, 0%, 30%);
+  --theme-color-boxShadow-dark: rgba(0, 0, 0, 0.5);
+
+  /* Light Background Shades */
+
+  --dark-shade-1: hsla(240, 6%, 10%, 0.84);
+
+  /* === Mix Theme Group === */
+
+  --theme-gray-primary: hsl(0, 0%, 35%);
+  --theme-gray-dark: hsla(0, 0%, 99%, 0.102);
+  --link-color: rgb(0, 154, 255);
+  --link-color-hover: rgb(0, 89, 148);
+}
+
+@theme {
+  /* === Fonts === */
+  --font-montserrat-sans: "Montserrat", sans-serif;
+  --font-calton-elegance-sans: "Calton Elegance Sans", sans-serif;
+
+  /* === Dark Theme Colors === */
+  --color-dark-black-primary: var(--theme-dark-black-primary);
+  --color-dark-black-secondary: var(--theme-dark-black-secondary);
+  --color-dark-black-third: var(--theme-dark-black-third);
+  --color-dark-white-primary: var(--theme-dark-white-primary);
+  --color-dark-white-secondary: var(--theme-dark-white-secondary);
+  --color-dark-boxShadow-light: var(--theme-color-boxShadow-light);
+
+  /* === Light Theme Colors === */
+  --color-light-white-primary: var(--theme-light-white-primary);
+  --color-light-white-secondary: var(--theme-light-white-secondary);
+  --color-light-white-third: var(--theme-light-white-third);
+  --color-light-black-primary: var(--theme-light-black-primary);
+  --color-light-black-secondary: var(--theme-light-black-secondary);
+  --color-light-boxShadow-dark: var(--theme-color-boxShadow-dark);
+
+  /* Light Background Shades */
+  --color-dark-shade-1: var(--dark-shade-1);
+
+  /* === Mix Theme Colors === */
+  --color-gray-primary: var(--theme-gray-primary);
+  --color-gray-dark: var(--theme-gray-dark);
+  --color-link: var(--link-color);
+  --color-link-hover: var(--link-color-hover);
+
+  /* === Other Styles === */
+  --letter-spacing-primary: 0.06rem;
+  --letter-spacing-secondary: 0.08rem;
+  --hover-transition: all 0.65s;
+  --active-transition: all 0.1s ease;
+}
+
+.shadow-light {
+  box-shadow: var(--color-boxShadow-light);
+}
+.shadow-dark {
+  box-shadow: var(--color-boxShadow-dark);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: auto;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--theme-dark-black-third);
+  border-radius: 60px;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+}
