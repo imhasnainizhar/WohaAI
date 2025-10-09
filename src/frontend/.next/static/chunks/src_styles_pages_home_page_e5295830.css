@@ -1,0 +1,211 @@
+/* [project]/src/styles/pages/home.page.css [app-client] (css) */
+.home-page {
+  height: auto;
+  font-family: var(--font-family-secondary);
+  letter-spacing: var(--letter-spacing-primary);
+  flex-direction: column;
+  justify-content: center;
+  display: flex;
+}
+
+.home-showcase-slider {
+  width: 100%;
+  height: auto;
+}
+
+.home-slides-container {
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  display: flex;
+}
+
+.home-slide {
+  text-align: center;
+  width: 100%;
+  height: calc(100vh + 25px);
+  max-height: 2650px;
+  letter-spacing: var(--letter-spacing-primary);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.heading-primary {
+  text-transform: uppercase;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 113.999%;
+}
+
+.slide-1 {
+  color: var(--white);
+  font-family: var(--font-family-primary);
+  background-image: url("/home-slider/new-mazda-rx-9-rotary-sports-car-imagined-by-mclaren-elva-designer_6.jpg");
+  background-position: -25% 54%;
+  background-repeat: no-repeat;
+  background-size: 140%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.slide-1-container {
+  background-color: #00000064;
+  width: 100%;
+  height: 100%;
+}
+
+.slide-1-content {
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  width: 100%;
+  height: 100%;
+  margin-top: 15%;
+  display: flex;
+}
+
+.slide-1-content > * {
+  text-align: left;
+  margin: 20px;
+}
+
+.slide-1-text {
+  width: auto;
+  max-width: 675px;
+  font-size: 16px;
+}
+
+.slide-1-btns {
+  justify-content: start;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: auto;
+  display: flex;
+}
+
+.order-btn, .learn-btn {
+  width: 130px;
+  height: 45px;
+  font-family: var(--font-family-secondary);
+  pointer-events: all;
+  cursor: pointer;
+  border: 1px solid var(--theme-gray-primary);
+  border-radius: 99999px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all .1s linear;
+}
+
+.order-btn {
+  background-color: var(--theme-dark-white-primary);
+  color: var(--theme-dark-black-primary);
+}
+
+.order-btn:hover, .learn-btn:hover {
+  background-color: var(--theme-gray-primary);
+}
+
+.order-btn:active, .learn-btn:active {
+  background-color: var(--theme-dark-black-third);
+}
+
+.slide-2 {
+  color: var(--white);
+  font-family: var(--font-family-primary);
+  background: linear-gradient(20deg, #8a7777, #ad3939);
+}
+
+.slide-3 {
+  color: var(--white);
+  font-family: var(--font-family-primary);
+  background: linear-gradient(20deg, #cfb1b1, #a05454);
+}
+
+.slide-4 {
+  color: var(--white);
+  font-family: var(--font-family-primary);
+  background: linear-gradient(20deg, #a38181, #4e4e4e);
+}
+
+.home-elevation-slate {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  height: 100vh;
+  padding: 0 10px;
+  transition: all 1.25s;
+  display: flex;
+  position: sticky;
+  top: 0;
+}
+
+.home-heading {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 800;
+  font-family: var(--font-family-primary);
+}
+
+.home-intro {
+  text-align: center;
+  text-transform: uppercase;
+  max-width: 1200px;
+  font-style: normal;
+  font-family: var(--font-family-secondary);
+  font-weight: 400;
+  line-height: 150%;
+}
+
+.shop-button {
+  pointer-events: all;
+  cursor: pointer;
+  color: #fff;
+  border-radius: 50px;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 55px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all .5s;
+  display: flex;
+}
+
+.shop-button:hover {
+  background-color: var(--theme-gray-primary);
+}
+
+.shop-button:active {
+  background-color: var(--theme-dark-black-third);
+  transition: all .2s;
+}
+
+@media (width <= 1200px) {
+  .slide-1 {
+    background-position: 10% 10%;
+    background-size: 150%;
+  }
+}
+
+@media (width <= 500px) {
+  .heading-primary {
+    font-size: 29px;
+  }
+
+  .slide-1-text {
+    max-width: 575px;
+    font-size: 14px;
+  }
+}
+
+
+/*# sourceMappingURL=src_styles_pages_home_page_e5295830.css.map*/

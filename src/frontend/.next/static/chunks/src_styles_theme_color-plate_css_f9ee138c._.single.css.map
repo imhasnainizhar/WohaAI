@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/styles/theme/color-plate.css"],"sourcesContent":[":root {\r\n  /* === Dark Theme Group === */\r\n  --theme-dark-black-primary: hsl(0, 0%, 5%);\r\n  --theme-dark-black-secondary: hsl(0, 0%, 15%);\r\n  --theme-dark-black-third: hsl(0, 0%, 20%);\r\n  --theme-dark-white-primary: hsl(0, 0%, 95%);\r\n  --theme-dark-white-secondary: hsl(0, 0%, 70%);\r\n  --theme-color-boxShadow-light: hsla(0, 0%, 80%, 0.25);\r\n\r\n  /* === Light Theme Group === */\r\n  --theme-light-white-primary: hsl(0, 0%, 100%);\r\n  --theme-light-white-secondary: hsl(0, 0%, 95%);\r\n  --theme-light-white-third: hsl(0, 0%, 90%);\r\n  --theme-light-black-primary: hsl(0, 0%, 5%);\r\n  --theme-light-black-secondary: hsl(0, 0%, 30%);\r\n  --theme-color-boxShadow-dark: rgba(0, 0, 0, 0.5);\r\n\r\n  /* === Mix Theme Group === */\r\n  --theme-gray-primary: hsl(0, 0%, 35%);\r\n  --link-color: rgb(0, 154, 255);\r\n  --link-color-hover: rgb(0, 89, 148);\r\n}"],"names":[],"mappings":"AAAA"}}]
+}
