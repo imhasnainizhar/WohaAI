@@ -1,40 +1,60 @@
-services:
+###############################################
+# 🐳 Multi-Service Docker Compose
+# ---------------------------------------------
+# Description: Full-stack microservice architecture
+# Stack: Next.js (frontend) + Node.js and Rust microservices with 
+# minimal implication of Java  + Redis
+# Dynamic Docker target controlled via .env (DOCKER_TARGET)
+###############################################
 
-  nextapp_service_main:    ## Successfully Deployed
+version: "3.9"
+
+services:
+  ##########################################################
+  # 🌐 FRONTEND SERVICE (Next.js)
+  # --------------------------------------------------------
+  # Serves the web UI and communicates with the API Gateway.
+  # Uses public env vars (NEXT_PUBLIC_*) for client access.
+  ##########################################################
+  frontend_app:    
     build:
-      context: 
+      context: .src/frontend
       dockerfile: Dockerfile
-      target: development
-    container_name: nextapp_service_main
+      target: ${DOCKER_TARGET}       # dynamic build stage: development / production
+    container_name: frontend_app
     expose:
       - ${NEXTAPP_MAIN_PORT}
     ports:
       - "${NEXTAPP_MAIN_PORT}:${NEXTAPP_MAIN_PORT}"
     volumes:
-      - ./nextapp:/src
+      - .src/frontend:/src            # live code mounting for dev
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
       - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
       - NEXT_PUBLIC_GATEWAY_BASE_URL_01=${NEXT_PUBLIC_GATEWAY_BASE_URL_01}
 
-  ## Backend Micro Services
-
-  api_gateway_01:
+  ##########################################################
+  # 🚏 API GATEWAY SERVICE
+  # --------------------------------------------------------
+  # Central router and proxy to internal microservices.
+  # Handles external HTTP requests and internal routing.
+  ##########################################################
+  api_gateway:
     build:
-      context: ./microservices/api_gateway/service
+      context: .src/microservices/api_gateway/service
       dockerfile: Dockerfile
-      target: development
-    container_name: api_gateway_01
+      target: ${DOCKER_TARGET}
+    container_name: api_gateway
     expose:
-      - "${API_GATEWAY_01}"
+      - "${API_GATEWAY}"
     ports:
-      - "${API_GATEWAY_01}:${API_GATEWAY_01}"
+      - "${API_GATEWAY}:${API_GATEWAY}"
     volumes:
-      - ./microservices/api_gateway/service:/src
+      - .src/microservices/api_gateway/service:/src
     environment:
       - NODE_ENV=${NODE_ENV}
-      - API_GATEWAY_01=${API_GATEWAY_01}
+      - API_GATEWAY_=${API_GATEWAY}
       - ME_SERVICE_PORT=${ME_SERVICE_PORT}
       - SIGNIN_SERVICE_PORT=${SIGNIN_SERVICE_PORT}
       - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
@@ -45,18 +65,24 @@ services:
     networks:
       - microservices_net_01
 
-  signin_service:    ## Successfully Deployed
+  ##########################################################
+  # 🔐 SIGNIN SERVICE
+  # --------------------------------------------------------
+  # Handles user authentication & token generation.
+  # Connects to Postgres via Prisma ORM.
+  ##########################################################
+  signin_service:    
     build:
-      context: ./microservices/signin_service/service
+      context: .src/microservices/signin_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: signin_service
     expose:
       - "${SIGNIN_SERVICE_PORT}"
     ports:
       - "${SIGNIN_SERVICE_PORT}:${SIGNIN_SERVICE_PORT}"
     volumes:
-      - ./microservices/signin_service/service:/src
+      - .src/microservices/signin_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -67,19 +93,23 @@ services:
     networks:
       - microservices_net_01
 
-
-  signout_service:   ## Successfully Deployed
+  ##########################################################
+  # 🚪 SIGNOUT SERVICE
+  # --------------------------------------------------------
+  # Handles user logout and session invalidation logic.
+  ##########################################################
+  signout_service:   
     build:
-      context: ./microservices/signout_service/service
+      context: .src/microservices/signout_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: signout_service
     expose:
       - "${SIGNOUT_SERVICE_PORT}"
     ports:
       - "${SIGNOUT_SERVICE_PORT}:${SIGNOUT_SERVICE_PORT}"
     volumes:
-      - ./microservices/signout_service/service:/src
+      - .src/microservices/signout_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -87,19 +117,23 @@ services:
     networks:
       - microservices_net_01
 
-
-  verify_user_service:    ## Successfully Deployed
+  ##########################################################
+  # 🧾 VERIFY USER SERVICE
+  # --------------------------------------------------------
+  # Validates OTPs or verification codes stored in Redis.
+  ##########################################################
+  verify_user_service:    
     build:
-      context: ./microservices/verify_user_service/service
+      context: .src/microservices/verify_user_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: verify_user_service
     expose:
       - "${VERIFY_USER_PORT}"
     ports:
       - "${VERIFY_USER_PORT}:${VERIFY_USER_PORT}"
     volumes:
-      - ./microservices/verify_user_service/service:/src
+      - .src/microservices/verify_user_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -111,19 +145,23 @@ services:
     networks:
       - microservices_net_01
 
-
-  verify_captcha_service:    ## Successfully Deployed
+  ##########################################################
+  # 🤖 VERIFY CAPTCHA SERVICE
+  # --------------------------------------------------------
+  # Validates Google reCAPTCHA tokens for bot prevention.
+  ##########################################################
+  verify_captcha_service:    
     build:
-      context: ./microservices/captcha_verification_service/service
+      context: .src/microservices/captcha_verification_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: verify_captcha_service
     expose:
       - "${VERIFY_CAPTCHA_PORT}"
     ports:
       - "${VERIFY_CAPTCHA_PORT}:${VERIFY_CAPTCHA_PORT}"
     volumes:
-      - ./microservices/captcha_verification_service/service:/src
+      - .src/microservices/captcha_verification_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -132,18 +170,24 @@ services:
     networks:
       - microservices_net_01
 
-  code_mailer_service:  ## Successfully Deployed
+  ##########################################################
+  # 📧 CODE MAILER SERVICE
+  # --------------------------------------------------------
+  # Sends verification codes, welcome emails, and recovery mails.
+  # Uses SMTP credentials from .env
+  ##########################################################
+  code_mailer_service:  
     build:
-      context: ./microservices/code_mailer_service/service
+      context: .src/microservices/code_mailer_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: code_mailer_service
     expose:
       - "${CODE_MAILER_PORT}"
     ports:
       - "${CODE_MAILER_PORT}:${CODE_MAILER_PORT}"
     volumes:
-      - ./microservices/code_mailer_service/service:/src
+      - .src/microservices/code_mailer_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -158,18 +202,23 @@ services:
     networks:
       - microservices_net_01
 
-  signup_validator_service:  ## Successfully Deployed
+  ##########################################################
+  # 🧠 SIGNUP VALIDATOR SERVICE
+  # --------------------------------------------------------
+  # Ensures user data validity before account creation.
+  ##########################################################
+  signup_validator_service:  
     build:
-      context: ./microservices/signup_validator_service/service
+      context: .src/microservices/signup_validator_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: signup_validator_service
     expose:
       - "${SIGNUP_VALIDATOR_PORT}"
     ports:
       - "${SIGNUP_VALIDATOR_PORT}:${SIGNUP_VALIDATOR_PORT}"
     volumes:
-      - ./microservices/signup_validator_service/service:/src
+      - .src/microservices/signup_validator_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -179,19 +228,23 @@ services:
     networks:
       - microservices_net_01
 
-
-  me_service:   ## Successfully Deployed
+  ##########################################################
+  # 🧍 ME SERVICE
+  # --------------------------------------------------------
+  # Manages user profile data and authenticated routes.
+  ##########################################################
+  me_service:   
     build:
-      context: ./microservices/me_service/service
+      context: .src/microservices/me_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: me_service
     expose:
       - "${ME_SERVICE_PORT}"
     ports:
       - "${ME_SERVICE_PORT}:${ME_SERVICE_PORT}"
     volumes:
-      - ./microservices/me_service/service:/src
+      - .src/microservices/me_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -202,18 +255,23 @@ services:
     networks:
       - microservices_net_01
 
-  signup_service:    ## Successfully Deployed
+  ##########################################################
+  # 📝 SIGNUP SERVICE
+  # --------------------------------------------------------
+  # Registers new users and issues initial JWT tokens.
+  ##########################################################
+  signup_service:    
     build:
-      context: ./microservices/signup_service/service
+      context: .src/microservices/signup_service/service
       dockerfile: Dockerfile
-      target: development
+      target: ${DOCKER_TARGET}
     container_name: signup_service
     expose:
       - "${SIGNUP_SERVICE_PORT}"
     ports:
       - "${SIGNUP_SERVICE_PORT}:${SIGNUP_SERVICE_PORT}"
     volumes:
-      - ./microservices/signup_service/service:/src
+      - .src/microservices/signup_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -224,14 +282,14 @@ services:
     networks:
       - microservices_net_01
 
-
-  ## Databases Servers
-
-  redis_code_c:    ## Successfully Deployed
+  ##########################################################
+  # ⚡ REDIS DATABASE
+  # --------------------------------------------------------
+  # In-memory data store for caching, code storage, etc.
+  ##########################################################
+  redis_code_c:    
     image: redis:7
     container_name: verification_code_cache
-    ## This service caches user verification codes 
-    ## on request for email verification in Redis server...
     expose:
       - "${REDIS_SERVER_PORT_01}"
     ports:
@@ -242,8 +300,12 @@ services:
     networks:
       - microservices_net_01
 
-## Other Configs
-
+##########################################################
+# 🗃️ Shared Volumes and Networks
+# --------------------------------------------------------
+# pgdata: used by Postgres if added later
+# microservices_net_01: shared overlay bridge
+##########################################################
 volumes:
   pgdata:
 

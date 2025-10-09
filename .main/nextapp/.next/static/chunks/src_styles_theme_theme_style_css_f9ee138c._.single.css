@@ -1,0 +1,54 @@
+/* [project]/src/styles/theme/theme.style.css [app-client] (css) */
+.dark-bg-primary {
+  background-color: var(--theme-dark-black-primary);
+}
+
+.dark-bg-secondary {
+  background-color: var(--theme-dark-black-secondary);
+}
+
+.dark-bg-third {
+  background-color: var(--theme-dark-black-third);
+}
+
+.dark-text-primary {
+  color: var(--theme-dark-white-primary);
+}
+
+.dark-text-secondary {
+  color: var(--theme-dark-white-secondary);
+}
+
+.dark-shadow {
+  box-shadow: 0px 0px 50px 0px var(--theme-color-boxShadow-dark);
+}
+
+.light-bg-primary {
+  background-color: var(--theme-light-white-primary);
+}
+
+.light-bg-secondary {
+  background-color: var(--theme-light-white-secondary);
+}
+
+.light-bg-third {
+  background-color: var(--theme-light-white-third);
+}
+
+.light-text-primary {
+  color: var(--theme-light-black-primary);
+}
+
+.light-text-secondary {
+  color: var(--theme-light-black-secondary);
+}
+
+.light-shadow {
+  box-shadow: 0px 0px 50px 0px var(--theme-color-boxShadow-light);
+}
+
+.border-primary {
+  border: var(--theme-border-primary);
+}
+
+/*# sourceMappingURL=src_styles_theme_theme_style_css_f9ee138c._.single.css.map*/
