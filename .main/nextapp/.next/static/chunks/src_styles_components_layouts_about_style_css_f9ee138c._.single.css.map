@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/styles/components/layouts/about.style.css"],"sourcesContent":[".about-section {\r\n    width: 100%;\r\n    height: auto;\r\n}\r\n\r\n.about-container{\r\n    height: auto;\r\n    width: 100%;\r\n    padding: 25px 10px;\r\n}\r\n\r\n.about-container > * {\r\n    padding: 8px 0px;\r\n}\r\n\r\n.about-heading{\r\n    font-size: 24px;\r\n    font-weight: 600;\r\n    letter-spacing: var(--letter-spacing-secondary);\r\n    font-family: Caalton Elegance Sans;\r\n}\r\n\r\n.about-content > *{\r\n    padding: 10px 0px;\r\n}\r\n\r\n.about-support-s > * {\r\n    padding: 10px 0px;\r\n}\r\n\r\na {\r\n    color: var(--link-color);\r\n    text-decoration: none;\r\n}\r\n\r\na:hover {\r\n    color: var(--link-color-hover);\r\n}\r\n\r\na:active {\r\n    color: var(--theme-gray-primary);\r\n}"],"names":[],"mappings":"AAAA;;;;;AAKA;;;;;;AAMA;;;;AAIA;;;;;;;AAOA;;;;AAQA;;;;;AAKA;;;;AAIA"}}]
-}

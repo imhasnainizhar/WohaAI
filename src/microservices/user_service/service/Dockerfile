@@ -1,16 +1,15 @@
 # ---------------------
 # Base
 # ---------------------
-FROM node:20 AS base
-WORKDIR /app
+FROM node:20-slim AS base
+WORKDIR /src
 COPY package*.json ./
 
 # ---------------------
 # Development
 # ---------------------
 FROM base AS development
-COPY prisma ./prisma
-RUN npm install
+RUN npm ci
 COPY . .
 CMD ["npm", "run", "dev"]
 
@@ -18,16 +17,22 @@ CMD ["npm", "run", "dev"]
 # Build
 # ---------------------
 FROM base AS build
+RUN npm ci
 COPY . .
-RUN npm install
+RUN npx prisma generate
 RUN npm run build
 
 # ---------------------
 # Production
 # ---------------------
-FROM node:20 AS production
+FROM node:20-slim AS production
 WORKDIR /app
-COPY --from=build /app/dist ./dist
+COPY --from=build /src/dist ./dist
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
+
+# Security best practice
+RUN useradd -m appuser
+USER appuser
+
 CMD ["npm", "start"]

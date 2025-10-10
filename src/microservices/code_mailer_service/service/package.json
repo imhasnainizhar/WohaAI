@@ -1,5 +1,5 @@
 {
-  "name": "code_mailer",
+  "name": "code_mailer_service",
   "description": "For sending verification codes to user mail.",
   "version": "1.0.0",
   "main": "dist/server.js",

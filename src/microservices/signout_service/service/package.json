@@ -1,5 +1,5 @@
 {
-  "name": "signout_Service",
+  "name": "signout_service",
   "description": "User can signout using this service.",
   "version": "1.0.0",
   "main": "dist/server.js",

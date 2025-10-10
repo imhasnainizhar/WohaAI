@@ -9,8 +9,9 @@ COPY package*.json ./
 # Development
 # ---------------------
 FROM base AS development
-COPY . .
+COPY prisma ./prisma
 RUN npm install
+COPY . .
 CMD ["npm", "run", "dev"]
 
 # ---------------------
@@ -26,11 +27,11 @@ RUN npm run build
 # ---------------------
 FROM node:20 AS production
 WORKDIR /app
+COPY --from=build /src/dist ./dist
 COPY package*.json ./
 RUN npm install --omit=dev
-COPY --from=build /src/dist ./dist
 
-# Security Best Practices
+# Security best practice
 RUN useradd -m appuser
 USER appuser
 

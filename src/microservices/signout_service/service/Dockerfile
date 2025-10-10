@@ -2,7 +2,7 @@
 # Base
 # ---------------------
 FROM node:20 AS base
-WORKDIR /app
+WORKDIR /src
 COPY package*.json ./
 
 # ---------------------
@@ -26,10 +26,12 @@ RUN npm run build
 # ---------------------
 FROM node:20 AS production
 WORKDIR /app
-
 COPY package*.json ./
 RUN npm install --omit=dev
+COPY --from=build /src/dist ./dist
 
-COPY --from=build /app/dist ./dist
+# Security best practice
+RUN useradd -m appuser
+USER appuser
 
 CMD ["npm", "start"]

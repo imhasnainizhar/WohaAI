@@ -3,6 +3,7 @@
     "target": "ES6",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
+    "allowSyntheticDefaultImports": true,
     "rootDir": "src",
     "outDir": "dist",
     "paths": {
@@ -12,7 +13,7 @@
       "@services/*": ["./services/*"],
       "@utils/*": ["./utils/*"],
       "@config/*": ["./config/*"],
-      "@lib/*": ["./lib/*"]
+      "@prisma/*": ["./prisma/*"]
     },
     "esModuleInterop": true,
     "strict": true,
