@@ -1,93 +1,131 @@
-# Woah GenAI ChatBot
+# 🤖 WoahAI Chatbot
 
+<p align="center">
+  <img src="https://your-logo-url.png" width="120" />
+</p>
 
+<p align="center">
+  Open-source AI chatbot project for <strong>educational purposes</strong> and portfolio showcase.<br/>
+  Learn, contribute, and explore ethical AI development 🌱
+</p>
 
-## Getting started
+<p align="center">
+  <img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
+  <img src="https://img.shields.io/badge/Powered%20By-OpenAI-black.svg" />
+</p>
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+---
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 🌟 Purpose
 
-## Add your files
+WoahAI Chatbot is a **portfolio and educational project** designed to:
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+* Demonstrate how to integrate **OpenAI APIs** in practical AI applications.
+* Showcase a **microservices architecture** with modular, containerized services.
+* Provide **educational resources** for learners to explore AI, infrastructure, and deployment workflows.
+* Offer **hands-on examples** of responsible and ethical AI development.
+
+This repo is intended as a learning resource for students, developers, and community contributors.
+
+---
+
+## 🚀 Features
+
+* 💬 AI-powered chatbot using OpenAI GPT models
+* 🐳 Local development environment via **Docker Compose** (`dev/` folder)
+* 🧩 Modular microservices structure (`src/` folder)
+* 🏗️ Infrastructure as Code with **Terraform** (`infra/` folder) for cloud deployment
+* 🌍 Ethical AI and open-source collaboration guidelines
+
+---
+
+## ⚙️ Getting Started
+
+Follow these steps to set up the project locally and for production testing:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://gitlab.com/yourusername/WoahAI_Chatbot.git
+cd WoahAI_Chatbot
+```
+
+### 2. Install Dependencies
+
+Each service may have its own dependencies. Navigate to the service folder in `src/` and run:
+
+```bash
+npm install   # or yarn install
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the root or respective service folder:
+
+```bash
+cp .env.example .env
+```
+
+Fill in your **OpenAI API key** and other necessary variables.
+
+> ⚠️ Do NOT commit your `.env` file or API keys.
+
+### 4. Start Local Development Environment
+
+Navigate to the `dev/` folder and start Docker Compose:
+
+```bash
+cd dev/
+docker compose -f compose.api.yml up --build
+```
+
+* Each compose file corresponds to a specific microservice.
+* Access services via the ports specified in the compose files.
+
+### 5. Terraform Deployment (Optional for Cloud) Under Development:
+
+The `infra/` folder contains Terraform configurations:
+
+```bash
+cd infra/
+terraform init
+terraform plan  # Review deployment plan
+terraform apply # Deploy infrastructure
+```
+
+This will set up cloud resources for production or staging.
+
+---
+
+## 📂 Project Structure
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot.git
-git branch -M main
-git push -uf origin main
+project-root/
+├── dev/                    # Docker Compose dev environment
+├── infra/                  # Terraform deployment configs
+├── src/                    # Microservice source code
+├── docs/                   # Wiki and additional documentation
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── CHANGELOG.md
+└── README.md
 ```
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/settings/integrations)
+## 📚 Documentation & Community
 
-## Collaborate with your team
+* [Wiki](./docs/Home.md) — detailed guides and project knowledge base
+* [Code of Conduct](./CODE_OF_CONDUCT.md) — community behavior standards
+* [Contributing](./CONTRIBUTING.md) — how to contribute responsibly
+* [Changelog](./CHANGELOG.md) — version updates
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+This project is designed to **help the community learn, experiment, and grow together** in ethical AI development.
 
-## Test and Deploy
+---
 
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+<p align="center">
+  Built with 💚 by <strong>Hani</strong> and contributors.<br/>
+  Explore. Learn. Contribute.
+</p>
