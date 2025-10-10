@@ -3,14 +3,14 @@ version: "3.9"
 services:
   signin_service:
     build:
-      context: ../src/microservices/signin_service/service
+      context: ../../src/microservices/signin_service/service
       dockerfile: Dockerfile
       target: ${DOCKER_TARGET}
     container_name: signin_service
     ports:
       - "${SIGNIN_SERVICE_PORT}:${SIGNIN_SERVICE_PORT}"
     volumes:
-      - ../src/microservices/signin_service/service:/src
+      - ../../src/microservices/signin_service/service:/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
