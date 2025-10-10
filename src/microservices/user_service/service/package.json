@@ -1,5 +1,5 @@
 {
-  "name": "me_Service",
+  "name": "user_service",
   "description": "User can fetch their profile using this api",
   "version": "1.0.0",
   "main": "dist/server.js",

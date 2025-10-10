@@ -1,0 +1,102 @@
+version: "3.9"
+
+services:
+  signin_service:
+    build:
+      context: ../src/microservices/signin_service/service
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET}
+    container_name: signin_service
+    ports:
+      - "${SIGNIN_SERVICE_PORT}:${SIGNIN_SERVICE_PORT}"
+    volumes:
+      - ../src/microservices/signin_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - SIGNIN_SERVICE_PORT=${SIGNIN_SERVICE_PORT}
+    networks:
+      - microservices_net_01
+
+  signout_service:
+    build:
+      context: ../src/microservices/signout_service/service
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET}
+    container_name: signout_service
+    ports:
+      - "${SIGNOUT_SERVICE_PORT}:${SIGNOUT_SERVICE_PORT}"
+    volumes:
+      - ../src/microservices/signout_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - SIGNOUT_SERVICE_PORT=${SIGNOUT_SERVICE_PORT}
+    networks:
+      - microservices_net_01
+
+  signup_service:
+    build:
+      context: ../src/microservices/signup_service/service
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET}
+    container_name: signup_service
+    ports:
+      - "${SIGNUP_SERVICE_PORT}:${SIGNUP_SERVICE_PORT}"
+    volumes:
+      - ../src/microservices/signup_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
+    networks:
+      - microservices_net_01
+
+  signup_validator_service:
+    build:
+      context: ../src/microservices/signup_validator_service/service
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET}
+    container_name: signup_validator_service
+    ports:
+      - "${SIGNUP_VALIDATOR_PORT}:${SIGNUP_VALIDATOR_PORT}"
+    volumes:
+      - ../src/microservices/signup_validator_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - SIGNUP_VALIDATOR_PORT=${SIGNUP_VALIDATOR_PORT}
+    networks:
+      - microservices_net_01
+
+  user_service:
+    build:
+      context: ../src/microservices/user_service/service
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET}
+    container_name: user_service
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    volumes:
+      - ../src/microservices/user_service/service:/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
+      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
+    networks:
+      - microservices_net_01
+
+networks:
+  microservices_net_01:
+    external: true
