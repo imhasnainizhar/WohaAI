@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  frontend_app:
+    build:
+      context: ../src/frontend
+      dockerfile: Dockerfile
+      target: ${DOCKER_TARGET}
+    container_name: frontend_app
+    ports:
+      - "${FRONTEND_APP_PORT}:${FRONTEND_APP_PORT}"
+    volumes:
+      - ../src/frontend:/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - APP_PUBLIC_RECAPTCHA_SITE_KEY=${APP_PUBLIC_RECAPTCHA_SITE_KEY}
+      - APP_PUBLIC_GATEWAY_BASE_URL_01=${APP_PUBLIC_GATEWAY_BASE_URL_01}
+    networks:
+      - microservices_net_01
+
+networks:
+  microservices_net_01:
+    external: true
