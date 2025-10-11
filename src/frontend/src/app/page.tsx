@@ -83,7 +83,7 @@ export default function Home() {
               <div className="h-full flex flex-col w-full">
                 <div className="h-[50%] w-full flex flex-col justify-end items-center gap-3">
                   <div className="min-w-[300px] max-w-[600px] w-full px-4 text-center font-bold font-sans text-[24px]">
-                    Introducing with WoahAI-2
+                    Introducing with WoahAI 2
                   </div>
                   <div
                     className={`min-w-[300px] max-w-[600px] w-full px-4 text-center pb-2.5 text-[14px] ${

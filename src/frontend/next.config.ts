@@ -8,7 +8,13 @@ const nextConfig: NextConfig = {
   },
 
 
-  webpack: (config) => {
+  webpack: (config, {isServer}) => {
+    if (!isServer) {
+      config.watchOptions = {
+        poll: 1000, // Check for changes every 1000ms
+        aggregateTimeout: 300,
+      }
+    }
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...config.resolve.alias,

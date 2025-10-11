@@ -22,15 +22,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <AppProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <body className="min-w-[380px] max-w-[2560px] no-underline font-montserrat-sans tracking-letter-spacing-primary shadow-[0_0_50px_0_var(--theme-color-boxShadow-dark)]">
-            {children}
-          </body>
-        </AuthProvider>
-      </ThemeProvider>
-      </AppProvider>
+      <body className="min-w-[380px] max-w-[2560px] no-underline font-montserrat-sans tracking-letter-spacing-primary shadow-[0_0_50px_0_var(--theme-color-boxShadow-dark)]">
+        <AppProvider>
+          <ThemeProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </ThemeProvider>
+        </AppProvider>
+      </body>
     </html>
   );
 }
