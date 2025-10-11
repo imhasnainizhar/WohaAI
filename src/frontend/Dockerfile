@@ -1,32 +1,49 @@
 # ---------------------
-# Base
+# Base Stage
 # ---------------------
-FROM node:20 AS base
+FROM node:18-bullseye AS base
 WORKDIR /app
+
+# Copy package files first for caching
 COPY package*.json ./
 
 # ---------------------
-# Development
+# Development Stage
 # ---------------------
 FROM base AS development
-RUN npm install
+
+# Installing Build tools for native modules
+RUN apt-get update && apt-get install -y python3 build-essential gcc g++ make
+
+# Installing Modules
+RUN npm ci
+
+# Copying Source Code, Ignoring node modules.
 COPY . .
+
+# Default command for development
 CMD ["npm", "run", "dev"]
 
 # ---------------------
-# Build
+# Production Build Stage
 # ---------------------
 FROM base AS build
-COPY . .
-RUN npm install
+RUN npm ci --omit=dev
 RUN npm run build
 
 # ---------------------
-# Production
+# Production Runtime Stage
 # ---------------------
-FROM node:20 AS production
-WORKDIR /dist
-COPY --from=build /app/dist ./dist
-COPY package*.json ./
-RUN npm install --omit=dev
-CMD ["npm", "start"]
+FROM node:20-alpine AS production
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY --from=build /app/node_modules ./node_modules
+
+# Non-sensitive defaults
+ENV NODE_ENV=${NODE_ENV}
+ENV APP_PUBLIC_RECAPTCHA_SITE_KEY=${APP_PUBLIC_RECAPTCHA_SITE_KEY}
+ENV APP_PUBLIC_GATEWAY_BASE_URL_01=${APP_PUBLIC_GATEWAY_BASE_URL_01}
+
+EXPOSE 3000
+CMD ["npm", "run", "start"]

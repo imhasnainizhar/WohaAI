@@ -14,41 +14,40 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "src",
     "paths": {
       "@lib/*": [
-        "lib/*"
+        "./src/lib/*"
       ],
       "@models/*": [
-        "models/*"
+        "./src/models/*"
       ],
       "@utils/*": [
-        "utils/*"
+        "./src/utils/*"
       ],
       "@components/*": [
-        "components/*"
+        "./src/components/*"
       ],
       "@styles/*": [
-        "styles/*"
+        "./src/styles/*"
       ],
       "@hooks/*": [
-        "hooks/*"
+        "./src/hooks/*"
       ],
       "@pages/*": [
-        "pages/*"
+        "./src/pages/*"
       ],
       "@app/*": [
-        "app/*"
+        "./src/app/*"
       ],
       "@providers/*": [
-        "provider/*"
+        "./src/providers/*"
       ]
     },
     "plugins": [
@@ -57,8 +56,13 @@
       }
     ]
   },
+  "typeRoots": [
+    "./node_modules/@types",
+    "../../packages/types"
+  ],
   "include": [
     "next-env.d.ts",
+    "../../packages/types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
