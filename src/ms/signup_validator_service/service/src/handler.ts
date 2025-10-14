@@ -7,14 +7,15 @@ const router = express.Router();
 
 router.post("/", async (req: Request, res: Response): Promise<Response> => {
   try {
-    console.log("🟢 [SIGNUP_VALIDATOR] Request received");
+    console.log("🟢 [SIGNUP_VALIDATOR] Request received"); // Incoming request logged
 
-    // Validate input
+    // 📝 Validate the request body using Zod schema
     const parsed = signUpSchema.safeParse(req.body);
     if (!parsed.success) {
       const flattened = parsed.error.flatten();
-      console.warn(" [SIGNUP_VALIDATOR] Validation failed:", flattened.fieldErrors);
+      console.warn("⚠️ [SIGNUP_VALIDATOR] Validation failed:", flattened.fieldErrors);
 
+      // ❌ Return validation errors to client
       return sendResponse({
         res,
         success: false,
@@ -29,7 +30,7 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
     const { email, username } = parsed.data;
     console.log("✅ [SIGNUP_VALIDATOR] Input validated for:", email);
 
-    // Check for existing user
+    // 🔍 Check if username or email already exists in DB
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ email }, { username }],
@@ -40,9 +41,9 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
       const usernameTaken = existingUser.username === username;
       const emailTaken = existingUser.email === email;
 
-      // both exist
+      // 🚫 Both username & email already exist
       if (usernameTaken && emailTaken) {
-        console.log(`🔴 Username ${username} and email ${email} are not available`)
+        console.log(`🔴 Username ${username} and email ${email} are not available`);
         return sendResponse({
           res,
           success: false,
@@ -57,9 +58,9 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
         });
       }
 
-      // only username exists
+      // 🚫 Only username exists
       if (usernameTaken) {
-        console.log(`🔴 Username ${username} are not available`)
+        console.log(`🔴 Username ${username} is not available`);
         return sendResponse({
           res,
           success: false,
@@ -71,9 +72,9 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
         });
       }
 
-      // only email exists
+      // 🚫 Only email exists
       if (emailTaken) {
-        console.log(`🔴 Email ${email} are not available`)
+        console.log(`🔴 Email ${email} is not available`);
         return sendResponse({
           res,
           success: false,
@@ -86,11 +87,12 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
       }
     }
 
+    // ✅ Neither username nor email exists — safe to proceed
     console.log(`🆗 [SIGNUP_VALIDATOR] Username ${username} available`);
     console.log(`🆗 [SIGNUP_VALIDATOR] Email ${email} available`);
+    console.log("🎉 [SIGNUP_VALIDATOR] Validation successful");
 
-    console.log("🎉 [SIGNUP_VALIDATOR] Validation successful ");
-
+    // 💾 Return success response to client
     return sendResponse({
       res,
       success: true,
@@ -101,12 +103,14 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
     });
 
   } catch (err: unknown) {
+    // 🔥 Catch unexpected errors
     if (err instanceof Error) {
       console.error("🔥 [ERROR] Internal Server Error in /signup route:", err.message);
     } else {
       console.error("🚨 [UNEXPECTED ERROR TYPE]:", err);
     }
 
+    // ❌ Return generic server error response
     return sendResponse({
       res,
       success: false,
