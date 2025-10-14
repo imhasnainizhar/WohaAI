@@ -30,7 +30,7 @@ services:
   ##########################################################
   api_gateway:
     build:
-      context: ../src/microservices/api_gateway_service/service
+      context: ../src/ms/api_gateway/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: api_gateway
@@ -39,8 +39,9 @@ services:
     ports:
       - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     volumes:
-      - ../src/microservices/api_gateway/service:/app
-      - ./node_modules:/app/node_modules
+      - ../src/ms/api_gateway/service:/app
+      - ../src/ms/api_gateway/service/routes.json:/app/routes.json
+      - ../src/ms/api_gateway/service/node_modules:/app/node_modules
     environment:
       - NODE_ENV=${NODE_ENV}
       - API_GATEWAY_PORT=${API_GATEWAY_PORT}
@@ -59,7 +60,7 @@ services:
   ##########################################################
   signin_service:    
     build:
-      context: ../src/microservices/signin_service/service
+      context: ../src/ms/signin_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: signin_service
@@ -68,8 +69,7 @@ services:
     ports:
       - "${SIGNIN_SERVICE_PORT}:${SIGNIN_SERVICE_PORT}"
     volumes:
-      - ../src/microservices/signin_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
+      - ../src/ms/signin_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -85,7 +85,7 @@ services:
   ##########################################################
   signout_service:   
     build:
-      context: ../src/microservices/signout_service/service
+      context: ../src/ms/signout_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: signout_service
@@ -94,8 +94,7 @@ services:
     ports:
       - "${SIGNOUT_SERVICE_PORT}:${SIGNOUT_SERVICE_PORT}"
     volumes:
-      - ../src/microservices/signout_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
+      - ../src/microservices/signout_service/service/src:/app
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -108,7 +107,7 @@ services:
   ##########################################################
   user_verify_code_service:    
     build:
-      context: ../src/microservices/user_verify_code_service/service
+      context: ../src/ms/user_verify_code_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: user_verify_code_service
@@ -117,8 +116,7 @@ services:
     ports:
       - "${USER_VERIFY_CODE_PORT}:${USER_VERIFY_CODE_PORT}"
     volumes:
-      - ../src/microservices/user_verify_code_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
+      - ../src/microservices/user_verify_code_service/service/src:/app
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -189,7 +187,7 @@ services:
   ##########################################################
   signup_validator_service:  
     build:
-      context: ../src/microservices/signup_validator_service/service
+      context: ../src/ms/signup_validator_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: signup_validator_service
@@ -198,8 +196,7 @@ services:
     ports:
       - "${SIGNUP_VALIDATOR_PORT}:${SIGNUP_VALIDATOR_PORT}"
     volumes:
-      - ../src/microservices/signup_validator_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
+      - ../src/ms/signup_validator_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -240,7 +237,7 @@ services:
   ##########################################################
   signup_service:    
     build:
-      context: ../src/microservices/signup_service/service
+      context: ../src/ms/signup_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: signup_service
@@ -249,15 +246,16 @@ services:
     ports:
       - "${SIGNUP_SERVICE_PORT}:${SIGNUP_SERVICE_PORT}"
     volumes:
-      - ../src/microservices/signup_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
-    restart: always
+      - ../src/ms/signup_service/service/src:/app/src
+    depends_on:
+      - postgres
     environment:
       - NODE_ENV=${NODE_ENV}
       - JWT_SECRET=${JWT_SECRET}
       - DATABASE_PROVIDER=${DATABASE_PROVIDER}
       - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
       - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
+      - PRISMA_SKIP_POSTINSTALL_GENERATE=${PRISMA_SKIP_POSTINSTALL_GENERATE}
     networks:
       - microservices_net_01
 
@@ -276,6 +274,37 @@ services:
     restart: always
     networks:
       - microservices_net_01
+
+  ##########################################################
+  # ⚡ DATABASE Setup For Dev
+  ##########################################################
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: MyUser1234
+      POSTGRES_DB: user_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - microservices_net_01
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dev.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+
 
 ##########################################################
 # 🗃️ Shared Volumes and Networks
