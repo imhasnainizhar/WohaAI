@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { signUpSchema } from "@utils/signup_validation_schema";
 import { prisma } from "@utils/prisma_client";
 import { sendResponse } from "@utils/api_response";
+import argon2 from "argon2";
 
 const router = express.Router();
 
@@ -47,19 +48,36 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
     console.log("✅ [SIGNUP] Input validated successfully for:", email);
 
     // 2️⃣ Check for existing user
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      console.warn("🛑 [SIGNUP] Email already exists:", email);
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        AND: [{ email }, { username }],
+      },
+    });
 
-      return sendResponse({
-        res,
-        success: false,
-        statusCode: 409,
-        message: "An account with this email already exists.",
-        errors: { email: ["Email already registered"] },
-        errorType: "email_unavailable",
-        path: req.path,
-      });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Email already taken.",
+          errors: { email: ["Email already taken"] },
+          errorType: "email_unavailable",
+          path: req.path,
+        });
+      }
+
+      if (existingUser.username === username) {
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Username not available.",
+          errors: { username: ["Username already taken"] },
+          errorType: "username_unavailable",
+          path: req.path,
+        });
+      }
     }
 
     // 3️⃣ Normalize names
@@ -70,14 +88,18 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
 
     // 4️⃣ Hash password
     console.log("🔐 [SIGNUP] Hashing password...");
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    const passwordHashed = await argon2.hash(password, {
+      type: argon2.argon2id, // Recommended variant here
+      memoryCost: 2 ** 16,   // 64 MB (memory hard)
+      timeCost: 3,           // iterations
+      parallelism: 1,
+    });
     // 5️⃣ Create user
     console.log("🧩 [SIGNUP] Creating user in database...");
     const newUser = await prisma.user.create({
       data: {
         email,
-        passwordHashed: hashedPassword,
+        passwordHashed: passwordHashed,
         username,
         userFirstName,
         userLastName,

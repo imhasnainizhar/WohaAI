@@ -5,6 +5,7 @@ import { z } from "zod";
 import { signInSchema } from "@utils/signin_validation_schema";
 import { prisma } from "@utils/prisma_client";
 import { sendResponse } from "@utils/api_response";
+import argon2 from "argon2";
 
 const router = express.Router();
 
@@ -76,7 +77,7 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
       sendResponse({
         res,
         success: false,
-        message: `No account found with this ${missingField}.`,
+        message: `No acc ount found with this ${missingField}.`,
         statusCode: 401,
         errorType: `${missingField}_not_exist`,
         errors: {
@@ -88,12 +89,13 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
     }
 
     // 3️⃣ Verify password
-    const isPasswordCorrect = await bcrypt.compare(password, user.passwordHashed);
+    const isPasswordCorrect = await argon2.verify(user.passwordHashed, password);
+    
     if (!isPasswordCorrect) {
-      console.warn("🛑 [SIGNIN] Incorrect password for:", email);
+      console.warn("🛑 [SIGNIN] In correct password for:", email);
       sendResponse({
         res,
-        success: false,
+        success : false,
         message: "Incorrect password.",
         statusCode: 401,
         errorType: "wrong_password",
