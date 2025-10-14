@@ -48,19 +48,36 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
     console.log("✅ [SIGNUP] Input validated successfully for:", email);
 
     // 2️⃣ Check for existing user
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      console.warn("🛑 [SIGNUP] Email already exists:", email);
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        AND: [{ email }, { username }],
+      },
+    });
 
-      return sendResponse({
-        res,
-        success: false,
-        statusCode: 409,
-        message: "An account with this email already exists.",
-        errors: { email: ["Email already registered"] },
-        errorType: "email_unavailable",
-        path: req.path,
-      });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Email already taken.",
+          errors: { email: ["Email already taken"] },
+          errorType: "email_unavailable",
+          path: req.path,
+        });
+      }
+
+      if (existingUser.username === username) {
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Username not available.",
+          errors: { username: ["Username already taken"] },
+          errorType: "username_unavailable",
+          path: req.path,
+        });
+      }
     }
 
     // 3️⃣ Normalize names
