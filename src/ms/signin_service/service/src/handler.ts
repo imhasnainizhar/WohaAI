@@ -33,19 +33,55 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const { email, password, rememberMe = false } = parsed.data;
+    const { email, password, username, rememberMe = false } = parsed.data;
     console.log("✅ [SIGNIN] Input validated for:", email);
 
-    // 2️⃣ Find user
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      console.warn("🛑 [SIGNIN] Email not found:", email);
+    if (!email && !username) {
       sendResponse({
         res,
         success: false,
-        message: "No account found with this email.",
+        message: "Either Use Email or Username.",
         statusCode: 401,
-        errorType: "email_not_exist",
+        errors: { password: ["Missing Email or Username"] },
+        errorType: "missing_credentials",
+        path: req.originalUrl,
+      })
+      return;
+    }
+
+    if (!password) {
+      sendResponse({
+        res,
+        success: false,
+        message: "Provide Password to Signin.",
+        statusCode: 401,
+        errors: { password: ["Missing Password Field"] },
+        errorType: "missing_credentials",
+        path: req.originalUrl,
+      })
+      return;
+    }
+
+    // 2️⃣ Find user
+    const where: any = {};
+    if (username) where.username = username;
+    if (email) where.email = email;
+
+    const user = await prisma.user.findFirst({ where });
+    if (!user) {
+      const missingField = username ? "username" : "email";
+
+      console.warn(`🛑 [SIGNIN] No account found with this ${missingField}:`, email || username);
+
+      sendResponse({
+        res,
+        success: false,
+        message: `No account found with this ${missingField}.`,
+        statusCode: 401,
+        errorType: `${missingField}_not_exist`,
+        errors: {
+          [missingField]: [`No account exists with this ${missingField}.`],
+        },
         path: req.originalUrl,
       });
       return;
