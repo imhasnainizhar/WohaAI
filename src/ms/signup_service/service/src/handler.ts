@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { signUpSchema } from "@utils/signup_validation_schema";
 import { prisma } from "@utils/prisma_client";
 import { sendResponse } from "@utils/api_response";
+import argon2 from "argon2";
 
 const router = express.Router();
 
@@ -70,14 +71,18 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
 
     // 4️⃣ Hash password
     console.log("🔐 [SIGNUP] Hashing password...");
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    const passwordHashed = await argon2.hash(password, {
+      type: argon2.argon2id, // Recommended variant here
+      memoryCost: 2 ** 16,   // 64 MB (memory hard)
+      timeCost: 3,           // iterations
+      parallelism: 1,
+    });
     // 5️⃣ Create user
     console.log("🧩 [SIGNUP] Creating user in database...");
     const newUser = await prisma.user.create({
       data: {
         email,
-        passwordHashed: hashedPassword,
+        passwordHashed: passwordHashed,
         username,
         userFirstName,
         userLastName,
