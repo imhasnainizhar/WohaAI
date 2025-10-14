@@ -13,7 +13,7 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
     const parsed = signUpSchema.safeParse(req.body);
     if (!parsed.success) {
       const flattened = parsed.error.flatten();
-      console.warn("⚠️ [SIGNUP_VALIDATOR] Validation failed:", flattened.fieldErrors);
+      console.warn(" [SIGNUP_VALIDATOR] Validation failed:", flattened.fieldErrors);
 
       return sendResponse({
         res,
@@ -29,47 +29,74 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
     const { email, username } = parsed.data;
     console.log("✅ [SIGNUP_VALIDATOR] Input validated for:", email);
 
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({ where: { username } });
+    // Check for existing user
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
+    });
+
     if (existingUser) {
-      console.warn("⚠️ [SIGNUP_VALIDATOR] Username already taken:", username);
-      return sendResponse({
-        res,
-        success: false,
-        statusCode: 409,
-        message: "Username already taken",
-        errors: { Username: ["Username already taken"] },
-        errorType: "user_not_available",
-        path: req.path,
-      });
+      const usernameTaken = existingUser.username === username;
+      const emailTaken = existingUser.email === email;
+
+      // both exist
+      if (usernameTaken && emailTaken) {
+        console.log(`🔴 Username ${username} and email ${email} are not available`)
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Username and Email already taken.",
+          errors: {
+            username: ["Username already taken"],
+            email: ["Email already taken"],
+          },
+          errorType: "conflict_both",
+          path: req.path,
+        });
+      }
+
+      // only username exists
+      if (usernameTaken) {
+        console.log(`🔴 Username ${username} are not available`)
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Username not available.",
+          errors: { username: ["Username already taken"] },
+          errorType: "username_unavailable",
+          path: req.path,
+        });
+      }
+
+      // only email exists
+      if (emailTaken) {
+        console.log(`🔴 Email ${email} are not available`)
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Email already taken.",
+          errors: { email: ["Email already taken"] },
+          errorType: "email_unavailable",
+          path: req.path,
+        });
+      }
     }
 
     console.log(`🆗 [SIGNUP_VALIDATOR] Username ${username} available`);
-
-    const existingEmail = await prisma.user.findUnique({ where: { email } });
-    if (existingEmail) {
-      console.warn("⚠️ [SIGNUP_VALIDATOR] Email already exists:", email);
-      return sendResponse({
-        res,
-        success: false,
-        statusCode: 409,
-        message: "Email already registered",
-        errors: { email: ["Email already exists"] },
-        errorType: "conflict_error",
-        path: req.path,
-      });
-    }
-
     console.log(`🆗 [SIGNUP_VALIDATOR] Email ${email} available`);
 
-    console.log("🎉 [SIGNUP_VALIDATOR] ");
+    console.log("🎉 [SIGNUP_VALIDATOR] Validation successful ");
 
     return sendResponse({
       res,
       success: true,
       statusCode: 201,
-      message: "Email is available",
-      data: { email },
+      message: "Username and email are available",
+      data: { email, username },
       path: req.path,
     });
 
