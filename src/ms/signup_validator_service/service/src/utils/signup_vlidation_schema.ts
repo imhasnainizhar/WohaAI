@@ -40,10 +40,9 @@ export const signUpSchema = z
       .regex(/^[a-zA-Z0-9 @$£&_-]+$/, "Invalid Symbols"),
 
     rememberMe: z.boolean().optional(),
-  })
+})
 
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords Do Not Match",
-  }
-  )
+.refine((data) => data.password === data.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Passwords Do Not Match",
+});

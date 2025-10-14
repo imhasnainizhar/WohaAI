@@ -1,0 +1,5 @@
+[
+  { "path": "/me", "target": "http://me_service:4000" },
+  { "path": "/signin", "target": "http://signin_service:4001" },
+  { "path": "/signup", "target": "http://signup_service:4002" }
+]
