@@ -50,24 +50,33 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
     // 2️⃣ Check for existing user
     const existingUser = await prisma.user.findFirst({
       where: {
-        AND: [{ email }, { username }],
+        OR: [{ email }, { username }],
       },
     });
-
     if (existingUser) {
-      if (existingUser.email === email) {
+      const usernameTaken = existingUser.username === username;
+      const emailTaken = existingUser.email === email;
+
+      // both exist
+      if (usernameTaken && emailTaken) {
+        console.log(`🔴 Username ${username} and email ${email} are not available`)
         return sendResponse({
           res,
           success: false,
           statusCode: 409,
-          message: "Email already taken.",
-          errors: { email: ["Email already taken"] },
-          errorType: "email_unavailable",
+          message: "Username and Email already taken.",
+          errors: {
+            username: ["Username already taken"],
+            email: ["Email already taken"],
+          },
+          errorType: "conflict_both",
           path: req.path,
         });
       }
 
-      if (existingUser.username === username) {
+      // only username exists
+      if (usernameTaken) {
+        console.log(`🔴 Username already taken`)
         return sendResponse({
           res,
           success: false,
@@ -75,6 +84,20 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
           message: "Username not available.",
           errors: { username: ["Username already taken"] },
           errorType: "username_unavailable",
+          path: req.path,
+        });
+      }
+
+      // only email exists
+      if (emailTaken) {
+        console.log(`🔴 Email ${email} are not available`)
+        return sendResponse({
+          res,
+          success: false,
+          statusCode: 409,
+          message: "Email already taken.",
+          errors: { email: ["Email already taken"] },
+          errorType: "email_unavailable",
           path: req.path,
         });
       }
@@ -147,7 +170,7 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
       maxAge: cookieMaxAge * 1000,
     });
 
-    console.log("🚀 [SIGNUP] User", username, "created successfully.");
+    console.log(`🚀 [SIGNUP] User ${username} created successfully with email ${email}.`);
 
     return sendResponse({
       res,
