@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { signInSchema } from "@utils/signin_validation_schema";
@@ -35,7 +34,7 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
     }
 
     const { email, password, username, rememberMe = false } = parsed.data;
-    console.log("✅ [SIGNIN] Input validated for:", email);
+    console.log("🟢 [SIGNIN] Input validated for:", email);
 
     if (!email && !username) {
       sendResponse({
@@ -72,7 +71,7 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
     if (!user) {
       const missingField = username ? "username" : "email";
 
-      console.warn(`🛑 [SIGNIN] No account found with this ${missingField}:`, email || username);
+      console.warn(`❌ [SIGNIN] No account found with this ${missingField}:`, email || username);
 
       sendResponse({
         res,
@@ -92,7 +91,7 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
     const isPasswordCorrect = await argon2.verify(user.passwordHashed, password);
     
     if (!isPasswordCorrect) {
-      console.warn("🛑 [SIGNIN] In correct password for:", email);
+      console.warn(" [SIGNIN] In correct password for:", email);
       sendResponse({
         res,
         success : false,
@@ -133,7 +132,7 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
       maxAge: cookieMaxAge * 1000,
     });
 
-    console.log(`🚀 [SIGNIN] User '${email}' successfully authenticated.`);
+    console.log(`🟢 [SIGNIN] User '${email}' successfully authenticated.`);
 
     sendResponse({
       res,
@@ -151,7 +150,7 @@ router.get("/", async (req: Request, res: Response): Promise<void> => {
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("❌ [SIGNIN] Unexpected Error:", message);
+    console.error("🔴 [SIGNIN] Unexpected Error:", message);
 
     sendResponse({
       res,

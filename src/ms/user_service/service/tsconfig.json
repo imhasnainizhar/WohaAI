@@ -6,13 +6,12 @@
     "rootDir": "src",
     "outDir": "dist",
     "paths": {
-      "@/*": ["./src/*"],
-      "@routes/*": ["./routes/*"],
-      "@controllers/*": ["./controllers/*"],
-      "@services/*": ["./services/*"],
-      "@utils/*": ["./utils/*"],
-      "@config/*": ["./config/*"],
-      "@lib/*": ["./lib/*"]
+      "@routes/*": ["./src/routes/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@services/*": ["./src/services/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@config/*": ["./src/config/*"],
+      "@lib/*": ["./src/lib/*"]
     },
     "esModuleInterop": true,
     "strict": true,

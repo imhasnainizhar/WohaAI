@@ -1,5 +1,5 @@
 import express from 'express';
-import verifyRoute from './app';
+import verifyRoute from './handler';
 import bodyParser from 'body-parser';
 
 const app = express();
@@ -10,5 +10,5 @@ app.use(bodyParser.json());
 app.use(verifyRoute);
 
 app.listen(port, () => {
-  console.log(`Verify User API Server is Listining on ${port}`);
+  console.log(`✅ Verify User API Server is Listining on ${port}`);
 });

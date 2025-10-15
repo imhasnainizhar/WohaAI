@@ -18,7 +18,7 @@ if (fs.existsSync(routesPath)) {
     const parsed = JSON.parse(fileContent);
     if (Array.isArray(parsed)) {
       routes = parsed;
-      console.log(`📄 Loaded ${routes.length} routes from routes.json`);
+      console.log(`✅ Loaded ${routes.length} routes from routes.json`);
     } else {
       console.error("❌ Invalid routes.json format. Expected an array.");
       process.exit(1);
@@ -111,5 +111,5 @@ app.use((req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 API Gateway running at http://localhost:${PORT}`);
+  console.log(`✅ API Gateway running at http://localhost:${PORT}`);
 });

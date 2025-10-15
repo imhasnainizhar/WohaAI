@@ -105,9 +105,9 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
   } catch (err: unknown) {
     // 🔥 Catch unexpected errors
     if (err instanceof Error) {
-      console.error("🔥 [ERROR] Internal Server Error in /signup route:", err.message);
+      console.error("🔴 [ERROR] Internal Server Error in /signup route:", err.message);
     } else {
-      console.error("🚨 [UNEXPECTED ERROR TYPE]:", err);
+      console.error("❌ [UNEXPECTED ERROR TYPE]:", err);
     }
 
     // ❌ Return generic server error response
