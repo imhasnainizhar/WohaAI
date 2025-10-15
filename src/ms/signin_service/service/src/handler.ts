@@ -19,6 +19,8 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
   try {
     // ✅ 1. Validate input properly
     const parsed = signInSchema.safeParse(req.body);
+    console.log(parsed)
+    console.log(req.body)
     if (!parsed.success) {
       console.warn("⛔ [SIGNIN] Validation failed.");
       sendResponse({
