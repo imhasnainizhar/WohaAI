@@ -1,15 +1,19 @@
 # ---------------------
 # Base
 # ---------------------
-FROM node:20-slim AS base
-WORKDIR /src
+FROM node:20 AS base
+WORKDIR /app
 COPY package*.json ./
 
 # ---------------------
 # Development
 # ---------------------
 FROM base AS development
-RUN npm ci
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
+ENV npm_config_lifecycle_event=""
+RUN npm install --ignore-scripts
+COPY prisma ./prisma
+RUN npx prisma generate
 COPY . .
 CMD ["npm", "run", "dev"]
 
@@ -17,19 +21,18 @@ CMD ["npm", "run", "dev"]
 # Build
 # ---------------------
 FROM base AS build
-RUN npm ci
 COPY . .
-RUN npx prisma generate
+RUN npm install
 RUN npm run build
 
 # ---------------------
 # Production
 # ---------------------
-FROM node:20-slim AS production
+FROM node:20 AS production
 WORKDIR /app
 COPY --from=build /src/dist ./dist
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Security best practice
 RUN useradd -m appuser

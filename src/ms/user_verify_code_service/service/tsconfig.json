@@ -1,18 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "rootDir": "src",
     "outDir": "dist",
-    "baseUrl": "src",
     "paths": {
-      "@routes/*": ["routes/*"],
-      "@controllers/*": ["controllers/*"],
-      "@services/*": ["services/*"],
-      "@utils/*": ["utils/*"],
-      "@config/*": ["config/*"],
-      "@lib/*": ["lib/*"]
+      "@routes/*": ["./src/routes/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@services/*": ["./src/services/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@config/*": ["./src/config/*"],
+      "@lib/*": ["./src/lib/*"]
     },
     "esModuleInterop": true,
     "strict": true,

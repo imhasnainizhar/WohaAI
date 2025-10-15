@@ -2,7 +2,7 @@
 # Base
 # ---------------------
 FROM node:20 AS base
-WORKDIR /src
+WORKDIR /app
 COPY package*.json ./
 
 # ---------------------

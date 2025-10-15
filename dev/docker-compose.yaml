@@ -94,7 +94,7 @@ services:
     ports:
       - "${SIGNOUT_SERVICE_PORT}:${SIGNOUT_SERVICE_PORT}"
     volumes:
-      - ../src/microservices/signout_service/service/src:/app
+      - ../src/ms/signout_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -116,7 +116,7 @@ services:
     ports:
       - "${USER_VERIFY_CODE_PORT}:${USER_VERIFY_CODE_PORT}"
     volumes:
-      - ../src/microservices/user_verify_code_service/service/src:/app
+      - ../src/ms/user_verify_code_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -131,19 +131,18 @@ services:
   ##########################################################
   # 🤖 VERIFY CAPTCHA SERVICE
   ##########################################################
-  captcha_service:    
+  captcha_verify_service:    
     build:
-      context: ../src/microservices/captcha_service/service
+      context: ../src/ms/captcha_verify_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: captcha_service
+    container_name: captcha_verify_service
     expose:
       - "${CAPTCHA_PORT}"
     ports:
       - "${CAPTCHA_PORT}:${CAPTCHA_PORT}"
     volumes:
-      - ../src/microservices/captcha_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
+      - ../src/ms/captcha_verify_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -157,7 +156,7 @@ services:
   ##########################################################
   code_mailer_service:  
     build:
-      context: ../src/microservices/code_mailer_service/service
+      context: ../src/ms/code_mailer_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: code_mailer_service
@@ -166,8 +165,7 @@ services:
     ports:
       - "${CODE_MAILER_PORT}:${CODE_MAILER_PORT}"
     volumes:
-      - ../src/microservices/code_mailer_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
+      - ../src/ms/code_mailer_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -211,7 +209,7 @@ services:
   ##########################################################
   user_service:   
     build:
-      context: ../src/microservices/user_service/service
+      context: ../src/ms/user_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: user_service
@@ -220,8 +218,7 @@ services:
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     volumes:
-      - ../src/microservices/user_service/service:/src
-      - ../src/microservices/node_modules:/src/node_modules
+      - ../src/ms/user_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -264,7 +261,7 @@ services:
   ##########################################################
   redis_code_c:    
     image: redis:7
-    container_name: verification_code_cache
+    container_name: redis_code_c
     expose:
       - "${REDIS_SERVER_PORT_01}"
     ports:
