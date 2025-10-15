@@ -12,12 +12,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 // CORS Setup
-
 const allowedOrigins = [
-  "https://app.example.com",
-  "https://admin.example.com",
-  "https://staging.example.com"
+  "http://localhost:3000"
 ];
+
 
 app.use(cors({
   origin: function(origin, callback){
