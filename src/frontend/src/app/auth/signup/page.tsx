@@ -103,7 +103,7 @@ export default function SignUp() {
         <div className="signup-page-content">
           <div className="signup-decor">
             <Image
-              src={darkTheme ? "/logos/odeysent_logo_dark_theme.png" : "/logos/odeysent_logo_light_theme.png"}
+              src={darkTheme ? "/logos/white_triangle.png" : "/logos/black_triangle.png"}
               alt="Brand Logo"
               width={40}
               height={40}

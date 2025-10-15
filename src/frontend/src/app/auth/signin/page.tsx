@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema } from "@lib/validators/signin-validation-schema";
-import { z } from "zod";
 import { useTheme } from "@providers/ThemeProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import z from "zod";
 
 type SignInInput = z.infer<typeof signInSchema>;
 
@@ -29,13 +29,14 @@ export default function SignIn() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [signInError, setSignInError] = useState<string>("");
 
-  const baseurl = process.env.NEXT_PUBLIC_GATEWAY_BASE_URL_01
+  const SIGNIN_API_URI = process.env.NEXT_PUBLIC_SIGNIN_API_URI;
 
   const onSignIn = async (SignInData: SignInInput) => {
-    setSignInError(""); 
+    setSignInError("");
 
     try {
-      const res = await fetch(`${baseurl}/signin`, {
+      console.log("SIGNIN_API_URI:", SIGNIN_API_URI);
+      const res = await fetch(`http://localhost:8000/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,6 +48,21 @@ export default function SignIn() {
           },
         }),
       });
+
+      // Log response text first
+      const text = await res.text();
+      console.log("Response text:", text);
+
+      let testdata;
+      try {
+        testdata = JSON.parse(text);
+      } catch {
+        console.error("Failed to parse JSON. Response was:", text);
+        setSignInError("Server returned invalid response.");
+        console.log(testdata)
+        return;
+      }
+
 
       const data = await res.json();
 
@@ -66,11 +82,10 @@ export default function SignIn() {
 
   return (
     <div
-      className={`signin-page ${
-        darkTheme
-          ? "dark-bg-primary dark-text-secondary"
-          : "light-bg-primary light-text-secondary"
-      }`}
+      className={`signin-page ${darkTheme
+        ? "dark-bg-primary dark-text-secondary"
+        : "light-bg-primary light-text-secondary"
+        }`}
       data-theme={theme}
     >
       <div className="signin-page-content">
@@ -78,8 +93,7 @@ export default function SignIn() {
           <Image
             src={
               darkTheme
-                ? "/logos/odeysent_logo_dark_theme.png"
-                : "/logos/odeysent_logo_light_theme.png"
+                ? "/logos/white_triangle.png" : "/logos/black_triangle.png"
             }
             alt="Brand Logo"
             width={40}
@@ -89,9 +103,8 @@ export default function SignIn() {
 
         <div className="signin-input-fields">
           <div
-            className={`signin-page-heading ${
-              darkTheme ? "dark-text-primary" : "light-text-primary"
-            }`}
+            className={`signin-page-heading ${darkTheme ? "dark-text-primary" : "light-text-primary"
+              }`}
           >
             SignIn To Elegence
           </div>
@@ -108,9 +121,8 @@ export default function SignIn() {
               <input
                 placeholder="   "
                 {...register("email")}
-                className={`${
-                  darkTheme ? "dark-text-primary" : "light-text-primary"
-                }`}
+                className={`${darkTheme ? "dark-text-primary" : "light-text-primary"
+                  }`}
               />
               <label htmlFor="email">Email</label>
               {errors.email && (
@@ -126,9 +138,8 @@ export default function SignIn() {
                 placeholder="   "
                 type="password"
                 {...register("password")}
-                className={`${
-                  darkTheme ? "dark-text-primary" : "light-text-primary"
-                }`}
+                className={`${darkTheme ? "dark-text-primary" : "light-text-primary"
+                  }`}
               />
               <label htmlFor="password">Password</label>
               {errors.password && (
@@ -148,11 +159,10 @@ export default function SignIn() {
 
             <div className="signin-submit-btn">
               <button
-                className={`${
-                  darkTheme
-                    ? "light-bg-primary light-text-primary"
-                    : "dark-bg-primary dark-text-primary"
-                }`}
+                className={`${darkTheme
+                  ? "light-bg-primary light-text-primary"
+                  : "dark-bg-primary dark-text-primary"
+                  }`}
                 type="submit"
               >
                 Sign In

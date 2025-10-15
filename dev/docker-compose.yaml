@@ -6,7 +6,7 @@ services:
   ##########################################################
   # 🌐 FRONTEND SERVICE (Next.js)
   ##########################################################
-  frontend_app:    
+  frontend_app:
     build:
       context: ../src/frontend
       dockerfile: Dockerfile
@@ -24,6 +24,15 @@ services:
       - APP_PUBLIC_RECAPTCHA_SITE_KEY=${APP_PUBLIC_RECAPTCHA_SITE_KEY}
       - APP_PUBLIC_GATEWAY_BASE_URL_01=${APP_PUBLIC_GATEWAY_BASE_URL_01}
       - CHOKIDAR_USEPOLLING=true
+      - NEXT_PUBLIC_BASE_URI=${NEXT_PUBLIC_BASE_URI}
+      - NEXT_PUBLIC_SIGNIN_API_URI=${NEXT_PUBLIC_SIGNIN_API_URI}
+      - NEXT_PUBLIC_SIGNUP_API_URI:${NEXT_PUBLIC_SIGNUP_API_URI}
+      - NEXT_PUBLIC_USER_API_URI:${NEXT_PUBLIC_USER_API_URI}
+      - NEXT_PUBLIC_SIGNOUT_API_URI:${NEXT_PUBLIC_SIGNOUT_API_URI}
+      - NEXT_PUBLIC_SIGNUP_VALIDATOR_URI:${NEXT_PUBLIC_SIGNUP_VALIDATOR_URI}
+      - NEXT_PUBLIC_VERIFY_CAPTCHA_URI:${NEXT_PUBLIC_VERIFY_CAPTCHA_URI}
+      - NEXT_PUBLIC_VERIFY_CODE_API_URI:${NEXT_PUBLIC_VERIFY_CODE_API_URI}
+      - NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI:${NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI}
 
   ##########################################################
   # 🚏 API GATEWAY SERVICE
@@ -42,6 +51,7 @@ services:
       - ../src/ms/api_gateway/service:/app
       - ../src/ms/api_gateway/service/routes.json:/app/routes.json
       - ../src/ms/api_gateway/service/node_modules:/app/node_modules
+    restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
       - API_GATEWAY_PORT=${API_GATEWAY_PORT}
@@ -58,7 +68,7 @@ services:
   ##########################################################
   # 🔐 SIGNIN SERVICE
   ##########################################################
-  signin_service:    
+  signin_service:
     build:
       context: ../src/ms/signin_service/service
       dockerfile: Dockerfile
@@ -83,7 +93,7 @@ services:
   ##########################################################
   # 🚪 SIGNOUT SERVICE
   ##########################################################
-  signout_service:   
+  signout_service:
     build:
       context: ../src/ms/signout_service/service
       dockerfile: Dockerfile
@@ -105,7 +115,7 @@ services:
   ##########################################################
   # 🧾 VERIFY USER SERVICE
   ##########################################################
-  user_verify_code_service:    
+  user_verify_code_service:
     build:
       context: ../src/ms/user_verify_code_service/service
       dockerfile: Dockerfile
@@ -131,7 +141,7 @@ services:
   ##########################################################
   # 🤖 VERIFY CAPTCHA SERVICE
   ##########################################################
-  captcha_verify_service:    
+  captcha_verify_service:
     build:
       context: ../src/ms/captcha_verify_service/service
       dockerfile: Dockerfile
@@ -154,7 +164,7 @@ services:
   ##########################################################
   # 📧 CODE MAILER SERVICE
   ##########################################################
-  code_mailer_service:  
+  code_mailer_service:
     build:
       context: ../src/ms/code_mailer_service/service
       dockerfile: Dockerfile
@@ -183,7 +193,7 @@ services:
   ##########################################################
   # 🧠 SIGNUP VALIDATOR SERVICE
   ##########################################################
-  signup_validator_service:  
+  signup_validator_service:
     build:
       context: ../src/ms/signup_validator_service/service
       dockerfile: Dockerfile
@@ -207,7 +217,7 @@ services:
   ##########################################################
   # 🧍 USER SERVICE
   ##########################################################
-  user_service:   
+  user_service:
     build:
       context: ../src/ms/user_service/service
       dockerfile: Dockerfile
@@ -232,7 +242,7 @@ services:
   ##########################################################
   # 📝 SIGNUP SERVICE
   ##########################################################
-  signup_service:    
+  signup_service:
     build:
       context: ../src/ms/signup_service/service
       dockerfile: Dockerfile
@@ -244,6 +254,7 @@ services:
       - "${SIGNUP_SERVICE_PORT}:${SIGNUP_SERVICE_PORT}"
     volumes:
       - ../src/ms/signup_service/service/src:/app/src
+    restart: always
     depends_on:
       - postgres
     environment:
@@ -259,7 +270,7 @@ services:
   ##########################################################
   # ⚡ REDIS DATABASE
   ##########################################################
-  redis_code_c:    
+  redis_code_c:
     image: redis:7
     container_name: redis_code_c
     expose:
@@ -301,7 +312,6 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
-
 
 ##########################################################
 # 🗃️ Shared Volumes and Networks
