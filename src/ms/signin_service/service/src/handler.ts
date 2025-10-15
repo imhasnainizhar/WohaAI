@@ -10,7 +10,7 @@ const router = express.Router();
 
 type SignInInput = z.infer<typeof signInSchema>;
 
-router.get("/", async (req: Request, res: Response): Promise<void> => {
+router.post("/", async (req: Request, res: Response): Promise<void> => {
   console.log("🟢 [SIGNIN] Request received:", {
     contentType: req.headers["content-type"],
     hasBody: !!req.body,
