@@ -42,27 +42,10 @@ export default function SignIn() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          SignInData: {
             ...SignInData,
             rememberMe,
-          },
         }),
       });
-
-      // Log response text first
-      const text = await res.text();
-      console.log("Response text:", text);
-
-      let testdata;
-      try {
-        testdata = JSON.parse(text);
-      } catch {
-        console.error("Failed to parse JSON. Response was:", text);
-        setSignInError("Server returned invalid response.");
-        console.log(testdata)
-        return;
-      }
-
 
       const data = await res.json();
 
