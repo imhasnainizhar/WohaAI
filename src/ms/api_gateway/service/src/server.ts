@@ -37,9 +37,7 @@ if (!process.env.API_GATEWAY_PORT) {
 
 // CORS setup
 const allowedOrigins = [
-  "https://app.example.com",
-  "https://admin.example.com",
-  "https://staging.example.com"
+  "http://localhost:3000"  // add this
 ];
 
 app.use(cors({
