@@ -29,14 +29,13 @@ export default function SignIn() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [signInError, setSignInError] = useState<string>("");
 
-  const SIGNIN_API_URI = process.env.NEXT_PUBLIC_SIGNIN_API_URI;
+  const SIGNIN_API_URI = process.env.NEXT_PUBLIC_SIGNIN_API_URI!;
 
   const onSignIn = async (SignInData: SignInInput) => {
     setSignInError("");
 
     try {
-      console.log("SIGNIN_API_URI:", SIGNIN_API_URI);
-      const res = await fetch(`http://localhost:8000/signin`, {
+      const res = await fetch(SIGNIN_API_URI, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

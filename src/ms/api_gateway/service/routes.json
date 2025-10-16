@@ -3,7 +3,7 @@
   { "path": "/signin", "target": "http://signin_service:8001" },
   { "path": "/signup", "target": "http://signup_service:8003" },
   { "path": "/signout", "target": "http://signout_service:8002" },
-  { "path": "/verify-code", "target": "http://user_verify_code_service:8004" },
+  { "path": "/code-verification", "target": "http://user_code_verification_service:8004" },
   { "path": "/verify-captcha", "target": "http://captcha_service:8005" },
   { "path": "/verification-code-mailer", "target": "http://code_mailer_service:8006" },
   { "path": "/signup-validator", "target": "http://signup_validator_service:8007" }

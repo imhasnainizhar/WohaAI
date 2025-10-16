@@ -20,12 +20,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userInfo, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const baseurl = process.env.NEXT_PUBLIC_GATEWAY_BASE_URL_01
+  const USER_SERVICE_URI = process.env.NEXT_PUBLIC_USER_API_URI!;
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${baseurl}/me`, {
+        const res = await fetch(USER_SERVICE_URI, {
           method: "GET",
           credentials: "include",
         });

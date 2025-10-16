@@ -1,5 +1,5 @@
 {
-  "name": "user_verify_code_service",
+  "name": "user_code_verification_service",
   "description": "This service validates users verification using verification code they sent with request to service.",
   "version": "1.0.0",
   "main": "dist/server.js",
