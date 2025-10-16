@@ -31,7 +31,7 @@ services:
       - NEXT_PUBLIC_SIGNOUT_API_URI:${NEXT_PUBLIC_SIGNOUT_API_URI}
       - NEXT_PUBLIC_SIGNUP_VALIDATOR_URI:${NEXT_PUBLIC_SIGNUP_VALIDATOR_URI}
       - NEXT_PUBLIC_VERIFY_CAPTCHA_URI:${NEXT_PUBLIC_VERIFY_CAPTCHA_URI}
-      - NEXT_PUBLIC_VERIFY_CODE_API_URI:${NEXT_PUBLIC_VERIFY_CODE_API_URI}
+      - NEXT_PUBLIC_CODE_VERIFICATION_API_URI:${NEXT_PUBLIC_CODE_VERIFICATION_API_URI}
       - NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI:${NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI}
 
   ##########################################################
@@ -58,7 +58,7 @@ services:
       - USER_SERVICE_PORT=${USER_SERVICE_PORT}
       - SIGNIN_SERVICE_PORT=${SIGNIN_SERVICE_PORT}
       - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
-      - USER_VERIFY_CODE_PORT=${USER_VERIFY_CODE_PORT}
+      - USER_CODE_VERIFICATION_PORT=${USER_CODE_VERIFICATION_PORT}
       - CODE_MAILER_PORT=${CODE_MAILER_PORT}
       - CAPTCHA_PORT=${CAPTCHA_PORT}
       - SIGNUP_VALIDATOR_PORT=${SIGNUP_VALIDATOR_PORT}
@@ -115,24 +115,24 @@ services:
   ##########################################################
   # 🧾 VERIFY USER SERVICE
   ##########################################################
-  user_verify_code_service:
+  user_code_verification_service:
     build:
-      context: ../src/ms/user_verify_code_service/service
+      context: ../src/ms/user_code_verification_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: user_verify_code_service
+    container_name: user_code_verification_service
     expose:
-      - "${USER_VERIFY_CODE_PORT}"
+      - "${USER_CODE_VERIFICATION_PORT}"
     ports:
-      - "${USER_VERIFY_CODE_PORT}:${USER_VERIFY_CODE_PORT}"
+      - "${USER_CODE_VERIFICATION_PORT}:${USER_CODE_VERIFICATION_PORT}"
     volumes:
-      - ../src/ms/user_verify_code_service/service/src:/app/src
+      - ../src/ms/user_code_verification_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
       - REDIS_CODE_C=${REDIS_CODE_C}
       - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
-      - USER_VERIFY_CODE_PORT=${USER_VERIFY_CODE_PORT}
+      - USER_CODE_VERIFICATION_PORT=${USER_CODE_VERIFICATION_PORT}
     depends_on:
       - redis_code_c
     networks:

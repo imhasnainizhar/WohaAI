@@ -29,7 +29,9 @@ export default function VerifyEmail() {
     resolver: zodResolver(VerificationCodeSchema),
   });
 
-  const baseurl = process.env.NEXT_PUBLIC_GATEWAY_BASE_URL_01
+  const CODE_MAILER_URI = process.env.NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI!;
+  const SIGNUP_SERVICE_URI = process.env.NEXT_PUBLIC_SIGNUP_API_URI!;
+  const USER_CODE_VERIFICATION_URI = process.env.NEXT_PUBLIC_CODE_VERIFICATION_API_URI!;
 
   useEffect(() => {
     const formDataStr = localStorage.getItem("tempSignupData");
@@ -72,7 +74,7 @@ export default function VerifyEmail() {
     setResendCooldown(true);
     setCooldownSeconds(60);
 
-    fetch(`${baseurl}/code_mailer`, {
+    fetch(CODE_MAILER_URI, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: completeUserData.email }),
@@ -90,7 +92,7 @@ export default function VerifyEmail() {
     }
 
     try {
-      const verifyUserRes = await fetch(`${baseurl}/verify_user`, {
+      const codeVerificationRes = await fetch(USER_CODE_VERIFICATION_URI, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -99,14 +101,14 @@ export default function VerifyEmail() {
         }),
       });
 
-      if (!verifyUserRes.ok) {
-        const err = await verifyUserRes.json();
+      if (!codeVerificationRes.ok) {
+        const err = await codeVerificationRes.json();
         console.error("❌ Verification failed:", err);
         setVerifyEmailError("Invalid Verification Code");
         return;
       }  
 
-      const signUpRes = await fetch(`${baseurl}/signup`, {
+      const signUpRes = await fetch(SIGNUP_SERVICE_URI, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(completeUserData),
