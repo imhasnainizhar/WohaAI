@@ -3,11 +3,14 @@ import express from 'express';
 const router = express.Router();
 
 router.post('/', (req, res) => {
+
+  const sameSite = process.env.NODE_ENV === "production" ? "strict" : "lax"
+
   try{
-      res.cookie('token', '', {
+    res.cookie('WOAH_JWT_TOKEN', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: sameSite,
     path: '/',
     maxAge: 0,
   });

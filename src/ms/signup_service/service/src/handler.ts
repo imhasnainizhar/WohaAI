@@ -7,50 +7,41 @@ import argon2 from "argon2";
 
 const router = express.Router();
 
-// ⚡ Define the expected structure of the signup request body
-interface SignUpRequest {
-  FirstName: string;
-  LastName: string;
-  Username: string;
-  Password: string;
-  ConfirmPassword: string;
-  RememberMe: boolean; // Determines session duration
-}
-
 router.post("/", async (req: Request, res: Response): Promise<Response> => {
+  // Filter out sensitive fields from logs
+  const safeBodyKeys = Object.keys(req.body || {}).filter(
+    (k) => !["password", "confirmPassword"].includes(k.toLowerCase())
+  );
+
   console.log("🟢 [SIGNUP] Incoming request:", {
     headers: req.headers["content-type"],
-    bodyKeys: Object.keys(req.body || {}),
+    bodyKeys: safeBodyKeys,
   });
 
   try {
-    const body: SignUpRequest = req.body;
-
-    // 1️⃣ Validate input using Zod schema
-    // 🔍 Ensures correct types, required fields, password rules, etc.
-    const parsed = signUpSchema.safeParse(body);
+    // Validate input
+    const parsed = signUpSchema.safeParse(req.body);
     if (!parsed.success) {
       const flattened = parsed.error.flatten();
       console.warn("⛔ [SIGNUP] Validation failed:", flattened.fieldErrors);
-
-      // 🚫 Send structured validation error response
       return sendResponse({
         res,
         success: false,
         statusCode: 400,
-        message: "Unexpected Input",
+        message: "Unexpected input",
         errors: flattened.fieldErrors,
         errorType: "validation_error",
         path: req.path,
       });
     }
 
-    // ✅ Destructure sanitized data for further use
-    const { email, password, firstName, lastName, rememberMe, username } = parsed.data;
-    console.log("✅ [SIGNUP] Input validated successfully for:", email);
+    // Destructure - ensure your Zod schema returns these camelCase names
+    const { email, password, firstName, lastName, rememberMe = false, username } =
+      parsed.data;
 
-    // 2️⃣ Check if username/email already exist in DB
-    // 🔄 Use OR query to minimize DB calls (efficient!)
+    console.log("✅ [SIGNUP] Input validated for:", email);
+
+    // Check duplicates
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ email }, { username }],
@@ -61,7 +52,6 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
       const usernameTaken = existingUser.username === username;
       const emailTaken = existingUser.email === email;
 
-      // ⚠️ Handle conflict: both username & email exist
       if (usernameTaken && emailTaken) {
         console.log(`🔴 Username ${username} and email ${email} are already in use`);
         return sendResponse({
@@ -69,16 +59,11 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
           success: false,
           statusCode: 409,
           message: "Username and Email already taken.",
-          errors: {
-            username: ["Username already taken"],
-            email: ["Email already taken"],
-          },
+          errors: { username: ["Username already taken"], email: ["Email already taken"] },
           errorType: "conflict_both",
           path: req.path,
         });
       }
-
-      // ⚠️ Conflict: username only
       if (usernameTaken) {
         console.log(`🔴 Username ${username} already taken`);
         return sendResponse({
@@ -91,8 +76,6 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
           path: req.path,
         });
       }
-
-      // ⚠️ Conflict: email only
       if (emailTaken) {
         console.log(`🔴 Email ${email} already taken`);
         return sendResponse({
@@ -107,44 +90,27 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
       }
     }
 
-    // 3️⃣ Normalize names
-    // ✨ Capitalize first letter, lowercase rest — consistent formatting
+    // Normalize names
     const userFirstName =
       firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
     const userLastName =
       lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
 
-    // 4️⃣ Hash password securely
-    // 🔐 Argon2id is memory-hard, GPU resistant, recommended for passwords
+    // Hash password
     console.log("🔐 [SIGNUP] Hashing password...");
     const passwordHashed = await argon2.hash(password, {
       type: argon2.argon2id,
-      memoryCost: 2 ** 16, // 64 MB RAM per hash
-      timeCost: 3,          // Iterations
-      parallelism: 1,       // CPU threads
+      memoryCost: 2 ** 16,
+      timeCost: 3,
+      parallelism: 1,
     });
 
-    // 5️⃣ Create user in database
-    // 🧩 Insert user record with hashed password & formatted names
-    // It uses prisma, for more detail of prisma visit docs: https://www.prisma.io/docs
-    console.log("🧩 [SIGNUP] Creating user in database...");
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        passwordHashed,
-        username,
-        userFirstName,
-        userLastName,
-      },
-    });
+    // Secrets
+    const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET_KEY;
+    const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
-    console.log("✅ [SIGNUP] User created with ID:", newUser.userID);
-
-    // 6️⃣ JWT token setup
-    // You can set your on secret generate using command given in ./README.md file
-    const JWT_SECRET_KEY = process.env.JWT_SECRET;
-    if (!JWT_SECRET_KEY) {
-      console.error("❌ [SIGNUP] JWT_SECRET not set in environment");
+    if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
+      console.error("❌ [SIGNUP] JWT secrets not set in environment");
       return sendResponse({
         res,
         success: false,
@@ -155,36 +121,98 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
       });
     }
 
-    // 🕒 Determine session duration
-    const sessionExpirationTime = rememberMe ? "30d" : "1d"; // JWT expiry
-    const cookieMaxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24; // cookie in seconds
+    // Expirations (ms for cookies)
+    const ACCESS_TOKEN_EXPIRES_IN = "1h"; // keep short: 15m-1h
+    const ACCESS_TOKEN_MAX_AGE_MS = 1000 * 60 * 60; // 1 hour
+    const sessionDays = rememberMe ? 365 : 7;
+    const REFRESH_TOKEN_EXPIRES_IN = rememberMe ? "365d" : "7d";
+    const REFRESH_TOKEN_MAX_AGE_MS = 1000 * 60 * 60 * 24 * sessionDays; // match refresh JWT
 
-    // 7️⃣ Generate JWT
-    console.log("🔑 [SIGNUP] Generating JWT session token...");
-    const sessionToken = jwt.sign(
+    // Generate tokens — ACCESS first, then REFRESH
+    console.log("🔑 [SIGNUP] Generating JWTs...");
+
+    const tempID = crypto.randomUUID();
+
+    const accessToken = jwt.sign(
       {
-        sub: newUser.userID,
-        email: newUser.email,
-        name: `${newUser.userFirstName} ${newUser.userLastName}`,
+        sub: tempID,   // Just for temporary signing jwt further it will be replaced by newUser.userID after user creation in DB
+        email: email,
+        name: `${userFirstName} ${userLastName}`,
       },
-      JWT_SECRET_KEY,
-      { expiresIn: sessionExpirationTime }
+      JWT_ACCESS_SECRET_KEY,
+      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
     );
 
-    // 8️⃣ Set cookie securely
-    // 🍪 httpOnly + secure + sameSite prevents XSS & CSRF attacks
-    console.log("🍪 [SIGNUP] Setting session cookie...");
-    res.cookie("woah_session", sessionToken, {
+    const refreshToken = jwt.sign(
+      {
+        sub: tempID,
+      },
+      JWT_REFRESH_SECRET_KEY,
+      { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
+    );
+
+    // Store hashed refresh token for future rotation/revocation.
+    // NOTE: the `refreshTokenHash` field is added to Prisma user model.
+    const refreshTokenHash = await argon2.hash(refreshToken);
+
+    // Creating User after signining token and hashing refresh token
+    console.log("🧩 [SIGNUP] Creating user in database...");
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        passwordHashed,
+        username,
+        userFirstName,
+        userLastName,
+        refreshTokenHash : refreshTokenHash
+      },
+    });
+
+    console.log("✅ [SIGNUP] User created with ID", newUser.userID, "in DB");
+
+      const finalAccessToken = jwt.sign(
+      {
+        sub: newUser.userID,
+        email: email,
+        name: `${userFirstName} ${userLastName}`,
+      },
+      JWT_ACCESS_SECRET_KEY,
+      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
+    );
+
+    const finalRefreshToken = jwt.sign(
+      {
+        sub: newUser.userID,
+      },
+      JWT_REFRESH_SECRET_KEY,
+      { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
+    );
+
+    // Cookies
+    const sameSite = process.env.NODE_ENV === "production" ? "none" : "lax";
+    console.log("🍪 [SIGNUP] Setting session cookies...");
+
+    // Set Access cookie (short-lived)
+    res.cookie("__woahai_acc_t", finalAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite,
       path: "/",
-      maxAge: cookieMaxAge * 1000,
+      maxAge: ACCESS_TOKEN_MAX_AGE_MS,
+    });
+
+    // Set Refresh cookie (long-lived)
+    res.cookie("__woahai_ref_t", finalRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite,
+      path: "/",
+      maxAge: REFRESH_TOKEN_MAX_AGE_MS,
     });
 
     console.log(`🚀 [SIGNUP] User ${username} created successfully with email ${email}.`);
 
-    // 9️⃣ Return success response
+    // Return success
     return sendResponse({
       res,
       success: true,
@@ -197,16 +225,13 @@ router.post("/", async (req: Request, res: Response): Promise<Response> => {
       },
       path: req.path,
     });
-
   } catch (err: any) {
-    // 🔟 Catch unhandled errors
     console.error("❌ [SIGNUP] Error:", {
-      message: err.message,
-      stack: err.stack?.split("\n")[0],
-      name: err.name,
+      message: err?.message,
+      stack: err?.stack?.split("\n")[0],
+      name: err?.name,
     });
 
-    // 💥 Generic server error response
     return sendResponse({
       res,
       success: false,

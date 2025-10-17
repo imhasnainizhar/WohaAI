@@ -12,9 +12,11 @@ interface DecodedToken extends JwtPayload {
 }
 
 router.get("/", async (req: Request, res: Response): Promise<Response> => {
-  const token = req.cookies?.odeysent_session;
+  const token = req.cookies?.__woahai_acc_t;
 
   // 🍪 No token found in cookies
+  console.log(req.cookies)
+  console.log(token)
   if (!token) {
     console.warn("⚠️🍪 Missing authentication token in cookies.");
     return sendResponse({
@@ -32,7 +34,7 @@ router.get("/", async (req: Request, res: Response): Promise<Response> => {
   if (!JWT_SECRET) {
     console.error("❌🔑 Missing JWT_SECRET in environment variables.");
     return sendResponse({
-      res,
+      res, 
       success: false,
       message: "Server configuration error",
       statusCode: 500,
