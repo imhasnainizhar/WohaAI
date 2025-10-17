@@ -1,12 +1,10 @@
-import express from 'express';
-import verifyRoute from './handler';
-import bodyParser from 'body-parser';
+import express from "express";
+import bodyParser from "body-parser";
+import verifyCaptchaRoute from "./handler";
 import cors from "cors";
 
 const app = express();
-const port = process.env.VERIFY_USER_PORT || 3000;
-
-app.use(bodyParser.json()); 
+const port = process.env.VERIFY_CAPTCHA_PORT || 3000;
 
 // CORS setup
 const allowedOrigins = [
@@ -28,8 +26,9 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(verifyRoute);
+app.use(bodyParser.json());
+app.use(verifyCaptchaRoute);
 
 app.listen(port, () => {
-  console.log(`✅ Verify User API Server is Listining on ${port}`);
+  console.log(`✅ Captch Verification API Server is Listining on ${port}`);
 });

@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:MyUser1234@postgres:5432/user_db?schema=public"
+  url      = "postgresql://postgres:MyUser1234@localhost:5432/user_db?schema=public"
 }
 
 model User {
@@ -16,8 +16,9 @@ model User {
   email             String   @unique
   username          String   @unique
   passwordHashed    String
-  registeredAt DateTime @default(now())
-  createdAt    DateTime @default(now())
+  refreshTokenHash  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt()
 
   cards     Card[]
 }

@@ -47,6 +47,7 @@ export default function SignUp() {
     try {
       const captchaRes = await fetch(SIGNUP_SERVICE_URI, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ captchaToken }),
       });

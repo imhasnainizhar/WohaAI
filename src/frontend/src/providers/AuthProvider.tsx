@@ -20,7 +20,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userInfo, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const USER_SERVICE_URI = process.env.NEXT_PUBLIC_USER_API_URI!;
+  const USER_SERVICE_URI = process.env.NEXT_PUBLIC_USER_API_URI;
+  if (!USER_SERVICE_URI) throw new Error("USER_SERVICE_URI is not defined");
+  console.log(USER_SERVICE_URI)
 
   useEffect(() => {
     const fetchUser = async () => {

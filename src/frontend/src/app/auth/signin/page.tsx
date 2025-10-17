@@ -37,6 +37,7 @@ export default function SignIn() {
     try {
       const res = await fetch(SIGNIN_API_URI, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
