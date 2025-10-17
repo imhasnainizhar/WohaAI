@@ -68,16 +68,66 @@ npm install   # or yarn install
 cp .env.example .env
 ```
 
-Edit `.env` and include your **OpenAI API key** and required service URLs.
+Edit `.env` and include your **OpenAI API key** and configure required services and other things **which are not configured by default**.
 
 > ⚠️ Never commit `.env` or secret keys.
 
 ### 4. Start Local Development
 
+## 🧑‍💻 Development Setup
+
+### Goals:
+
+* Hot reloading for both frontend and backend.
+* Shared network for seamless service communication.
+* Mounted volumes for live file editing.
+
+### 🧩 Commands
+
+#### 1. **Start all services (development mode)**
+
 ```bash
-cd dev/
-docker compose up --build
+cd dev
+docker compose -f compose.api.yml -f compose.auth.yml -f compose.frontend.yml --env-file ../.env up --build
 ```
+
+This command:
+
+* Builds images with the `development` target (`DOCKER_TARGET=development`).
+* Mounts local source code for live reload.
+* Runs all services in a shared network `microservices_net_01`.
+
+#### 2. **Run a single service (debugging)**
+
+```bash
+cd dev
+docker compose -f compose.auth.yml --env-file ../.env up signin_service --build
+```
+
+Example (Frontend):
+
+```bash
+cd dev
+docker compose -f compose.frontend.yml --env-file ../.env up frontend_app --build
+```
+
+#### 3. **Stop and remove containers**
+
+```bash
+docker compose -f compose.frontend.yml down
+```
+
+You can also stop containers with **Ctrl + C**.
+
+---
+
+## 🗂 Example Compose Configuration Highlights
+
+* Uses `target: development` for hot reload builds.
+* Mounts local directories with `volumes:`.
+* Exposes dev ports like **3000**, **8000**, **6379**, etc.
+
+---
 
 Access the services using ports defined in `.env`. Each microservice is modular and discoverable via the API Gateway.
 
