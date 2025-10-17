@@ -1,0 +1,31 @@
+services:
+  frontend_app:
+    build:
+      context: ../src/frontend
+      dockerfile: Dockerfile
+      target: ${NODE_ENV}
+    container_name: frontend_app
+    ports:
+      - "${FRONTEND_APP_PORT}:${FRONTEND_APP_PORT}"
+    volumes:
+      - ../src/frontend/src:/app/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - APP_PUBLIC_RECAPTCHA_SITE_KEY=${APP_PUBLIC_RECAPTCHA_SITE_KEY}
+      - APP_PUBLIC_GATEWAY_BASE_URL_01=${APP_PUBLIC_GATEWAY_BASE_URL_01}
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_PUBLIC_BASE_URI=${NEXT_PUBLIC_BASE_URI}
+      - NEXT_PUBLIC_SIGNIN_API_URI=${NEXT_PUBLIC_SIGNIN_API_URI}
+      - NEXT_PUBLIC_SIGNUP_API_URI=${NEXT_PUBLIC_SIGNUP_API_URI}
+      - NEXT_PUBLIC_USER_API_URI=${NEXT_PUBLIC_USER_API_URI}
+      - NEXT_PUBLIC_SIGNOUT_API_URI=${NEXT_PUBLIC_SIGNOUT_API_URI}
+      - NEXT_PUBLIC_SIGNUP_VALIDATOR_URI=${NEXT_PUBLIC_SIGNUP_VALIDATOR_URI}
+      - NEXT_PUBLIC_CAPTCHA_VERIFICATION_URI=${NEXT_PUBLIC_VERIFY_CAPTCHA_URI}
+      - NEXT_PUBLIC_CODE_VERIFICATION_API_URI=${NEXT_PUBLIC_CODE_VERIFICATION_API_URI}
+      - NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI=${NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI}
+
+networks:
+  default:
+    name: microservices_net_01
+    external: true
