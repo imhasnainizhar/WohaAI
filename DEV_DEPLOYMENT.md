@@ -5,11 +5,11 @@ This guide explains how to **develop and test** a complete **MicroService Archit
 Your stack includes:
 
 * **Next.js Frontend**
-* **Node.js Microservices (API Gateway, Auth, User, etc.)**
+* **Node.js Microservices (Auth, User, Generative APIs etc.)**
 * **Redis**
-* **Postgres DB**
+* **Postgres DBs**
 
-All services are orchestrated via **Docker Compose**.
+All services are orchestrated via **Docker Compose** just for dev.
 
 > ⚙️ **Production deployment** will be handled later through **Terraform (IaC)** and **GitLab CI/CD pipelines**.
 
