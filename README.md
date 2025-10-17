@@ -1,12 +1,12 @@
 # 🤖 WoahAI Chatbot
 
 <p align="center">
-  <img src="https://your-logo-url.png" width="120" />
+  <img src="https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/blob/65c3f25e2aeee5471f7e089621b5e0ea8a258840/gitlab_favicon.png" width="120" />
 </p>
 
 <p align="center">
-  Open-source AI chatbot project for <strong>educational purposes</strong> and portfolio showcase.<br/>
-  Learn, contribute, and explore ethical AI development 🌱
+  <strong>⚡ WoahAI is evolving at high speed!</strong><br/>
+  Building ChatGPT-like business logic, custom generative APIs, and a dynamic UI layer — progressing rapidly toward production-grade architecture.
 </p>
 
 <p align="center">
@@ -17,42 +17,35 @@
 
 ---
 
-## ⚡ Development Speed & Vision
-
-WoahAI is under **active and rapid development**, focused on building a **production-grade AI assistant ecosystem**. The current roadmap includes:
-
-* A complete **ChatGPT-style business logic layer**, built with modular generative API integrations (OpenAI, Anthropic, custom LLMs).
-* A **Next.js UI** with real-time chat, adaptive prompts, and multi-modal extensions — under heavy, fast-paced development.
-* **Microservice architecture** using Node.js + Express, Prisma, Redis, and PostgreSQL.
-* Future **Terraform-managed cloud infrastructure**, replacing Docker Compose for production-level orchestration.
-
-This is not a demo — it’s a living system under design to represent modern, scalable AI backends.
-
----
-
 ## 🌟 Purpose
 
 WoahAI Chatbot is a **portfolio and educational project** designed to:
 
-* Demonstrate how to integrate **OpenAI and generative APIs** into a microservice ecosystem.
-* Showcase **clean architecture** and modular containerization across frontend and backend.
-* Provide a **learning playground** for developers exploring AI systems, DevOps, and infrastructure.
-* Promote **ethical, transparent, and open-source** AI experimentation.
+* Develop and showcase **ChatGPT-like generative logic**, prompt pipelines, and message orchestration.
+* Implement custom **Generative APIs** for conversational AI, modular and scalable for future extensions.
+* Demonstrate a full **microservices architecture** running on Docker Compose, later deployment via Terraform.
+* Provide **educational and AI engineering resources** for learners and contributors.
+
+This project is in **active development**, blending **LLM-driven backends**, **real-time API systems**, and **Next.js UI** to form a modern, open AI chatbot stack.
 
 ---
 
-## 🚀 Features
+## 🚀 Current Development Highlights
 
-* 💬 **AI Chatbot Logic** using GPT-style APIs (OpenAI and future custom endpoints)
-* 🐳 **Microservices-first backend**: Sign-in, Sign-up, Gateway, User, Verification, and Mailer services
-* 🛠️ **Local Dev Environment** via Docker Compose (in `dev/`)
-* 🏗️ **Infrastructure-as-Code (IaC)** with Terraform (in `infra/`)
-* 📂 **PostgreSQL + Redis** integration for persistence and caching
-* 🌐 **Next.js UI** under development — optimized for SSR, token-based auth, and AI conversation streams
+**Most Business Logic is Being Developed In October - November 2025**
+
+* 🧠 **ChatGPT-like core logic** – custom pipeline managing conversation state, role hierarchy, and memory retention.
+* 🧩 **Generative APIs** – modular endpoints for contextual reasoning, and functional tool use.
+* 🖥️ **Frontend (Next.js)** – dynamic chat interface, theme engine, and realtime stream rendering (under rapid development).
+* 🐳 **Dockerized Dev Environment** – each service isolated and configurable through `.env`.
+* 🔐 **JWT + Redis Integration** – secure session management and code verification flows.
+* 🏗️ **Terraform (IaC)** – production deployment automation (in progress).
 
 ---
 
 ## ⚙️ Getting Started
+
+Follow these steps to set up WoahAI locally for development or testing.
 
 ### 1. Clone the Repository
 
@@ -63,72 +56,88 @@ cd WoahAI_Chatbot
 
 ### 2. Install Dependencies
 
-Each service in `src/` has its own package.json:
+Each microservice or frontend app has its own dependencies:
 
 ```bash
-npm install  # or yarn install
+npm install   # or yarn install
 ```
 
 ### 3. Configure Environment Variables
-
-Create a `.env` file from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-> ⚠️ Never commit secrets or API keys.
+Edit `.env` and include your **OpenAI API key** and required service URLs.
 
-### 4. Run the Dev Environment
+> ⚠️ Never commit `.env` or secret keys.
+
+### 4. Start Local Development
 
 ```bash
 cd dev/
-docker compose -f compose.api.yml up --build
+docker compose up --build
 ```
 
-* Access frontend on `http://localhost:3000`
-* API Gateway on `http://localhost:8000`
-
-### 5. (Optional) Terraform Cloud Deployment
-
-```bash
-cd infra/
-terraform init
-terraform plan
-terraform apply
-```
-
-Future production releases will use Terraform for container orchestration, scaling, and secrets management.
+Access the services using ports defined in `.env`. Each microservice is modular and discoverable via the API Gateway.
 
 ---
 
-## 🗂️ Project Structure
+## 📂 Project Structure
 
 ```
 project-root/
-├── dev/                    # Docker Compose environment
-├── infra/                  # Terraform IaC configs (under dev)
-├── src/                    # Microservice source code
-├── frontend/               # Next.js UI (in progress)
-├── docs/                   # Documentation and wiki
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-├── CHANGELOG.md
+├── dev/                    # Docker Compose dev environment
+├── infra/                  # Terraform IaC configs (WIP)
+├── src/                    # Microservice + frontend source code
+│   ├── frontend/           # Next.js UI (under development)
+│   ├── services/           # AI, auth, verification, and mailer modules
+├── docs/                   # Technical docs and architecture notes
 └── README.md
 ```
 
 ---
 
+## 🧱 Tech Stack Overview
+
+| Layer            | Technology                         | Purpose                                 |
+| ---------------- | ---------------------------------- | --------------------------------------- |
+| Frontend         | **Next.js 14 (App Router)**        | UI, streaming chat, theming             |
+| API Gateway      | **Express.js**                     | Routes and proxies service requests     |
+| Backend Services | **Node.js / TypeScript**           | Chat logic, auth, verification          |
+| AI Layer         | **Custom Tooling + OpenAI APIs**   | Generative intelligence core            |
+| Database         | **PostgreSQL + Prisma ORM**        | User and token data                     |
+| Cache / Queue    | **Redis**                          | Session, verification, and task caching |
+| Infrastructure   | **Docker + Terraform**             | Dev & future cloud orchestration        |
+
+---
+
+## 🌍 Vision & Roadmap
+
+WoahAI aims to evolve into a **modular, production-ready conversational AI ecosystem**, combining scalable backend logic, ethical AI Engineering practices, and cutting-edge UI.
+
+### Upcoming Milestones:
+
+* 🔁 Persistent memory & conversation history
+* 🧩 Function calling & external API tools
+* 📊 Observability dashboard (Prometheus + Grafana)
+* ☁️ Full Terraform AWS deployment
+* 🧠 Model fine-tuning playground
+
+---
+
 ## 📚 Documentation & Community
 
-* [Wiki](./docs/Home.md) — full guides & reference docs
-* [Code of Conduct](./CODE_OF_CONDUCT.md) — behavior guidelines
-* [Contributing](./CONTRIBUTING.md) — development workflow
-* [Changelog](./CHANGELOG.md) — progress tracking
+* [Wiki](./docs/Home.md) — architecture and tutorials
+* [Code of Conduct](./CODE_OF_CONDUCT.md)
+* [Contributing Guide](./CONTRIBUTING.md)
+* [Changelog](./CHANGELOG.md)
+
+Join the mission to **build open, transparent, and ethical AI systems** while learning modern full-stack and DevOps principles.
 
 ---
 
 <p align="center">
-  Built with 💚 by <strong>Hani</strong> and contributors.<br/>
-  <em>Accelerating ethical AI systems — one microservice at a time.</em>
+  Built with ❤ by <strong>Hani</strong> and contributors.<br/>
+  <em>Fast development. Transparent logic. Real AI engineering.</em>
 </p>
