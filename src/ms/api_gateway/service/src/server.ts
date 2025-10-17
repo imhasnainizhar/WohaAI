@@ -57,7 +57,6 @@ app.use(cors({
 // Error logger
 const logErrorHandler = (route: string) => (
   err: Error,
-  req: Request,
   res: Response,
   next: NextFunction
 ): void => {
@@ -93,16 +92,19 @@ if (routes.length === 0) {
 } else {
   for (const { path: routePath, target } of routes) {
     try {
+      
       if (!routePath || !target) {
         console.error(`❌ Skipping invalid route entry:`, { routePath, target });
         continue;
       }
+
       if (routePath.startsWith("http")) {
         console.error(
           `❌ Skipping invalid route: path looks like URL (${routePath}). You might've flipped path and target.`
         );
         continue;
       }
+
       proxy(routePath, target);
     } catch (err) {
       console.error(`❌ Error setting up proxy for ${routePath}:`, err);
