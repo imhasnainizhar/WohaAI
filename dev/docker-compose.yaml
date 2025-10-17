@@ -26,13 +26,13 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - NEXT_PUBLIC_BASE_URI=${NEXT_PUBLIC_BASE_URI}
       - NEXT_PUBLIC_SIGNIN_API_URI=${NEXT_PUBLIC_SIGNIN_API_URI}
-      - NEXT_PUBLIC_SIGNUP_API_URI:${NEXT_PUBLIC_SIGNUP_API_URI}
-      - NEXT_PUBLIC_USER_API_URI:${NEXT_PUBLIC_USER_API_URI}
-      - NEXT_PUBLIC_SIGNOUT_API_URI:${NEXT_PUBLIC_SIGNOUT_API_URI}
-      - NEXT_PUBLIC_SIGNUP_VALIDATOR_URI:${NEXT_PUBLIC_SIGNUP_VALIDATOR_URI}
-      - NEXT_PUBLIC_VERIFY_CAPTCHA_URI:${NEXT_PUBLIC_VERIFY_CAPTCHA_URI}
-      - NEXT_PUBLIC_CODE_VERIFICATION_API_URI:${NEXT_PUBLIC_CODE_VERIFICATION_API_URI}
-      - NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI:${NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI}
+      - NEXT_PUBLIC_SIGNUP_API_URI=${NEXT_PUBLIC_SIGNUP_API_URI}
+      - NEXT_PUBLIC_USER_API_URI=${NEXT_PUBLIC_USER_API_URI}
+      - NEXT_PUBLIC_SIGNOUT_API_URI=${NEXT_PUBLIC_SIGNOUT_API_URI}
+      - NEXT_PUBLIC_SIGNUP_VALIDATOR_URI=${NEXT_PUBLIC_SIGNUP_VALIDATOR_URI}
+      - NEXT_PUBLIC_CAPTCHA_VERIFICATION_URI=${NEXT_PUBLIC_VERIFY_CAPTCHA_URI}
+      - NEXT_PUBLIC_CODE_VERIFICATION_API_URI=${NEXT_PUBLIC_CODE_VERIFICATION_API_URI}
+      - NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI=${NEXT_PUBLIC_VERIFICATION_CODE_MAILER_URI}
 
   ##########################################################
   # 🚏 API GATEWAY SERVICE
@@ -60,7 +60,7 @@ services:
       - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
       - USER_CODE_VERIFICATION_PORT=${USER_CODE_VERIFICATION_PORT}
       - CODE_MAILER_PORT=${CODE_MAILER_PORT}
-      - CAPTCHA_PORT=${CAPTCHA_PORT}
+      - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
       - SIGNUP_VALIDATOR_PORT=${SIGNUP_VALIDATOR_PORT}
     networks:
       - microservices_net_01
@@ -141,23 +141,23 @@ services:
   ##########################################################
   # 🤖 VERIFY CAPTCHA SERVICE
   ##########################################################
-  captcha_verify_service:
+  captcha_verification_service:
     build:
-      context: ../src/ms/captcha_verify_service/service
+      context: ../src/ms/captcha_verification_service/service
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: captcha_verify_service
+    container_name: captcha_verification_service
     expose:
-      - "${CAPTCHA_PORT}"
+      - "${CAPTCHA_VERIFICATION_PORT}"
     ports:
-      - "${CAPTCHA_PORT}:${CAPTCHA_PORT}"
+      - "${CAPTCHA_VERIFICATION_PORT}:${CAPTCHA_VERIFICATION_PORT}"
     volumes:
-      - ../src/ms/captcha_verify_service/service/src:/app/src
+      - ../src/ms/captcha_verification_service/service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
       - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
-      - CAPTCHA_PORT=${CAPTCHA_PORT}
+      - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
     networks:
       - microservices_net_01
 
@@ -208,8 +208,8 @@ services:
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
-      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
-      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
+      - POSTGRES_PROVIDER=${POSTGRES_PROVIDER}
+      - PRISMA_USER_DATABASE_URL=${PRISMA_USER_DATABASE_URL}
       - SIGNUP_VALIDATOR_PORT=${SIGNUP_VALIDATOR_PORT}
     networks:
       - microservices_net_01
@@ -288,16 +288,16 @@ services:
   ##########################################################
   postgres:
     image: postgres:16
-    container_name: postgres
+    container_name: ${POSTGRES_PROVIDER}
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: MyUser1234
-      POSTGRES_DB: user_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_USER_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     networks:
       - microservices_net_01
 
