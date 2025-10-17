@@ -17,32 +17,42 @@
 
 ---
 
+## ⚡ Development Speed & Vision
+
+WoahAI is under **active and rapid development**, focused on building a **production-grade AI assistant ecosystem**. The current roadmap includes:
+
+* A complete **ChatGPT-style business logic layer**, built with modular generative API integrations (OpenAI, Anthropic, custom LLMs).
+* A **Next.js UI** with real-time chat, adaptive prompts, and multi-modal extensions — under heavy, fast-paced development.
+* **Microservice architecture** using Node.js + Express, Prisma, Redis, and PostgreSQL.
+* Future **Terraform-managed cloud infrastructure**, replacing Docker Compose for production-level orchestration.
+
+This is not a demo — it’s a living system under design to represent modern, scalable AI backends.
+
+---
+
 ## 🌟 Purpose
 
 WoahAI Chatbot is a **portfolio and educational project** designed to:
 
-* Demonstrate how to integrate **OpenAI APIs** in practical AI applications.
-* Showcase a **microservices architecture** with modular, containerized services.
-* Provide **educational resources** for learners to explore AI, infrastructure, and deployment workflows.
-* Offer **hands-on examples** of responsible and ethical AI development.
-
-This repo is intended as a learning resource for students, developers, and community contributors.
+* Demonstrate how to integrate **OpenAI and generative APIs** into a microservice ecosystem.
+* Showcase **clean architecture** and modular containerization across frontend and backend.
+* Provide a **learning playground** for developers exploring AI systems, DevOps, and infrastructure.
+* Promote **ethical, transparent, and open-source** AI experimentation.
 
 ---
 
 ## 🚀 Features
 
-* 💬 AI-powered chatbot using OpenAI GPT models
-* 🐳 Local development environment via **Docker Compose** (`dev/` folder)
-* 🧩 Modular microservices structure (`src/` folder)
-* 🏗️ Infrastructure as Code with **Terraform** (`infra/` folder) for cloud deployment
-* 🌍 Ethical AI and open-source collaboration guidelines
+* 💬 **AI Chatbot Logic** using GPT-style APIs (OpenAI and future custom endpoints)
+* 🐳 **Microservices-first backend**: Sign-in, Sign-up, Gateway, User, Verification, and Mailer services
+* 🛠️ **Local Dev Environment** via Docker Compose (in `dev/`)
+* 🏗️ **Infrastructure-as-Code (IaC)** with Terraform (in `infra/`)
+* 📂 **PostgreSQL + Redis** integration for persistence and caching
+* 🌐 **Next.js UI** under development — optimized for SSR, token-based auth, and AI conversation streams
 
 ---
 
 ## ⚙️ Getting Started
-
-Follow these steps to set up the project locally and for production testing:
 
 ### 1. Clone the Repository
 
@@ -53,59 +63,54 @@ cd WoahAI_Chatbot
 
 ### 2. Install Dependencies
 
-Each service may have its own dependencies. Navigate to the service folder in `src/` and run:
+Each service in `src/` has its own package.json:
 
 ```bash
-npm install   # or yarn install
+npm install  # or yarn install
 ```
 
 ### 3. Configure Environment Variables
 
-Create a `.env` file in the root or respective service folder:
+Create a `.env` file from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in your **OpenAI API key** and other necessary variables.
+> ⚠️ Never commit secrets or API keys.
 
-> ⚠️ Do NOT commit your `.env` file or API keys.
-
-### 4. Start Local Development Environment
-
-Navigate to the `dev/` folder and start Docker Compose:
+### 4. Run the Dev Environment
 
 ```bash
 cd dev/
 docker compose -f compose.api.yml up --build
 ```
 
-* Each compose file corresponds to a specific microservice.
-* Access services via the ports specified in the compose files.
+* Access frontend on `http://localhost:3000`
+* API Gateway on `http://localhost:8000`
 
-### 5. Terraform Deployment (Optional for Cloud) Under Development:
-
-The `infra/` folder contains Terraform configurations:
+### 5. (Optional) Terraform Cloud Deployment
 
 ```bash
 cd infra/
 terraform init
-terraform plan  # Review deployment plan
-terraform apply # Deploy infrastructure
+terraform plan
+terraform apply
 ```
 
-This will set up cloud resources for production or staging.
+Future production releases will use Terraform for container orchestration, scaling, and secrets management.
 
 ---
 
-## 📂 Project Structure
+## 🗂️ Project Structure
 
 ```
 project-root/
-├── dev/                    # Docker Compose dev environment
-├── infra/                  # Terraform deployment configs
+├── dev/                    # Docker Compose environment
+├── infra/                  # Terraform IaC configs (under dev)
 ├── src/                    # Microservice source code
-├── docs/                   # Wiki and additional documentation
+├── frontend/               # Next.js UI (in progress)
+├── docs/                   # Documentation and wiki
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
@@ -116,16 +121,14 @@ project-root/
 
 ## 📚 Documentation & Community
 
-* [Wiki](./docs/Home.md) — detailed guides and project knowledge base
-* [Code of Conduct](./CODE_OF_CONDUCT.md) — community behavior standards
-* [Contributing](./CONTRIBUTING.md) — how to contribute responsibly
-* [Changelog](./CHANGELOG.md) — version updates
-
-This project is designed to **help the community learn, experiment, and grow together** in ethical AI development.
+* [Wiki](./docs/Home.md) — full guides & reference docs
+* [Code of Conduct](./CODE_OF_CONDUCT.md) — behavior guidelines
+* [Contributing](./CONTRIBUTING.md) — development workflow
+* [Changelog](./CHANGELOG.md) — progress tracking
 
 ---
 
 <p align="center">
   Built with 💚 by <strong>Hani</strong> and contributors.<br/>
-  Explore. Learn. Contribute.
+  <em>Accelerating ethical AI systems — one microservice at a time.</em>
 </p>
