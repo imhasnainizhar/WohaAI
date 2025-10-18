@@ -4,7 +4,7 @@ interface ApiResponseOptions<T> {
   res: Response;
   success?: boolean; // default false for error
   message: string;
-  statusCode: number;
+  statusCode?: number;
   data?: T;
   errors?: Record<string, string[]>;
   errorType?: string;
