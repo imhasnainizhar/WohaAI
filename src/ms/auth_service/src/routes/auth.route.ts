@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { signoutController, signupController } from "@controllers/index";
 import { signinController } from "@controllers/index";
+import { refreshTokenController } from "@controllers/index";
 
 const router = Router();
 
@@ -8,6 +9,6 @@ const router = Router();
 router.post("/signup", signupController);
 router.post("/signin", signinController);
 router.post("/signout", signoutController);
-// router.post("/refresh", refreshTokenController);
+router.post("/refresh", refreshTokenController);
 
 export default router;
