@@ -1,0 +1,52 @@
+{
+  "name": "auth_service",
+  "version": "1.0.0",
+  "description": "Microservice handling all auth logic of App",
+  "main": "src/server.ts",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prepare": "npm run prisma:generate",
+    "postinstall": "",
+    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=./prisma/schema.prisma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "WoahAI"
+  },
+  "keywords": [
+    "AI",
+    "Auth"
+  ],
+  "author": "Hasnain Izhar",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemon": "^1.19.6",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.17.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.17.1",
+    "argon2": "^0.44.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "ioredis": "^5.8.1",
+    "jsonwebtoken": "^9.0.2",
+    "process": "^0.11.10",
+    "zod": "^4.1.12"
+  }
+}
