@@ -4,7 +4,7 @@ import cors from "cors";
 import { json, urlencoded } from "body-parser";
 // import { errorHandler } from "@middleware/error_handler";
 import { authRoutes } from "@routes/index";
-import { env } from "@config/env";
+import { env } from "@config/env.config";
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 // Routes
-app.use("/api/auth/*", authRoutes);
+app.use("/api/auth", authRoutes);
 
 // Error handler (keep last)
 // app.use(errorHandler);
