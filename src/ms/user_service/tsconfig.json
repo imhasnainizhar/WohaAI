@@ -1,0 +1,62 @@
+{
+    "compilerOptions": {
+        /* Language and Environment */
+        "target": "ES2022",
+        "lib": [
+            "ES2022"
+        ],
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        /* Project Structure */
+        "rootDir": "./src",
+        "outDir": "./dist",
+        /* Type Checking */
+        "strict": true,
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        /* Module + Imports */
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        /* Path Aliases (modern way, no baseUrl needed) */
+        "paths": {
+            "@app": [
+                "./src/app"
+            ],
+            "@config/*": [
+                "./src/config/*"
+            ],
+            "@routes/*": [
+                "./src/routes/*"
+            ],
+            "@middleware/*": [
+                "./src/middleware/*"
+            ],
+            "@schemas/*": [
+                "./src/schemas/*"
+            ],
+            "@services/*": [
+                "./src/services/*"
+            ],
+            "@controllers/*": [
+                "./src/controllers/*"
+            ],
+            "@utils/*": [
+                "./src/utils/*"
+            ],
+            "@types/*": [
+                "./src/types/*"
+            ],
+        },
+        /* Output + Debugging */
+        "sourceMap": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
