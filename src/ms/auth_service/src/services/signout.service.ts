@@ -1,27 +1,71 @@
-import express from 'express';
-import { Request, Response } from 'express';
-const router = express.Router();
+import { prisma } from "@utils/prisma_client";
+import { logger } from "@utils/logger";
+import { ServiceResponse } from "@utils/service_response";
+import { ServiceException } from "@errors/service_exception";
 
-const signoutService = (req: Request, res: Response) => {
+/**
+ * @service signoutService
+ * Handles token revocation & DB logic for signout.
+ * - Checks if user exists
+ * - Revokes all non-revoked refresh tokens
+ * - Returns structured ServiceResponse
+ */
+export const signoutService = async <T>(userID: string) => {
+  try {
+    // Check if user exists
+    const userExists = await prisma.user.findUnique({
+      where: { userID },
+      select: { userID: true },
+    });
 
-  const sameSite = process.env.NODE_ENV === "production" ? "strict" : "lax"
+    if (!userExists) {
+      logger.warn({ message: "🔴 [SIGNOUT] User not found", userID });
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 404,
+          message: "User not found.",
+          errorType: "user_not_found",
+        })
+      );
+    }
 
-  try{
-    res.cookie('WOAH_JWT_TOKEN', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: sameSite,
-    path: '/',
-    maxAge: 0,
-  });
+    // Revoke all active refresh tokens
+    const result = await prisma.refreshToken.updateMany({
+      where: { userId: userID, revoked: false },
+      data: { revoked: true, revokedAt: new Date() },
+    });
 
-  console.log("🟢 Signed out Successfully")
-  return res.status(200).json({ ok: true });
-  } catch (err) {
-    console.warn("🔴 Error:", err)
-    console.warn("🔴 Signout failed")
+    logger.info({
+      message: "♻️ [SIGNOUT] Refresh tokens revoked successfully",
+      userID,
+      revokedCount: result.count,
+    });
+
+    // Return success response
+    return ServiceResponse.success<T>({
+      success: true,
+      statusCode: 200,
+      message: "User signed out successfully.",
+      data: { revokedCount: result.count } as T,
+    });
+  } catch (err: any) {
+    logger.error({
+      message: "❌ [SIGNOUT] Error revoking tokens",
+      userID,
+      error: err?.message || err,
+    });
+
+    // Normalize all other errors
+    if (err instanceof ServiceException) throw err;
+
+    throw new ServiceException(
+      ServiceResponse.error({
+        success: false,
+        statusCode: 500,
+        message: err?.message || "Internal server error",
+        errorType: "internal_server_error",
+      })
+    );
   }
-
 };
-
-export default signoutService;

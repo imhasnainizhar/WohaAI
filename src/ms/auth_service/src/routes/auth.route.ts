@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { signoutController, signupController } from "@controllers/index";
-import { signinController } from "@controllers/index";
-import { refreshTokenController } from "@controllers/index";
+import { signupController } from "@controllers/signup.controller";
+import { signoutController } from "@controllers/signout.controller";
+import { signinController } from "@controllers/signin.controller";
+import { refreshTokenController } from "@controllers/refresh_token.controller";
 
 const router = Router();
 

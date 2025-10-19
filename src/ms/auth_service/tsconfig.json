@@ -44,6 +44,12 @@
             ],
             "@utils/*": [
                 "./src/utils/*"
+            ],
+            "@custom_types/*": [
+                "./src/custom_types/*"
+            ],
+            "@errors/*": [
+                "./src/errors/*"
             ]
         },
         /* Output + Debugging */

@@ -1,50 +1,45 @@
-import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { signUpSchema } from "@schemas/signup_validation.schema";
+import { signUpSchema, SignUpUser } from "@schemas/signup_validation.schema";
 import { prisma } from "@utils/prisma_client";
-import { sendResponse } from "@utils/api_response";
 import argon2 from "argon2";
+import { ServiceResponse } from "@utils/service_response";
+import { ServiceException } from "@errors/service_exception";
+import { logger } from "@utils/logger";
+import crypto from "crypto";
 
-
-export async function signupService(req: Request, res: Response): Promise<Response> {
-  // Filter out sensitive fields from logs
-  const safeBodyKeys = Object.keys(req.body || {}).filter(
-    (k) => !["password", "confirmPassword"].includes(k.toLowerCase())
-  );
-
-  console.log("🟢 [SIGNUP] Incoming request:", {
-    headers: req.headers["content-type"],
-    bodyKeys: safeBodyKeys,
-  });
-
+/**
+ * Handles user signup — validation, password hashing, duplicate checks,
+ * token generation, and cookie configuration.
+ * 
+ * Returns a typed `ServiceResponse` or throws structured errors.
+ */
+export async function signupService<T>(body: SignUpUser): Promise<ServiceResponse<T>> {
   try {
-    // Validate input
-    const parsed = signUpSchema.safeParse(req.body);
+    // Validate request body using Zod
+    const parsed = signUpSchema.safeParse(body);
     if (!parsed.success) {
       const flattened = parsed.error.flatten();
-      console.warn("⛔ [SIGNUP] Validation failed:", flattened.fieldErrors);
-      return sendResponse({
-        res,
-        success: false,
-        statusCode: 400,
-        message: "Unexpected input",
+      logger.warn({
+        message: "⛔ [SIGNUP] Validation failed",
         errors: flattened.fieldErrors,
-        errorType: "validation_error",
-        path: req.path,
       });
+
+        return ServiceResponse.error({
+          success: false,
+          statusCode: 400,
+          message: "Invalid input fields.",
+          errorType: "validation_error",
+          errors: flattened.fieldErrors,
+        })
     }
 
-    // Destructure - ensure your Zod schema returns these camelCase names
-    const { email, password, firstName, lastName, rememberMe = false, username } =
-      parsed.data;
+    const { email, password, firstName, lastName, rememberMe = false, username } = parsed.data;
 
-    console.log("✅ [SIGNUP] Input validated for:", email);
+    logger.info(`✅ [SIGNUP] Input validated for email: ${email}`);
 
-    // Check duplicates
+    // Check if user already exists
     const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { username }],
-      },
+      where: { OR: [{ email }, { username }] },
     });
 
     if (existingUser) {
@@ -52,51 +47,49 @@ export async function signupService(req: Request, res: Response): Promise<Respon
       const emailTaken = existingUser.email === email;
 
       if (usernameTaken && emailTaken) {
-        console.log(`🔴 Username ${username} and email ${email} are already in use`);
-        return sendResponse({
-          res,
-          success: false,
-          statusCode: 409,
-          message: "Username and Email already taken.",
-          errors: { username: ["Username already taken"], email: ["Email already taken"] },
-          errorType: "conflict_both",
-          path: req.path,
-        });
+        logger.error(`🔴 [SIGNUP] Username ${username} and email ${email} already taken`);
+          return ServiceResponse.error({
+            success: false,
+            statusCode: 409,
+            message: "Username and Email already taken.",
+            errors: {
+              username: ["Username taken"],
+              email: ["Email taken"],
+            },
+            errorType: "conflict_both",
+          })
       }
+
       if (usernameTaken) {
-        console.log(`🔴 Username ${username} already taken`);
-        return sendResponse({
-          res,
-          success: false,
-          statusCode: 409,
-          message: "Username not available.",
-          errors: { username: ["Username already taken"] },
-          errorType: "username_unavailable",
-          path: req.path,
-        });
+        logger.error(`🔴 [SIGNUP] Username ${username} is unavailable`);
+          return ServiceResponse.error({
+            success: false,
+            statusCode: 409,
+            message: "Username not available.",
+            errors: { username: ["Username taken"] },
+            errorType: "username_unavailable",
+          })
       }
+
       if (emailTaken) {
-        console.log(`🔴 Email ${email} already taken`);
-        return sendResponse({
-          res,
-          success: false,
-          statusCode: 409,
-          message: "Email already taken.",
-          errors: { email: ["Email already taken"] },
-          errorType: "email_unavailable",
-          path: req.path,
-        });
+        logger.error(`🔴 [SIGNUP] Email ${email} already exists`);
+          return ServiceResponse.error({
+            success: false,
+            statusCode: 409,
+            message: "Email already taken.",
+            errors: { email: ["Email taken"] },
+            errorType: "email_unavailable",
+          })
       }
     }
 
-    // Normalize names
+    // Normalize capitalization
     const userFirstName =
       firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
     const userLastName =
       lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
 
-    // Hash password
-    console.log("🔐 [SIGNUP] Hashing password...");
+    logger.info("🔐 [SIGNUP] Hashing user password...");
     const passwordHashed = await argon2.hash(password, {
       type: argon2.argon2id,
       memoryCost: 2 ** 16,
@@ -104,58 +97,38 @@ export async function signupService(req: Request, res: Response): Promise<Respon
       parallelism: 1,
     });
 
-    // Secrets
+    // Verify JWT keys
     const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET_KEY;
     const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
     if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
-      console.error("❌ [SIGNUP] JWT secrets not set in environment");
-      return sendResponse({
-        res,
-        success: false,
-        statusCode: 500,
-        message: "Token unavailable due to server misconfiguration",
-        errorType: "token_error",
-        path: req.path,
-      });
+      logger.error("❌ [SIGNUP] Missing JWT secret environment variables");
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          message: "Server misconfiguration: JWT keys missing",
+          statusCode: 500,
+          errorType: "token_error",
+          errors: { env: ["JWT secrets not set"] },
+        })
+      );
     }
 
-    // Expirations (ms for cookies)
-    const ACCESS_TOKEN_EXPIRES_IN = "1h"; // keep short: 15m-1h
-    const ACCESS_TOKEN_MAX_AGE_MS = 1000 * 60 * 60; // 1 hour
+    // Token + session configuration
+    const ACCESS_TOKEN_EXPIRES_IN = "1h";
+    const ACCESS_TOKEN_MAX_AGE_MS = 1000 * 60 * 60;
     const sessionDays = rememberMe ? 365 : 7;
     const REFRESH_TOKEN_EXPIRES_IN = rememberMe ? "365d" : "7d";
-    const REFRESH_TOKEN_MAX_AGE_MS = 1000 * 60 * 60 * 24 * sessionDays; // match refresh JWT
-
-    // Generate tokens — ACCESS first, then REFRESH
-    console.log("🔑 [SIGNUP] Generating JWTs...");
+    const REFRESH_TOKEN_MAX_AGE_MS = 1000 * 60 * 60 * 24 * sessionDays;
 
     const tempID = crypto.randomUUID();
 
-    const accessToken = jwt.sign(
-      {
-        sub: tempID,   // Just for temporary signing jwt further it will be replaced by newUser.userID after user creation in DB
-        email: email,
-        name: `${userFirstName} ${userLastName}`,
-      },
-      JWT_ACCESS_SECRET_KEY,
-      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
-    );
-
-    const refreshToken = jwt.sign(
-      {
-        sub: tempID,
-      },
-      JWT_REFRESH_SECRET_KEY,
-      { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
-    );
-
-    // Store hashed refresh token for future rotation/revocation.
-    // NOTE: the `refreshTokenHash` field is added to Prisma user model.
+    const refreshToken = jwt.sign({ sub: tempID }, JWT_REFRESH_SECRET_KEY, {
+      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+    });
     const refreshTokenHash = await argon2.hash(refreshToken);
 
-    // Creating User after signining token and hashing refresh token
-    console.log("🧩 [SIGNUP] Creating user in database...");
+    logger.info("🧩 [SIGNUP] Creating new user in DB...");
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -163,57 +136,57 @@ export async function signupService(req: Request, res: Response): Promise<Respon
         username,
         userFirstName,
         userLastName,
-        refreshTokenHash : refreshTokenHash
+        refreshTokenHash,
       },
     });
 
-    console.log("✅ [SIGNUP] User created with ID", newUser.userID, "in DB");
+    logger.info(`✅ [SIGNUP] User created successfully (ID: ${newUser.userID})`);
 
-      const finalAccessToken = jwt.sign(
-      {
-        sub: newUser.userID,
-        email: email,
-        name: `${userFirstName} ${userLastName}`,
-      },
+    // Generate tokens
+    const accessToken = jwt.sign(
+      { sub: newUser.userID, email, name: `${userFirstName} ${userLastName}` },
       JWT_ACCESS_SECRET_KEY,
       { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
     );
 
     const finalRefreshToken = jwt.sign(
-      {
-        sub: newUser.userID,
-      },
+      { sub: newUser.userID },
       JWT_REFRESH_SECRET_KEY,
       { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
     );
 
-    // Cookies
-    const sameSite = process.env.NODE_ENV === "production" ? "none" : "lax";
-    console.log("🍪 [SIGNUP] Setting session cookies...");
+    // Configure cookies
+    const sameSite = (process.env.NODE_ENV === "production" ? "none" : "lax") as
+      "none" | "lax" | "strict";
 
-    // Set Access cookie (short-lived)
-    res.cookie("__woahai_acc_t", finalAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite,
-      path: "/",
-      maxAge: ACCESS_TOKEN_MAX_AGE_MS,
-    });
+    const cookies = [
+      {
+        name: "__woahai_acc_t",
+        value: accessToken,
+        options: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite,
+          path: "/",
+          maxAge: ACCESS_TOKEN_MAX_AGE_MS,
+        },
+      },
+      {
+        name: "__woahai_ref_t",
+        value: finalRefreshToken,
+        options: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite,
+          path: "/",
+          maxAge: REFRESH_TOKEN_MAX_AGE_MS,
+        },
+      },
+    ];
 
-    // Set Refresh cookie (long-lived)
-    res.cookie("__woahai_ref_t", finalRefreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite,
-      path: "/",
-      maxAge: REFRESH_TOKEN_MAX_AGE_MS,
-    });
+    logger.info(`🚀 [SIGNUP] User ${username} successfully registered`);
 
-    console.log(`🚀 [SIGNUP] User ${username} created successfully with email ${email}.`);
-
-    // Return success
-    return sendResponse({
-      res,
+    return ServiceResponse.success({
       success: true,
       statusCode: 201,
       message: "User created successfully",
@@ -221,23 +194,27 @@ export async function signupService(req: Request, res: Response): Promise<Respon
         email: newUser.email,
         username: newUser.username,
         userID: newUser.userID,
-      },
-      path: req.path,
+      } as T,     // Because 
+      cookies,
     });
   } catch (err: any) {
-    console.error("❌ [SIGNUP] Error:", {
-      message: err?.message,
-      stack: err?.stack?.split("\n")[0],
-      name: err?.name,
+    // ⚠️ Handle structured or unexpected errors
+    if (err instanceof ServiceException) throw err; // pass up structured errors
+
+    logger.error({
+      message: `❌ [SIGNUP] Unexpected error`,
+      error: err.message,
+      stack: err.stack?.split("\n")[0],
     });
 
-    return sendResponse({
-      res,
-      success: false,
-      statusCode: 500,
-      message: "Something went wrong on our side",
-      errorType: "internal_server_error",
-      path: req.path,
-    });
+    throw new ServiceException(
+      ServiceResponse.error({
+        success: false,
+        message: err?.message || "Internal server error",
+        statusCode: 500,
+        errorType: "internal_server_error",
+        errors: err?.errors,
+      })
+    );
   }
 }
