@@ -45,9 +45,12 @@
             "@utils/*": [
                 "./src/utils/*"
             ],
-            "@types/*": [
-                "./src/types/*"
+            "@custom_types/*": [
+                "./src/custom_types/*"
             ],
+            "@errors/*":[
+                "./src/errors/*"
+            ]
         },
         /* Output + Debugging */
         "sourceMap": true

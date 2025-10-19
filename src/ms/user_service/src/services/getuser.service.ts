@@ -1,68 +1,43 @@
-import { prisma } from "@utils/prisma_client";
+import { prisma } from '@utils/prisma_client';
+import { ServiceResponse } from '@utils/service_response';
+import { sanitizeUser } from '@custom_types/user.type';
 
-// Custom domain errors
-export class UserNotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "UserNotFoundError";
+interface GetUserParams {
+  userId?: string;
+  username?: string;
+}
+
+export const getUserService = async ({ userId, username }: GetUserParams) => {
+  // Validate input
+  if (!userId && !username) {
+    return ServiceResponse.error({
+      success: false,
+      statusCode: 400,
+      message: "Either userId or username is required",
+      errorType: "invalid_input",
+    });
   }
-}
 
-export class InvalidInputError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "InvalidInputError";
-  }
-}
-
-// User type (sanitized for API output)
-export interface UserRecord {
-  id: string;
-  email: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// Sanitize function to remove sensitive info
-// Helps to keep private fields internal not to get out.
-export const sanitizeUser = (user: any): UserRecord => ({
-  id: user.id,
-  email: user.email,
-  username: user.username,
-  firstName: user.firstName,
-  lastName: user.lastName,
-  createdAt: user.createdAt,
-  updatedAt: user.updatedAt,
-});
-
-// Service to get user by ID
-export const getUserByIdService = async (userId: string): Promise<UserRecord> => {
-  if (!userId) throw new InvalidInputError("User ID is required");
-
+  // Fetch user from DB
   const rawUser = await prisma.user.findUnique({
-    where: { id: userId },
+    where: userId ? { id: userId } : { username: username! },
   });
 
   if (!rawUser) {
-    throw new UserNotFoundError(`User not found with ID: ${userId}`);
+    return ServiceResponse.error({
+      success: false,
+      statusCode: 404,
+      message: userId
+        ? `User not found with ID: ${userId}`
+        : `User not found with username: ${username}`,
+      errorType: "not_found",
+    });
   }
 
-  return sanitizeUser(rawUser);
-};
-
-export const getUserByUsernameService = async (username: string): Promise<UserRecord> => {
-  if (!username) throw new InvalidInputError("Username is required");
-
-  const rawUser = await prisma.user.findUnique({
-    where: { username },
+  return ServiceResponse.success({
+    success: true,
+    statusCode: 200,
+    message: "User found",
+    data: sanitizeUser(rawUser),
   });
-
-  if (!rawUser) {
-    throw new UserNotFoundError(`User not found with username: ${username}`);
-  }
-
-  return sanitizeUser(rawUser);
 };

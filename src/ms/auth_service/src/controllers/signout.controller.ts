@@ -1,82 +1,94 @@
 import { Request, Response } from "express";
-import { signoutService } from "@services/signout.service";
+import { signupService } from "@services/signup.service";
 import { sendResponse } from "@utils/api_response";
-import { env } from "@config/env.config";
 import { logger } from "@utils/logger";
+import { ServiceResponse } from "@utils/service_response";
+import { ServiceException } from "@errors/service_exception";
 
 /**
- * @controller signoutController
- * Handles Express response & cookies for signout flow.
+ * @controller signupController
+ * Handles signup HTTP requests.
+ * Delegates validation and user creation to signupService.
+ * Only manages cookies and HTTP response.
  */
-export const signoutController = async (req: Request, res: Response) => {
-    try {
-        const userID = req.body.userID;
-        logger.warn({
-            message: "⚠️ [SIGNOUT] Missing userID in request body",
-            path: req.path,
-        });
-        if (userID) {
-            return sendResponse({
-                res,
-                success: false,
-                message: "Missing user ID",
-                statusCode: 400,
-                errorType: "bad_request",
-                path: req.path,
-            });
-        }
+export const signupController = async (req: Request, res: Response) => {
+  try {
+    // Remove sensitive fields before logging
+    const safeBodyKeys = Object.keys(req.body || {}).filter(
+      (k) => !["password", "confirmPassword"].includes(k.toLowerCase())
+    );
 
-        // Calling Service for signout
-        await signoutService(userID);
+    logger.info({
+      message: "🟢 [SIGNUP] Incoming request",
+      bodyKeys: safeBodyKeys,
+      ip: req.ip,
+      path: req.path,
+    });
 
-        const sameSite: "strict" | "lax" =
-            env.NODE_ENV === "production" ? "strict" : "lax";
+    // Call service layer
+    const serviceResult: ServiceResponse<any> = await signupService(req.body);
 
-        // 🍪 Clear all authentication cookies
-        /**
-         * Clear the JWT cookie by setting an empty value and maxAge 0.
-         * This ensures the token is invalidated on the client-side.
-         * HttpOnly and Secure flags are kept for security.
-         */
+    // If service returned a failure response, forward it without throwing
+    if (!serviceResult.success) {
+      logger.warn({
+        message: serviceResult.message,
+        errors: serviceResult.errors,
+        path: req.path
+      }, "🔴 [SIGNUP] Service returned failure");
 
-        const cookieOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite,
-            path: "/",
-            maxAge: 0,
-        } as const;
-
-        // Setting cookies to clear all cookie sessions.
-        res.cookie("__woahai_acc_t", "", cookieOptions);
-        res.cookie("__woahai_ref_t", "", cookieOptions);
-        res.cookie("__woahai_private_acc_t", "", cookieOptions);
-    } catch (err: any) {
-        // Error Handling
-        logger.error(
-            { message: "❌ [SIGNOUT] Signout failed", path: req.path, error: err.message }
-        );
-
-        switch (err.name) {
-            case "UserNotFound":
-                return sendResponse({
-                    res,
-                    success: false,
-                    message: "User not found",
-                    statusCode: 404,
-                    errorType: "user_not_found",
-                    path: req.path,
-                });
-
-            default:
-                return sendResponse({
-                    res,
-                    success: false,
-                    message: "Internal server error during signout",
-                    statusCode: 500,
-                    errorType: "internal_server_error",
-                    path: req.path,
-                });
-        }
+      return sendResponse({
+        res,
+        success: false,
+        message: serviceResult.message,
+        statusCode: serviceResult.statusCode,
+        errorType: serviceResult.errorType,
+        errors: serviceResult.errors,
+        path: req.path,
+      });
     }
+
+    // Apply cookies returned by service
+    if (serviceResult.cookies) {
+      serviceResult.cookies.forEach((cookie) => {
+        res.cookie(cookie.name, cookie.value, cookie.options);
+      });
+    }
+
+    // Forward successful response
+    return sendResponse({
+      res,
+      success: true,
+      message: serviceResult.message || "Signup successful",
+      statusCode: serviceResult.statusCode || 201,
+      data: serviceResult.data,
+      path: req.path,
+    });
+
+  } catch (err: any) {
+    // Log unexpected error
+    logger.error({
+      context: "[SIGNUP_CONTROLLER]",
+      message: err?.message,
+      stack: err?.stack?.split("\n")[0],
+    }, "❌ [SIGNUP] Unexpected error");
+
+    // If it's a ServiceException, forward its response
+    if (err instanceof ServiceException) {
+      return sendResponse({
+        res,
+        ...err.response,
+        path: req.path,
+      });
+    }
+
+    // Fallback for truly unexpected errors
+    return sendResponse({
+      res,
+      success: false,
+      message: err?.message || "Internal server error",
+      statusCode: 500,
+      errorType: "internal_server_error",
+      path: req.path,
+    });
+  }
 };

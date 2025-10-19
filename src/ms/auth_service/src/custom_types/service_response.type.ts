@@ -1,8 +1,8 @@
-export interface ServiceSuccess<T> {
+export interface ServiceResponse<T> {
   success: true;
   statusCode: number;
   message: string;
-  data: T;
+  data?: T;
   cookies?: {
     name: string;
     value: string;
@@ -14,14 +14,6 @@ export interface ServiceSuccess<T> {
       maxAge: number;
     };
   }[];
-}
-
-export interface ServiceFailure {
-  success: false;
-  message: string;
-  statusCode: number;
-  errorType: string; // e.g., "validation_error", "not_found", "internal_error"
+  errorType?: string; // e.g., "validation_error", "not_found", "internal_error"
   errors?: Record<string, string[]>; // optional validation errors
 }
-
-export type ServiceResult<T> = ServiceSuccess<T> | ServiceFailure;

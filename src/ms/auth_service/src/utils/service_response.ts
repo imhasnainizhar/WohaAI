@@ -10,6 +10,11 @@ interface Cookie {
     }
 }
 
+// ServiceResponse Interface also exixts in /types directory so you can
+// use that for specifying return type also...
+// But this is a response class also used by service exception to throw service response,
+// Throw and Return both hve same structure but a little bit different way of implementation.
+// See docs for more information and contribute in Docs to help us :)
 export class ServiceResponse<T> {
 
     readonly success: boolean;

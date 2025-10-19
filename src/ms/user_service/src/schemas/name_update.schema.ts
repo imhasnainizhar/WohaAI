@@ -15,4 +15,4 @@ export const NameUpdateSchema = z
       .max(20, "Very Long, Maximum 20 Characters")
       .regex(/^[A-Za-z]+$/, "Only Letters"),
   });
-export type NameUpdateSchema = z.infer<typeof NameUpdateSchema>;
+export type NameUpdate = z.infer<typeof NameUpdateSchema>;

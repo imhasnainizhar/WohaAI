@@ -1,3 +1,4 @@
+import { ServiceResponse } from '@utils/service_response';
 import { Request, Response } from "express";
 import { refreshTokenService } from "@services/refresh_token.service";
 import { sendResponse } from "@utils/api_response";
@@ -25,7 +26,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
             });
         }
 
-        const { newAccessToken, newRefreshToken, user } = await refreshTokenService(refreshToken);
+        const { newAccessToken, newRefreshToken, user } : any  = (await refreshTokenService(refreshToken)).data;
 
         const sameSite = process.env.NODE_ENV === "production" ? "none" : "lax";
 
