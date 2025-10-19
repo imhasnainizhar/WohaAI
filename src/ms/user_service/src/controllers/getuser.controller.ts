@@ -9,9 +9,7 @@ import {
 } from "@services/getuser.service";
 import { logger } from "@utils/logger";
 
-
-
-// Zod validation schemas
+// Zod schemas for validating route parameters before hitting the service layer
 const idParamsSchema = z.object({
   id: z.string().uuid({ message: "Invalid user ID format" }),
 });
@@ -20,16 +18,29 @@ const usernameParamsSchema = z.object({
   username: z.string().min(1, "Username is required"),
 });
 
-
-
-// Controller: Get user by ID
+/**
+ * Controller: Get user by ID
+ */
 export const getUserByIdController = async (req: Request, res: Response) => {
-  const path = req.originalUrl;
+  const path = req.path;
 
   try {
+    // 🟢 Log incoming request
+    logger.info({ message: "🟢 [USER] Incoming get user by ID request", path });
+
+    // Validate and extract user ID
     const { id } = idParamsSchema.parse(req.params);
+
+    // 🟣 Debug log for development insights
+    logger.debug({ message: "🟣 [USER] Validated user ID parameter", id, path });
+
+    // Fetch user data from service layer
     const user = await getUserByIdService(id);
 
+    // ✅ Log success
+    logger.info({ message: "✅ [USER] User retrieved successfully by ID", userId: id, path });
+
+    // Send structured success response
     return sendResponse({
       res,
       success: true,
@@ -39,9 +50,9 @@ export const getUserByIdController = async (req: Request, res: Response) => {
       path,
     });
   } catch (err: unknown) {
-    // Zod validation errors
+    // ❌ Zod validation error
     if (err instanceof ZodError) {
-      logger.warn({ err, path }, "Validation failed in getUserController");
+      logger.warn({ message: "⚠️ [USER] Validation failed in getUserByIdController", path, issues: err.issues });
 
       const fieldErrors: Record<string, string[]> = {};
       err.issues.forEach((issue) => {
@@ -61,8 +72,9 @@ export const getUserByIdController = async (req: Request, res: Response) => {
       });
     }
 
-    // Domain-specific errors
+    // ⚠️ Domain-specific invalid input error
     if (err instanceof InvalidInputError) {
+      logger.warn({ message: "⚠️ [USER] Invalid input in getUserByIdController", path, error: err.message });
       return sendResponse({
         res,
         success: false,
@@ -73,7 +85,9 @@ export const getUserByIdController = async (req: Request, res: Response) => {
       });
     }
 
+    // 🔴 User not found error
     if (err instanceof UserNotFoundError) {
+      logger.warn({ message: "🔴 [USER] User not found in getUserByIdController", path, error: err.message });
       return sendResponse({
         res,
         success: false,
@@ -84,9 +98,9 @@ export const getUserByIdController = async (req: Request, res: Response) => {
       });
     }
 
-    // Standard JS Error
+    // ❌ General JS Error
     if (err instanceof Error) {
-      logger.error({ err, path }, "Unhandled error in getUserController");
+      logger.error({ message: "❌ [USER] Unhandled error in getUserByIdController", path, error: err.message });
       return sendResponse({
         res,
         success: false,
@@ -97,8 +111,8 @@ export const getUserByIdController = async (req: Request, res: Response) => {
       });
     }
 
-    // Fallback for non-Error thrown values
-    logger.error({ err, path }, "Unknown error type in getUserController");
+    // 🔴 Unknown thrown value
+    logger.error({ message: "🔴 [USER] Unknown error type in getUserByIdController", path, error: err });
     return sendResponse({
       res,
       success: false,
@@ -110,14 +124,29 @@ export const getUserByIdController = async (req: Request, res: Response) => {
   }
 };
 
-// Controller: Get user by username
+/**
+ * Controller: Get user by username
+ */
 export const getUserByUsernameController = async (req: Request, res: Response) => {
-  const path = req.originalUrl;
+  const path = req.path;
 
   try {
+    // 🟢 Log incoming request
+    logger.info({ message: "🟢 [USER] Incoming get user by username request", path });
+
+    // Validate and extract username
     const { username } = usernameParamsSchema.parse(req.params);
+
+    // 🟣 Debug log
+    logger.debug({ message: "🟣 [USER] Validated username parameter", username, path });
+
+    // Fetch user by username
     const user = await getUserByUsernameService(username);
 
+    // ✅ Log success
+    logger.info({ message: "✅ [USER] User retrieved successfully by username", username, path });
+
+    // Respond with data
     return sendResponse({
       res,
       success: true,
@@ -127,9 +156,9 @@ export const getUserByUsernameController = async (req: Request, res: Response) =
       path,
     });
   } catch (err: unknown) {
-    // Zod validation errors
+    // ❌ Validation error
     if (err instanceof ZodError) {
-      logger.warn({ err, path }, "Validation failed in getUserByUsernameController");
+      logger.warn({ message: "⚠️ [USER] Validation failed in getUserByUsernameController", path, issues: err.issues });
 
       const fieldErrors: Record<string, string[]> = {};
       err.issues.forEach((issue) => {
@@ -149,8 +178,9 @@ export const getUserByUsernameController = async (req: Request, res: Response) =
       });
     }
 
-    // Domain-specific errors
+    // ⚠️ Invalid input
     if (err instanceof InvalidInputError) {
+      logger.warn({ message: "⚠️ [USER] Invalid input in getUserByUsernameController", path, error: err.message });
       return sendResponse({
         res,
         success: false,
@@ -161,7 +191,9 @@ export const getUserByUsernameController = async (req: Request, res: Response) =
       });
     }
 
+    // ⛔ User not found
     if (err instanceof UserNotFoundError) {
+      logger.warn({ message: "⛔ [USER] User not found in getUserByUsernameController", path, error: err.message });
       return sendResponse({
         res,
         success: false,
@@ -172,9 +204,9 @@ export const getUserByUsernameController = async (req: Request, res: Response) =
       });
     }
 
-    // Standard JS Error
+    // 🔴 General JS error
     if (err instanceof Error) {
-      logger.error({ err, path }, "Unhandled error in getUserByUsernameController");
+      logger.error({ message: "🔴 [USER] Unhandled error in getUserByUsernameController", path, error: err.message });
       return sendResponse({
         res,
         success: false,
@@ -185,8 +217,8 @@ export const getUserByUsernameController = async (req: Request, res: Response) =
       });
     }
 
-    // Fallback for non-Error thrown values
-    logger.error({ err, path }, "Unknown error type in getUserByUsernameController");
+    // ❌ Unknown error type
+    logger.error({ message: "❌ [USER] Unknown error type in getUserByUsernameController", path, error: err });
     return sendResponse({
       res,
       success: false,
@@ -197,3 +229,4 @@ export const getUserByUsernameController = async (req: Request, res: Response) =
     });
   }
 };
+  

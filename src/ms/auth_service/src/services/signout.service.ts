@@ -1,49 +1,71 @@
-import { Request, Response } from "express";
+import { prisma } from "@utils/prisma_client";
 import { logger } from "@utils/logger";
+import { ServiceResponse } from "@utils/service_response";
+import { ServiceException } from "@errors/service_exception";
 
-export const signoutService = (req: Request, res: Response) => {
-  // Determine cookie SameSite policy based on environment
-  const sameSite = process.env.NODE_ENV === "production" ? "strict" : "lax";
-
+/**
+ * @service signoutService
+ * Handles token revocation & DB logic for signout.
+ * - Checks if user exists
+ * - Revokes all non-revoked refresh tokens
+ * - Returns structured ServiceResponse
+ */
+export const signoutService = async <T>(userID: string) => {
   try {
-    /**
-     * Clear the JWT cookie by setting an empty value and maxAge 0.
-     * This ensures the token is invalidated on the client-side.
-     * HttpOnly and Secure flags are kept for security.
-     */
-    res.cookie("__woahai_acc_t", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite,
-      path: "/",
-      maxAge: 0,
+    // Check if user exists
+    const userExists = await prisma.user.findUnique({
+      where: { userID },
+      select: { userID: true },
     });
 
-    res.cookie("__woahai_ref_t", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite,
-      path: "/",
-      maxAge: 0,
+    if (!userExists) {
+      logger.warn({ message: "🔴 [SIGNOUT] User not found", userID });
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 404,
+          message: "User not found.",
+          errorType: "user_not_found",
+        })
+      );
+    }
+
+    // Revoke all active refresh tokens
+    const result = await prisma.refreshToken.updateMany({
+      where: { userId: userID, revoked: false },
+      data: { revoked: true, revokedAt: new Date() },
     });
 
-    res.cookie("__woahai_private_acc_t", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite,
-      path: "/",
-      maxAge: 0,
+    logger.info({
+      message: "♻️ [SIGNOUT] Refresh tokens revoked successfully",
+      userID,
+      revokedCount: result.count,
     });
 
-    // Successful logout
-    logger.info({ path: req.path, userID: req.body?.userID }, "🟢 [SIGNOUT] Signed out successfully");
-    return res.status(200).json({ ok: true });
+    // Return success response
+    return ServiceResponse.success<T>({
+      success: true,
+      statusCode: 200,
+      message: "User signed out successfully.",
+      data: { revokedCount: result.count } as T,
+    });
   } catch (err: any) {
-    // Internal server error during signout
-    logger.error({ path: req.path, error: err.message }, "❌ [SIGNOUT] Signout failed");
-    return res.status(500).json({
-      ok: false,
-      message: "Internal server error during signout",
+    logger.error({
+      message: "❌ [SIGNOUT] Error revoking tokens",
+      userID,
+      error: err?.message || err,
     });
+
+    // Normalize all other errors
+    if (err instanceof ServiceException) throw err;
+
+    throw new ServiceException(
+      ServiceResponse.error({
+        success: false,
+        statusCode: 500,
+        message: err?.message || "Internal server error",
+        errorType: "internal_server_error",
+      })
+    );
   }
 };

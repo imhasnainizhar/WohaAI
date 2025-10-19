@@ -23,3 +23,5 @@ export const signInSchema = z.object({
     .regex(/^[a-zA-Z0-9 _-]+$/, "Invalid Symbols"),
   rememberMe: z.boolean().optional(),
 });
+
+  export type SigInUser = z.infer<typeof signInSchema>;
