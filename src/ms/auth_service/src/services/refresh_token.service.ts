@@ -3,12 +3,15 @@ import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@utils/prisma_client";
 import { sendResponse } from "@utils/api_response";
+import { logger } from "@utils/logger";
 
 export async function refreshTokenService(req: Request, res: Response) {
   try {
     const refreshToken = req.cookies?.__woahai_ref_t;
 
+    // User did not send a refresh token
     if (!refreshToken) {
+      logger.warn({ path: req.path }, "🔴 [REFRESH] Refresh token missing");
       return sendResponse({
         res,
         success: false,
@@ -22,7 +25,9 @@ export async function refreshTokenService(req: Request, res: Response) {
     const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
     const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET_KEY;
 
+    // Internal misconfiguration
     if (!JWT_REFRESH_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
+      logger.error({ path: req.path }, "❌ [REFRESH] JWT secret keys not configured");
       return sendResponse({
         res,
         success: false,
@@ -33,11 +38,12 @@ export async function refreshTokenService(req: Request, res: Response) {
       });
     }
 
-    // Verify refresh token
+    // Verify refresh token validity
     let payload: any;
     try {
       payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET_KEY);
     } catch {
+      logger.warn({ path: req.path }, "⛔ [REFRESH] Invalid refresh token attempt");
       return sendResponse({
         res,
         success: false,
@@ -48,11 +54,13 @@ export async function refreshTokenService(req: Request, res: Response) {
       });
     }
 
+    // Fetch user and check token hash
     const user = await prisma.user.findUnique({
       where: { userID: payload.sub },
     });
 
     if (!user || !user.refreshTokenHash) {
+      logger.warn({ path: req.path, userID: payload.sub }, "⛔ [REFRESH] User not found or token not registered");
       return sendResponse({
         res,
         success: false,
@@ -63,9 +71,9 @@ export async function refreshTokenService(req: Request, res: Response) {
       });
     }
 
-    // Validate hash
     const valid = await argon2.verify(user.refreshTokenHash, refreshToken);
     if (!valid) {
+      logger.warn({ path: req.path, userID: user.userID }, "⛔ [REFRESH] Refresh token mismatch");
       return sendResponse({
         res,
         success: false,
@@ -87,22 +95,22 @@ export async function refreshTokenService(req: Request, res: Response) {
       expiresIn: "7d",
     });
 
-    // Store new hash (token rotation)
+    // Rotate refresh token hash
     const newRefreshTokenHash = await argon2.hash(newRefreshToken);
     await prisma.user.update({
       where: { userID: user.userID },
       data: { refreshTokenHash: newRefreshTokenHash },
     });
 
-    // Set cookies
     const sameSite = process.env.NODE_ENV === "production" ? "none" : "lax";
 
+    // Set secure cookies
     res.cookie("__woahai_acc_t", newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite,
       path: "/",
-      maxAge: 1000 * 60 * 60, // 1 hour
+      maxAge: 1000 * 60 * 60,
     });
 
     res.cookie("__woahai_ref_t", newRefreshToken, {
@@ -110,8 +118,10 @@ export async function refreshTokenService(req: Request, res: Response) {
       secure: process.env.NODE_ENV === "production",
       sameSite,
       path: "/",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
+
+    logger.info({ userID: user.userID, path: req.path }, "🟢 [REFRESH] Tokens refreshed successfully");
 
     return sendResponse({
       res,
@@ -122,8 +132,8 @@ export async function refreshTokenService(req: Request, res: Response) {
       path: req.path,
     });
   } catch (err: any) {
-    console.error("❌ [REFRESH] Error:", err.message);
-
+    // Unexpected internal error
+    logger.error({ path: req.path, error: err.message }, "❌ [REFRESH] Internal server error");
     return sendResponse({
       res,
       success: false,

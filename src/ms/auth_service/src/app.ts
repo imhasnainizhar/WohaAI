@@ -2,25 +2,26 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { json, urlencoded } from "body-parser";
-// import { errorHandler } from "@middleware/error_handler";
-import { authRoutes } from "@routes/index";
-import { env } from "@config/env.config";
+// import { errorHandler } from "@middleware/error_handler"; // Centralized error handling middleware
+import authRoutes from "@routes/auth.route"; // Auth-related endpoints (signup, signin, refresh token, etc.)
+import { env } from "@config/env.config"; // Environment variables
 
 const app = express();
 
-// Middlewares
-app.use(cors({
-  origin: env.CLIENT_URL,
-  credentials: true,
-}));
-app.use(cookieParser());
-app.use(json());
-app.use(urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: env.CLIENT_URL, // Only allow requests from the frontend client
+    credentials: true, // Allow cookies to be sent with requests
+  })
+);
 
-// Routes
-app.use("/api/auth", authRoutes);
+app.use(cookieParser()); // Parse cookies from incoming requests
+app.use(json()); // Parse JSON payloads from incoming requests
+app.use(urlencoded({ extended: true })); // Parse URL-encoded payloads (e.g., form submissions)
 
-// Error handler (keep last)
+app.use("/api/auth", authRoutes); // Mount auth-related routes under /api/auth
+
+// This middleware should come last to catch all errors from above routes
 // app.use(errorHandler);
 
 export default app;

@@ -5,20 +5,20 @@ import { signInSchema } from "@schemas/signin_validation.schema";
 import { prisma } from "@utils/prisma_client";
 import { sendResponse } from "@utils/api_response";
 import argon2 from "argon2";
+import { logger } from "@utils/logger";
 
 type SignInInput = z.infer<typeof signInSchema>;
 
 export const signinService = async (req: Request, res: Response): Promise<void> => {
-  console.log("🟢 [SIGNIN] Request received:", {
-    contentType: req.headers["content-type"],
-    hasBody: !!req.body,
-  });
+  // Log incoming request
+  logger.info({ contentType: req.headers["content-type"], hasBody: !!req.body }, "🟢 [SIGNIN] Request received");
 
   try {
-    // ✅ 1. Validate input
+    // Validate input using Zod
     const parsed = signInSchema.safeParse(req.body);
     if (!parsed.success) {
-      console.warn("⛔ [SIGNIN] Validation failed.");
+      // User input is invalid
+      logger.warn({ errors: parsed.error.flatten().fieldErrors }, "🔴 [SIGNIN] Validation failed");
       sendResponse({
         res,
         success: false,
@@ -33,7 +33,9 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
 
     const { email, password, username, rememberMe = false } = parsed.data;
 
+    // Ensure at least email or username is provided
     if (!email && !username) {
+      logger.warn({ email, username }, "🔴 [SIGNIN] Missing credentials");
       sendResponse({
         res,
         success: false,
@@ -47,6 +49,7 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
     }
 
     if (!password) {
+      logger.warn({ username, email }, "🔴 [SIGNIN] Missing password");
       sendResponse({
         res,
         success: false,
@@ -59,15 +62,24 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // 2️⃣ Find user
+    // Construct Prisma where clause dynamically to find user by email or username
     const where: Record<string, any> = {};
     if (username) where.username = username;
     if (email) where.email = email;
 
+    /**
+     * Optimization: Only a single database call is made to fetch the user record.
+     * This avoids multiple queries for:
+     * 1. Checking if user exists
+     * 2. Retrieving hashed password
+     * 3. Storing refresh token
+     * By fetching the full user object once, we reduce latency and DB load.
+     */
     const user = await prisma.user.findFirst({ where });
+
     if (!user) {
       const missingField = username ? "username" : "email";
-      console.warn(`❌ [SIGNIN] No account found with this ${missingField}:`, email || username);
+      logger.warn({ identifier: email || username }, "🔴 [SIGNIN] No account found with this " + missingField);
       sendResponse({
         res,
         success: false,
@@ -80,10 +92,10 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // 3️⃣ Verify password
+    // Verify password using argon2
     const isPasswordCorrect = await argon2.verify(user.passwordHashed, password);
     if (!isPasswordCorrect) {
-      console.warn("❌ [SIGNIN] Incorrect password for:", email || username);
+      logger.warn({ email, username }, "🔴 [SIGNIN] Incorrect password");
       sendResponse({
         res,
         success: false,
@@ -95,12 +107,11 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // 4️⃣ Secrets
     const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET_KEY;
     const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
     if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
-      console.error("❌ [SIGNIN] JWT secrets not set in environment");
+      logger.error("❌ [SIGNIN] JWT secrets not set in environment");
       sendResponse({
         res,
         success: false,
@@ -112,43 +123,37 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // 5️⃣ Expirations (ms for cookies)
+    // Define token expirations
     const ACCESS_TOKEN_EXPIRES_IN = "1h";
-    const ACCESS_TOKEN_MAX_AGE_MS = 1000 * 60 * 60; // 1 hour
+    const ACCESS_TOKEN_MAX_AGE_MS = 1000 * 60 * 60;
     const sessionDays = rememberMe ? 365 : 7;
     const REFRESH_TOKEN_EXPIRES_IN = rememberMe ? "365d" : "7d";
     const REFRESH_TOKEN_MAX_AGE_MS = 1000 * 60 * 60 * 24 * sessionDays;
 
-    // 6️⃣ Generate tokens
-    console.log("🔑 [SIGNIN] Generating JWTs...");
+    logger.debug("🔑 [SIGNIN] Generating JWTs...");
 
+    // Generate access and refresh tokens
     const accessToken = jwt.sign(
-      {
-        sub: user.userID,
-        email: user.email,
-        name: `${user.userFirstName} ${user.userLastName}`,
-      },
+      { sub: user.userID, email: user.email, name: `${user.userFirstName} ${user.userLastName}` },
       JWT_ACCESS_SECRET_KEY,
       { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
     );
 
-    const refreshToken = jwt.sign(
-      { sub: user.userID },
-      JWT_REFRESH_SECRET_KEY,
-      { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
-    );
+    const refreshToken = jwt.sign({ sub: user.userID }, JWT_REFRESH_SECRET_KEY, {
+      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+    });
 
-    // 7️⃣ Store hashed refresh token
+    // Hash the refresh token and store in DB
     const refreshTokenHash = await argon2.hash(refreshToken);
     await prisma.user.update({
       where: { userID: user.userID },
       data: { refreshTokenHash },
     });
 
-    // 8️⃣ Set Cookies
     const sameSite = process.env.NODE_ENV === "production" ? "none" : "lax";
-    console.log("🍪 [SIGNIN] Setting secure cookies...");
+    logger.debug("🍪 [SIGNIN] Setting secure cookies...");
 
+    // Set access token and refresh token as HttpOnly cookies
     res.cookie("__woahai_acc_t", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -165,8 +170,9 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
       maxAge: REFRESH_TOKEN_MAX_AGE_MS,
     });
 
-    console.log(`🟢 [SIGNIN] User '${email || username}' authenticated successfully.`);
+    logger.info({ userID: user.userID }, "🟢 [SIGNIN] User authenticated successfully");
 
+    // Send success response
     sendResponse({
       res,
       success: true,
@@ -182,8 +188,8 @@ export const signinService = async (req: Request, res: Response): Promise<void> 
       },
       path: req.originalUrl,
     });
-  } catch (err) {
-    console.error("🔴 [SIGNIN] Unexpected Error:", err);
+  } catch (err: any) {
+    logger.error({ error: err.message }, "❌ [SIGNIN] Unexpected internal error");
     sendResponse({
       res,
       success: false,
