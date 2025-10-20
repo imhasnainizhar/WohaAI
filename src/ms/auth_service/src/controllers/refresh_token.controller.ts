@@ -1,4 +1,3 @@
-import { ServiceResponse } from '@utils/service_response';
 import { Request, Response } from "express";
 import { refreshTokenService } from "@services/refresh_token.service";
 import { sendResponse } from "@utils/api_response";
@@ -28,12 +27,12 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
         const { newAccessToken, newRefreshToken, user } : any  = (await refreshTokenService(refreshToken)).data;
 
-        const sameSite = process.env.NODE_ENV === "production" ? "none" : "lax";
+        const sameSite = env.NODE_ENV === "production" ? "none" : "lax";
 
         // 🍪 Set updated cookies
         res.cookie(env.ACCESS_TOKEN_NAME, newAccessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: env.NODE_ENV === "production",
             sameSite,
             path: "/",
             maxAge: 1000 * 60 * 60, // 1 hour
@@ -41,7 +40,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
         res.cookie(env.REFRESH_TOKEN_NAME, newRefreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: env.NODE_ENV === "production",
             sameSite,
             path: "/",
             maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days

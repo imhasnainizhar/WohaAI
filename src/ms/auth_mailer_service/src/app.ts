@@ -1,11 +1,8 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import mailerRoutes from "@routes/mailer.route";
 import { sendResponse } from "@utils/api_response";
 import { logger } from "@utils/logger";
-
-dotenv.config();
 
 const app: Application = express();
 

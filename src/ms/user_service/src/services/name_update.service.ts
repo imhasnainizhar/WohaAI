@@ -1,7 +1,7 @@
 // services/name_update.service.ts
 import { NameUpdateSchema, NameUpdate } from "@schemas/name_update.schema";
 import { prisma } from "@utils/prisma_client";
-import { z, ZodError } from "zod";
+import { ZodError } from "zod";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/service_response";
 import { ServiceException } from "@errors/service_exception";

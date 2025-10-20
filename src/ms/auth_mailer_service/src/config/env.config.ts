@@ -12,9 +12,7 @@ const p = process.env // Technique for convinience
 export const env = {
   NODE_ENV: p.NODE_ENV || "development",
   AUTH_MAILER_SERVICE_PORT: p.AUTH_MAILER_SERVICE_PORT,
-  PRISMA_USER_DATABASE_URI: p.PRISMA_USER_DATABASE_URI!,
-  REDIS_CODE_C_URI: p.REDIS_CODE_C_URI,
-
+  LOG_LEVEL: p.LOG_LEVEL,
 
   MAILER_PORT: p.MAILER_PORT,
   MAILER_EMAIL_USER: p.MAILER_EMAIL_USER,

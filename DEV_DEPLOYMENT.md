@@ -1,6 +1,12 @@
 # 🐳 Multi-Service Docker Development Guide
 
-This guide explains how to **develop and test** a complete **MicroService Architecture** using Docker and Docker Compose.
+This guide explains how to **develop, test, and deploy** this MicroService Architecture application consisting of:
+
+- **Next.js Frontend**
+- **Node.js Microservices (API Gateway, Auth Services, etc.)**
+- **Redis**
+- **Postgres DB**
+- All orchestrated via **Docker** and **Docker Compose**.
 
 Your stack includes:
 
@@ -29,8 +35,8 @@ project-root/
 │   ├── frontend/
 │   │   └── Dockerfile
 │   └── microservices/
-│       ├── api_gateway/service/Dockerfile
-│       ├── signin_service/service/Dockerfile
+│       ├── api_gateway/Dockerfile
+│       ├── auth_service/Dockerfile
 │       └── ...
 │
 └── .env
@@ -40,15 +46,100 @@ project-root/
 
 ## 🧑‍💻 Development Setup
 
-### Goals:
+In **development**, you want:
 
-* Hot reloading for both frontend and backend.
-* Shared network for seamless service communication.
-* Mounted volumes for live file editing.
+- Hot reloading for frontend and backend.
+- Shared network for inter-service communication.
+- Mounted volumes for live file editing.
 
 ### 🧩 Commands
 
-#### 1. **Start all services (development mode)**
+1. **Start all services in dev mode:**
+
+   ```bash
+   cd Docker/services
+   docker compose -f compose.shared.yml -f compose.db.yml -f compose.utility.yml -f compose.gateway.yml -f compose.auth.yml -f compose.frontend.yml --env-file ../env/.env up --build
+   ```
+
+   This command:
+
+   Builds all images using the development target (DOCKER_TARGET=development)
+
+   Mounts local source code (./src/...:/src) for hot reloading
+
+   Starts all services together in one shared network microservices_net_01
+
+2. **Run a single service for debugging:**
+
+   ```bash
+   cd Docker/services
+   docker compose -f compose.auth.yml --env-file ../env/.env up --build
+   ```
+
+   Example: Frontend (Next.js)
+
+   ```bash
+   cd Docker/services
+   docker compose -f compose.frontend.yml --env-file ../env/.env up frontend_app --build
+   ```
+
+3. **Stop and remove containers:**
+
+   ```bash
+   docker compose -f compose.frontend.yml down
+   ```
+
+   You can also use Control Key + C
+
+### 🗂 Example `docker-compose.dev.yml` Overview
+
+- Uses `target: development` for hot reload builds.
+- Mounts local directories (`volumes:`) for live code updates.
+- Exposes all dev ports (e.g., 3000, 4000, 6379).
+
+---
+
+## 🚀 Production Deployment
+
+In **production**, you want:
+
+- Prebuilt, optimized images.
+- No file mounts or unnecessary ports.
+- Smaller image size and locked dependencies.
+
+### 🧩 Commands
+
+1. **Build all images:**
+
+   ```bash
+   docker compose -f docker-compose.prod.yml build
+   ```
+
+2. **Run the entire stack:**
+
+   ```bash
+   docker compose -f docker-compose.prod.yml up -d
+   ```
+
+3. **Check running containers:**
+
+   ```bash
+   docker ps
+   ```
+
+4. **View logs for a specific service:**
+
+   ```bash
+   docker compose -f docker-compose.prod.yml logs -f api_gateway
+   ```
+
+---
+
+## 🧱 Individual Service Deployment (Production)
+
+Each microservice can be built and deployed **independently**.
+
+Example for `signin_service`:
 
 ```bash
 cd dev
@@ -87,18 +178,44 @@ You can also stop containers with **Ctrl + C**.
 
 ## 🗂 Example Compose Configuration Highlights
 
-* Uses `target: development` for hot reload builds.
-* Mounts local directories with `volumes:`.
-* Exposes dev ports like **3000**, **8000**, **6379**, etc.
+To build and deploy only the **frontend app**:
+
+### Dev Mode
+
+```bash
+docker compose -f docker-compose.dev.yml up --build frontend_app
+```
+
+### Production Mode
+
+```bash
+docker compose -f docker-compose.prod.yml up -d frontend_app
+```
+
+You can also build and run it separately:
+
+```bash
+cd src/frontend
+docker build -t frontend_app_prod --target production .
+docker run -p 80:3000 frontend_app_prod
+```
 
 ---
 
 ## 🌐 Environment Variables (`.env`)
 
-Your `.env` configuration defines all Dockerized environment settings for both **development** and future **production** via Terraform.
-**So, consider to create and check .env file at root directory and provide it in docker compose commands for development**
+✅ **Development**
 
-**For Just an Example**
+- Use shared `.env` for service communication.
+- Mount local files for rapid iteration.
+- Keep logs active for debugging.
+
+✅ **Production**
+
+- Use separate compose file.
+- Don’t mount source code.
+- Use minimal images (multi-stage builds).
+- Push images to container registry (e.g., GitHub Packages, Docker Hub).
 
 ```bash
 ###############################################

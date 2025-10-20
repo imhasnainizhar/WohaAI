@@ -1,69 +1,62 @@
 services:
-  redis_code_c:
-    image: redis:7
-    container_name: redis_code_c
-    ports:
-      - "${REDIS_SERVER_PORT_01}:${REDIS_SERVER_PORT_01}"
-    command: >
-      redis-server --requirepass "${REDIS_PASSWORD_CODE_C}" --port ${REDIS_SERVER_PORT_01}
-    restart: always
 
-  user_code_verification_service:
-    build:
-      context: ../src/ms/user_code_verification_service/service
-      dockerfile: Dockerfile
-      target: ${NODE_ENV}
-    container_name: user_code_verification_service
-    ports:
-      - "${USER_CODE_VERIFICATION_PORT}:${USER_CODE_VERIFICATION_PORT}"
-    volumes:
-      - ../src/ms/user_code_verification_service/service/src:/app/src
-    restart: always
-    depends_on:
-      - redis_code_c
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - REDIS_CODE_C=${REDIS_CODE_C}
-      - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
-      - USER_CODE_VERIFICATION_PORT=${USER_CODE_VERIFICATION_PORT}
+  # user_code_verification_service:
+  #   build:
+  #     context: ../src/ms/user_code_verification_service/
+  #     dockerfile: Dockerfile
+  #     target: ${NODE_ENV}
+  #   container_name: user_code_verification_service
+  #   ports:
+  #     - "${USER_CODE_VERIFICATION_PORT}:${USER_CODE_VERIFICATION_PORT}"
+  #   volumes:
+  #     - ../src/ms/user_code_verification_service/src:/app/src
+  #   restart: always
+  #   depends_on:
+  #     - redis_code_c
+  #   environment:
+  #     - NODE_ENV=${NODE_ENV}
+  #     - REDIS_CODE_C_PORT=${REDIS_CODE_C_PORT}
+  #     - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
+  #     - USER_CODE_VERIFICATION_PORT=${USER_CODE_VERIFICATION_PORT}
 
-  captcha_verification_service:
-    build:
-      context: ../src/ms/captcha_verification_service/service
-      dockerfile: Dockerfile
-      target: ${NODE_ENV}
-    container_name: captcha_verification_service
-    ports:
-      - "${CAPTCHA_VERIFICATION_PORT}:${CAPTCHA_VERIFICATION_PORT}"
-    volumes:
-      - ../src/ms/captcha_verification_service/service/src:/app/src
-    restart: always
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
-      - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
+  # captcha_verification_service:
+  #   build:
+  #     context: ../src/ms/captcha_verification_service/
+  #     dockerfile: Dockerfile
+  #     target: ${NODE_ENV}
+  #   container_name: captcha_verification_service
+  #   ports:
+  #     - "${CAPTCHA_VERIFICATION_PORT}:${CAPTCHA_VERIFICATION_PORT}"
+  #   volumes:
+  #     - ../src/ms/captcha_verification_service/src:/app/src
+  #   restart: always
+  #   environment:
+  #     - NODE_ENV=${NODE_ENV}
+  #     - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+  #     - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
 
-  code_mailer_service:
+  auth_mailer_service:
     build:
-      context: ../src/ms/code_mailer_service/service
+      context: ../src/ms/auth_mailer_service/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: code_mailer_service
     ports:
-      - "${CODE_MAILER_PORT}:${CODE_MAILER_PORT}"
+      - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
     volumes:
-      - ../src/ms/code_mailer_service/service/src:/app/src
+      - ../src/ms/auth_mailer_service/src:/app/src
     restart: always
     depends_on:
       - redis_code_c
     environment:
       - NODE_ENV=${NODE_ENV}
-      - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
-      - EMAIL_FROM=${EMAIL_FROM}
-      - REDIS_CODE_C=${REDIS_CODE_C}
+      - MAILER_EMAIL_USER=${MAILER_EMAIL_USER}
+      - MAILER_EMAIL_PASS=${MAILER_EMAIL_PASS}
+      - MAILER_EMAIL_FROM=${MAILER_EMAIL_FROM}
+      - REDIS_CODE_C_URI=${REDIS_CODE_C_URI}
+      - REDIS_CODE_C_PORT=${REDIS_CODE_C_PORT}
       - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
-      - CODE_MAILER_PORT=${CODE_MAILER_PORT}
+      - AUTH_MAILER_SERVICE_PORT=${AUTH_MAILER_SERVICE_PORT}
 
 networks:
   default:
