@@ -32,7 +32,6 @@ COPY --from=build /app/node_modules ./node_modules
 # Non-sensitive defaults
 ENV NODE_ENV=${NODE_ENV}    
 ENV API_GATEWAY_PORT=${API_GATEWAY_PORT}
-# Sensitive envs like JWT_SECRET, DATABASE_URL, etc. should come from runtime
 
 EXPOSE ${API_GATEWAY_PORT}
 CMD ["npm", "run", "start"]
