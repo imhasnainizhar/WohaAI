@@ -1,7 +1,7 @@
 import { ServiceException } from "@errors/service_exception";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/service_response";
-import { createValidationToken } from "@utils/random_jwt";
+import { createToken } from "@utils/jwt";
 import { getCache, deleteCache } from "@utils/redis_client";
 
 /**
@@ -74,7 +74,7 @@ export const codeVerificationService = async (
     await deleteCache(`verification_code:${signupSessionId}`);
 
     // 6. Generate a short-lived validation token for next signup step
-    const validationToken = createValidationToken(signupSessionId, "email_verified");
+    const validationToken = createToken(signupSessionId, "email_verified");
 
     logger.info(`✅ Email verification successful for session: ${signupSessionId}`);
 

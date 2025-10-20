@@ -8,21 +8,38 @@ import {
 } from "@services/validators/signup_validation.service";
 import { ServiceException } from "@errors/service_exception";
 import { logger } from "@utils/logger";
+import { env } from "@config/env.config";
+
+const TOKEN_COOKIE_NAME = "signup_token";
+const TOKEN_TTL_SECONDS = 1800; // 30 minutes
+
+const sameSite = (env.NODE_ENV === "production" ? "none" : "lax") as
+  "none" | "lax" | "strict";
+
 
 /**
- * Validate username availability
+ * Step 1: Validate username and set Redis token in HTTP-only cookie
  */
 export const validateUsernameController = async (req: Request, res: Response) => {
   try {
     const { username } = req.body;
 
     const result = await validateUsername(username);
+
+    // Set token in HTTP-only secure cookie
+    res.cookie(TOKEN_COOKIE_NAME, result.data?.token, {
+      httpOnly: true,
+      secure: true, 
+      sameSite: sameSite,
+      maxAge: TOKEN_TTL_SECONDS * 1000,
+    });
+
     return sendResponse({
       res,
       success: true,
       message: result.message,
       statusCode: result.statusCode,
-      data: result.data,
+      data: null, // token is now in cookie, not in response body
     });
   } catch (err: any) {
     if (err instanceof ServiceException) {
@@ -41,19 +58,39 @@ export const validateUsernameController = async (req: Request, res: Response) =>
 };
 
 /**
- * Validate display name format
+ * Step 2: Validate display name
  */
-export const validateDisplayNameController = (req: Request, res: Response) => {
+export const validateDisplayNameController = async (req: Request, res: Response) => {
   try {
-    const { displayName } = req.body;
+    const token = req.cookies[TOKEN_COOKIE_NAME];
+    const { firstName, lastName, username } = req.body;
 
-    const result = validateDisplayName(displayName);
+    if (!token) {
+      sendResponse({
+        res,
+        success: false,
+        message: "Missing signup token.",
+        statusCode: 400,
+        errorType: "validation_error",
+      })
+    }
+
+    const result = await validateDisplayName(token, firstName, lastName, username);
+
+    // Refresh cookie TTL
+    res.cookie(TOKEN_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: sameSite,
+      maxAge: TOKEN_TTL_SECONDS * 1000,
+    });
+
     return sendResponse({
       res,
       success: true,
       message: result.message,
       statusCode: result.statusCode,
-      data: result.data,
+      data: null,
     });
   } catch (err: any) {
     if (err instanceof ServiceException) {
@@ -72,19 +109,39 @@ export const validateDisplayNameController = (req: Request, res: Response) => {
 };
 
 /**
- * Validate email format and availability
+ * Step 3: Validate email
  */
 export const validateEmailController = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const token = req.cookies[TOKEN_COOKIE_NAME];
+    const { email, firstName, lastName, username } = req.body;
 
-    const result = await validateEmail(email);
+    if (!token) {
+      return sendResponse({
+        res,
+        success: false,
+        message: "Missing signup token.",
+        statusCode: 400,
+        errorType: "validation_error",
+      })
+    }
+
+    const result = await validateEmail(token, email, firstName, lastName, username);
+
+    // Refresh cookie TTL
+    res.cookie(TOKEN_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: sameSite,
+      maxAge: TOKEN_TTL_SECONDS * 1000,
+    });
+
     return sendResponse({
       res,
       success: true,
       message: result.message,
       statusCode: result.statusCode,
-      data: result.data,
+      data: null,
     });
   } catch (err: any) {
     if (err instanceof ServiceException) {
@@ -103,19 +160,34 @@ export const validateEmailController = async (req: Request, res: Response) => {
 };
 
 /**
- * Validate password strength
+ * Step 4: Validate password
  */
-export const validatePasswordController = (req: Request, res: Response) => {
+export const validatePasswordController = async (req: Request, res: Response) => {
   try {
-    const { password } = req.body;
+    const token = req.cookies[TOKEN_COOKIE_NAME];
+    const { password, confirmPassword, email, firstName, lastName, username } = req.body;
 
-    const result = validatePassword(password);
+    if (!token) {
+      sendResponse({
+        res,
+        success: false,
+        message: "Missing signup token.",
+        statusCode: 400,
+        errorType: "validation_error",
+      })
+    }
+
+    const result = await validatePassword(token, password, confirmPassword, email, firstName, lastName, username);
+
+    // Optionally, invalidate the token after final step
+    res.clearCookie(TOKEN_COOKIE_NAME);
+
     return sendResponse({
       res,
       success: true,
       message: result.message,
       statusCode: result.statusCode,
-      data: result.data,
+      data: null,
     });
   } catch (err: any) {
     if (err instanceof ServiceException) {
