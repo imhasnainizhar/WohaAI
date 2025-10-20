@@ -2,17 +2,19 @@
 import { redisClient } from "@config/redis.config";
 import { logger } from "@utils/logger";
 
-export const setCache = async (key: string, value: string, ttlSeconds?: number) => {
+export const setCache = async (key: string, value: string, ttlSeconds?: number): Promise<Boolean> => {
   try {
     if (ttlSeconds) {
       await redisClient.set(key, value, { EX: ttlSeconds });
+      return true;
     } else {
       await redisClient.set(key, value);
     }
     logger.debug(`🧩 Redis SET: ${key}`);
+    return true;
   } catch (err) {
     logger.error("Redis setCache error: " + (err as Error).message);
-    throw err;
+    return false;
   }
 };
 
@@ -27,12 +29,13 @@ export const getCache = async (key: string): Promise<string | null> => {
   }
 };
 
-export const deleteCache = async (key: string) => {
+export const deleteCache = async (key: string): Promise<Boolean> => {
   try {
     await redisClient.del(key);
     logger.debug(`🧩 Redis DEL: ${key}`);
+    return true;
   } catch (err) {
     logger.error("Redis deleteCache error: " + (err as Error).message);
-    throw err;
-  }
+    return false;  
+  } 
 };

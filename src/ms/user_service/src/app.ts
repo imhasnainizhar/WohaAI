@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "@routes/user.route";
 import { env } from "@config/env.config";
+import { connectRedis } from "@config/redis.config";
 
 const app = express();
 
@@ -14,6 +15,11 @@ app.use(
 );
 
 app.use(express.json());
+
+// Connecting Redis
+( async () => {
+  await connectRedis();
+})();
 
 // Routes
 app.use("/api/user", userRoutes);
