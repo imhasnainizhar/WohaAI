@@ -1,0 +1,1 @@
+This folder is allocated for tests of Auth Mailer service
