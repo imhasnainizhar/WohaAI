@@ -1,92 +1,29 @@
 services:
-  signin_service:
+  auth_service:
     build:
-      context: ../src/ms/signin_service/service
+      context: ../src/ms/auth_service/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: signin_service
+    container_name: auth_service
     ports:
-      - "${SIGNIN_SERVICE_PORT}:${SIGNIN_SERVICE_PORT}"
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     volumes:
-      - ../src/ms/signin_service/service/src:/app/src
+      - ../src/ms/auth_service/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
-      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
-      - SIGNIN_SERVICE_PORT=${SIGNIN_SERVICE_PORT}
 
-  signout_service:
-    build:
-      context: ../src/ms/signout_service/service
-      dockerfile: Dockerfile
-      target: ${NODE_ENV}
-    container_name: signout_service
-    ports:
-      - "${SIGNOUT_SERVICE_PORT}:${SIGNOUT_SERVICE_PORT}"
-    volumes:
-      - ../src/ms/signout_service/service/src:/app/src
-    restart: always
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - SIGNOUT_SERVICE_PORT=${SIGNOUT_SERVICE_PORT}
+      - JWT_ACCESS_SECRET_KEY=${JWT_ACCESS_SECRET_KEY}
+      - JWT_REFRESH_SECRET_KEY=${JWT_REFRESH_SECRET_KEY}
+      - JWT_PRIVATE_ACCESS_SECRET_KEY=${JWT_PRIVATE_ACCESS_SECRET_KEY}
 
-  user_service:
-    build:
-      context: ../src/ms/user_service/service
-      dockerfile: Dockerfile
-      target: ${NODE_ENV}
-    container_name: user_service
-    ports:
-      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
-    volumes:
-      - ../src/ms/user_service/service/src:/app/src
-    restart: always
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
-      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
-      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
+      - REFRESH_TOKEN_NAME=${REFRESH_TOKEN_NAME}
+      - ACCESS_TOKEN_NAME=${ACCESS_TOKEN_NAME}
+      - PRIVATE_ACCESS_TOKEN_NAME=${PRIVATE_ACCESS_TOKEN_NAME}
 
-  signup_service:
-    build:
-      context: ../src/ms/signup_service/service
-      dockerfile: Dockerfile
-      target: ${NODE_ENV}
-    container_name: signup_service
-    ports:
-      - "${SIGNUP_SERVICE_PORT}:${SIGNUP_SERVICE_PORT}"
-    volumes:
-      - ../src/ms/signup_service/service/src:/app/src
-    restart: always
-    depends_on:
-      - postgres
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_PROVIDER=${DATABASE_PROVIDER}
-      - PRISMA_DATABASE_URL=${PRISMA_DATABASE_URL}
-      - SIGNUP_SERVICE_PORT=${SIGNUP_SERVICE_PORT}
-      - PRISMA_SKIP_POSTINSTALL_GENERATE=${PRISMA_SKIP_POSTINSTALL_GENERATE}
-
-  signup_validator_service:
-    build:
-      context: ../src/ms/signup_validator_service/service
-      dockerfile: Dockerfile
-      target: ${NODE_ENV}
-    container_name: signup_validator_service
-    ports:
-      - "${SIGNUP_VALIDATOR_PORT}:${SIGNUP_VALIDATOR_PORT}"
-    volumes:
-      - ../src/ms/signup_validator_service/service/src:/app/src
-    restart: always
-    environment:
-      - NODE_ENV=${NODE_ENV}
       - POSTGRES_PROVIDER=${POSTGRES_PROVIDER}
-      - PRISMA_USER_DATABASE_URL=${PRISMA_USER_DATABASE_URL}
-      - SIGNUP_VALIDATOR_PORT=${SIGNUP_VALIDATOR_PORT}
+      - PRISMA_USER_DATABASE_URI=${PRISMA_USER_DATABASE_URI}
+      - AUTH_SERVICE_PORT:${AUTH_SERVICE_PORT}
 
 networks:
   default:

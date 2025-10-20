@@ -1,10 +1,7 @@
 [
-  { "path": "/user", "target": "http://user_service:8008" },
-  { "path": "/signin", "target": "http://signin_service:8001" },
-  { "path": "/signup", "target": "http://signup_service:8003" },
-  { "path": "/signout", "target": "http://signout_service:8002" },
-  { "path": "/signup-validator", "target": "http://signup_validator_service:8007" },
-  { "path": "/verification-code-mailer", "target": "http://code_mailer_service:8006" },
-  { "path": "/code-verification", "target": "http://user_code_verification_service:8004" },
-  { "path": "/captcha-verification", "target": "http://captcha_verification_service:8005" }
+  { "path": "/api/user", "target": "http://user_service:8009" },
+  { "path": "/api/auth", "target": "http://auth_service:8010" },
+  { "path": "/api/auth-mailer", "target": "http://auth_mailer_serivce:8006" },
+  { "path": "/api/code-verification", "target": "http://user_code_verification_service:8004" },
+  { "path": "/api/captcha-verification", "target": "http://captcha_verification_service:8005" }
 ]

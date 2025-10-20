@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: env.CLIENT_URL, // Only allow requests from the frontend client
+    origin: env.CLIENT_ORIGIN, // Only allow requests from the frontend client
     credentials: true, // Allow cookies to be sent with requests
   })
 );

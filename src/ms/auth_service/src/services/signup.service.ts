@@ -6,6 +6,7 @@ import { ServiceResponse } from "@utils/service_response";
 import { ServiceException } from "@errors/service_exception";
 import { logger } from "@utils/logger";
 import crypto from "crypto";
+import { env } from "@config/env.config";
 
 /**
  * Handles user signup — validation, password hashing, duplicate checks,
@@ -98,8 +99,8 @@ export async function signupService<T>(body: SignUpUser): Promise<ServiceRespons
     });
 
     // Verify JWT keys
-    const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET_KEY;
-    const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
+    const JWT_ACCESS_SECRET_KEY = env.JWT_ACCESS_SECRET_KEY;
+    const JWT_REFRESH_SECRET_KEY = env.JWT_REFRESH_SECRET_KEY;
 
     if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
       logger.error("❌ [SIGNUP] Missing JWT secret environment variables");
@@ -156,7 +157,7 @@ export async function signupService<T>(body: SignUpUser): Promise<ServiceRespons
     );
 
     // Configure cookies
-    const sameSite = (process.env.NODE_ENV === "production" ? "none" : "lax") as
+    const sameSite = (env.NODE_ENV === "production" ? "none" : "lax") as
       "none" | "lax" | "strict";
 
     const cookies = [
@@ -165,7 +166,7 @@ export async function signupService<T>(body: SignUpUser): Promise<ServiceRespons
         value: accessToken,
         options: {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: env.NODE_ENV === "production",
           sameSite,
           path: "/",
           maxAge: ACCESS_TOKEN_MAX_AGE_MS,
@@ -176,7 +177,7 @@ export async function signupService<T>(body: SignUpUser): Promise<ServiceRespons
         value: finalRefreshToken,
         options: {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: env.NODE_ENV === "production",
           sameSite,
           path: "/",
           maxAge: REFRESH_TOKEN_MAX_AGE_MS,

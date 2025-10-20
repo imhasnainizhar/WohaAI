@@ -6,6 +6,7 @@ import { signInSchema, SigInUser } from "@schemas/signin_validation.schema";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/service_response";
 import { ServiceException } from "@errors/service_exception";
+import { env } from "@config/env.config";
 
 /**
  * Core business logic for user sign-in.
@@ -80,8 +81,8 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
     }
 
     // Ensure JWT secret keys are set
-    const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET_KEY;
-    const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
+    const JWT_ACCESS_SECRET_KEY = env.JWT_ACCESS_SECRET_KEY;
+    const JWT_REFRESH_SECRET_KEY = env.JWT_REFRESH_SECRET_KEY;
     if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
       throw new ServiceException(
         ServiceResponse.error({
@@ -120,7 +121,7 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
     });
 
     // Configure SameSite cookie attribute depending on environment
-    const sameSite = (process.env.NODE_ENV === "production" ? "none" : "lax") as
+    const sameSite = (env.NODE_ENV === "production" ? "none" : "lax") as
       "none" | "lax" | "strict";
 
     // Prepare HTTP-only cookies for access and refresh tokens
@@ -130,7 +131,7 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
         value: accessToken,
         options: {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: env.NODE_ENV === "production",
           sameSite,
           path: "/",
           maxAge: ACCESS_TOKEN_MAX_AGE_MS,
@@ -141,7 +142,7 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
         value: refreshToken,
         options: {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: env.NODE_ENV === "production",
           sameSite,
           path: "/",
           maxAge: REFRESH_TOKEN_MAX_AGE_MS,

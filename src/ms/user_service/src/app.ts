@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
 import userRoutes from "@routes/user.route";
+import { env } from "@config/env.config";
 
 const app = express();
 
 // Middleware
 app.use(
     cors({
-        origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+        origin: env.CLIENT_ORIGIN,
         credentials: true,
     })
 );
@@ -19,7 +20,7 @@ app.use("/api/user", userRoutes);
 
 // Health check route
 app.get("/", (_, res) => {
-    if (process.env.NODE_ENV === "development") {
+    if (env.NODE_ENV === "development") {
         res.status(200).send("👤 User Service is running.");
         return;
     };
