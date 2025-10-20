@@ -1,4 +1,4 @@
-# 🐳 Multi-Service Docker Deployment Guide
+# 🐳 Multi-Service Docker Development Guide
 
 This guide explains how to **develop, test, and deploy** this MicroService Architecture application consisting of:
 
@@ -8,7 +8,16 @@ This guide explains how to **develop, test, and deploy** this MicroService Archi
 - **Postgres DB**
 - All orchestrated via **Docker** and **Docker Compose**.
 
-- **Further we will extend this to deployment using IaC Terraform deployment using AWS and integrating pipelines using Gitlab Workflows**
+Your stack includes:
+
+* **Next.js Frontend**
+* **Node.js Microservices (Auth, User, Generative APIs etc.)**
+* **Redis**
+* **Postgres DBs**
+
+All services are orchestrated via **Docker Compose** just for dev.
+
+> ⚙️ **Production deployment** will be handled later through **Terraform (IaC)** and **GitLab CI/CD pipelines**.
 
 ---
 
@@ -16,17 +25,12 @@ This guide explains how to **develop, test, and deploy** this MicroService Archi
 
 ```
 project-root/
-├── Docker/
-|    ├── services/
-|    |    ├── compose.api.yml
-|    |    ├── compose.auth.yml
-|    |    └── ...
-|    |
-|    └── env/
-|        ├── example.env
-|        ├── .env
-|        └── ...
-|
+├── dev/
+│   ├── compose.api.yml
+│   ├── compose.auth.yml
+│   ├── compose.frontend.yml
+│   └── ...
+│
 ├── src/
 │   ├── frontend/
 │   │   └── Dockerfile
@@ -138,16 +142,41 @@ Each microservice can be built and deployed **independently**.
 Example for `signin_service`:
 
 ```bash
-cd src/microservices/signin_service/service
-docker build -t signin_service_prod --target production .
-docker run -d --name signin_service_prod   -p 4002:4002   --env-file ../../../.env   signin_service_prod
+cd dev
+docker compose -f compose.api.yml -f compose.auth.yml -f compose.frontend.yml --env-file ../.env up --build
 ```
 
-This allows flexible deployment strategies (e.g., Kubernetes, ECS, separate VM per service).
+This command:
+
+* Builds images with the `development` target (`DOCKER_TARGET=development`).
+* Mounts local source code for live reload.
+* Runs all services in a shared network `microservices_net_01`.
+
+#### 2. **Run a single service (debugging)**
+
+```bash
+cd dev
+docker compose -f compose.auth.yml --env-file ../.env up signin_service --build
+```
+
+Example (Frontend):
+
+```bash
+cd dev
+docker compose -f compose.frontend.yml --env-file ../.env up frontend_app --build
+```
+
+#### 3. **Stop and remove containers**
+
+```bash
+docker compose -f compose.frontend.yml down
+```
+
+You can also stop containers with **Ctrl + C**.
 
 ---
 
-## 🌐 Frontend (Next.js) Deployment
+## 🗂 Example Compose Configuration Highlights
 
 To build and deploy only the **frontend app**:
 
@@ -173,7 +202,7 @@ docker run -p 80:3000 frontend_app_prod
 
 ---
 
-## 🔁 Best Practices
+## 🌐 Environment Variables (`.env`)
 
 ✅ **Development**
 
@@ -188,42 +217,26 @@ docker run -p 80:3000 frontend_app_prod
 - Use minimal images (multi-stage builds).
 - Push images to container registry (e.g., GitHub Packages, Docker Hub).
 
----
-
-## ⚙️ Environment Variables
-
-Define these in your `.env`:
-
-```
+```bash
+###############################################
+# 🌍 Global Configuration
+###############################################
 NODE_ENV=development
+DOCKER_TARGET=development
 
-# Frontend
-APP_PUBLIC_GATEWAY_BASE_URL_01=http://localhost:4000
-
-# Backend
-API_GATEWAY=4000
-SIGNIN_SERVICE_PORT=4002
-
-# Redis
-REDIS_SERVER_PORT_01=6379
-REDIS_PASSWORD_CODE_C=mysecretredis
-DATABASE_PROVIDER=postgres
-PRISMA_DATABASE_URL=postgresql://user:pass@db:5432/app
 ```
-
 ---
 
 ## 🧭 TL;DR Summary
 
-| Task | Command | Description |
-|------|----------|-------------|
-| Start Dev Stack | `docker compose -f docker-compose.dev.yml up --build` | Run all with hot reload |
-| Start Prod Stack | `docker compose -f docker-compose.prod.yml up -d` | Run optimized services |
-| Build Single Service | `docker build -t myservice --target production .` | Isolated deployment |
-| Stop Stack | `docker compose down` | Clean shutdown |
+| Task               | Command                                                                                    | Description                      |
+| ------------------ | ------------------------------------------------------------------------------------------ | -------------------------------- |
+| Start Dev Stack    | `docker compose -f compose.api.yml -f compose.auth.yml -f compose.frontend.yml up --build` | Run all services with hot reload |
+| Run Single Service | `docker compose -f compose.auth.yml up signin_service --build`                             | Debug isolated service           |
+| Stop Stack         | `docker compose down`                                                                      | Clean shutdown                   |
 
 ---
 
-💡 **Pro Tip:** Keep your Compose files versioned, and automate image builds & pushes via **GitHub Actions** or **GitLab CI/CD**.
+💡 **Pro Tip:** Keep your Compose files modular under `dev/`, version them in Git, and later automate builds and deploys via **GitLab CI/CD + Terraform**.
 
 ---

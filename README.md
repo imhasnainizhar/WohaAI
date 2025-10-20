@@ -1,93 +1,193 @@
-# Woah GenAI ChatBot
+# 🤖 WoahAI Chatbot
 
+<p align="center">
+  <img src="https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/blob/65c3f25e2aeee5471f7e089621b5e0ea8a258840/gitlab_favicon.png" width="120" />
+</p>
 
+<p align="center">
+  <strong>⚡ WoahAI is evolving at high speed!</strong><br/>
+  Building ChatGPT-like business logic, custom generative APIs, and a dynamic UI layer — progressing rapidly toward production-grade architecture.
+</p>
 
-## Getting started
+<p align="center">
+  <img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
+  <img src="https://img.shields.io/badge/Powered%20By-OpenAI-black.svg" />
+</p>
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+---
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 🌟 Purpose
 
-## Add your files
+WoahAI Chatbot is a **portfolio and educational project** designed to:
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+* Develop and showcase **ChatGPT-like generative logic**, prompt pipelines, and message orchestration.
+* Implement custom **Generative APIs** for conversational AI, modular and scalable for future extensions.
+* Demonstrate a full **microservices architecture** running on Docker Compose, later deployment via Terraform.
+* Provide **educational and AI engineering resources** for learners and contributors.
+
+This project is in **active development**, blending **LLM-driven backends**, **real-time API systems**, and **Next.js UI** to form a modern, open AI chatbot stack.
+
+---
+
+## 🚀 Current Development Highlights
+
+**Most Business Logic is Being Developed In October - November 2025**
+
+* 🧠 **ChatGPT-like core logic** – custom pipeline managing conversation state, role hierarchy, and memory retention.
+* 🧩 **Generative APIs** – modular endpoints for contextual reasoning, and functional tool use.
+* 🖥️ **Frontend (Next.js)** – dynamic chat interface, theme engine, and realtime stream rendering (under rapid development).
+* 🐳 **Dockerized Dev Environment** – each service isolated and configurable through `.env`.
+* 🔐 **JWT + Redis Integration** – secure session management and code verification flows.
+* 🏗️ **Terraform (IaC)** – production deployment automation (in progress).
+
+---
+
+## ⚙️ Getting Started
+
+Follow these steps to set up WoahAI locally for development or testing.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://gitlab.com/yourusername/WoahAI_Chatbot.git
+cd WoahAI_Chatbot
+```
+
+### 2. Install Dependencies
+
+Each microservice or frontend app has its own dependencies:
+
+```bash
+npm install   # or yarn install
+```
+
+### 3. Configure Environment Variables
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and include your **OpenAI API key** and configure required services and other things **which are not configured by default**.
+
+> ⚠️ Never commit `.env` or secret keys.
+
+### 4. Start Local Development
+
+## 🧑‍💻 Development Setup
+
+### Goals:
+
+* Hot reloading for both frontend and backend.
+* Shared network for seamless service communication.
+* Mounted volumes for live file editing.
+
+### 🧩 Commands
+
+#### 1. **Start all services (development mode)**
+
+```bash
+cd dev
+docker compose -f compose.api.yml -f compose.auth.yml -f compose.frontend.yml --env-file ../.env up --build
+```
+
+This command:
+
+* Builds images with the `development` target (`DOCKER_TARGET=development`).
+* Mounts local source code for live reload.
+* Runs all services in a shared network `microservices_net_01`.
+
+#### 2. **Run a single service (debugging)**
+
+```bash
+cd dev
+docker compose -f compose.auth.yml --env-file ../.env up signin_service --build
+```
+
+Example (Frontend):
+
+```bash
+cd dev
+docker compose -f compose.frontend.yml --env-file ../.env up frontend_app --build
+```
+
+#### 3. **Stop and remove containers**
+
+```bash
+docker compose -f compose.frontend.yml down
+```
+
+You can also stop containers with **Ctrl + C**.
+
+---
+
+## 🗂 Example Compose Configuration Highlights
+
+* Uses `target: development` for hot reload builds.
+* Mounts local directories with `volumes:`.
+* Exposes dev ports like **3000**, **8000**, **6379**, etc.
+
+---
+
+Access the services using ports defined in `.env`. Each microservice is modular and discoverable via the API Gateway.
+
+---
+
+## 📂 Project Structure
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot.git
-git branch -M main
-git push -uf origin main
+project-root/
+├── dev/                    # Docker Compose dev environment
+├── infra/                  # Terraform IaC configs (WIP)
+├── src/                    # Microservice + frontend source code
+│   ├── frontend/           # Next.js UI (under development)
+│   ├── services/           # AI, auth, verification, and mailer modules
+├── docs/                   # Technical docs and architecture notes
+└── README.md
 ```
 
-## Integrate with your tools
+---
 
-- [ ] [Set up project integrations](https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/settings/integrations)
+## 🧱 Tech Stack Overview
 
-## Collaborate with your team
+| Layer            | Technology                         | Purpose                                 |
+| ---------------- | ---------------------------------- | --------------------------------------- |
+| Frontend         | **Next.js 14 (App Router)**        | UI, streaming chat, theming             |
+| API Gateway      | **Express.js**                     | Routes and proxies service requests     |
+| Backend Services | **Node.js / TypeScript**           | Chat logic, auth, verification          |
+| AI Layer         | **Custom Tooling + OpenAI APIs**   | Generative intelligence core            |
+| Database         | **PostgreSQL + Prisma ORM**        | User and token data                     |
+| Cache / Queue    | **Redis**                          | Session, verification, and task caching |
+| Infrastructure   | **Docker + Terraform**             | Dev & future cloud orchestration        |
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+---
 
-## Test and Deploy
+## 🌍 Vision & Roadmap
 
-Use the built-in continuous integration in GitLab.
+WoahAI aims to evolve into a **modular, production-ready conversational AI ecosystem**, combining scalable backend logic, ethical AI Engineering practices, and cutting-edge UI.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### Upcoming Milestones:
 
-***
+* 🔁 Persistent memory & conversation history
+* 🧩 Function calling & external API tools
+* 📊 Observability dashboard (Prometheus + Grafana)
+* ☁️ Full Terraform AWS deployment
+* 🧠 Model fine-tuning playground
 
-# Editing this README
+---
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## 📚 Documentation & Community
 
-## Suggestions for a good README
+* [Wiki](./docs/Home.md) — architecture and tutorials
+* [Code of Conduct](./CODE_OF_CONDUCT.md)
+* [Contributing Guide](./CONTRIBUTING.md)
+* [Changelog](./CHANGELOG.md)
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Join the mission to **build open, transparent, and ethical AI systems** while learning modern full-stack and DevOps principles.
 
-## Name
-Choose a self-explaining name for your project.
+---
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+<p align="center">
+  Built with ❤ by <strong>Hani</strong> and contributors.<br/>
+  <em>Fast development. Transparent logic. Real AI engineering.</em>
+</p>
