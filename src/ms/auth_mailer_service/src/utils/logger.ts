@@ -1,10 +1,7 @@
-// src/utils/logger.ts
 import pino from "pino";
 
-// Detect environment
 const isDev = process.env.NODE_ENV !== "production";
 
-// Configure base logger
 export const logger = pino({
   level: process.env.LOG_LEVEL || (isDev ? "debug" : "info"),
   transport: isDev
@@ -17,5 +14,10 @@ export const logger = pino({
         },
       }
     : undefined,
-  base: undefined, // Remove pid & hostname to keep logs clean for structured output
+  base: undefined, // remove pid & hostname for clean JSON output
 });
+
+// Example usage:
+// logger.debug("This log is dev-only");
+// logger.info("This log appears in both dev and prod");
+// logger.error("Something went wrong!");

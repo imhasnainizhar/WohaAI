@@ -1,20 +1,40 @@
+import 'dotenv/config';
 import nodemailer from "nodemailer";
+import { logger } from "@utils/logger";
+import { env } from "@config/env.config"
 
 export const mailTransporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: Number(process.env.MAIL_PORT) || 587,
-  secure: process.env.MAIL_SECURE === "true", // true for 465, false for other ports
+  host: env.MAILER_HOST,
+  port: Number(env.MAILER_PORT),
+  // secure: process.env.MAIL_SECURE === "true", // true for 465, false for other ports
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
+    user: env.MAILER_EMAIL_USER,
+    pass: env.MAILER_EMAIL_PASS,
   },
 });
 
-// Optional: verify connection
-mailTransporter.verify((error: any) => {
-  if (error) {
-    console.error("🛑 Mailer verification failed", error);
-  } else {
-    console.log("✅ Mailer is ready to send messages");
+// export const mailTransporter = nodemailer.createTransport({
+//     host: 'smtp.ethereal.email',
+//     port: 587,
+//     auth: {
+//         user: 'orland86@ethereal.email',
+//         pass: '2WvWfWvWRm6nCSXVf3'
+//     }
+// });
+
+// verify connection
+(async () => {
+  try {
+    await mailTransporter.verify();
+    logger.info("✅ Mailer is ready to send messages");
+  } catch (error: any) {
+    // Log detailed info
+    logger.error("🛑 Mailer verification failed", error);
+
+    if (typeof error == "object" && error !== null) {
+      logger.error(Object.keys(error))
+      logger.error(JSON.stringify(error, null, 2))
+    }
   }
-});
+})();
+

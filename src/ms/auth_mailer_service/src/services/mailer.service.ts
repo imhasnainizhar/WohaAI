@@ -1,6 +1,7 @@
 import { ServiceResponse } from "@utils/service_response";
 import { ServiceException } from "@errors/service_exception";
 import { mailTransporter } from "@config/mailer.config";
+import { env } from "@config/env.config";
 
 interface MailOptions {
   to: string;
@@ -14,7 +15,7 @@ export class MailerService {
   static async sendMail(options: MailOptions) {
     try {
       const info = await mailTransporter.sendMail({
-        from: `"NoReply" <${process.env.MAIL_FROM}>`,
+        from: `"NoReply" <${env.MAILER_EMAIL_FROM}>`,
         to: options.to,
         subject: options.subject,
         text: options.text,
