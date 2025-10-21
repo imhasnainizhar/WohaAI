@@ -1,7 +1,6 @@
 import { prisma } from "@utils/prisma_client";
 import { logger } from "@utils/logger";
-import { ServiceResponse } from "@utils/service_response";
-import { ServiceException } from "@errors/service_exception";
+import { ServiceResponse, ServiceException } from "@utils/response";
 
 /**
  * @service signoutService

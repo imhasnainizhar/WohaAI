@@ -1,94 +1,183 @@
+import { signupInitService } from '@services/signup/signup_init.service';
 import { Request, Response } from "express";
-import { signupService } from "@services/signup.service";
-import { sendResponse } from "@utils/api_response";
+import { sendResponse, ServiceException } from "@utils/response";
+import {
+  validateDisplayNameService,
+  validateEmailService,
+  validatePasswordService,
+} from "@services/signup/signup.service";
 import { logger } from "@utils/logger";
-import { ServiceResponse } from "@utils/service_response";
-import { ServiceException } from "@errors/service_exception";
+import { env } from '@config/env.config';
+import { verifyJwtToken } from '@utils/jwt';
 
 /**
- * @controller signupController
- * Handles signup HTTP requests.
- * Delegates validation and user creation to signupService.
- * Only manages cookies and HTTP response.
+ * Step 1: Validate username and set Redis token in HTTP-only cookie
  */
-export const signupController = async (req: Request, res: Response) => {
+export const validateUsernameController = async (req: Request, res: Response) => {
   try {
-    // Remove sensitive fields before logging
-    const safeBodyKeys = Object.keys(req.body || {}).filter(
-      (k) => !["password", "confirmPassword"].includes(k.toLowerCase())
-    );
+    const { username } = req.body;
 
-    logger.info({
-      message: "🟢 [SIGNUP] Incoming request",
-      bodyKeys: safeBodyKeys,
-      ip: req.ip,
-      path: req.path,
-    });
+    const result = await signupInitService(username);
 
-    // Call service layer
-    const serviceResult: ServiceResponse<any> = await signupService(req.body);
-
-    // If service returned a failure response, forward it without throwing
-    if (!serviceResult.success) {
-      logger.warn({
-        message: serviceResult.message,
-        errors: serviceResult.errors,
-        path: req.path
-      }, "🔴 [SIGNUP] Service returned failure");
-
-      return sendResponse({
-        res,
-        success: false,
-        message: serviceResult.message,
-        statusCode: serviceResult.statusCode,
-        errorType: serviceResult.errorType,
-        errors: serviceResult.errors,
-        path: req.path,
-      });
-    }
-
-    // Apply cookies returned by service
-    if (serviceResult.cookies) {
-      serviceResult.cookies.forEach((cookie) => {
-        res.cookie(cookie.name, cookie.value, cookie.options);
-      });
-    }
-
-    // Forward successful response
+    // Set token in HTTP-only secure cookie
     return sendResponse({
       res,
       success: true,
-      message: serviceResult.message || "Signup successful",
-      statusCode: serviceResult.statusCode || 201,
-      data: serviceResult.data,
-      path: req.path,
+      message: result.message,
+      statusCode: result.statusCode,
+      data: null, // token is now in cookie, not in response body
+      cookies: [
+
+      ]
     });
-
   } catch (err: any) {
-    // Log unexpected error
-    logger.error({
-      context: "[SIGNUP_CONTROLLER]",
-      message: err?.message,
-      stack: err?.stack?.split("\n")[0],
-    }, "❌ [SIGNUP] Unexpected error");
-
-    // If it's a ServiceException, forward its response
     if (err instanceof ServiceException) {
-      return sendResponse({
-        res,
-        ...err.response,
-        path: req.path,
-      });
+      return sendResponse({ res, ...err.response });
     }
 
-    // Fallback for truly unexpected errors
+    logger.error({ message: "Unexpected error in validateUsername", error: err });
     return sendResponse({
       res,
       success: false,
-      message: err?.message || "Internal server error",
+      message: "Internal server error.",
       statusCode: 500,
       errorType: "internal_server_error",
-      path: req.path,
+    });
+  }
+};
+
+/**
+ * Step 2: Validate display name
+ */
+export const validateDisplayNameController = async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
+    const { firstName, lastName, username } = req.body;
+
+    if (!token) {
+      sendResponse({
+        res,
+        success: false,
+        message: "Missing signup token.",
+        statusCode: 400,
+        errorType: "validation_error",
+      })
+    }
+
+    const payload = verifyJwtToken(token, env.JWT_SIGNUP_SESSION_SECRET_KEY)
+    const signupSessionID = payload.signupSessionID
+
+    const result = await validateDisplayNameService(signupSessionID, firstName, lastName, username);
+
+    return sendResponse({
+      res,
+      success: true,
+      message: result.message,
+      statusCode: result.statusCode,
+      data: null,
+    });
+  } catch (err: any) {
+    if (err instanceof ServiceException) {
+      return sendResponse({ res, ...err.response });
+    }
+
+    logger.error({ message: "Unexpected error in validateDisplayName", error: err });
+    return sendResponse({
+      res,
+      success: false,
+      message: "Internal server error.",
+      statusCode: 500,
+      errorType: "internal_server_error",
+    });
+  }
+};
+
+/**
+ * Step 3: Validate email
+ */
+export const validateEmailController = async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
+    const { email, firstName, lastName, username } = req.body;
+
+    if (!token) {
+      return sendResponse({
+        res,
+        success: false,
+        message: "Missing signup token.",
+        statusCode: 400,
+        errorType: "validation_error",
+      })
+    }
+
+    const payload = verifyJwtToken(token, env.JWT_SIGNUP_SESSION_SECRET_KEY)
+    const signupSessionID = payload.signupSessionID
+
+    const result = await validateEmailService(signupSessionID, email, firstName, lastName, username);
+
+
+    return sendResponse({
+      res,
+      success: true,
+      message: result.message,
+      statusCode: result.statusCode,
+      data: null,
+    });
+  } catch (err: any) {
+    if (err instanceof ServiceException) {
+      return sendResponse({ res, ...err.response });
+    }
+
+    logger.error({ message: "Unexpected error in validateEmail", error: err });
+    return sendResponse({
+      res,
+      success: false,
+      message: "Internal server error.",
+      statusCode: 500,
+      errorType: "internal_server_error",
+    });
+  }
+};
+
+/**
+ * Step 4: Validate password
+ */
+export const validatePasswordController = async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
+    const { password, confirmPassword, email, firstName, lastName, username } = req.body;
+
+    if (!token) {
+      sendResponse({
+        res,
+        success: false,
+        message: "Missing signup token.",
+        statusCode: 400,
+        errorType: "validation_error",
+      })
+    }
+
+    const payload = verifyJwtToken(token, env.JWT_SIGNUP_SESSION_SECRET_KEY)
+    const signupSessionID = payload.signupSessionID
+
+    const result = await validatePasswordService(signupSessionID, password, confirmPassword, email, firstName, lastName, username);
+
+    return sendResponse({
+      res,
+      ...result
+    });
+  } catch (err: any) {
+    if (err instanceof ServiceException) {
+      return sendResponse({ res, ...err.response });
+    }
+
+    logger.error({ message: "Unexpected error in validatePassword", error: err });
+    return sendResponse({
+      res,
+      success: false,
+      message: "Internal server error.",
+      statusCode: 500,
+      errorType: "internal_server_error",
     });
   }
 };

@@ -1,12 +1,10 @@
-import jwt from "jsonwebtoken";
-import { z } from "zod";
+import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@utils/prisma_client";
 import { signInSchema, SigInUser } from "@schemas/signin_validation.schema";
 import { logger } from "@utils/logger";
-import { ServiceResponse } from "@utils/service_response";
-import { ServiceException } from "@errors/service_exception";
-import { env } from "@config/env.config";
+import { ServiceResponse, ServiceException } from "@utils/response";
+import { env, EXPIRATION } from "@config/env.config";
 
 /**
  * Core business logic for user sign-in.
@@ -95,23 +93,18 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
     }
 
     // Token expiration and max-age configuration based on rememberMe option
-    const ACCESS_TOKEN_EXPIRES_IN = "1h";
-    const ACCESS_TOKEN_MAX_AGE_MS = 1000 * 60 * 60;
-    const sessionDays = rememberMe ? 365 : 7;
-    const REFRESH_TOKEN_EXPIRES_IN = rememberMe ? "365d" : "7d";
-    const REFRESH_TOKEN_MAX_AGE_MS = 1000 * 60 * 60 * 24 * sessionDays;
+    const ACCESS_TOKEN_EXPIRES_IN = EXPIRATION.JWT_ACCESS_TOKEN;
+    const ACCESS_TOKEN_MAX_AGE_MS = EXPIRATION.ACCESS_SESSION_COOKIE;
 
     // Generate JWT access token with user info
     const accessToken = jwt.sign(
       { sub: user.userID, email: user.email, name: `${user.userFirstName} ${user.userLastName}` },
       JWT_ACCESS_SECRET_KEY,
-      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
+      { expiresIn: ACCESS_TOKEN_EXPIRES_IN } as SignOptions
     );
 
     // Generate JWT refresh token for long-term session
-    const refreshToken = jwt.sign({ sub: user.userID }, JWT_REFRESH_SECRET_KEY, {
-      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
-    });
+    const refreshToken = jwt.sign({ sub: user.userID }, JWT_REFRESH_SECRET_KEY);
 
     // Hash the refresh token before storing it in DB for security
     const refreshTokenHash = await argon2.hash(refreshToken);
@@ -121,31 +114,30 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
     });
 
     // Configure SameSite cookie attribute depending on environment
-    const sameSite = (env.NODE_ENV === "production" ? "none" : "lax") as
-      "none" | "lax" | "strict";
+    const sameSite = env.SAME_SITE_COOKIE_OPTION
+    const secureSite = env.SECURE_COOKIE_OPTION
 
     // Prepare HTTP-only cookies for access and refresh tokens
     const cookies = [
       {
-        name: "__woahai_acc_t",
+        name: env.ACCESS_TOKEN_NAME,
         value: accessToken,
         options: {
           httpOnly: true,
-          secure: env.NODE_ENV === "production",
+          secure: secureSite,
           sameSite,
           path: "/",
           maxAge: ACCESS_TOKEN_MAX_AGE_MS,
         },
       },
       {
-        name: "__woahai_ref_t",
+        name: env.REFRESH_TOKEN_NAME,
         value: refreshToken,
         options: {
           httpOnly: true,
-          secure: env.NODE_ENV === "production",
+          secure: secureSite,
           sameSite,
           path: "/",
-          maxAge: REFRESH_TOKEN_MAX_AGE_MS,
         },
       },
     ];
