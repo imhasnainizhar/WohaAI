@@ -10,10 +10,10 @@ This guide explains how to **develop, test, and deploy** this MicroService Archi
 
 Your stack includes:
 
-* **Next.js Frontend**
-* **Node.js Microservices (Auth, User, Generative APIs etc.)**
-* **Redis**
-* **Postgres DBs**
+- **Next.js Frontend**
+- **Node.js Microservices (Auth, User, Generative APIs etc.)**
+- **Redis**
+- **Postgres DBs**
 
 All services are orchestrated via **Docker Compose** just for dev.
 
@@ -23,7 +23,7 @@ All services are orchestrated via **Docker Compose** just for dev.
 
 ## 📁 Project Structure
 
-```
+```bash
 project-root/
 ├── dev/
 │   ├── compose
@@ -121,6 +121,7 @@ cd dev/compose
 docker compose -f  up compose.frontend.yml --build frontend_app
 ```
 
+---
 
 ## 🌐 Environment Variables (`.env`)
 
@@ -144,9 +145,7 @@ docker compose -f  up compose.frontend.yml --build frontend_app
 NODE_ENV=development
 DOCKER_TARGET=development
 ....
-
 ```
----
 
 ## 🧭 TL;DR Summary
 

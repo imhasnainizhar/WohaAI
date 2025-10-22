@@ -1,19 +1,11 @@
 # 🤖 WoahAI Chatbot
 
-<p align="center">
-  <img src="https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/blob/65c3f25e2aeee5471f7e089621b5e0ea8a258840/gitlab_favicon.png" width="120" />
-</p>
+![WoahAI Logo](https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/raw/65c3f25e2aeee5471f7e089621b5e0ea8a258840/gitlab_favicon.png "WoahAI Chatbot Logo")
 
-<p align="center">
-  <strong>⚡ WoahAI is evolving at high speed!</strong><br/>
-  Building ChatGPT-like business logic, custom generative APIs, and a dynamic UI layer — progressing rapidly toward production-grade architecture.
-</p>
+**⚡ WoahAI is evolving at high speed!**
+Building ChatGPT-like business logic, custom generative APIs, and a dynamic UI layer — progressing rapidly toward production-grade architecture.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Contributions-Welcome-brightgray.svg" />
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
-  <img src="https://img.shields.io/badge/Powered%20By-OpenAI-black.svg" />
-</p>
+![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-brightgray.svg) ![License MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Powered By OpenAI](https://img.shields.io/badge/Powered%20By-OpenAI-black.svg)
 
 ---
 
@@ -32,7 +24,7 @@ This project is in **active development**, blending **LLM-driven backends**, **r
 
 ## 🚀 Current Development Highlights
 
-**Most Business Logic is Being Developed In October - November 2025**
+## Most Business Logic is Being Developed In October - November 2025
 
 * 🧠 **ChatGPT-like core logic** – custom pipeline managing conversation state, role hierarchy, and memory retention.
 * 🧩 **Generative APIs** – modular endpoints for contextual reasoning, and functional tool use.
@@ -68,7 +60,7 @@ npm install   # or yarn install
 cp .env.example .env
 ```
 
-Edit `.env` and include your **OpenAI API key** and configure required services and other things **which are not configured by default**.
+Edit `.env` and include your **OpenAI API key** and configure required services **not set by default**.
 
 > ⚠️ Never commit `.env` or secret keys.
 
@@ -76,46 +68,47 @@ Edit `.env` and include your **OpenAI API key** and configure required services 
 
 ## 🧑‍💻 Development Setup
 
-### Goals:
+### Goals
 
 * Hot reloading for both frontend and backend.
 * Shared network for seamless service communication.
 * Mounted volumes for live file editing.
 
-### 🧩 Commands
+### Commands
 
-#### 1. **Start all services (development mode)**
+#### 1. Start all services (development mode)
 
 ```bash
 cd dev/scripts
 
-## For Windows Run
+# For Windows
 ./dev.ps1
 
-## For Linus or MacOS Run
+# For Linux or macOS
 ./dev.sh
 ```
+
 This command:
 
 * Builds images with the `development` target (`DOCKER_TARGET=development`).
 * Mounts local source code for live reload.
 * Runs all services in a shared network `microservices_net_01`.
 
-#### 2. **Run a single service (debugging)**
+#### 2. Run a single service (debugging)
 
 ```bash
-cd /compose
+cd dev/compose
+
 docker compose -f compose.auth.yml --env-file ../.env up --build
 ```
 
 Example (Frontend):
 
 ```bash
-cd dev/compose
 docker compose -f compose.frontend.yml --env-file ../.env up --build
 ```
 
-#### 3. **Stop and remove containers**
+#### 3. Stop and remove containers
 
 ```bash
 docker compose -f compose.frontend.yml down
@@ -139,40 +132,39 @@ Access the services using ports defined in `.env`. Each microservice is modular 
 
 ## 📂 Project Structure
 
-```
+```text
 project-root/
 ├── dev/                    # Docker Compose dev environment
 ├── infra/                  # Terraform IaC configs (WIP)
 ├── src/                    # Microservice + frontend source code
 │   ├── frontend/           # Next.js UI (under development)
-│   ├── ms/                 # AI, auth, verification, and mailer monorepo modules(Micro-Services)
+│   ├── ms/                 # AI, auth, verification, and mailer monorepo modules (Microservices)
 ├── docs/                   # Technical docs and architecture notes
-├── DEV_DEPLOYMENT.md       # Development guide using docker
+├── DEV_DEPLOYMENT.md       # Development guide using Docker
 └── README.md
-
 ```
 
 ---
 
 ## 🧱 Tech Stack Overview
 
-| Layer            | Technology                         | Purpose                                 |
-| ---------------- | ---------------------------------- | --------------------------------------- |
-| Frontend         | **Next.js 14 (App Router)**        | UI, streaming chat, theming             |
-| API Gateway      | **Express.js**                     | Routes and proxies service requests     |
-| Micro Services   | **Node.js / TypeScript**           | Chat logic, auth, verification          |
-| AI Layer         | **Custom Tooling + OpenAI APIs**   | Generative intelligence core            |
-| Database         | **PostgreSQL + Prisma ORM**        | User and token data                     |
-| Cache / Queue    | **Redis**                          | Session, verification, and task caching |
-| Infrastructure   | **Docker + Terraform**             | Dev & future cloud orchestration        |
+| Layer          | Technology                       | Purpose                                 |
+| -------------- | -------------------------------- | --------------------------------------- |
+| Frontend       | **Next.js 14 (App Router)**      | UI, streaming chat, theming             |
+| API Gateway    | **Express.js**                   | Routes and proxies service requests     |
+| Micro Services | **Node.js / TypeScript**         | Chat logic, auth, verification          |
+| AI Layer       | **Custom Tooling + OpenAI APIs** | Generative intelligence core            |
+| Database       | **PostgreSQL + Prisma ORM**      | User and token data                     |
+| Cache / Queue  | **Redis**                        | Session, verification, and task caching |
+| Infrastructure | **Docker + Terraform**           | Dev & future cloud orchestration        |
 
 ---
 
 ## 🌍 Vision & Roadmap
 
-WoahAI aims to evolve into a **modular, production-ready conversational AI ecosystem**, combining scalable backend logic, ethical AI Engineering practices, and cutting-edge UI.
+WoahAI aims to evolve into a **modular, production-ready conversational AI ecosystem**, combining scalable backend logic, ethical AI engineering practices, and cutting-edge UI.
 
-### Upcoming Milestones:
+### Upcoming Milestones
 
 * 🔁 Persistent memory & conversation history
 * 🧩 Function calling & external API tools
@@ -193,7 +185,5 @@ Join the mission to **build open, transparent, and ethical AI systems** while le
 
 ---
 
-<p align="center">
-  Built with ❤ by <strong>Hani</strong>.<br/>
-  <em>Fast development. Transparent logic. Real AI engineering.</em>
-</p>
+**Built with ❤ by Hani.**
+*Fast development. Transparent logic. Real AI engineering.*
