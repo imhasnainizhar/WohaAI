@@ -88,9 +88,15 @@ Edit `.env` and include your **OpenAI API key** and configure required services 
 
 ```bash
 cd dev
-docker compose -f compose.api.yml -f compose.auth.yml -f compose.frontend.yml --env-file ../.env up --build
+docker compose \
+  -f compose.shared.yml \
+  -f compose.utility.yml \
+  -f compose.db.yml \
+  -f compose.auth.yml \
+  -f compose.gateway.yml \
+  --env-file ../.env \
+  up --build
 ```
-
 This command:
 
 * Builds images with the `development` target (`DOCKER_TARGET=development`).
@@ -101,14 +107,14 @@ This command:
 
 ```bash
 cd dev
-docker compose -f compose.auth.yml --env-file ../.env up signin_service --build
+docker compose -f compose.auth.yml --env-file ../.env up --build
 ```
 
 Example (Frontend):
 
 ```bash
 cd dev
-docker compose -f compose.frontend.yml --env-file ../.env up frontend_app --build
+docker compose -f compose.frontend.yml --env-file ../.env up --build
 ```
 
 #### 3. **Stop and remove containers**
