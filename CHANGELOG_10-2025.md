@@ -6,8 +6,9 @@ October marks a major phase of stabilization and production hardening. Nearly ev
 
 ---
 
-## Attention:
-**UI is being developed with heavy business logic**
+## Attention*:*
+
+## UI is being developed with heavy business logic
 
 ## 🧱 System Architecture & Project Restructure
 
@@ -46,11 +47,7 @@ October marks a major phase of stabilization and production hardening. Nearly ev
 * Refactored token verification logic with **typed decoding** via `DecodedToken` interface.
 * Enforced `sub` existence in JWT payload before querying the database.
 * Introduced **explicit error states**:
-
-  * Missing token → 401
-  * Invalid token → 401
-  * Expired token → 401 with descriptive message.
-* All responses now handled through the `sendResponse` util for uniform structure, present in each microservice 
+* All responses now handled through the `sendResponse` util for uniform structure, present in each microservice
 as the project standard.
 
 ### 🔒 ReCAPTCHA Verification

@@ -1,6 +1,7 @@
 # 🤝 WoahAI Chatbot — Contributing Guide
 
 ## 1. Welcome
+
 Thank you for your interest in contributing to **WoahAI Chatbot**!  
 This project is designed as an open learning resource for responsible AI experimentation using **OpenAI APIs**.
 
@@ -27,12 +28,14 @@ This project is designed as an open learning resource for responsible AI experim
 ## 4. Contribution Guidelines
 
 ✅ Follow these practices:
+
 - Write clean, well-commented code.  
 - Keep commits focused and descriptive.  
 - Follow the project’s structure and naming conventions.  
 - Use AI responsibly in line with [OpenAI’s Use Policy](https://openai.com/policies/usage-policies).  
 
 ❌ Avoid:
+
 - Committing large model files or datasets.  
 - Submitting code that scrapes, exploits, or violates API rules.  
 - Toxic or disrespectful communication.
@@ -42,6 +45,7 @@ This project is designed as an open learning resource for responsible AI experim
 ## 5. Reporting Issues
 
 If you find a bug or have a suggestion:
+
 - Open a **GitLab Issue** with a clear title and description.  
 - Include steps to reproduce (if applicable).  
 - Be constructive and respectful in discussions.
@@ -51,10 +55,10 @@ If you find a bug or have a suggestion:
 ## 6. License and Conduct
 
 By contributing, you agree to:
+
 - Follow the [Code of Conduct](./CODE_OF_CONDUCT.md).  
-- Share your contributions under the same license as the project.  
+- Share your contributions under the same license as the project.
 
 Let’s build **ethical, transparent, and educational AI tools** together 🌱
 
 ---
-
