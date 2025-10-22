@@ -1,0 +1,31 @@
+services:
+  auth_service:
+    build:
+      context: ../../src/ms/auth_service/
+      dockerfile: Dockerfile
+      target: ${NODE_ENV}
+    container_name: auth_service
+    ports:
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
+    volumes:
+      - ../../src/ms/auth_service/src:/app/src
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+
+      - JWT_ACCESS_SECRET_KEY=${JWT_ACCESS_SECRET_KEY}
+      - JWT_REFRESH_SECRET_KEY=${JWT_REFRESH_SECRET_KEY}
+      - JWT_PRIVATE_ACCESS_SECRET_KEY=${JWT_PRIVATE_ACCESS_SECRET_KEY}
+
+      - REFRESH_TOKEN_NAME=${REFRESH_TOKEN_NAME}
+      - ACCESS_TOKEN_NAME=${ACCESS_TOKEN_NAME}
+      - PRIVATE_ACCESS_TOKEN_NAME=${PRIVATE_ACCESS_TOKEN_NAME}
+
+      - POSTGRES_PROVIDER=${POSTGRES_PROVIDER}
+      - PRISMA_USER_DATABASE_URI=${PRISMA_USER_DATABASE_URI}
+      - AUTH_SERVICE_PORT:${AUTH_SERVICE_PORT}
+
+networks:
+  default:
+    name: microservices_net_01
+    external: true

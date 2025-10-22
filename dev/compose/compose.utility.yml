@@ -1,0 +1,45 @@
+services:
+
+  # captcha_verification_service:
+  #   build:
+  #     context: ../src/ms/captcha_verification_service/
+  #     dockerfile: Dockerfile
+  #     target: ${NODE_ENV}
+  #   container_name: captcha_verification_service
+  #   ports:
+  #     - "${CAPTCHA_VERIFICATION_PORT}:${CAPTCHA_VERIFICATION_PORT}"
+  #   volumes:
+  #     - ../src/ms/captcha_verification_service/src:/app/src
+  #   restart: always
+  #   environment:
+  #     - NODE_ENV=${NODE_ENV}
+  #     - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+  #     - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
+
+  auth_mailer_service:
+    build:
+      context: ../../src/ms/auth_mailer_service/
+      dockerfile: Dockerfile
+      target: ${NODE_ENV}
+    container_name: code_mailer_service
+    ports:
+      - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
+    volumes:
+      - ../../src/ms/auth_mailer_service/src:/app/src
+    restart: always
+    depends_on:
+      - redis_code_c
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MAILER_EMAIL_USER=${MAILER_EMAIL_USER}
+      - MAILER_EMAIL_PASS=${MAILER_EMAIL_PASS}
+      - MAILER_EMAIL_FROM=${MAILER_EMAIL_FROM}
+      - REDIS_CODE_C_URI=${REDIS_CODE_C_URI}
+      - REDIS_CODE_C_PORT=${REDIS_CODE_C_PORT}
+      - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
+      - AUTH_MAILER_SERVICE_PORT=${AUTH_MAILER_SERVICE_PORT}
+
+networks:
+  default:
+    name: microservices_net_01
+    external: true
