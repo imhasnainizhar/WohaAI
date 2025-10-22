@@ -147,7 +147,7 @@ project-root/
 ├── infra/                  # Terraform IaC configs (WIP)
 ├── src/                    # Microservice + frontend source code
 │   ├── frontend/           # Next.js UI (under development)
-│   ├── services/           # AI, auth, verification, and mailer modules
+│   ├── ms/                 # AI, auth, verification, and mailer monorepo modules(Micro-Services)
 ├── docs/                   # Technical docs and architecture notes
 └── README.md
 ```
@@ -160,7 +160,7 @@ project-root/
 | ---------------- | ---------------------------------- | --------------------------------------- |
 | Frontend         | **Next.js 14 (App Router)**        | UI, streaming chat, theming             |
 | API Gateway      | **Express.js**                     | Routes and proxies service requests     |
-| Backend Services | **Node.js / TypeScript**           | Chat logic, auth, verification          |
+| Micro Services   | **Node.js / TypeScript**           | Chat logic, auth, verification          |
 | AI Layer         | **Custom Tooling + OpenAI APIs**   | Generative intelligence core            |
 | Database         | **PostgreSQL + Prisma ORM**        | User and token data                     |
 | Cache / Queue    | **Redis**                          | Session, verification, and task caching |
