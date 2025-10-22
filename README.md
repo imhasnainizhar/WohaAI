@@ -87,15 +87,13 @@ Edit `.env` and include your **OpenAI API key** and configure required services 
 #### 1. **Start all services (development mode)**
 
 ```bash
-cd dev
-docker compose \
-  -f compose.shared.yml \
-  -f compose.utility.yml \
-  -f compose.db.yml \
-  -f compose.auth.yml \
-  -f compose.gateway.yml \
-  --env-file ../.env \
-  up --build
+cd dev/scripts
+
+## For Windows Run
+./dev.ps1
+
+## For Linus or MacOS Run
+./dev.sh
 ```
 This command:
 
