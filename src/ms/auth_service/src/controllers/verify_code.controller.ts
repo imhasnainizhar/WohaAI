@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { codeVerificationService } from "@services/verifications/code_verification.service";
-import { sendResponse } from "@utils/api_response";
+import { generateVerificationCodeService } from "@services/verifications/generate_code.service";
+import { sendResponse } from "@utils/response";
 import { logger } from "@utils/logger";
 import { z } from "zod";
 
@@ -39,9 +39,10 @@ export const verifyCodeController = async (req: Request, res: Response) => {
     }
 
     const { verificationCode, signupSessionId } = parsed.data;
+    const code = verificationCode.toString()
 
     // Call service
-    const serviceResult = await codeVerificationService(verificationCode, signupSessionId);
+    const serviceResult = await generateVerificationCodeService(code, signupSessionId);
 
     // Return service response
     return sendResponse({

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { signoutService } from "@services/signout.service";
-import { sendResponse } from "@utils/api_response";
+import { sendResponse } from "@utils/response";
 import { logger } from "@utils/logger";
+import { env } from "@config/env.config";
 
 /**
  * @controller signoutController
@@ -30,15 +31,20 @@ export const signoutController = async (req: Request, res: Response) => {
     const serviceResult = await signoutService(userID);
 
     // Clear auth cookies (optional but recommended)
-    res.clearCookie("accessToken", {
+    res.clearCookie(env.ACCESS_TOKEN_NAME, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: env.SECURE_COOKIE_OPTION,
+      sameSite: env.SAME_SITE_COOKIE_OPTION,
     });
-    res.clearCookie("refreshToken", {
+    res.clearCookie(env.REFRESH_TOKEN_NAME, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: env.SECURE_COOKIE_OPTION,
+      sameSite: env.SAME_SITE_COOKIE_OPTION,
+    });
+    res.clearCookie(env.PRIVATE_ACCESS_TOKEN_NAME, {
+      httpOnly: true,
+      secure: env.SECURE_COOKIE_OPTION,
+      sameSite: env.SAME_SITE_COOKIE_OPTION,
     });
 
     logger.info(`✅ [SIGNOUT] User ${userID} signed out successfully.`);

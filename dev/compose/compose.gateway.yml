@@ -1,15 +1,15 @@
 services:
   api_gateway:
     build:
-      context: ../src/ms/api_gateway/
+      context: ../../src/ms/api_gateway/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: api_gateway
     ports:
       - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     volumes:
-      - ../src/ms/api_gateway/:/app
-      - ../src/ms/api_gateway/routes.json:/app/routes.json
+      - ../../src/ms/api_gateway/:/app
+      - ../../src/ms/api_gateway/routes.json:/app/routes.json
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}

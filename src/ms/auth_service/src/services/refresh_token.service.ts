@@ -3,8 +3,7 @@ import argon2 from "argon2";
 import { prisma } from "@utils/prisma_client";
 import { logger } from "@utils/logger";
 import { env } from "@config/env.config";
-import { ServiceResponse } from "@utils/service_response";
-import { ServiceException } from "@errors/service_exception";
+import { ServiceResponse, ServiceException } from "@utils/response";
 
 /**
  * @service refreshTokenService

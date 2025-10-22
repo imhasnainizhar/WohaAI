@@ -1,0 +1,14 @@
+//---------------------------//
+|   1st Todo:
+//---------------------------//
+
+Now we have to develop an internal networking protocol so, services can communicate 
+with each other easily ith lightweight headers and body instead of https heavy ones.
+We faced problems when we tried to call create user service from auth's signup service so for now
+clients call that service with enough validations.
+
+//---------------------------//
+|   2st Todo:
+//---------------------------//
+
+Whole UI should be developed before 5th of November 2025 and be ready for deployment.

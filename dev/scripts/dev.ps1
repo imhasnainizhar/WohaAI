@@ -1,0 +1,10 @@
+## For Windows
+
+docker compose `
+  -f ../compose/compose.shared.yml `
+  -f ../compose/compose.utility.yml `
+  -f ../compose/compose.db.yml `
+  -f ../compose/compose.auth.yml `
+  -f ../compose/compose.gateway.yml `
+  --env-file ../../.env `
+  up --build

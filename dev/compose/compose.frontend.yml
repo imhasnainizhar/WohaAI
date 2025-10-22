@@ -1,14 +1,14 @@
 services:
   frontend_app:
     build:
-      context: ../src/frontend
+      context: ../../src/frontend
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: frontend_app
     ports:
       - "${FRONTEND_APP_PORT}:${FRONTEND_APP_PORT}"
     volumes:
-      - ../src/frontend/src:/app/src
+      - ../../src/frontend/src:/app/src
     restart: always
     environment:
       - NODE_ENV=${NODE_ENV}
