@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg" />
+  <img src="https://img.shields.io/badge/Contributions-Welcome-brightgray.svg" />
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
   <img src="https://img.shields.io/badge/Powered%20By-OpenAI-black.svg" />
 </p>
@@ -104,14 +104,14 @@ This command:
 #### 2. **Run a single service (debugging)**
 
 ```bash
-cd dev
+cd /compose
 docker compose -f compose.auth.yml --env-file ../.env up --build
 ```
 
 Example (Frontend):
 
 ```bash
-cd dev
+cd dev/compose
 docker compose -f compose.frontend.yml --env-file ../.env up --build
 ```
 
@@ -147,7 +147,9 @@ project-root/
 │   ├── frontend/           # Next.js UI (under development)
 │   ├── ms/                 # AI, auth, verification, and mailer monorepo modules(Micro-Services)
 ├── docs/                   # Technical docs and architecture notes
+├── DEV_DEPLOYMENT.md       # Development guide using docker
 └── README.md
+
 ```
 
 ---
@@ -192,6 +194,6 @@ Join the mission to **build open, transparent, and ethical AI systems** while le
 ---
 
 <p align="center">
-  Built with ❤ by <strong>Hani</strong> and contributors.<br/>
+  Built with ❤ by <strong>Hani</strong>.<br/>
   <em>Fast development. Transparent logic. Real AI engineering.</em>
 </p>
