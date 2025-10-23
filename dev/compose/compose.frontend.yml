@@ -26,8 +26,8 @@ services:
       - NEXT_PUBLIC_AUTH_MAILER_API_URI=${NEXT_PUBLIC_AUTH_MAILER_API_URI}
 
       - NEXT_PUBLIC_USER_API_URI=${NEXT_PUBLIC_USER_API_URI}
-
+    networks:
+      - microservices_net_01
 networks:
-  default:
-    name: microservices_net_01
+  microservices_net_01:
     external: true

@@ -38,8 +38,9 @@ services:
       - REDIS_CODE_C_PORT=${REDIS_CODE_C_PORT}
       - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
       - AUTH_MAILER_SERVICE_PORT=${AUTH_MAILER_SERVICE_PORT}
+    networks:
+      - microservices_net_01
 
 networks:
-  default:
-    name: microservices_net_01
+  microservices_net_01:
     external: true
