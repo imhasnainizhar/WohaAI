@@ -70,3 +70,5 @@ export const rememberMeSchema = z
   .object({
     rememberMe: z.boolean().optional(),
   })
+export type RememberMe = z.infer<typeof rememberMeSchema>;
+

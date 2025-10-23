@@ -17,7 +17,7 @@ export const redisClient = createClient({
 redisClient.on("connect", () => logger.info("🧠 Redis connected successfully"));
 redisClient.on("ready", () => logger.info("✅ Redis client ready to use"));
 redisClient.on("end", () => logger.warn("⚠️ Redis connection closed"));
-redisClient.on("reconnecting", () => logger.info("♻️ Redis reconnecting..."));
+redisClient.on("reconnecting", () => logger.info("♻️  Redis reconnecting..."));
 redisClient.on("error", (err) => logger.error("❌ Redis error: " + err.message));
 
 export const connectRedis = async () => {

@@ -2,7 +2,7 @@ import { createJwtToken } from "@utils/jwt";
 import { randomUUID } from "crypto";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { setCache } from "@utils/redis_client";
-import { usernameSchema } from "@schemas/signup_validation.schema";
+import { UserName, usernameSchema } from "@schemas/signup_validation.schema";
 import { prisma } from "@utils/prisma_client";
 import { env, EXPIRATION } from "@config/env.config";
 import { logger } from "@utils/logger";
@@ -29,14 +29,13 @@ export const signupInitService = async (username: string) => {
     }
 
     // Check if username is already taken
-    logger.debug(`🔎 Checking username availability: ${parsed.data}`);
+    logger.debug(`🔎 Checking username availability: ${parsed.data.username}`);
     const existingUser = await prisma.user.findUnique({
-      where: { username: parsed.data },
-      select: { id: true },
+      where: { username: parsed.data?.username },
     });
 
     if (existingUser) {
-      logger.info(`🚫 Username already taken: ${parsed.data}`);
+      logger.info(`🚫 Username already taken: ${parsed.data.username}`);
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
@@ -59,7 +58,7 @@ export const signupInitService = async (username: string) => {
 
     // Store temporary signup data in Redis
     logger.debug("💾 Caching pending signup session in Redis...");
-    const tempUser = { username: parsed.data };
+    const tempUser = { username: parsed.data.username };
     await setCache(
       `pending_signup:${signupSessionID}`,
       JSON.stringify(tempUser),
@@ -82,7 +81,7 @@ export const signupInitService = async (username: string) => {
     ];
 
     // Return successful response
-    logger.debug(`✅ Username available and session initialized: ${parsed.data}`);
+    logger.debug(`✅ Username available and session initialized: ${parsed.data.username}`);
     return ServiceResponse.success({
       success: true,
       statusCode: 200,

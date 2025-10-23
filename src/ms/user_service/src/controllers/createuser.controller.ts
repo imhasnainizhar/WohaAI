@@ -39,21 +39,6 @@ export const createUserController = async (req: Request, res: Response) => {
         // Call service
         const serviceResult = await createUserService(parsed.data);
 
-        // ptionally set auth cookies
-        const { tokens } = serviceResult.data;
-        res.cookie("accessToken", tokens.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: tokens.accessExp * 1000,
-        });
-        res.cookie("refreshToken", tokens.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: tokens.refreshExp * 1000,
-        });
-
         // Send response
         return sendResponse({
             res,

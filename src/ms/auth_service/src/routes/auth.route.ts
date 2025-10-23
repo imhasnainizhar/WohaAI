@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { signupInitController } from './../controllers/signup_init.controller';
-import { verifyCodeController } from '@controllers/verify_code.controller';
+import { confirmUserEmailController } from '@controllers/signup.controller';
 import { signoutController } from "@controllers/signout.controller";
 import { signinController } from "@controllers/signin.controller";
 import { refreshTokenController } from "@controllers/refresh_token.controller";
@@ -22,6 +22,6 @@ router.post("/validate-email", validateEmailController);
 router.post("/validate-password", validatePasswordController);
 
 router.get("/generate-verification-code", generateVerificationCodeController);
-router.post("/verify-code", verifyCodeController);
+router.post("/verify-email", confirmUserEmailController);
 
 export default router;

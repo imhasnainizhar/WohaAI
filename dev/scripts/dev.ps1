@@ -1,5 +1,7 @@
 ## For Windows
 
+docker network create microservices_net_01
+
 docker compose `
   -f ../compose/compose.shared.yml `
   -f ../compose/compose.utility.yml `

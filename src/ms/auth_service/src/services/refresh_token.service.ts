@@ -1,21 +1,16 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@utils/prisma_client";
 import { logger } from "@utils/logger";
-import { env } from "@config/env.config";
+import { env, EXPIRATION } from "@config/env.config";
 import { ServiceResponse, ServiceException } from "@utils/response";
+import { UserSessionRefresh, ActiveSessionRecord, activeSessionSelect } from "@custom_types/user_session.types";
 
-/**
- * @service refreshTokenService
- * Handles business logic for refreshing tokens.
- * - Verifies refresh token
- * - Rotates access + refresh tokens
- * - Updates refresh token hash in DB
- */
-export async function refreshTokenService<T>(refreshToken: string) {
+export async function refreshTokenService<T>(
+  data: UserSessionRefresh
+) {
   try {
-    const JWT_REFRESH_SECRET_KEY = env.JWT_REFRESH_SECRET_KEY;
-    const JWT_ACCESS_SECRET_KEY = env.JWT_ACCESS_SECRET_KEY;
+    const { JWT_REFRESH_SECRET_KEY, JWT_ACCESS_SECRET_KEY } = env;
 
     if (!JWT_REFRESH_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
       throw new ServiceException(
@@ -28,29 +23,29 @@ export async function refreshTokenService<T>(refreshToken: string) {
       );
     }
 
-    // Verify the refresh token
-    let payload: any;
-    try {
-      payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET_KEY);
-    } catch (err) {
-      logger.warn({ message: "🔒 [REFRESH] Invalid refresh token" });
+    // Verify refresh token signature
+    const decoded = jwt.verify(data.refreshSessionToken, JWT_REFRESH_SECRET_KEY);
+    const payload = typeof decoded === "string" ? null : decoded as JwtPayload & { userSessionID?: string };
+
+    if (!payload?.sub || !payload?.userSessionID) {
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
           statusCode: 401,
-          message: "Invalid refresh token.",
+          message: "Invalid refresh token payload.",
           errorType: "invalid_token",
         })
       );
     }
 
-    // Find user by ID from token payload
-    const user = await prisma.user.findUnique({
-      where: { userID: payload.sub },
+    // Fetch latest refresh token record and its user
+    const activeSessionsRecord : ActiveSessionRecord | null = await prisma.userSession.findFirst({
+      where: { userID: payload.sub, revoked: false, userSessionID: payload.userSessionID },
+      select: activeSessionSelect,
     });
 
-    if (!user || !user.refreshTokenHash) {
-      logger.warn({ message: "🔒 [REFRESH] User not found or no refresh token hash" });
+    if (!activeSessionsRecord || !activeSessionsRecord.refreshTokenHash || !activeSessionsRecord.user) {
+      logger.warn("🔒 [REFRESH] User not found or refresh token hash missing");
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
@@ -61,41 +56,55 @@ export async function refreshTokenService<T>(refreshToken: string) {
       );
     }
 
-    // Verify the stored hash matches the provided refresh token
-    const valid = await argon2.verify(user.refreshTokenHash, refreshToken);
-    if (!valid) {
-      logger.warn({ message: "🔒 [REFRESH] Refresh token hash mismatch", userID: user.userID });
+    // Verify token matches stored hash
+    const isValid = await argon2.verify(activeSessionsRecord.refreshTokenHash, data.refreshSessionToken);
+    if (!isValid) {
+      await prisma.userSession.update({
+        where: { userSessionID: payload.userSessionID },
+        data: { revoked: true, revokedAt: new Date() }
+      });
+      logger.warn(`🔒 [REFRESH] Refresh token hash mismatch for userID: ${activeSessionsRecord.user.userID}`);
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
           statusCode: 401,
-          message: "Refresh token mismatch.",
-          errorType: "token_mismatch",
+          message: "Session expired, require signin.",
+          errorType: "session_expired",
         })
       );
     }
 
-    // Rotate access + refresh tokens
+    const user = activeSessionsRecord.user;
+
+    // Generate new access + refresh tokens
     const newAccessToken = jwt.sign(
       { sub: user.userID, email: user.email, name: `${user.userFirstName} ${user.userLastName}` },
       JWT_ACCESS_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: EXPIRATION.JWT_ACCESS_SESSION_TOKEN } as SignOptions
     );
 
-    const newRefreshToken = jwt.sign({ sub: user.userID }, JWT_REFRESH_SECRET_KEY, {
-      expiresIn: "7d",
-    });
+    const newRefreshToken = jwt.sign(
+      { sub: user.userID, userSessionID: data.userSessionID },
+      JWT_REFRESH_SECRET_KEY,
+      activeSessionsRecord.rememberMe ? { expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions : { expiresIn: EXPIRATION.JWT_REFRESH_REMEMBER_OFF_SESSION_TOKEN } as SignOptions
+    );
 
-    // Hash and store new refresh token
+    // Hash and store the new refresh token
     const newRefreshTokenHash = await argon2.hash(newRefreshToken);
-    await prisma.user.update({
-      where: { userID: user.userID },
-      data: { refreshTokenHash: newRefreshTokenHash },
+
+    await prisma.userSession.update({
+      where: {
+        userSessionID: data.userSessionID,
+      },
+      data: {
+        refreshTokenHash: newRefreshTokenHash,
+        revokedAt: null,
+        userIPAddress: data.userIPAddress
+      },
     });
 
-    logger.debug({ message: "♻️ [REFRESH] Tokens rotated successfully", userID: user.userID });
+    logger.debug(`♻️ [REFRESH] Tokens rotated successfully for userID: ${user.userID}`);
 
-    // Return new tokens + user info wrapped in ServiceResponse
     return ServiceResponse.success<T>({
       success: true,
       statusCode: 200,
@@ -107,10 +116,9 @@ export async function refreshTokenService<T>(refreshToken: string) {
       } as T,
     });
   } catch (err: any) {
-    // Pass through ServiceExceptions
     if (err instanceof ServiceException) throw err;
 
-    logger.error({ message: "❌ [REFRESH] Unexpected error", error: err });
+    logger.error(`❌ [REFRESH] Unexpected error: ${err}`);
     throw new ServiceException(
       ServiceResponse.error({
         success: false,

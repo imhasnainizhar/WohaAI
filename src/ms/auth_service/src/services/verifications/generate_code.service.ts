@@ -2,7 +2,6 @@ import { logger } from "@utils/logger";
 import { setCache, getCache } from "@utils/redis_client";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { EXPIRATION } from "@config/env.config";
-import { getCodeRequestSchema } from "@schemas/code_request.schema";
 
 /**
  * @service generateVerificationCode
@@ -10,25 +9,13 @@ import { getCodeRequestSchema } from "@schemas/code_request.schema";
  * - Stores it in Redis against signupSessionId
  * - Returns ServiceResponse (no exceptions for user mistakes)
  */
-export const generateVerificationCodeService = async ( email: string, signupSessionId: string) => {
+export const generateVerificationCodeService = async ( signupSessionId: string ) => {
 
   let pendingEmail; // Now, it is readable in catch-block
 
   try {
-    const body = { signupSessionId }
-    const parsed = getCodeRequestSchema.safeParse(body)
 
-    // Input validation — don't throw server exceptions for client errors
-    if (!parsed.data?.email) {
-      return ServiceResponse.error({
-        success: false,
-        statusCode: 400,
-        message: "Email is required to generate a verification code.",
-        errorType: "validation_failed",
-      });
-    }
-
-    if (!parsed.data?.signupSessionID) {
+    if (!signupSessionId) {
       return ServiceResponse.error({
         success: false,
         statusCode: 400,

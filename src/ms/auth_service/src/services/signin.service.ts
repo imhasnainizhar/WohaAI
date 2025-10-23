@@ -5,18 +5,23 @@ import { signInSchema, SigInUser } from "@schemas/signin_validation.schema";
 import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { env, EXPIRATION } from "@config/env.config";
+import { createUserSession } from "@session_utils/create_user_session";
+import { ClientData } from "@custom_types/user_session.types";
 
 /**
  * Core business logic for user sign-in.
  * Validates input, verifies credentials, generates JWT tokens, and returns cookies.
  */
-export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse<T>> => {
+export const signinService = async <T>(
+  body: SigInUser,
+  clientData: ClientData
+): Promise<ServiceResponse<T>> => {
   try {
+
     // Validate the request body using Zod schema
     const parsed = signInSchema.safeParse(body);
     if (!parsed.success) {
       // If validation fails, log the error and throw structured ServiceException
-      logger.warn({ message: `🔴 [SIGNIN] Validation failed`, errors: parsed.error.flatten().fieldErrors });
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
@@ -27,10 +32,8 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
         })
       );
     }
+    const { username, password, email, rememberMe = false } = body;
 
-    const { email, password, username, rememberMe = false } = parsed.data;
-
-    // Require at least one identifier (email or username)
     if (!email && !username) {
       throw new ServiceException(
         ServiceResponse.error({
@@ -43,17 +46,19 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
       );
     }
 
-    /**
-     * Decide which identifier to use for user lookup:
-     * - `prisma.user.findFirst` searches for a user matching either the provided email or username.
-     * - The OR clause ensures that if either matches, the user is retrieved.
-     * - This allows flexible login using either email or username.
-     */
+    // ✅ Fetch full user record for authentication
     const user = await prisma.user.findFirst({
       where: { OR: [{ email }, { username }] },
+      select: {
+        userID: true,
+        userFirstName: true,
+        userLastName: true,
+        email: true,
+        username: true,
+        passwordHashed: true,
+      },
     });
 
-    // If no user is found with given credentials
     if (!user) {
       throw new ServiceException(
         ServiceResponse.error({
@@ -65,7 +70,7 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
       );
     }
 
-    // Verify the provided password against the hashed password stored in DB
+    // ✅ Verify password
     const isPasswordCorrect = await argon2.verify(user.passwordHashed, password);
     if (!isPasswordCorrect) {
       throw new ServiceException(
@@ -78,9 +83,8 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
       );
     }
 
-    // Ensure JWT secret keys are set
-    const JWT_ACCESS_SECRET_KEY = env.JWT_ACCESS_SECRET_KEY;
-    const JWT_REFRESH_SECRET_KEY = env.JWT_REFRESH_SECRET_KEY;
+    // ✅ Ensure JWT keys are available
+    const { JWT_ACCESS_SECRET_KEY, JWT_REFRESH_SECRET_KEY } = env;
     if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
       throw new ServiceException(
         ServiceResponse.error({
@@ -92,32 +96,42 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
       );
     }
 
-    // Token expiration and max-age configuration based on rememberMe option
-    const ACCESS_TOKEN_EXPIRES_IN = EXPIRATION.JWT_ACCESS_TOKEN;
-    const ACCESS_TOKEN_MAX_AGE_MS = EXPIRATION.ACCESS_SESSION_COOKIE;
-
-    // Generate JWT access token with user info
-    const accessToken = jwt.sign(
-      { sub: user.userID, email: user.email, name: `${user.userFirstName} ${user.userLastName}` },
-      JWT_ACCESS_SECRET_KEY,
-      { expiresIn: ACCESS_TOKEN_EXPIRES_IN } as SignOptions
+    // 🧩 Step 1: Generate refresh token
+    const refreshToken = jwt.sign(
+      { sub: user.userID },
+      JWT_REFRESH_SECRET_KEY,
+      rememberMe
+        ? ({ expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions)
+        : ({ expiresIn: EXPIRATION.JWT_REFRESH_REMEMBER_OFF_SESSION_TOKEN } as SignOptions)
     );
 
-    // Generate JWT refresh token for long-term session
-    const refreshToken = jwt.sign({ sub: user.userID }, JWT_REFRESH_SECRET_KEY);
+    // 🧩 Step 2: Create a session record in DB (hash refresh token, store device/IP info)
+    const session = await createUserSession(user.userID, clientData, refreshToken, rememberMe);
 
-    // Hash the refresh token before storing it in DB for security
-    const refreshTokenHash = await argon2.hash(refreshToken);
-    await prisma.user.update({
-      where: { userID: user.userID },
-      data: { refreshTokenHash },
-    });
+    const finalRefreshToken = jwt.sign(
+      { sub: user.userID, userSessionID: session.userSessionID },
+      JWT_REFRESH_SECRET_KEY,
+      rememberMe
+        ? ({ expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions)
+        : ({ expiresIn: EXPIRATION.JWT_REFRESH_REMEMBER_OFF_SESSION_TOKEN } as SignOptions)
+    );
 
-    // Configure SameSite cookie attribute depending on environment
-    const sameSite = env.SAME_SITE_COOKIE_OPTION
-    const secureSite = env.SECURE_COOKIE_OPTION
+    // 🧩 Step 3: Generate access token tied to this session
+    const accessToken = jwt.sign(
+      {
+        sub: user.userID,
+        email: user.email,
+        name: `${user.userFirstName} ${user.userLastName}`,
+        userSessionID: session.userSessionID,
+      },
+      JWT_ACCESS_SECRET_KEY,
+      { expiresIn: EXPIRATION.JWT_ACCESS_SESSION_TOKEN } as SignOptions
+    );
 
-    // Prepare HTTP-only cookies for access and refresh tokens
+    // 🧩 Step 4: Prepare cookies
+    const sameSite = env.SAME_SITE_COOKIE_OPTION;
+    const secureSite = env.SECURE_COOKIE_OPTION;
+
     const cookies = [
       {
         name: env.ACCESS_TOKEN_NAME,
@@ -127,24 +141,37 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
           secure: secureSite,
           sameSite,
           path: "/",
-          maxAge: ACCESS_TOKEN_MAX_AGE_MS,
+          maxAge: EXPIRATION.ACCESS_SESSION_COOKIE,
         },
       },
       {
         name: env.REFRESH_TOKEN_NAME,
-        value: refreshToken,
-        options: {
-          httpOnly: true,
-          secure: secureSite,
-          sameSite,
-          path: "/",
-        },
+        value: finalRefreshToken,
+        options: rememberMe ?
+          {
+            httpOnly: true,
+            secure: secureSite,
+            sameSite,
+            path: "/",
+            maxAge: EXPIRATION.REFRESH_SESSION_COOKIE
+          } : {
+            httpOnly: true,
+            secure: secureSite,
+            sameSite,
+            path: "/",
+          }
       },
     ];
 
-    logger.info(`🟢 [SIGNIN] User ${user.username} authenticated successfully`);
+    logger.info({
+      message: "🟢 [SIGNIN] User authenticated successfully",
+      userID: user.userID,
+      username: user.username,
+      ip: session.userIPAddress,
+      device: session.userDeviceName,
+    });
 
-    // Return a structured ServiceResponse for successful sign-in
+    // ✅ Step 5: Return unified service response
     return ServiceResponse.success({
       success: true,
       statusCode: 200,
@@ -162,10 +189,8 @@ export const signinService = async <T>(body: SigInUser): Promise<ServiceResponse
   } catch (err: any) {
     logger.error("❌ [SIGNIN] Unexpected error", err);
 
-    // If error is already a ServiceException, re-throw it to be handled by controller
     if (err instanceof ServiceException) throw err;
 
-    // Wrap any unexpected error into a structured ServiceException
     throw new ServiceException(
       ServiceResponse.error({
         success: false,

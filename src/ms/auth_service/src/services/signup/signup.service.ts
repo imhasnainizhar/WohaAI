@@ -23,9 +23,9 @@ import { createJwtToken } from "@utils/jwt";
  */
 export const validateDisplayNameService = async (
   signupSessionID: string,
+  username: string,
   firstName: string,
-  lastName: string,
-  username: string
+  lastName: string
 ) => {
   try {
     logger.debug("Validating display name...");
@@ -91,8 +91,8 @@ export const validateDisplayNameService = async (
  */
 export const validateEmailService = async (
   signupSessionID: string,
-  email: string,
   username: string,
+  email: string,
   firstName: string,
   lastName: string
 ) => {
@@ -118,8 +118,7 @@ export const validateEmailService = async (
 
     // Check if the email already exists in the system
     const existingEmail = await prisma.user.findUnique({
-      where: { email: parsed.data },
-      select: { id: true },
+      where: { email: parsed.data?.email },
     });
     if (existingEmail)
       throwConflictError(
@@ -167,9 +166,9 @@ export const validateEmailService = async (
  */
 
 export const confirmUserEmailService = async (
-  verificationCode: number,
+  verificationCode: string,
   signupSessionId: string,
-  email: Email
+  email: string
 ): Promise<ServiceResponse<any>> => {
   try {
     // Guard clause for missing inputs
@@ -188,8 +187,10 @@ export const confirmUserEmailService = async (
       );
     }
 
+    const code = Number(verificationCode)
+
     // Validate code format (6-digit)
-    if (!Number.isInteger(verificationCode) || verificationCode < 100000 || verificationCode > 999999) {
+    if (!Number.isInteger(code) || code < 100000 || code > 999999) {
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
@@ -309,12 +310,12 @@ export const confirmUserEmailService = async (
  */
 export const validatePasswordService = async (
   signupSessionID: string,
+  username: string,
+  email: string,
   password: string,
   confirmPassword: string,
-  username: string,
   firstName: string,
   lastName: string,
-  email: string
 ) => {
   try {
     logger.debug("Validating password...");

@@ -2,25 +2,11 @@ import { env } from "@config/env.config";
 import { Request, Response } from "express";
 import { generateVerificationCodeService } from "@services/verifications/generate_code.service";
 import { logger } from "@utils/logger";
-import { getCodeRequestSchema } from "@schemas/code_request.schema";
 import { verifyJwtToken } from "@utils/jwt";
 import { sendResponse } from "@utils/response";
 
 export const generateVerificationCodeController = async (req: Request, res: Response) => {
   try {
-    // Validate request body
-    const parsed = getCodeRequestSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return sendResponse({
-        res,
-        success: false,
-        statusCode: 400,
-        message: "Validation failed",
-        errors: parsed.error.flatten().fieldErrors,
-        path: req.path,
-      });
-    }
-
     const token = req.cookies?.[env.SIGNUP_SESSION_TOKEN_NAME!];
     if (!token) {
       return sendResponse({
@@ -52,7 +38,7 @@ export const generateVerificationCodeController = async (req: Request, res: Resp
     const signupSessionID = sessionPayload.sid ?? sessionPayload.signupSessionID;
 
     // Generate verification code
-    const serviceResult = await generateVerificationCodeService( signupSessionID, req.body?.email );
+    const serviceResult = await generateVerificationCodeService( signupSessionID );
 
     // Respond
     return sendResponse({
