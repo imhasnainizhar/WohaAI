@@ -4,60 +4,111 @@ import { ServiceResponse, ServiceException } from "@utils/response";
 
 /**
  * @service signoutService
- * Handles token revocation & DB logic for signout.
- * - Checks if user exists
- * - Revokes all non-revoked refresh tokens
- * - Returns structured ServiceResponse
+ * Revokes a user's device session (signout) safely with logging and error handling.
+ *
+ * @param userID - ID of the user performing signout
+ * @param userSessionID - ID of the specific device session to revoke
+ * @returns ServiceResponse with revoked session info
  */
-export const signoutService = async <T>(userID: string) => {
+export const signoutService = async <T>(userID: string, userSessionID: string) => {
   try {
-    // Check if user exists
-    const userExists = await prisma.user.findUnique({
-      where: { userID },
-      select: { userID: true },
-    });
+    logger.debug(`[SIGNOUT] Attempting to find active session for userID: ${userID}, sessionID: ${userSessionID}`);
 
-    if (!userExists) {
-      logger.warn({ message: "🔴 [SIGNOUT] User not found", userID });
+    let session;
+    try {
+      // Attempt to find the active session in DB
+      session = await prisma.userSession.findFirst({
+        where: { userID, userSessionID, revoked: false },
+      });
+    } catch (prismaErr) {
+      logger.error({
+        message: `[SIGNOUT] Prisma error finding session`,
+        userID,
+        userSessionID,
+        error: prismaErr,
+      });
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
-          statusCode: 404,
-          message: "User not found.",
-          errorType: "user_not_found",
+          statusCode: 500,
+          message: "Database error while fetching session.",
+          errorType: "db_error",
         })
       );
     }
 
-    // Revoke all active refresh tokens
-    const result = await prisma.refreshToken.updateMany({
-      where: { userId: userID, revoked: false },
-      data: { revoked: true, revokedAt: new Date() },
-    });
+    // No active session found
+    if (!session) {
+      logger.warn(`[SIGNOUT] No active session found for userID: ${userID}, sessionID: ${userSessionID}`);
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 404,
+          message: "Session not found or already signed out.",
+          errorType: "session_expired",
+        })
+      );
+    }
 
+    // Attempt to revoke the session
+    try {
+      await prisma.userSession.update({
+        where: { userSessionID },
+        data: { revoked: true, revokedAt: new Date() },
+      });
+    } catch (updateErr) {
+      logger.error({
+        message: `[SIGNOUT] Prisma error updating session`,
+        userID,
+        userSessionID,
+        error: updateErr,
+      });
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 500,
+          message: "Database error while revoking session.",
+          errorType: "db_error",
+        })
+      );
+    }
+
+    // Log successful revocation with device context
     logger.info({
-      message: "♻️ [SIGNOUT] Refresh tokens revoked successfully",
+      message: "♻️ [SIGNOUT] Session revoked successfully",
       userID,
-      revokedCount: result.count,
+      userSessionID,
+      deviceName: session.userDeviceName,
+      deviceId: session.userDeviceID,
+      ipAddress: session.userIPAddress,
     });
 
-    // Return success response
+    // Return structured success response
     return ServiceResponse.success<T>({
       success: true,
       statusCode: 200,
-      message: "User signed out successfully.",
-      data: { revokedCount: result.count } as T,
+      message: "User signed out successfully (device session revoked).",
+      data: {
+        revokedSession: {
+          userSessionID,
+          deviceName: session.userDeviceName,
+          deviceId: session.userDeviceID,
+          ipAddress: session.userIPAddress,
+        },
+      } as T,
     });
   } catch (err: any) {
+    // 6️⃣ Catch-all for unexpected errors
     logger.error({
-      message: "❌ [SIGNOUT] Error revoking tokens",
+      message: `❌ [SIGNOUT] Unexpected error signing out user ${userID}`,
       userID,
+      userSessionID,
       error: err?.message || err,
     });
 
-    // Normalize all other errors
     if (err instanceof ServiceException) throw err;
 
+    // Wrap unknown errors into ServiceException
     throw new ServiceException(
       ServiceResponse.error({
         success: false,

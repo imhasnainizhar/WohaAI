@@ -1,38 +1,79 @@
 import { Request, Response } from "express";
 import { refreshTokenService } from "@services/refresh_token.service";
-import { sendResponse } from "@utils/api_response";
+import { sendResponse, ServiceException } from "@utils/response";
 import { logger } from "@utils/logger";
 import { env } from "@config/env.config";
+import { verifyJwtToken } from "@utils/jwt";
+import { UserSessionRefresh } from "@custom_types/user_session.types";
+import { getClientInfo } from "../session_utils/get_client_data";
 
 /**
  * @controller refreshTokenController
- * Handles Express-specific logic for refreshing access tokens.
+ * Handles refresh-token rotation for a specific user session & device.
  */
 export const refreshTokenController = async (req: Request, res: Response) => {
-    try {
-        logger.info({ message: "🟢 [REFRESH] Incoming refresh token request at", path: req.path});
+    const controllerTag = "🟢 [REFRESH_CONTROLLER]";
+    const { path } = req;
 
+    try {
+        // Initial request log
+        logger.info({ message: `${controllerTag} Incoming refresh token request`, path });
+
+        // Extract refresh token from cookies
         const refreshToken = req.cookies?.[env.REFRESH_TOKEN_NAME];
         if (!refreshToken) {
-            logger.warn({ path: req.path }, "🔴 [REFRESH] Missing refresh token");
+            logger.warn({ message: `${controllerTag} Missing refresh token cookie`, path });
             return sendResponse({
                 res,
                 success: false,
-                message: "Refresh token missing",
+                message: "Session expired",
                 statusCode: 401,
-                errorType: "token_missing",
+                errorType: "refresh_token_missing",
+                path,
+            });
+        }
+        const payload = verifyJwtToken(refreshToken, env.JWT_REFRESH_SECRET_KEY)
+        const { sub: userID, userSessionID } = payload
+        if (!userID || !userSessionID) {
+            logger.warn({ message: `${controllerTag} Missing refresh token cookie`, path });
+            return sendResponse({
+                res,
+                success: false,
+                message: "Session expired",
+                statusCode: 401,
+                errorType: "refresh_token_missing",
+                path,
+            });
+        }
+        const { userIPAddress } = getClientInfo(req);
+        if (!userIPAddress) {
+            logger.warn({
+                message: "⚠️ [REFRESH_CONTROLLER] Unable to determine client IP address",
+                userAgent: req.headers["user-agent"] || "Unknown",
                 path: req.path,
             });
         }
 
-        const { newAccessToken, newRefreshToken, user } : any  = (await refreshTokenService(refreshToken)).data;
+        // Collect session/device context from headers or custom client payload
+        const refreshSessionOptions: UserSessionRefresh = {
+            refreshSessionToken: refreshToken,
+            userID: userID,
+            userSessionID: userSessionID,
+            userIPAddress: userIPAddress ?? "unknown",
+            rememberMe: payload.rememberMe ?? false,
+        };
 
+        // Call the refresh token service
+        const result = await refreshTokenService(refreshSessionOptions);
+        const { newAccessToken, newRefreshToken, user }: any = result.data;
+
+        // Set updated cookies (access + refresh)
         const sameSite = env.NODE_ENV === "production" ? "none" : "lax";
+        const secure = env.NODE_ENV === "production";
 
-        // 🍪 Set updated cookies
         res.cookie(env.ACCESS_TOKEN_NAME, newAccessToken, {
             httpOnly: true,
-            secure: env.NODE_ENV === "production",
+            secure,
             sameSite,
             path: "/",
             maxAge: 1000 * 60 * 60, // 1 hour
@@ -40,13 +81,19 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
         res.cookie(env.REFRESH_TOKEN_NAME, newRefreshToken, {
             httpOnly: true,
-            secure: env.NODE_ENV === "production",
+            secure,
             sameSite,
             path: "/",
             maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         });
 
-        logger.info({ message: "🟢 [REFRESH] Tokens refreshed successfully", userID: user.userID });
+        // Log success and respond
+        logger.info({
+            message: `${controllerTag} Tokens rotated successfully`,
+            userID: payload.sub,
+            sessionID: payload.userSessionID,
+            path,
+        });
 
         return sendResponse({
             res,
@@ -54,52 +101,40 @@ export const refreshTokenController = async (req: Request, res: Response) => {
             message: "Tokens refreshed successfully",
             statusCode: 200,
             data: { userID: user.userID, email: user.email },
-            path: req.path,
+            path,
         });
     } catch (err: any) {
-        // Centralized error handling based on custom error types
-        logger.error({ message: "❌ [REFRESH] Error during token refresh",path: req.path, error: err.message });
+        // Centralized error management
+        if (err instanceof ServiceException) {
+            logger.warn({
+                message: `🔴 ${controllerTag} Service-level error`,
+                path,
+                errorType: err.response.errorType,
+                details: err.response.message,
+            });
 
-        switch (err.name) {
-            case "InvalidTokenError":
-                return sendResponse({
-                    res,
-                    success: false,
-                    message: "Invalid refresh token",
-                    statusCode: 403,
-                    errorType: "invalid_token",
-                    path: req.path,
-                });
-
-            case "UserNotFoundError":
-                return sendResponse({
-                    res,
-                    success: false,
-                    message: "User not found or token mismatch",
-                    statusCode: 404,
-                    errorType: "user_not_found",
-                    path: req.path,
-                });
-
-            case "ConfigError":
-                return sendResponse({
-                    res,
-                    success: false,
-                    message: "Token configuration error",
-                    statusCode: 500,
-                    errorType: "config_error",
-                    path: req.path,
-                });
-
-            default:
-                return sendResponse({
-                    res,
-                    success: false,
-                    message: "Internal server error",
-                    statusCode: 500,
-                    errorType: "internal_error",
-                    path: req.path,
-                });
+            return sendResponse({
+                res,
+                ...err.response,
+                path,
+            });
         }
+
+        // Unexpected errors
+        logger.error({
+            message: `❌ ${controllerTag} Unexpected failure`,
+            path,
+            error: err?.message,
+            stack: err?.stack,
+        });
+
+        return sendResponse({
+            res,
+            success: false,
+            statusCode: 500,
+            message: "Internal server error",
+            errorType: "internal_error",
+            path,
+        });
     }
 };

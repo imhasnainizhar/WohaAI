@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { signinService } from "@services/signin.service";
-import { sendResponse } from "@utils/api_response";
+import { sendResponse } from "@utils/response";
 import { logger } from "@utils/logger";
+import { getClientInfo } from "@session_utils/get_client_data";
+import { ClientData } from "@custom_types/user_session.types";
 
 /**
  * @controller signinController
@@ -20,8 +22,13 @@ export const signinController = async (req: Request, res: Response) => {
       ip: req.ip,
     });
 
+    const body = req.body;
+    
+    const clientData : ClientData = getClientInfo(req);
+
     // Call service
-    const result = await signinService(req.body);
+    
+    const result = await signinService(body, clientData);
 
     // Set cookies if provided
     if (result.cookies) {

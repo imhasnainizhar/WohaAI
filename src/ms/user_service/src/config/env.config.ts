@@ -9,23 +9,20 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const p = process.env
+
+const secure = (p.NODE_ENV === "production") ? true : false
+
+const sameSite = (p.NODE_ENV === "production" ? "none" : "lax") as
+  "none" | "lax" | "strict";
+
 export const env = {
   NODE_ENV: p.NODE_ENV || "development",
   USER_SERVICE_PORT: p.USER_SERVICE_PORT,
   CLIENT_ORIGIN: p.CLIENT_ORIGIN,
   LOG_LEVEL: p.LOG_LEVEL,
+  SECURE_COOKIE_OPTION: secure,
+  SAME_SITE_COOKIE_OPTION: sameSite,
 
   PRISMA_USER_DATABASE_URI: p.PRISMA_USER_DATABASE_URI!,
   REDIS_CODE_C_URI: p.REDIS_CODE_C_URI,
-
-  JWT_ACCESS_SECRET_KEY: process.env.JWT_ACCESS_SECRET_KEY || "",
-  JWT_REFRESH_SECRET_KEY: process.env.JWT_REFRESH_SECRET_KEY || "",
-  JWT_PRIVATE_ACCESS_SECRET_KEY: process.env.JWT_PRIVATE_ACCESS_SECRET_KEY || "",
-
-  // Token names for checking or creating token easily, without writing complex names of tokens again 
-  // and again in code multiple times.
-  REFRESH_TOKEN_NAME: process.env.REFRESH_TOKEN_NAME || "",
-  ACCESS_TOKEN_NAME: process.env.ACCESS_TOKEN_NAME || "",
-  PRIVATE_ACCESS_TOKEN_NAME: process.env.PRIVATE_ACCESS_TOKEN_NAME || "",
-
 };

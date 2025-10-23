@@ -11,6 +11,8 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT}:5432"
+    networks:
+      - microservices_net_01
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -23,11 +25,12 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
+    networks:
+      - microservices_net_01
 
 volumes:
   pgdata:
 
 networks:
-  default:
-    name: microservices_net_01
+  microservices_net_01:
     external: true

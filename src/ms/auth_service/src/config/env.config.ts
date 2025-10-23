@@ -1,16 +1,32 @@
+import dotenvExpand from "dotenv-expand";
+import dotenv from "dotenv";
 import process from "process";
 import path from "path";
-import dotenv from "dotenv";
 import { logger } from "@utils/logger";
+import { existsSync } from "fs";
 
 const p = process.env // Technique for convinience
 
 // Include this condition where you wnt to get monorepo parent .env file for dev environment testing
 // This is used in config files to get env from .env file for development
 // Where we will get env variables for production from infra
-if (p.NODE_ENV !== "production") {
-  dotenv.config({ path: path.resolve(__dirname, "../../../../../.env") });
+
+const isDocker = existsSync("/.dockerenv");
+const isProduction = p.NODE_ENV === "production";
+
+if (!isProduction) {
+  const envPath = isDocker
+    ? path.resolve("/app/.env") // inside container
+    : path.resolve(__dirname, "../../../../../.env"); // local monorepo
+  const envResult = dotenv.config({ path: envPath });
+  dotenvExpand.expand(envResult);
+  logger.debug(`Loaded environment from: ${envPath}`);
 }
+logger.debug(`logged env: ${p.NODE_ENV}`)
+logger.debug(`logged env: ${p.REDIS_PASSWORD_CODE_C}`)
+logger.debug(`logged env: ${p.SIGNUP_SESSION_TOKEN_NAME}`)
+logger.debug(`logged env: ${p.COOKIE_DOMAIN}`)
+logger.debug(`logged env: ${p.PRISMA_USER_DATABASE_URI}`)
 
 const secure = (p.NODE_ENV === "production") ? true : false
 
@@ -44,8 +60,15 @@ interface EnvConfig {
 }
 
 export const EXPIRATION = {
-  JWT_ACCESS_TOKEN: "15m",
-  ACCESS_SESSION_COOKIE: 15 * 60 * 1000, // 15 minutes in ms
+  JWT_ACCESS_SESSION_TOKEN: "45m",
+  ACCESS_SESSION_COOKIE: 45 * 60 * 1000, // 15 minutes in ms
+
+  JWT_PRIVATE_ACCESS_SESSION_TOKEN: "10m",
+  PRIVATE_ACCESS_SESSION_COOKIE: 10 * 60 * 1000, // 10 minutes in ms
+
+  JWT_REFRESH_SESSION_TOKEN: "365d",
+  JWT_REFRESH_REMEMBER_OFF_SESSION_TOKEN: "6h",
+  REFRESH_SESSION_COOKIE: 365 * 25 * 60 * 60 * 1000, // 365 days in ms
 
   JWT_SIGNUP_SESSION_TOKEN: "10m", // 10 minutes in seconds (for email/username validation flow)
   SIGNUP_SESSION_COOKIE: 10 * 60 * 1000, // 10 minutes for cookie, in ms
@@ -54,9 +77,9 @@ export const EXPIRATION = {
   JWT_SIGNUP_SESSION_TOKEN_EXTENDED: "30m", // 30 minutes in seconds (for post email-verification signup flow)
   SIGNUP_SESSION_COOKIE_EXTENDED: 30 * 60 * 1000, // 30 minutes for cookie, in ms
   REDIS_SIGNUP_SESSION_TTL_EXTENDED: 30 * 60, // Match signup session (30 min)
-};
+} ;
 
-export const env : EnvConfig= {
+export const env: EnvConfig = {
   NODE_ENV: p.NODE_ENV || "development",
   AUTH_SERVICE_PORT: p.AUTH_SERVICE_PORT!,
   SECURE_COOKIE_OPTION: secure,
@@ -89,7 +112,7 @@ export const env : EnvConfig= {
 const missing: string[] = [];
 
 for (const [key, value] of Object.entries(env)) {
-    if (
+  if (
     value === undefined ||
     value === null ||
     (typeof value === "string" && value.trim() === "")

@@ -3,55 +3,120 @@ import { signoutService } from "@services/signout.service";
 import { sendResponse } from "@utils/response";
 import { logger } from "@utils/logger";
 import { env } from "@config/env.config";
+import { verifyJwtToken } from "@utils/jwt";
 
 /**
  * @controller signoutController
  * Handles incoming signout requests.
- * - Extracts user ID from request (req.body.userID)
- * - Calls signoutService to revoke tokens
- * - Returns standardized API response via sendResponse
+ * - Extracts user ID and session ID from refresh token
+ * - Calls signoutService to revoke the specific session
+ * - Clears cookies and returns standardized API response
  */
 export const signoutController = async (req: Request, res: Response) => {
   try {
-    const userID = req.body?.userID;
-
-    if (!userID) {
-      logger.warn("🚫 [SIGNOUT] Missing user ID in request.");
+    // Extract token from cookies
+    const token = req.cookies?.[env.REFRESH_TOKEN_NAME];
+    if (!token) {
+      logger.warn(`🚫 [SIGNOUT] No refresh token provided in cookies. Path: ${req.path}`);
       return sendResponse({
         res,
         success: false,
         statusCode: 401,
-        message: "Unauthorized. User not identified.",
+        message: "No refresh token provided.",
         errorType: "unauthorized",
         path: req.path,
       });
     }
 
-    // Call signout service
-    const serviceResult = await signoutService(userID);
+    // Verify token and extract payload
+    let payload: any;
+    try {
+      payload = verifyJwtToken(token, env.JWT_REFRESH_SECRET_KEY);
+    } catch (verifyErr) {
+      logger.warn({
+        message: `🚫 [SIGNOUT] Failed to verify refresh token.`,
+        error: verifyErr,
+        path: req.path,
+      });
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 401,
+        message: "Invalid or expired refresh token.",
+        errorType: "unauthorized",
+        path: req.path,
+      });
+    }
 
-    // Clear auth cookies (optional but recommended)
-    res.clearCookie(env.ACCESS_TOKEN_NAME, {
-      httpOnly: true,
-      secure: env.SECURE_COOKIE_OPTION,
-      sameSite: env.SAME_SITE_COOKIE_OPTION,
-    });
-    res.clearCookie(env.REFRESH_TOKEN_NAME, {
-      httpOnly: true,
-      secure: env.SECURE_COOKIE_OPTION,
-      sameSite: env.SAME_SITE_COOKIE_OPTION,
-    });
-    res.clearCookie(env.PRIVATE_ACCESS_TOKEN_NAME, {
-      httpOnly: true,
-      secure: env.SECURE_COOKIE_OPTION,
-      sameSite: env.SAME_SITE_COOKIE_OPTION,
-    });
+    const { sub: userID, userSessionID } = payload;
 
-    logger.info(`✅ [SIGNOUT] User ${userID} signed out successfully.`);
+    if (!userID || !userSessionID) {
+      logger.warn(`🚫 [SIGNOUT] Missing userID or sessionID in token payload.`);
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 401,
+        message: "Session expired.",
+        errorType: "unauthorized",
+        path: req.path,
+      });
+    }
 
+    // Call signout service with safe try/catch
+    let serviceResult;
+    try {
+      serviceResult = await signoutService(userID, userSessionID);
+      if (!serviceResult || typeof serviceResult !== "object") {
+        logger.error({
+          message: "[SIGNOUT] Invalid service response from signoutService",
+          userID,
+          userSessionID,
+        });
+        throw new Error("Invalid service response.");
+      }
+    } catch (serviceErr: any) {
+      logger.error({
+        message: `[SIGNOUT] signoutService failed for user ${userID}`,
+        error: serviceErr?.message || serviceErr,
+        userID,
+        userSessionID,
+        path: req.path,
+      });
+
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: serviceErr?.statusCode || 500,
+        message: serviceErr?.message || "Failed to sign out user.",
+        errorType: serviceErr?.errorType || "internal_server_error",
+        path: req.path,
+      });
+    }
+
+    // Clear cookies safely
+    try {
+      const cookieOptions = {
+        httpOnly: true,
+        secure: env.SECURE_COOKIE_OPTION,
+        sameSite: env.SAME_SITE_COOKIE_OPTION,
+      };
+      res.clearCookie(env.ACCESS_TOKEN_NAME, cookieOptions);
+      res.clearCookie(env.REFRESH_TOKEN_NAME, cookieOptions);
+      res.clearCookie(env.PRIVATE_ACCESS_TOKEN_NAME, cookieOptions);
+    } catch (cookieErr) {
+      logger.warn({
+        message: `[SIGNOUT] Failed to clear cookies for user ${userID}`,
+        error: cookieErr,
+        path: req.path,
+      });
+    }
+
+    logger.info(`✅ [SIGNOUT] User ${userID} signed out successfully. Path: ${req.path}`);
+
+    // Return service response safely
     return sendResponse({
       res,
-      ...serviceResult, // spreads { success, statusCode, message, data } from your service
+      ...serviceResult, // spreads { success, statusCode, message, data }
       path: req.path,
     });
   } catch (err: any) {

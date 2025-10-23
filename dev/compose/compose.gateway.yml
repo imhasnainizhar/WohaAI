@@ -19,8 +19,9 @@ services:
       - USER_SERVICE_PORT=${USER_SERVICE_PORT}
       - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
       - USER_CODE_VERIFICATION_PORT=${USER_CODE_VERIFICATION_PORT}
+    networks:
+      - microservices_net_01
 
 networks:
-  default:
-    name: microservices_net_01
+  microservices_net_01:
     external: true

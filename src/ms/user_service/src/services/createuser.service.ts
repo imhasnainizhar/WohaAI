@@ -47,6 +47,7 @@ export const createUserService = async (input: CreateUserInput) => {
       message: "User created successfully",
       data: {
         user: newUser,
+        userSessionCreated: false,       // This field under review
       },
     });
   } catch (err: any) {

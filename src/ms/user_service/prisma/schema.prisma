@@ -1,0 +1,45 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_USER_DATABASE_URI")
+}
+
+model User {
+  userID           String   @id @default(uuid())
+  userFirstName    String
+  userLastName     String
+  phoneNumber      String?
+  email            String   @unique
+  username         String   @unique
+  passwordHashed   String
+  refreshTokenHash String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt()
+
+  // Foreign Relations
+  refreshToken refreshToken[]
+  cards        Card[]
+}
+
+model Card {
+  cardId String @id @default(uuid())
+
+  // Foreign Relations
+  userID String
+  user   User   @relation(fields: [userID], references: [userID])
+}
+
+model refreshToken {
+  refreshTokenID   String   @id @default(uuid())
+  refreshTokenHash String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Foreign Relations
+  userID           String
+  user             User     @relation(fields: [userID], references: [userID])
+}
