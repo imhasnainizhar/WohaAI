@@ -1,53 +1,91 @@
 import { prisma } from "@utils/prisma_client";
-import { ServiceResponse } from "@utils/service_response";
-import { ServiceException } from "@errors/service_exception";
+import { deleteCache, getCache } from "@utils/redis_client";
+import { ServiceResponse, ServiceException } from "@utils/response";
 import { logger } from "@utils/logger";
 
 interface CreateUserInput {
+  username: string;
+  userFirstName: string,
+  userLastName: string,
   email: string;
   hashedPassword: string;
-  firstName: string;
-  lastName: string;
-  username: string;
+  signupSessionID: string;
 }
 
 /**
  * @service createUserService
- * Creates a new user in the DB after email verification
+ * Creates a new user in the DB after verifying Redis entry for integrity.
  */
-export const createUserService = async (input: CreateUserInput) => {
+export const createUserService = async (userData: CreateUserInput) => {
   try {
-    const { email, hashedPassword, firstName, lastName, username } = input;
+    const {
+      username,
+      userFirstName,
+      userLastName,
+      email,
+      hashedPassword,
+      signupSessionID
+    } = userData;
 
-    // Create user
+    // ✅ Step 1: Redis verification check
+    const verifiedPayload = await getCache(`pending_signup:${signupSessionID}`);
+
+    if (!verifiedPayload) {
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 401,
+          message: "Invalid or expired verification token",
+          errorType: "unauthorized_request",
+        })
+      );
+    }
+
+    const parsedVerification = JSON.parse(verifiedPayload);
+
+    // ensure the email from Redis matches the current request
+    if (parsedVerification.email !== email) {
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 403,
+          message: "Request data mismatch — possible tampering detected",
+          errorType: "data_tampered",
+        })
+      );
+    }
+
+    // ✅ Step 2: Create user
     const newUser = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
-        firstName,
-        lastName,
+        hashedPassword: hashedPassword,
+        userFirstName,
+        userLastName,
         username,
       },
       select: {
-        id: true,
+        userID: true,
         email: true,
         username: true,
-        firstName: true,
-        lastName,
+        userFirstName: true,
+        userLastName: true,
         createdAt: true,
       },
     });
 
-    logger.info(`✅ User created successfully: ${newUser.id}`);
+    logger.info(`✅ User created successfully: ${newUser.userID}`);
 
-    // Return structured service response
+    // ✅ Step 3: Delete the Redis entry (one-time use)
+    await deleteCache(`pending_signup:${signupSessionID}`);
+
     return ServiceResponse.success({
       success: true,
       statusCode: 201,
       message: "User created successfully",
       data: {
         user: newUser,
-        userSessionCreated: false,       // This field under review
+        userSessionCreated: false,
       },
     });
   } catch (err: any) {
