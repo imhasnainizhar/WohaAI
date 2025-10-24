@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export const usernameUpdateSchema = z
   .object({
-    userID: z.number(),
     username: z
       .string()
       .trim()

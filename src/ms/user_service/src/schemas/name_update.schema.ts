@@ -1,8 +1,7 @@
 import { z } from "zod";
 
-export const NameUpdateSchema = z
+export const nameUpdateSchema = z
   .object({
-    userID: z.number(),
     firstName: z
       .string()
       .min(1, "*Required")
@@ -15,4 +14,4 @@ export const NameUpdateSchema = z
       .max(20, "Very Long, Maximum 20 Characters")
       .regex(/^[A-Za-z]+$/, "Only Letters"),
   });
-export type NameUpdate = z.infer<typeof NameUpdateSchema>;
+export type NameUpdate = z.infer<typeof nameUpdateSchema>;

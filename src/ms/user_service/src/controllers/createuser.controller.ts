@@ -1,20 +1,35 @@
 import { Request, Response } from "express";
 import { createUserService } from "@services/createuser.service";
-import { sendResponse } from "@utils/api_response";
+import { sendResponse, ServiceException, ServiceResponse } from "@utils/response";
 import { logger } from "@utils/logger";
-import { z } from "zod";
+import { success, z } from "zod";
+import { env } from "@config/env.config";
+import { verifyJwtToken } from "@utils/jwt";
 
 // Zod schema for input validation
 const createUserSchema = z.object({
+    username: z.string().min(3, "Username must be at least 3 characters"),
+    userFirstName: z.string().min(1, "Display name is required"),
+    userLastName: z.string().min(1, "Display name is required"),
     email: z.string().email("Invalid email"),
     hashedPassword: z.string(),
-    firstName: z.string().min(1, "Display name is required"),
-    lastName: z.string().min(1, "Display name is required"),
-    username: z.string().min(3, "Username must be at least 3 characters"),
 });
 
 export const createUserController = async (req: Request, res: Response) => {
     try {
+        const signupSessionToken = req.cookies?.[env.SIGNUP_SESSION_TOKEN_NAME];
+        const session = verifyJwtToken(signupSessionToken, env.JWT_SIGNUP_SESSION_SECRET_KEY);
+        const signupSessionID = session.signupSessionID
+        if (!signupSessionID) {
+            throw new ServiceException(
+                ServiceResponse.error({
+                    success: false,
+                    statusCode: 401,
+                    message: "signup session timed out",
+                    errorType: "signup_sesion_expired"
+                })
+            )
+        }
         // Validate input
         const parsed = createUserSchema.safeParse(req.body);
         if (!parsed.success) {
@@ -26,18 +41,19 @@ export const createUserController = async (req: Request, res: Response) => {
                 formattedErrors[key].push(err.message);
             });
 
-            return sendResponse({
-                res,
-                success: false,
-                statusCode: 400,
-                message: "Validation failed",
-                errors: formattedErrors,
-                path: req.path,
-            });
+            throw new ServiceException(
+                ServiceResponse.error({
+                    success: false,
+                    statusCode: 400,
+                    message: "Validation failed",
+                    errors: formattedErrors,
+                })
+            )
         }
 
+        const { username, userFirstName, userLastName, email, hashedPassword } = parsed.data
         // Call service
-        const serviceResult = await createUserService(parsed.data);
+        const serviceResult = await createUserService({ username, userFirstName, userLastName, email, hashedPassword, signupSessionID });
 
         // Send response
         return sendResponse({
@@ -46,7 +62,26 @@ export const createUserController = async (req: Request, res: Response) => {
             path: req.path,
         });
     } catch (err: any) {
-        logger.error("❌ createUserController error:", err);
+        if (err instanceof ServiceException) {
+            logger.error({
+                msg: "❌ createUserController error",
+                message: err.message,
+                stack: err.stack,
+                name: err.name,
+                cause: err.cause,
+            });
+            return sendResponse({
+                res,
+                ...err.response
+            })
+        }
+        logger.error({
+            msg: "❌ createUserController error",
+            message: err.message,
+            stack: err.stack,
+            name: err.name,
+            cause: err.cause,
+        });
 
         return sendResponse({
             res,

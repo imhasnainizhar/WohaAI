@@ -1,21 +1,52 @@
+import { verifyJwtToken } from '@utils/jwt';
 import { Request, Response } from "express";
-import { sendResponse } from "@utils/api_response";
-import { ZodError } from "zod";
+import { sendResponse, ServiceException, ServiceResponse } from "@utils/response";
+import { safeParse, ZodError } from "zod";
 import { logger } from "@utils/logger";
+import { env } from '@config/env.config';
 
 // Services handling respective update logic
 import { nameUpdateService } from "@services/name_update.service";
 import { passwordUpdateService } from "@services/password_update.service";
 import { usernameUpdateService } from "@services/username_update.service";
 import { emailUpdateService } from "@services/email_update.service";
+import { usernameUpdateSchema } from '@schemas/username_update.schema';
+import { passwordUpdateSchema } from '@schemas/password_update.schema';
+import { nameUpdateSchema } from '@schemas/name_update.schema';
+import { emailUpdateSchema } from '@schemas/email_update.schema';
 
 /**
  * Controller: Update user's display name
  */
 export const nameUpdateController = async (req: Request, res: Response) => {
   try {
+    const refreshToken = req.cookies?.[env.JWT_REFRESH_SECRET_KEY]
+    const session = verifyJwtToken(refreshToken, env.JWT_REFRESH_SECRET_KEY)
+
+    const userID = session.sub
+    if (!userID) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 401,
+        message: "session expired",
+        errorType: "unauthorized"
+      })
+    }
+
+    const parsed = nameUpdateSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 410,
+        message: "validation error",
+        errorType: "validation_error"
+      })
+    }
+    const { firstName, lastName } = parsed.data
     // Attempt to update the user's name via the service layer
-    const result = await nameUpdateService(req.body);
+    const result = await nameUpdateService({ userID, firstName, lastName });
 
     // Log successful update
     logger.info({ action: "update_name", user: req.body.userId }, "User name updated successfully");
@@ -44,6 +75,14 @@ export const nameUpdateController = async (req: Request, res: Response) => {
       });
     }
 
+    if (error instanceof ServiceException) {
+      logger.warn({ action: "update_name", errors: error }, "Service Exception");
+      return sendResponse({
+        res,
+        ...error.response
+      });
+    }
+
     // Log unexpected internal errors
     logger.error({ action: "update_name", error }, "Internal server error");
     return sendResponse({
@@ -62,41 +101,65 @@ export const nameUpdateController = async (req: Request, res: Response) => {
  */
 export const passwordUpdateController = async (req: Request, res: Response) => {
   try {
-    // Delegate password update logic to the service layer
-    const result = await passwordUpdateService(req.body);
+    const refreshToken = req.cookies?.[env.JWT_REFRESH_SECRET_KEY]
+    const session = verifyJwtToken(refreshToken, env.JWT_REFRESH_SECRET_KEY)
 
-    // Handle failed responses gracefully based on service feedback
-    if (!result.success) {
-      logger.warn({ action: "update_password", reason: result.message }, "Password update failed");
+    const userID = session.sub
+    if (!userID) {
       return sendResponse({
         res,
         success: false,
-        message: result.message,
-        statusCode: result.statusCode || 400,
-        errors: result.errors,
-        errorType:
-          result.statusCode === 400
-            ? "validation_error"
-            : result.statusCode === 404
-              ? "not_found"
-              : "service_error",
+        statusCode: 401,
+        message: "session expired",
+        errorType: "unauthorized"
+      })
+    }
+
+    const parsed = passwordUpdateSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 410,
+        message: "validation error",
+        errorType: "validation_error"
+      })
+    }
+    const { newPassword, confirmNewPassword } = parsed.data
+
+    if (newPassword !== confirmNewPassword) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 400,
+        message: "Password must match confirm password",
+        errorType: "validation_error"
+      })
+    }
+
+    const result = await passwordUpdateService({ userID, newPassword });
+
+    // Send successful structured response
+    if (result) {
+      // Log successful password update (without exposing sensitive info)
+      logger.info({ action: "update_password", user: session.userId }, "Password updated successfully");
+
+      return sendResponse({
+        res,
+        success: true,
+        message: "Password updated successfully",
+        statusCode: 200,
+        data: result.data,
         path: req.originalUrl,
       });
     }
-
-    // Log successful password update (without exposing sensitive info)
-    logger.info({ action: "update_password", user: req.body.userId }, "Password updated successfully");
-
-    // Send successful structured response
-    return sendResponse({
-      res,
-      success: true,
-      message: "Password updated successfully",
-      statusCode: 200,
-      data: result.data,
-      path: req.originalUrl,
-    });
   } catch (error) {
+    if (error instanceof ServiceException) {
+      return sendResponse({
+        res,
+        ...error.response
+      })
+    }
     // Log internal unexpected errors
     logger.error({ action: "update_password", error }, "Unexpected error while updating password");
     return sendResponse({
@@ -115,8 +178,33 @@ export const passwordUpdateController = async (req: Request, res: Response) => {
  */
 export const usernameUpdateController = async (req: Request, res: Response) => {
   try {
+    const refreshToken = req.cookies?.[env.JWT_REFRESH_SECRET_KEY]
+    const session = verifyJwtToken(refreshToken, env.JWT_REFRESH_SECRET_KEY)
+
+    const userID = session.sub
+    if (!userID) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 401,
+        message: "session expired",
+        errorType: "unauthorized"
+      })
+    }
+
+    const parsed = usernameUpdateSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 410,
+        message: "validation error",
+        errorType: "validation_error"
+      })
+    }
+    const { username } = parsed.data
     // Attempt username update through service
-    const result = await usernameUpdateService(req.body);
+    const result = await usernameUpdateService({ userID, username });
 
     // Handle failed cases with structured feedback
     if (!result.success) {
@@ -150,6 +238,13 @@ export const usernameUpdateController = async (req: Request, res: Response) => {
       path: req.originalUrl,
     });
   } catch (error: any) {
+    if (error instanceof ServiceException) {
+      return sendResponse({
+        res,
+        ...error.response
+      })
+    }
+
     // Log internal exceptions
     logger.error({ action: "update_username", error }, "Unexpected error while updating username");
     return sendResponse({
@@ -168,9 +263,32 @@ export const usernameUpdateController = async (req: Request, res: Response) => {
  */
 export const emailUpdateController = async (req: Request, res: Response) => {
   try {
-    // Perform email update operation via service
-    const result = await emailUpdateService(req.body);
+    const refreshToken = req.cookies?.[env.JWT_REFRESH_SECRET_KEY]
+    const session = verifyJwtToken(refreshToken, env.JWT_REFRESH_SECRET_KEY)
 
+    const userID = session.sub
+    if (!userID) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 401,
+        message: "session expired",
+        errorType: "unauthorized"
+      })
+    }
+
+    const parsed = emailUpdateSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return sendResponse({
+        res,
+        success: false,
+        statusCode: 410,
+        message: "validation error",
+        errorType: "validation_error"
+      })
+    }
+    const { email } = parsed.data
+    const result = await emailUpdateService({ userID, email })
     // Handle failed service responses
     if (!result.success) {
       logger.warn({ action: "update_email", reason: result.message }, "Email update failed");
@@ -198,6 +316,13 @@ export const emailUpdateController = async (req: Request, res: Response) => {
       path: req.originalUrl,
     });
   } catch (error: any) {
+    if (error instanceof ServiceException) {
+      return sendResponse({
+        res,
+        ...error.response
+      })
+    }
+
     // Log unexpected errors
     logger.error({ action: "update_email", error }, "Unexpected error while updating email");
     return sendResponse({

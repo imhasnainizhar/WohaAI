@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { z, ZodError } from "zod";
-import { sendResponse } from "@utils/api_response";
+import { sendResponse } from "@utils/response";
 import { getUserService } from "@services/getuser.service";
 import { logger } from "@utils/logger";
 
 // Zod schemas for route validation
-const idParamsSchema = z.object({ id: z.string().uuid({ message: "Invalid user ID format" }) });
+const idParamsSchema = z.object({ userID: z.string().uuid({ message: "Invalid user ID format" }) });
 const usernameParamsSchema = z.object({ username: z.string().min(1, "Username is required") });
 
 /**
@@ -18,11 +18,11 @@ export const getUserController = async (req: Request, res: Response) => {
     logger.info({ message: "🟢 [USER] Incoming get user request", path });
 
     let result;
-    if (req.params.id) {
-      const { id } = idParamsSchema.parse(req.params);
-      result = await getUserService({ userId: id });
-    } else if (req.params.username) {
-      const { username } = usernameParamsSchema.parse(req.params);
+    if (req.body.params.id) {
+      const { userID } = idParamsSchema.parse(req.body.params);
+      result = await getUserService({ userID: userID });
+    } else if (req.body.params.username) {
+      const { username } = usernameParamsSchema.parse(req.body.params);
       result = await getUserService({ username });
     } else {
       return sendResponse({
