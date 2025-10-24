@@ -1,29 +1,25 @@
-// services/name_update.service.ts
-import { NameUpdateSchema, NameUpdate } from "@schemas/name_update.schema";
 import { prisma } from "@utils/prisma_client";
 import { ZodError } from "zod";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/service_response";
-import { ServiceException } from "@errors/service_exception";
+import { ServiceException } from "@utils/response";
+import { NameUpdate } from "@custom_types/update_types/name_update.type";
 
 /**
  * @service nameUpdateService
  * Handles updating user's first and last name.
  * Returns a standardized ServiceResponse.
  */
-export const nameUpdateService = async (body: NameUpdate) => {
+export const nameUpdateService = async ({ userID, firstName, lastName }: NameUpdate) => {
     try {
-        // Validate request body
-        const parsed = NameUpdateSchema.parse(body);
-
         // Update user in database
         const updatedUser = await prisma.user.update({
-            where: { id: parsed.userID },
+            where: { userID: userID },
             data: {
-                firstName: parsed.firstName,
-                lastName: parsed.lastName,
+                userFirstName: firstName,
+                userLastName: lastName,
             },
-            select: { id: true, firstName: true, lastName: true },
+            select: { userID: true, userFirstName: true, userLastName: true },
         });
 
         // Return success response
@@ -35,25 +31,18 @@ export const nameUpdateService = async (body: NameUpdate) => {
         });
 
     } catch (error: any) {
-        // Handle validation errors
-        if (error instanceof ZodError) {
-            return ServiceResponse.error({
-                success: false,
-                statusCode: 400,
-                message: "Validation failed",
-                errorType: "validation_error",
-                errors: error.flatten().fieldErrors,
-            });
-        }
 
         // Prisma record not found
         if (error.code === "P2025") {
-            return ServiceResponse.error({
-                success: false,
-                statusCode: 404,
-                message: "User not found",
-                errorType: "not_found",
-            });
+            logger.debug(`❌${error.message}`)
+            throw new ServiceException(
+                ServiceResponse.error({
+                    success: false,
+                    statusCode: 404,
+                    message: "User not found",
+                    errorType: "not_found",
+                })
+            )
         }
 
         // Unexpected errors

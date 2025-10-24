@@ -9,6 +9,5 @@ export const emailUpdateSchema = z
       .refine((val) => !/[<>`'"\\]/.test(val), {
         message: "Invalid Characters",
       }),
-    userID: z.number(),
   });
 export type EmailUpdate = z.infer<typeof emailUpdateSchema>;

@@ -10,7 +10,6 @@ import { logger } from "@utils/logger";
 import { env } from '@config/env.config';
 import { verifyJwtToken } from '@utils/jwt';
 import { verifyUserEmailSchema } from '@schemas/email_verification.schema';
-import { ZodError } from 'zod';
 
 /**
  * Validate display name

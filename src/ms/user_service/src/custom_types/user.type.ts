@@ -1,6 +1,6 @@
 // user.types.ts
 export type UserRecord = {
-  id: string;
+  userID: string;
   email: string;
   username: string;
   firstName?: string | null;
@@ -13,7 +13,7 @@ export type UserRecord = {
 };
 
 export type PublicUser = {
-  id: string;
+  userID: string;
   username: string;
   firstName?: string | null;
   lastName?: string | null;
@@ -23,7 +23,7 @@ export type PublicUser = {
 /** Remove sensitive/internal fields before sending to client */
 export function sanitizeUser(user: UserRecord): PublicUser {
   return {
-    id: user.id,
+    userID: user.userID,
     username: user.username,
     firstName: user.firstName ?? null,
     lastName: user.lastName ?? null,

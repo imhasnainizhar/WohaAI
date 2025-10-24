@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createUserService } from "@services/createuser.service";
-import { sendResponse } from "@utils/api_response";
+import { sendResponse } from "@utils/response";
 import { logger } from "@utils/logger";
 import { z } from "zod";
 

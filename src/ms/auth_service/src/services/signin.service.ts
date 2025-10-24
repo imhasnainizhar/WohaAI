@@ -55,7 +55,7 @@ export const signinService = async <T>(
         userLastName: true,
         email: true,
         username: true,
-        passwordHashed: true,
+        hashedPassword: true,
       },
     });
 
@@ -71,7 +71,7 @@ export const signinService = async <T>(
     }
 
     // ✅ Verify password
-    const isPasswordCorrect = await argon2.verify(user.passwordHashed, password);
+    const isPasswordCorrect = await argon2.verify(user.hashedPassword, password);
     if (!isPasswordCorrect) {
       throw new ServiceException(
         ServiceResponse.error({

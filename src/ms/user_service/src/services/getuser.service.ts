@@ -3,13 +3,13 @@ import { ServiceResponse } from '@utils/service_response';
 import { sanitizeUser } from '@custom_types/user.type';
 
 interface GetUserParams {
-  userId?: string;
+  userID?: string;
   username?: string;
 }
 
-export const getUserService = async ({ userId, username }: GetUserParams) => {
+export const getUserService = async ({ userID, username }: GetUserParams) => {
   // Validate input
-  if (!userId && !username) {
+  if (!userID && !username) {
     return ServiceResponse.error({
       success: false,
       statusCode: 400,
@@ -20,15 +20,15 @@ export const getUserService = async ({ userId, username }: GetUserParams) => {
 
   // Fetch user from DB
   const rawUser = await prisma.user.findUnique({
-    where: userId ? { id: userId } : { username: username! },
+    where: userID ? { userID: userID } : { username: username! },
   });
 
   if (!rawUser) {
     return ServiceResponse.error({
       success: false,
       statusCode: 404,
-      message: userId
-        ? `User not found with ID: ${userId}`
+      message: userID
+        ? `User not found with ID: ${userID}`
         : `User not found with username: ${username}`,
       errorType: "not_found",
     });

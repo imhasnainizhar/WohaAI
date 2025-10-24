@@ -1,8 +1,7 @@
 import { z } from "zod"
 
-export const PasswordUpdateSchema = z
+export const passwordUpdateSchema = z
   .object({
-    userID: z.number(),
     newPassword: z
       .string()
       .min(1, "*Required")
@@ -19,4 +18,4 @@ export const PasswordUpdateSchema = z
     path: ["confirmPassword"],
     message: "Passwords Do Not Match",
   });
-export type PasswordUpdate = z.infer<typeof PasswordUpdateSchema>;
+export type PasswordUpdate = z.infer<typeof passwordUpdateSchema>;

@@ -12,17 +12,15 @@ model User {
   userID           String   @id @default(uuid())
   userFirstName    String
   userLastName     String
-  phoneNumber      String?
   email            String   @unique
   username         String   @unique
-  passwordHashed   String
-  refreshTokenHash String?
+  hashedPassword   String
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt()
 
   // Foreign Relations
-  refreshToken refreshToken[]
-  cards        Card[]
+  userSession UserSession[]
+  cards       Card[]
 }
 
 model Card {
@@ -33,13 +31,20 @@ model Card {
   user   User   @relation(fields: [userID], references: [userID])
 }
 
-model refreshToken {
-  refreshTokenID   String   @id @default(uuid())
-  refreshTokenHash String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+model UserSession {
+  userSessionID     String   @id @default(uuid())
+  refreshTokenHash  String
+  createdAt         DateTime @default(now())
+  revoked           Boolean  @default(false)
+  revokedAt         DateTime?
+  rememberMe        Boolean  @default(false)
+  userIPAddress     String
+  userDeviceID      String
+  userDeviceName    String
+  userDeviceType    String
+  userDeviceBrowser String
+  userDeviceOS      String
 
-  // Foreign Relations
-  userID           String
-  user             User     @relation(fields: [userID], references: [userID])
+  userID String
+  user   User @relation(fields: [userID], references: [userID])
 }

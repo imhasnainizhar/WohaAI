@@ -1,13 +1,11 @@
-// src/utils/logger.ts
-import { env } from "@config/env.config";
 import pino from "pino";
 
 // Detect environment
-const isDev = env.NODE_ENV !== "production";
+const isDev = process.env.NODE_ENV !== "production" ? "development" : "production";
 
 // Configure base logger
 export const logger = pino({
-  level: env.LOG_LEVEL || (isDev ? "debug" : "info"),
+  level: process.env.LOG_LEVEL || (isDev ? "debug" : "info"),
   transport: isDev
     ? {
         target: "pino-pretty",

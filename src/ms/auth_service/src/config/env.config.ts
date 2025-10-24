@@ -22,11 +22,6 @@ if (!isProduction) {
   dotenvExpand.expand(envResult);
   logger.debug(`Loaded environment from: ${envPath}`);
 }
-logger.debug(`logged env: ${p.NODE_ENV}`)
-logger.debug(`logged env: ${p.REDIS_PASSWORD_CODE_C}`)
-logger.debug(`logged env: ${p.SIGNUP_SESSION_TOKEN_NAME}`)
-logger.debug(`logged env: ${p.COOKIE_DOMAIN}`)
-logger.debug(`logged env: ${p.PRISMA_USER_DATABASE_URI}`)
 
 const secure = (p.NODE_ENV === "production") ? true : false
 
@@ -56,7 +51,6 @@ interface EnvConfig {
   SIGNUP_SESSION_TOKEN_NAME: string;
   CLIENT_ORIGIN: string;
   COOKIE_DOMAIN: string;
-
 }
 
 export const EXPIRATION = {
