@@ -7,6 +7,7 @@
         ],
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
+        "allowSyntheticDefaultImports": true,
         /* Project Structure */
         "rootDir": "./src",
         "outDir": "./dist",
@@ -35,6 +36,12 @@
             ],
             "@errors/*":[
                 "./src/errors/*"
+            ],
+            "@routes/*":[
+                "./src/routes/*"
+            ],
+            "@controllers/*":[
+                "./src/controllers/*"
             ]
         },
         /* Output + Debugging */

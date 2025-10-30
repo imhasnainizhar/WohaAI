@@ -13,11 +13,10 @@
   },
   "license": "MIT",
   "author": "Hasnain Izhar",
-  "type": "module",
   "main": "src/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/server.js"
   },
@@ -25,7 +24,9 @@
     "axios": "^1.13.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "dotenv-expand": "^12.0.3",
     "express": "^5.1.0",
+    "mcp": "^1.4.2",
     "pino": "^10.1.0",
     "pino-pretty": "^13.1.2",
     "playwright": "^1.56.1",
@@ -34,10 +35,12 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.5",
     "@types/node": "^24.9.2",
     "@types/nodemon": "^1.19.6",
     "nodemon": "^3.1.10",
+    "process": "^0.11.10",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"

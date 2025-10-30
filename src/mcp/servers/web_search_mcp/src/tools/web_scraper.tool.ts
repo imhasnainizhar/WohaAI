@@ -30,7 +30,7 @@ export interface PageResult {
  * OpenAI-style universal page fetcher
  * Handles static + dynamic (JS) pages without third-party services.
  */
-export async function fetchPageContent(
+export async function fetchPageContentTool(
   url: string,
   {
     timeoutMs = 10_000,

@@ -16,10 +16,10 @@
  *  - This file intentionally keeps network calls minimal and parser simple (cheerio).
  */
 
-import { env } from "@config/env.config.js";
+import { env } from "@config/env.config";
 import axios from "axios";
-import { logger } from "@utils/logger.js";
-import { ServiceResponse, ServiceException } from "@utils/response.js";
+import { logger } from "@utils/logger";
+import { ServiceResponse, ServiceException } from "@utils/response";
 
 export const webSearchTool = async (query: string, numResults = 10) => {
     try {
