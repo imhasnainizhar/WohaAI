@@ -18,7 +18,7 @@
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
@@ -48,6 +48,9 @@
       ],
       "@providers/*": [
         "./src/providers/*"
+      ],
+      "@config/*": [
+        "./src/config/*"
       ]
     },
     "plugins": [
@@ -66,7 +69,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/prisma/schema.prisma"
+    "src/prisma/schema.prisma",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

@@ -1,0 +1,102 @@
+/* [project]/src/styles/theme/main.global.css [app-client] (css) */
+@font-face {
+  font-family: Calton Elegance Sans;
+  src: url("/fonts/Calton Elegance Sans-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --theme-dark-black-primary: #18181b;
+  --theme-dark-black-secondary: #27282a;
+  --theme-dark-black-third: #333;
+  --theme-dark-white-primary: #f2f2f2;
+  --theme-dark-white-secondary: #b3b3b3;
+  --theme-color-boxShadow-light: #cccccc40;
+  --theme-light-white-primary: #fff;
+  --theme-light-white-secondary: #f2f2f2;
+  --theme-light-white-third: #e6e6e6;
+  --theme-light-black-primary: #0d0d0d;
+  --theme-light-black-secondary: #4d4d4d;
+  --theme-color-boxShadow-dark: #00000080;
+  --dark-shade-1: #18181bd6;
+  --theme-gray-primary: #595959;
+  --theme-gray-dark: #fcfcfc1a;
+  --link-color: #009aff;
+  --link-color-hover: #005994;
+}
+
+@theme {
+    --font-montserrat-sans: "Montserrat", sans-serif; --font-calton-elegance-sans: "Calton Elegance Sans", sans-serif;   --color-dark-black-primary: var(--theme-dark-black-primary) ; --color-dark-black-secondary: var(--theme-dark-black-secondary) ; --color-dark-black-third: var(--theme-dark-black-third) ; --color-dark-white-primary: var(--theme-dark-white-primary) ; --color-dark-white-secondary: var(--theme-dark-white-secondary) ; --color-dark-boxShadow-light: var(--theme-color-boxShadow-light) ;   --color-light-white-primary: var(--theme-light-white-primary) ; --color-light-white-secondary: var(--theme-light-white-secondary) ; --color-light-white-third: var(--theme-light-white-third) ; --color-light-black-primary: var(--theme-light-black-primary) ; --color-light-black-secondary: var(--theme-light-black-secondary) ; --color-light-boxShadow-dark: var(--theme-color-boxShadow-dark) ;   --color-dark-shade-1: var(--dark-shade-1) ;   --color-gray-primary: var(--theme-gray-primary) ; --color-gray-dark: var(--theme-gray-dark) ; --color-link: var(--link-color) ; --color-link-hover: var(--link-color-hover) ;   --letter-spacing-primary: .06rem; --letter-spacing-secondary: .08rem; --hover-transition: all .65s; --active-transition: all .1s ease;
+}
+
+.shadow-light {
+  box-shadow: var(--color-boxShadow-light);
+}
+
+.shadow-dark {
+  box-shadow: var(--color-boxShadow-dark);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: auto;
+}
+
+::-webkit-scrollbar-track {
+  cursor: pointer;
+  background-color: #0000;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--theme-dark-black-third);
+  cursor: pointer;
+  border-radius: 60px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-corner {
+  background: none;
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+input:-webkit-autofill {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+input:-webkit-autofill:hover {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+input:-webkit-autofill:focus {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+input:-webkit-autofill:active {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+/*# sourceMappingURL=src_styles_theme_main_global_css_bad6b30c._.single.css.map*/
