@@ -1,31 +1,18 @@
 services:
   frontend_app:
     build:
-      context: ../../src/frontend
+      context: ../../../src/frontend
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: frontend_app
     ports:
       - "${FRONTEND_APP_PORT}:${FRONTEND_APP_PORT}"
     volumes:
-      - ../../src/frontend/src:/app/src
+      - ../../../src/frontend/src:/app/src
     restart: always
-    environment:
-      - NODE_ENV=${NODE_ENV}
-
-      - APP_PUBLIC_RECAPTCHA_SITE_KEY=${APP_PUBLIC_RECAPTCHA_SITE_KEY}
-
-      - APP_PUBLIC_GATEWAY_BASE_URI=${APP_PUBLIC_GATEWAY_BASE_URI}
-
-      - CHOKIDAR_USEPOLLING=true
-
-      - NEXT_PUBLIC_BASE_URI=${NEXT_PUBLIC_BASE_URI}
-
-      - NEXT_PUBLIC_AUTH_API_URI=${NEXT_PUBLIC_AUTH_API_URI}
-
-      - NEXT_PUBLIC_AUTH_MAILER_API_URI=${NEXT_PUBLIC_AUTH_MAILER_API_URI}
-
-      - NEXT_PUBLIC_USER_API_URI=${NEXT_PUBLIC_USER_API_URI}
+    env_file:
+      - ../../../.env
+      - ../../../.env.docker
     networks:
       - microservices_net_01
 networks:

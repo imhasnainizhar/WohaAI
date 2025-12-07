@@ -1,11 +1,10 @@
-version: "3.9"
 
 services:
   nginx-proxy:
     image: nginx:latest
     container_name: nginx-proxy
     ports:
-      - "80:80"
+      - "${WOAH_NGINX_PROXY_PORT}:${WOAH_NGINX_PROXY_PORT}"
     volumes:
       - ../../../../src/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ../../../../src/nginx/conf.d:/etc/nginx/conf.d:ro

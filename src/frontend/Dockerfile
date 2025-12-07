@@ -1,7 +1,7 @@
 # ---------------------
 # Base Stage
 # ---------------------
-FROM node:18-bullseye AS base
+FROM node:22-alpine AS base
 WORKDIR /app
 
 # Copy package files first for caching
@@ -13,7 +13,7 @@ COPY package*.json ./
 FROM base AS development
 
 # Installing Build tools for native modules
-RUN apt-get update && apt-get install -y python3 build-essential gcc g++ make
+RUN apk update && apk add python3 build-base gcc g++ make git
 
 # Installing Modules
 RUN npm ci
@@ -34,7 +34,7 @@ RUN npm run build
 # ---------------------
 # Production Runtime Stage
 # ---------------------
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
