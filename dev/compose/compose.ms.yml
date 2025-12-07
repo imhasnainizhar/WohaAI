@@ -11,7 +11,7 @@ services:
       - ../../src/ms/auth_service/src:/app/src
     restart: always
     env_file:
-      - ../../.env
+      - ../../.env.docker
     # environment:
     #   - NODE_ENV=${NODE_ENV}
 
@@ -41,7 +41,7 @@ services:
       - ../../src/ms/user_service/src:/app/src
     restart: always
     env_file:
-      - ../../.env
+      - ../../.env.docker
     # environment:
     #   - NODE_ENV=${NODE_ENV}
 

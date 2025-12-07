@@ -1,7 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { env } from "@config/env.config";
 
+//* Types
+/** User type is used for those specifiers who uses auth info from this auth Context. */
 export type User = {
   userID: string;
   email: string;
@@ -15,6 +18,7 @@ type AuthContextType = {
   loading: boolean;
 };
 
+//* Provider Logic
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -27,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(USER_SERVICE_URI, {
+        const res = await fetch(env.USER_SERVICE_URI, {
           method: "GET",
           credentials: "include",
         });

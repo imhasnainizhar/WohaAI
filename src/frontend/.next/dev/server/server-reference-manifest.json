@@ -1,0 +1,21 @@
+{
+  "node": {
+    "7fd707be8ed655c7f36ae350c8c024a8138afb6620": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/config/env.config.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "env",
+          "filename": "src/config/env.config.ts"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "filename": "src/config/env.config.ts",
+      "exportedName": "env"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "pP/L8O0HjApMWM2floubDwpiL7WTDFfdL65odG2jw5c="
+}
