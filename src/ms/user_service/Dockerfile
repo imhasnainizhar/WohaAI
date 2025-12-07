@@ -1,7 +1,7 @@
 # ---------------------
 # Base
 # ---------------------
-FROM node:20 AS base
+FROM node:22-alpine AS base
 WORKDIR /app
 COPY package*.json ./
 
@@ -28,7 +28,7 @@ RUN npm run build
 # ---------------------
 # Production
 # ---------------------
-FROM node:20 AS production
+FROM node:22-alpine AS production
 WORKDIR /app
 COPY --from=build /src/dist ./dist
 COPY package*.json ./

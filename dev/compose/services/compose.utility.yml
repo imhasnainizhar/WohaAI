@@ -18,26 +18,20 @@ services:
 
   auth_mailer_service:
     build:
-      context: ../../src/ms/auth_mailer_service/
+      context: ../../../src/ms/auth_mailer_service/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: code_mailer_service
     ports:
       - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
     volumes:
-      - ../../src/ms/auth_mailer_service/src:/app/src
+      - ../../../src/ms/auth_mailer_service/src:/app/src
     restart: always
     depends_on:
       - redis_code_c
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - MAILER_EMAIL_USER=${MAILER_EMAIL_USER}
-      - MAILER_EMAIL_PASS=${MAILER_EMAIL_PASS}
-      - MAILER_EMAIL_FROM=${MAILER_EMAIL_FROM}
-      - REDIS_CODE_C_URI=${REDIS_CODE_C_URI}
-      - REDIS_CODE_C_PORT=${REDIS_CODE_C_PORT}
-      - REDIS_PASSWORD_CODE_C=${REDIS_PASSWORD_CODE_C}
-      - AUTH_MAILER_SERVICE_PORT=${AUTH_MAILER_SERVICE_PORT}
+    env_file:
+      - ../../../.env
+      - ../../../.env.docker
     networks:
       - microservices_net_01
 
