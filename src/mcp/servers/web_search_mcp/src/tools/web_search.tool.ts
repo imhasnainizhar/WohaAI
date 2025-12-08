@@ -20,10 +20,11 @@ import { env } from "@config/env.config";
 import axios from "axios";
 import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
+import { WebSearchParams } from "@custom_types/input";
 
-export const webSearchTool = async (query: string, numResults = 10) => {
+export const webSearchTool = async ({prompt, requiredResults = 10}: WebSearchParams) => {
     try {
-        if (env.SERPER_API_KEY) {
+        if (!env.SERPER_API_KEY) {
             throw new ServiceException(
                 ServiceResponse.error({
                     success: false,
@@ -39,8 +40,8 @@ export const webSearchTool = async (query: string, numResults = 10) => {
         const url = "https://google.serper.dev/search";
         const response = await axios.post(url,
             { 
-                q: query,
-                num_results: numResults,
+                q: prompt,
+                num_results: requiredResults,
             },
             {
                 headers: {

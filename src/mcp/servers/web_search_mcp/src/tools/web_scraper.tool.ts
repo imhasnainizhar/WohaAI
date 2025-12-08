@@ -19,6 +19,7 @@
  */
 
 import { chromium } from "playwright"; // optional if JS rendering is needed
+import { WebScraperParams } from "@custom_types/input";
 
 export interface PageResult {
   status: number;
@@ -30,15 +31,13 @@ export interface PageResult {
  * OpenAI-style universal page fetcher
  * Handles static + dynamic (JS) pages without third-party services.
  */
-export async function fetchPageContentTool(
-  url: string,
+export async function webScraper(
   {
-    timeoutMs = 10_000,
-    maxRetries = 2,
-    renderJS = false,
-  }: { timeoutMs?: number; maxRetries?: number; renderJS?: boolean } = {}
-): Promise<PageResult> {
+    url,
+    WebScraperOptions
+  }: WebScraperParams): Promise<PageResult> {
   if (!/^https?:\/\//i.test(url)) throw new Error(`Invalid URL: ${url}`);
+  const { maxRetries, timeoutMs, renderJS } = WebScraperOptions
 
   let attempt = 0;
   let lastError: any;
