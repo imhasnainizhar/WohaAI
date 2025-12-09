@@ -33,8 +33,7 @@ server.registerTool("web_search",
   }
 )
 
-server.registerTool(
-  "web_scraper",
+server.registerTool("web_scraper",
   {
     title: "Webpage Scraper",
     description: "To scrape browsed pages to get data",
@@ -46,33 +45,38 @@ server.registerTool(
         renderJS: z.boolean()
       })
     }),
-    outputSchema: z.object({
-      content: z.array(
-        z.object({
-          type: z.literal("text"),
-          text: z.string()
-        })
-      )
-    })
   },
-  async (args: WebScraperParams, _extra) => {
-    const { url, WebScraperOptions } = args;
+  async ({ url, WebScraperOptions }) => {
+    try {
+      const result = await webScraper({
+        url,
+        WebScraperOptions
+      });
 
-    const result = await webScraper({
-      url,
-      WebScraperOptions
-    });
-
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(result)
-        }
-      ]
-    };
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify(result, null, 2)
+          }
+        ]
+      };
+    } catch (error: any) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify({
+              error: true,
+              message: error?.message || error?.toString() || "Unknown error occurred",
+              url: url || "unknown"
+            }, null, 2)
+          }
+        ]
+      };
+    }
   }
-);
+)
 
 
 console.log("🧩 Booting Web MCP server...");

@@ -9,6 +9,7 @@ docker compose `
   -f ../compose/infra/nginx/compose.nginx.yml `
   -f ../compose/shared/compose.cache.yml `
   -f ../compose/shared/compose.queue.yml `
+  -f ../compose/mcp/compose.mcp.yml `
   --env-file ../../.env `
   --env-file ../../.env.docker `
   up --build
