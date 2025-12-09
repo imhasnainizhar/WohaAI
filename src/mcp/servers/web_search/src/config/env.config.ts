@@ -17,7 +17,7 @@ const isProduction = p.NODE_ENV === "production";
 if (!isProduction) {
     const envPath = isDocker
         ? path.resolve("/app/.env") // inside container
-        : path.resolve(__dirname, "../../.env"); // local monorepo
+        : path.resolve(__dirname, "../../../../../../.env"); // local monorepo
     // const envResult = dotenv.config({ path: envPath });
     dotenv.config({ path: envPath });
     // dotenvExpand.expand(envResult);
@@ -27,7 +27,7 @@ if (!isProduction) {
 // --- Types for your env config ---
 interface EnvConfig {
     NODE_ENV: string;
-    WEB_BROWSER_MCP_PORT: string;
+    WEB_SEARCH_MCP_PORT: string;
     LOG_LEVEL: string;
     SERPER_API_KEY: string;
 }
@@ -35,7 +35,7 @@ interface EnvConfig {
 // ✅ Build environment object
 export const env: EnvConfig = {
     NODE_ENV: p.NODE_ENV || "development",
-    WEB_BROWSER_MCP_PORT: p.WEB_BROWSER_MCP_PORT!,
+    WEB_SEARCH_MCP_PORT: p.WEB_SEARCH_MCP_PORT!,
     LOG_LEVEL: p.LOG_LEVEL || "debug",
     SERPER_API_KEY: p.SERPER_API_KEY!,
 };

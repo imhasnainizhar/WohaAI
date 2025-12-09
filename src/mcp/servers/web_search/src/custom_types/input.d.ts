@@ -4,7 +4,7 @@ export type WebSearchParams = {
 }
 
 export type WebScraperOptions = {
-    timeoutMs: number,
+    timeoutMS: number,
     maxRetries: number,
     renderJS: boolean
 }

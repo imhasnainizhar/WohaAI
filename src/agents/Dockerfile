@@ -9,7 +9,7 @@ COPY package*.json ./
 # Development
 # ---------------------
 FROM base AS development
-RUN npm install --ignore-scripts
+RUN npm install
 COPY . .
 CMD ["npm", "run", "dev"]
 

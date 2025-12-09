@@ -17,7 +17,7 @@ const isProduction = p.NODE_ENV === "production";
 if (!isProduction) {
     const envPath = isDocker
         ? path.resolve("/app/.env") // inside container
-        : path.resolve(__dirname, "../../.env"); // local monorepo
+        : path.resolve(__dirname, "../../../../../.env"); // local monorepo
     // const envResult = dotenv.config({ path: envPath });
     dotenv.config({ path: envPath });
     // dotenvExpand.expand(envResult);
@@ -27,7 +27,7 @@ if (!isProduction) {
 // --- Types for your env config ---
 interface EnvConfig {
     NODE_ENV: string;
-    MCP_GATEWAY: string;
+    MCP_GATEWAY_PORT: string;
     LOG_LEVEL: string;
 }
 
@@ -35,7 +35,7 @@ interface EnvConfig {
 export const env: EnvConfig = {
     NODE_ENV: p.NODE_ENV || "development",
     LOG_LEVEL: p.LOG_LEVEL || "debug",
-    MCP_GATEWAY: p.MCP_GATEWAY!,
+    MCP_GATEWAY_PORT: p.MCP_GATEWAY_PORT!,
 };
 
 // Dynamic validation: loop through env to detect misconfiguration

@@ -15,6 +15,12 @@
   "license": "MIT",
   "author": "Hasnain Izhar",
   "main": "src/server.ts",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.24.3",
     "dotenv": "^17.2.3",
@@ -29,6 +35,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^24.10.2",
     "@types/nodemon": "^1.19.6",
+    "nodemon": "^3.1.11",
     "process": "^0.11.10",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
