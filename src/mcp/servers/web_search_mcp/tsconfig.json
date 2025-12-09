@@ -34,15 +34,6 @@
             "@tools/*": [
                 "./src/tools/*"
             ],
-            "@errors/*":[
-                "./src/errors/*"
-            ],
-            "@routes/*":[
-                "./src/routes/*"
-            ],
-            "@controllers/*":[
-                "./src/controllers/*"
-            ]
         },
         /* Output + Debugging */
         "sourceMap": true

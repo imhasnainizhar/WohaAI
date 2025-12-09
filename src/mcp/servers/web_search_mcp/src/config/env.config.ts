@@ -24,18 +24,11 @@ if (!isProduction) {
     logger.debug(`Loaded environment from: ${envPath}`);
 }
 
-const secure = (p.NODE_ENV === "production") ? true : false
-
-const sameSite = (p.NODE_ENV === "production" ? "none" : "lax") as
-    "none" | "lax" | "strict";
-
 // --- Types for your env config ---
 interface EnvConfig {
     NODE_ENV: string;
     WEB_BROWSER_MCP_PORT: string;
     LOG_LEVEL: string;
-    SECURE_COOKIE_OPTION: boolean;
-    SAME_SITE_COOKIE_OPTION: "none" | "lax" | "strict";
     SERPER_API_KEY: string;
 }
 
@@ -44,8 +37,6 @@ export const env: EnvConfig = {
     NODE_ENV: p.NODE_ENV || "development",
     WEB_BROWSER_MCP_PORT: p.WEB_BROWSER_MCP_PORT!,
     LOG_LEVEL: p.LOG_LEVEL || "debug",
-    SECURE_COOKIE_OPTION: secure,
-    SAME_SITE_COOKIE_OPTION: sameSite,
     SERPER_API_KEY: p.SERPER_API_KEY!,
 };
 
