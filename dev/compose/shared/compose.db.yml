@@ -1,4 +1,19 @@
 services:
+  user_postgres_db:
+    image: postgres:16
+    container_name: user_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${USER_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${USER_POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${USER_POSTGRES_PORT}:${USER_POSTGRES_PORT}"
+    networks:
+      - microservices_net_01
+
   postgres:
     image: postgres:16
     container_name: postgres

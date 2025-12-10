@@ -28,6 +28,7 @@ if (!isProduction) {
 interface EnvConfig {
     NODE_ENV: string;
     WOAHAI_LLM_AGENT_PORT: string;
+    AGENT_MEMORY_DB_URI: string,
     LOG_LEVEL: string;
     OPENAI_API_KEY: string;
 }
@@ -38,6 +39,7 @@ export const env: EnvConfig = {
     WOAHAI_LLM_AGENT_PORT: p.WEB_SEARCH_MCP_PORT!,
     LOG_LEVEL: p.LOG_LEVEL || "debug",
     OPENAI_API_KEY: p.SERPER_API_KEY!,
+    AGENT_MEMORY_DB_URI: p.AGENT_MEMORY_DB_URI!
 };
 
 // Dynamic validation: loop through env to detect misconfiguration
