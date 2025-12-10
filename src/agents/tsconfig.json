@@ -27,20 +27,11 @@
             "@config/*": [
                 "./src/config/*"
             ],
-            "@routes/*": [
-                "./src/routes/*"
-            ],
             "@middleware/*": [
                 "./src/middleware/*"
             ],
             "@schemas/*": [
                 "./src/schemas/*"
-            ],
-            "@services/*": [
-                "./src/services/*"
-            ],
-            "@controllers/*": [
-                "./src/controllers/*"
             ],
             "@utils/*": [
                 "./src/utils/*"
@@ -48,8 +39,11 @@
             "@custom_types/*": [
                 "./src/custom_types/*"
             ],
-            "@errors/*": [
-                "./src/errors/*"
+            "@internals/*": [
+                "./src/internals/*"
+            ],
+            "@graph/*": [
+                "./src/graph/*"
             ]
         },
         /* Output + Debugging */
