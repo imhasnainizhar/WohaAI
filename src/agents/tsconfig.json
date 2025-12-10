@@ -22,29 +22,23 @@
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@app": [
-                "./src/app"
-            ],
             "@config/*": [
                 "./src/config/*"
             ],
             "@middleware/*": [
                 "./src/middleware/*"
             ],
-            "@schemas/*": [
-                "./src/schemas/*"
-            ],
             "@utils/*": [
                 "./src/utils/*"
-            ],
-            "@custom_types/*": [
-                "./src/custom_types/*"
             ],
             "@internals/*": [
                 "./src/internals/*"
             ],
-            "@graph/*": [
-                "./src/graph/*"
+            "@tools/*": [
+                "./src/tools/*"
+            ],
+            "@workflows/*": [
+                "./src/workflows/*"
             ]
         },
         /* Output + Debugging */

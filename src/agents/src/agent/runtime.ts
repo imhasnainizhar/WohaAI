@@ -1,33 +1,16 @@
-import { ChatOpenAI } from "@langchain/openai";
 import { createAgent, providerStrategy, summarizationMiddleware } from "langchain";
-import { StateGraph, START, END } from "@langchain/langgraph";
+import { StateGraph, START, END, MemorySaver } from "@langchain/langgraph";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { env } from "@config/env.config";
-import { getMCPTools } from "./tools/externals/mcp_tools";
-import z from "zod";
+import { getMCPTools } from "@tools/externals/mcp_tools";
+import { GraphState } from "@internals/types/agent";
+import { responseSchema } from "@internals/schemas/agent.schema";
+import { memorySchema } from '@internals/schemas/agent.schema';
 import pg from "pg"
 
+
+// DB URI for Postgres Pool
 const DB_URI = env.AGENT_MEMORY_DB_URI
-
-// Graph State Type used as param of agent
-type GraphState = {
-  sid: string;
-  input: string;
-  memory?: string;
-  searchResult?: string;
-  output?: string;
-};
-
-// JSON schema for summarization memory
-const memorySchema = {
-  type: "object",
-  properties: { memory: { type: "string" } },
-};
-
-// Response Schema for LLM
-const responseSchema = z.object({
-  output: z.string().optional()
-});
 
 // Response format to pass as a param for createAgent()
 const responseFormat = providerStrategy(responseSchema);
@@ -38,8 +21,11 @@ const pool = new pg.Pool({
   connectionString: DB_URI
 })
 
-// Postgres Checkpointer
-const checkpointer = new PostgresSaver(pool);
+// Postgres Memory Saver for LTM
+const postgresSaver = new PostgresSaver(pool);
+
+// Memory Saver for Short-Term Memory
+const checkpointer = new MemorySaver();
 
 // Agent Node
 export default async function AgentNode() {
