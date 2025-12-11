@@ -3,7 +3,7 @@ import { StateGraph, START, END, MemorySaver } from "@langchain/langgraph";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { env } from "@config/env.config";
 import { getMCPTools } from "@tools/externals/mcp_tools";
-import { GraphState } from "@internals/types/agent";
+import { GraphState } from "@internals/types/graph";
 import { responseSchema } from "@internals/schemas/agent.schema";
 import { memorySchema } from '@internals/schemas/agent.schema';
 import pg from "pg"
