@@ -37,6 +37,9 @@
             "@tools/*": [
                 "./src/tools/*"
             ],
+            "@agent/*": [
+                "./src/agent/*"
+            ],
             "@workflows/*": [
                 "./src/workflows/*"
             ]

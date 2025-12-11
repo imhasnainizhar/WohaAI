@@ -11,8 +11,7 @@ const MCPClient = new MultiServerMCPClient({
 // Async function to get callable MCP tools
 export async function getMCPTools() {
     try {
-        const tools = await MCPClient.getTools(); // returns callable tools
-        return tools;
+        return await MCPClient.getTools(); // returns callable tools
     } catch (err) {
         console.error("Failed to fetch MCP tools:", err);
         return [];

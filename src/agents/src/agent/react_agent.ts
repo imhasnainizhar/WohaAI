@@ -25,7 +25,7 @@ const pool = new pg.Pool({
 const postgresSaver = new PostgresSaver(pool);
 
 // Memory Saver for Short-Term Memory
-const checkpointer = new MemorySaver();
+export const checkpointer = new MemorySaver();
 
 // Agent Node
 export default async function AgentNode() {
@@ -47,4 +47,6 @@ export default async function AgentNode() {
     ],
     checkpointer,
   });
+
+  return agent;
 }
