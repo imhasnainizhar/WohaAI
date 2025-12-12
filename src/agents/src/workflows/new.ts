@@ -32,7 +32,7 @@ export default async function initAgentWorkflow() {
         for (const toolCall of state.tool_calls || []) {
             const tool = tools.find(t => t.name === toolCall.name);
             if (!tool) {
-                toolMessages.push( new ToolMessage({
+                toolMessages.push(new ToolMessage({
                     content: `Tool ${toolCall.name} not found`,
                     tool_call_id: toolCall.id
                 }));
@@ -45,7 +45,7 @@ export default async function initAgentWorkflow() {
                     content: typeof result === 'string' ? result : JSON.stringify(result),
                     tool_call_id: toolCall.id
                 }));
-            } catch (error : any) {
+            } catch (error: any) {
                 toolMessages.push(new ToolMessage({
                     content: `Error: ${error.message}`,
                     tool_call_id: toolCall.id
@@ -58,11 +58,6 @@ export default async function initAgentWorkflow() {
             tool_messages: [...(state.tool_messages || []), ...toolMessages],
             tool_calls: []
         };
-    }
-
-    // Router: decide between LLM/tools/END based on tool_calls
-    function shouldContinue(state: typeof AnnotationState.State) {
-        return state.tool_calls?.length ? "tools" : END;      // 🚨 Need for maturity 🚨
     }
 
     const llm = await openAiModelWithTools();
@@ -78,10 +73,10 @@ export default async function initAgentWorkflow() {
         const systemMessage = new SystemMessage(
             `You can call web search tool to get webpages urls for latest information, urls be scrapped later.
             When a tool is required, return a ToolCall object in JSON format with name and args.`
-        );    
+        );
         const result = await llm.invoke([
-            systemMessage, 
-            ...state.messages, 
+            systemMessage,
+            ...state.messages,
             new HumanMessage(state.refinedInput)
         ]);
         return { ...state, searchResult: result.content };
@@ -92,7 +87,7 @@ export default async function initAgentWorkflow() {
         const systemMessage = new SystemMessage(
             `You have to call web scraper tool to get latest information by fetching webpages url & scrapping webpages.
             When a tool is required, return a ToolCall object in JSON format with name and args.`
-        );    
+        );
         const result = await llm.invoke(state.searchResult);
         return { ...state, scrapedResult: result.content };
     };
@@ -103,27 +98,72 @@ export default async function initAgentWorkflow() {
         return { ...state, output: finalResult.content };
     };
 
+    //--------------------//
+    // Router: decide between LLM/tools/END based on tool_calls
+    // 🚨 Need for maturity 🚨
+
+    // function shouldContinue(state: typeof AnnotationState.State) {
+    //     return state.tool_calls?.length ? "tools" : "end";      
+    // }
+    //--------------------//
+
+    //--------------------//
+    // Router Nodes
+
+    // after web_search → either tools or scraper
+    const router_web_search = async (state: typeof AnnotationState.State) => {
+        return { next: state.tool_calls?.length ? "tools" : "web_scraper" };
+    };
+
+    // after web_scraper → either tools or finish
+    const router_web_scraper = async (state: typeof AnnotationState.State) => {
+        return { next: state.tool_calls?.length ? "tools" : "final_response" };
+    };
+    //--------------------//
+
     // Creating Graph Workflow
     const workflow = new StateGraph(AnnotationState)
 
         // Adding Nodes to Graph
         .addNode("__start__", async (state: typeof AnnotationState.State) => state)
+
         .addNode("init_chat", init_chat)
+        .addNode("tools", toolsNode)
         .addNode("web_search", web_search)
+        .addNode("router_web_search", router_web_search)
         .addNode("web_scraper", web_scraper)
+        .addNode("router_web_scraper", router_web_scraper)
         .addNode("final_response", finalResponse)
 
         // End node
         .addNode(END, async (state: typeof AnnotationState.State) => state)
-        
-        // Connect nodes
+
+        // Edges
         .addEdge(START, "init_chat")
         .addEdge("init_chat", "web_search")
-        .addEdge("web_search", "web_scraper")
-        .addEdge("web_scraper", "final_response")
+
+        .addConditionalEdges(
+            "router_web_search",
+            (state) => state.tool_calls?.length ? "tools" : "web_scraper",
+            {
+                tools: "tools",
+                web_scraper: "web_scraper"
+            }
+        )
+
+        .addEdge("tools", "web_search")
+
+        .addConditionalEdges(
+            "router_web_scraper",
+            (state) => state.tool_calls?.length ? "tools" : "final_response",
+            {
+                tools: "tools",
+                final_response: 'final_response'
+            }
+        )
+
         .addEdge("final_response", END);
 
     // Compiling Workflow
     workflow.compile();
-
 }

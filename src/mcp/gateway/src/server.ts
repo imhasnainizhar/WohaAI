@@ -6,7 +6,6 @@ import { env } from '@config/env.config';
 import { ListToolsRequestSchema, CallToolRequestSchema, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
 import { REGISTRY } from './registry';
-import { RegisteredServer } from '@custom_types/gateway';
 import { logger } from '@utils/logger';
 
 
