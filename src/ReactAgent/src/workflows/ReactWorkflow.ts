@@ -2,12 +2,12 @@ import { StateGraph, START, END, Annotation } from '@langchain/langgraph';
 import { BaseMessage, HumanMessage, ToolMessage, ToolCall, SystemMessage, AIMessage } from 'langchain';
 import { toolsNode } from '@graph/ToolNodes/ToolNode';
 import { logger } from '@utils/logger';
-import { plannerNode } from '@graph/WorkflowNodes/PlaannerNode';
+import { plannerNode } from '@graph/WorkflowNodes/PlannerNode';
 import { responseNode } from '@graph/WorkflowNodes/ResponseNode';
 import summarizerNode from '@graph/ToolNodes/SummarizerNode';
 import { InitChatNode } from '@graph/WorkflowNodes/InitChatNode';
-import { workflowTransitionLogger } from '@utils/workflowTransitionLogger';
-import { PlannerOutput } from '@internals/types/agent';
+import { workflowTransitionLogger } from '@utils/workflow_transitional_logger';
+import { PlannerDecision } from '@internals/schemas/planner.schema';
 
 
 // Define the annotation schema for the workflow state
@@ -16,12 +16,14 @@ export const AnnotationState = Annotation.Root({
     username: Annotation<string | undefined>(),
     sid: Annotation<string>(),
     input: Annotation<string>(),
+    // Msg state keep all messages
     messages: Annotation<BaseMessage[]>({
         default: () => [],
         reducer: (messages, newMessages) => {
             return [...messages, ...newMessages];
         }
     }),
+    // tool_call state keep only latest tool calls
     tool_calls: Annotation<ToolCall[]>({
         default: () => [],
         reducer: (_, new_tool_calls) => [...new_tool_calls]
@@ -30,36 +32,45 @@ export const AnnotationState = Annotation.Root({
         default: () => 0,
         reducer: (count, newCount) => count + newCount
     }),
+    // tool_messages state keep only latest tool messages
     tool_messages: Annotation<ToolMessage[]>({
         default: () => [],
-        reducer: (tool_messages, newTool_messages) => [...tool_messages, ...newTool_messages]
+        reducer: (_, newTool_messages) => [...newTool_messages]
     }),
-    planner_action: Annotation<PlannerOutput>(),
+    planner_decision: Annotation<PlannerDecision>(),
+    // tool_outputs state keep all tool outputs
     tool_outputs: Annotation<String[]>({
         default: () => [],
         reducer: (tool_outputs, new_tool_outputs) => [...tool_outputs, ...new_tool_outputs]
     }),
+    // new_tool_output state keep only latest tool output
     new_tool_output: Annotation<String[]>({
         default: () => [],
         reducer: (tool_outputs, new_tool_outputs) => [...new_tool_outputs]
     }),
+    // summarizer_path state helps to decide wheather to route on planner decision or not.
     summarizer_path: Annotation<boolean>({
         default: () => false,
         reducer: (summarizerValue, newSummarizerValue) => newSummarizerValue
     }),
+    // summarized_tool_output state keep all summarized tool outputs
     summarized_tool_output: Annotation<String[]>({
         default: () => [],
         reducer: (summarized_tool_output, newSummarized_tool_output) => [...summarized_tool_output, ...newSummarized_tool_output]
     }),
+    // last_summary_index state keep the index of the last summarized tool output
     last_summary_index: Annotation<number>({
         default: () => 0,
         reducer: (_, newIndex) => newIndex
     }),
+    // memory state keep the memory of the agent
     memory: Annotation<string>({
         default: () => "",
         reducer: (memory, newMemory) => newMemory
     }),
+    // refinedInput state keep the refined input of the agent
     refinedInput: Annotation<string>(),
+    // output state keep the output of the agent
     output: Annotation<string>({
         default: () => "",
         reducer: (output, newOutput) => newOutput
@@ -103,14 +114,16 @@ export default async function reactAgentWorkflow() {
             workflowTransitionLogger("Planner", (state) => {
                 const hasPendingToolRequests = state.tool_calls.length > 0;
 
-                const hasNewToolOutputs =
-                    state.tool_outputs.length > (state.last_summary_index ?? 0) &&
-                    state.summarizer_path &&
-                    state.tool_calls.length === 0;
+                const hasNewToolOutputs = (
+                    state.tool_outputs.length > (state.last_summary_index ?? 0)
+                    && state.tool_outputs.length > 6
+                    && state.tool_outputs.length % 3 === 0
+                ) || (
+                    state.summarizer_path && state.tool_calls.length === 0
+                );
 
                 if (hasPendingToolRequests) return "Tools";
                 if (hasNewToolOutputs) return "Summarize";
-                // if (!hasPendingToolRequests && !state.summarizer_path) return "Response";
                 return "Response";
             }),
             {

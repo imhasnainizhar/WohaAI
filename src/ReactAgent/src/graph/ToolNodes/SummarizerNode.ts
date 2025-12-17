@@ -1,7 +1,7 @@
 import { AnnotationState } from "@workflows/ReactWorkflow";
 import { logger } from "@utils/logger";
 import { AIMessage, HumanMessage, SystemMessage, Tool } from "langchain";
-import { summarizerModel } from "@models/summarizer.model";
+import { summarizerModel } from "../../llm_models/summarizer.model";
 import summarizerPrompt from "@internals/prompts/summarizer_prompt";
 import { summarizingTextTemplate } from "@internals/templates/summarizing_text_template";
 
@@ -22,7 +22,7 @@ export default async function summarizerNode(state: typeof AnnotationState.State
     const textToSummarizeHumanMsg = new HumanMessage({
         content: textToSummarize
     });
-    logger.debug(`Text to summarize: ${textToSummarize}`);
+    logger.debug(`Text to summarize: ${textToSummarize.slice(0, 250)}`);
     // Invoke LLM to summarize tool outputs
     const summarizedResult: AIMessage = await llm.invoke([
         summarizerPrompt,

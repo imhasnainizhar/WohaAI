@@ -5,7 +5,6 @@ ${JSON.stringify(summarizedToolOutput)}
 NEW TOOL OUTPUTS:
 ${toolOutputsToSummarize
         .map((o, i) =>
-            `Source ${i + 1}:\n- ${o}`
+            `Source ${i + 1}:\n- ${JSON.stringify(o)}`
         )
         .join("\n\n")}`;
-

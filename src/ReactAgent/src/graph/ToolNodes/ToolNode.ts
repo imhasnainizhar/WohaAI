@@ -13,6 +13,7 @@ export async function toolsNode(state: typeof AnnotationState.State) {
     const toolMessages: ToolMessage[] = [];
     const toolOutput: NormalizedToolOutput[] = [];
     for (const call of state.tool_calls ?? []) {
+
         if (!call.id) {
             // 🚨 Tool calls must always have IDs
             throw new Error("Tool call missing call_id");
@@ -21,7 +22,33 @@ export async function toolsNode(state: typeof AnnotationState.State) {
         const toolName = call.name as ToolName;
         const tool = ToolRegistry[toolName];
         logger.debug(`Tool: ${JSON.stringify(tool)}`);
-        if (!tool?.execute) throw new Error(`Tool ${toolName} has no execute function`);
+        if (!tool?.execute) {
+            logger.warn(`Planner output tool "${toolName}" is invalid`);
+
+            const tm = new ToolMessage({
+                tool_call_id: call.id,
+                content: JSON.stringify({
+                    tool: toolName,
+                    call_id: call.id,
+                    status: "invalid",
+                    reason: `Tool "${toolName}" is not registered or has no execute function`,
+                    createdAt: Date.now(),
+                }),
+            });
+
+            toolMessages.push(tm);
+
+            // Also add to tool_outputs if you want to track it
+            toolOutput.push({
+                tool: toolName,
+                call_id: call.id,
+                body: JSON.stringify({ error: "Invalid tool" }),
+                meta: { status: "invalid" },
+                createdAt: Date.now(),
+            });
+            // Skip execution
+            continue;
+        };
 
         logger.debug(`Executing Tool → ${toolName} (${call.id})`);
 

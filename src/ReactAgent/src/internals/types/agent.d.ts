@@ -1,4 +1,5 @@
 import { ToolName, ToolInput } from "@tools/registry";
+import { ToolCall } from "@langchain/core/messages";
 
 // Graph State Type
 export type GraphState = {
@@ -21,12 +22,6 @@ export type NormalizedToolOutput = {
   body: string;              // ALWAYS stringified
   meta?: Record<string, any>;
   createdAt?: number | undefined;
-};
-
-export type PlannerOutput = {
-  action: "Tools" | "Summarize" | "Respond";
-  summarizer_path?: boolean;
-  reason?: string;
 };
 
 //-----------------------------------//

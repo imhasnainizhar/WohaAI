@@ -37,8 +37,11 @@
             "@tools/*": [
                 "./src/tools/*"
             ],
-            "@models/*": [
-                "./src/models/*"
+            "@llm_models/*": [
+                "./src/llm_models/*"
+            ],
+            "@memory/*": [
+                "./src/memory/*"
             ],
             "@workflows/*": [
                 "./src/workflows/*"
@@ -55,6 +58,6 @@
     },
     "include": [
         "src/**/*.ts"
-    ],
+, "src/internals/memory/qdrant_client.mts"    ],
     "exclude": ["node_modules", "dist", "build", ".cache"]
 }

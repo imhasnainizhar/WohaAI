@@ -1,12 +1,12 @@
-// ltm.ts
 import { QuadrantVectorStore } from "@internals/memory/store";
-import { Embedder } from "@internals/memory/embedder";
 import { MemoryQuadrant } from "@internals/types/store";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { embedderModel } from "@internals/memory/embedder";
 
-export class LTM {
+export class MemoryHandler {
   constructor(
     private store: QuadrantVectorStore,
-    private embedder: Embedder
+    private embedder: OpenAIEmbeddings = embedderModel
   ) {}
 
   async remember(
@@ -14,7 +14,7 @@ export class LTM {
     content: string,
     metadata?: Record<string, any>
   ) {
-    const embedding = await this.embedder.embed(content);
+    const embedding = await this.embedder.embedQuery(content);
 
     this.store.add({
       id: crypto.randomUUID(),
@@ -31,7 +31,9 @@ export class LTM {
     query: string,
     topK = 5
   ) {
-    const embedding = await this.embedder.embed(query);
+    const embedding = await this.embedder.embedQuery(query);
     return this.store.search(quadrant, embedding, topK);
   }
 }
+
+export const memoryHandler = new MemoryHandler(new QuadrantVectorStore(), embedderModel);

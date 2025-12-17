@@ -10,7 +10,7 @@ const workflowTransitionLogger =
 
             logger.info(
                 `[Transition] ${nodeName} → ${next} | ` +
-                `tool_requests=${state.tool_requests.length}, ` +
+                `tool_calls=${state.tool_calls.length}, ` +
                 `tool_outputs=${state.tool_outputs.length}, ` +
                 `last_summary_index=${state.last_summary_index}, ` +
                 `summarizer_path=${state.summarizer_path}`

@@ -2,7 +2,7 @@ import { logger } from "@utils/logger";
 import { AnnotationState } from "@workflows/ReactWorkflow";
 import { SystemMessage, BaseMessage, HumanMessage, AIMessage } from "langchain";
 import responsePrompt from "@internals/prompts/response_prompt";
-import { chatModel } from "@models/chat.model";
+import { chatModel } from "../../llm_models/chat.model";
 
 export const responseNode = async (state: typeof AnnotationState.State) => {
     try {
@@ -18,20 +18,15 @@ export const responseNode = async (state: typeof AnnotationState.State) => {
               : "No external tool context was required."
         });
 
-        const systemMessages = state.messages.filter(
-            (m) => m.type === "human" || m.type === "ai"
-        );
-
         const finalMessages: BaseMessage[] = [
             responseSystemMessage,
             new HumanMessage(state.refinedInput || ""),
-            ...systemMessages,
             summarizedToolOutput
         ];
 
         const finalResult: AIMessage = await llm.invoke(finalMessages);
 
-        logger.debug(`Response result: ${JSON.stringify(finalResult)}`);
+        logger.debug(`Response result: ${JSON.stringify(finalResult.content)}`);
 
         if (!finalResult.content || finalResult.content === "") {
             throw new Error("No response from LLM");

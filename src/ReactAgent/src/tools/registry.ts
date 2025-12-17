@@ -3,7 +3,6 @@ import { getMCPTools } from "@tools/externals/MCPTools";
 type ToolDefinition<I, O> = {
     name: string,
     description: string;
-    tool_type: "mcp" | "internal";
     input: I,
     output: O,
     execute: (input: I) => Promise<O>
@@ -34,7 +33,6 @@ export type WebScraperParams = {
 export const ToolRegistry = {
     WebSearcherTool: {
         name: "WebSearcherTool",
-        tool_type: "mcp",
         description: "Search the web for latest URLs",
         input: {} as { prompt: string; requiredResults?: number },
         output: {} as { urls: string[] },
@@ -48,7 +46,6 @@ export const ToolRegistry = {
 
     WebScraperTool: {
         name: "WebScraperTool",
-        tool_type: "mcp",
         description: "Scrape HTML from a URL",
         input: {} as WebScraperParams,
         output: {} as PageResult,

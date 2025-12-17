@@ -2,8 +2,8 @@ import { HumanMessage, SystemMessage, AIMessage } from "langchain";
 import { logger } from "@utils/logger";
 import { AnnotationState } from "@workflows/ReactWorkflow";
 import initChatPrompt from "@internals/prompts/init_chat_prompt";
-import { workflowTransitionLogger } from "@utils/workflowTransitionLogger";
-import { chatModel } from "@models/chat.model";
+import { workflowTransitionLogger } from "@utils/workflow_transitional_logger";
+import { chatModel } from "../../llm_models/chat.model";
 
 export const InitChatNode = async (state: typeof AnnotationState.State) => {
   try {

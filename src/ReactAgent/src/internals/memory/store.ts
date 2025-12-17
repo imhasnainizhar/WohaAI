@@ -1,5 +1,5 @@
 import { MemoryRecord, MemoryQuadrant } from "@internals/types/store";
-import { cosineSimilarity } from "@utils/vectors";
+import { cosineSimilarity } from "@utils/cosine_similarity";
 
 export class QuadrantVectorStore {
   private store: Record<MemoryQuadrant, MemoryRecord[]> = {
