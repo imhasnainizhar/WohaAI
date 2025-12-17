@@ -16,6 +16,7 @@ services:
       - ../../../.env.docker
     networks:
       - mcp_network_m
+      - woahai_agent_network
 
   web_search_mcp:
     build:
@@ -26,15 +27,18 @@ services:
     ports:
       - "${WEB_SEARCH_MCP_PORT}:${WEB_SEARCH_MCP_PORT}"
     volumes:
-      - ../../../src/mcp/servers/web_search:/app
+      - ../../../src/mcp/servers/web_search/src:/app/src
     restart: always
     env_file:
       - ../../../.env
       - ../../../.env.docker
     networks:
       - mcp_network_m
+      - woahai_agent_network
 
 
 networks:
   mcp_network_m:
+    external: true
+  woahai_agent_network:
     external: true

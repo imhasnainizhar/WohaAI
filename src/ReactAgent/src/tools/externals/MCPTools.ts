@@ -6,7 +6,7 @@ import { env } from "@config/env.config";
 const MCPClient = new MultiServerMCPClient({
     mcp_gateway: {
         transport: "http",
-        url: `http://localhost:${env.MCP_GATEWAY_PORT}/mcp`
+        url: `http://mcp_gateway:${env.MCP_GATEWAY_PORT}/mcp`
     }
 });
 

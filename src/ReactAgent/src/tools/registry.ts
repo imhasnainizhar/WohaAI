@@ -3,20 +3,44 @@ import { getMCPTools } from "@tools/externals/MCPTools";
 type ToolDefinition<I, O> = {
     name: string,
     description: string;
+    tool_type: "mcp" | "internal";
     input: I,
     output: O,
     execute: (input: I) => Promise<O>
 }
 
+//-------------------------//
+// These types will be shared through global shared directory
+export type PageResult = {
+    status: number,
+    contentType: string,
+    body: string
+}
+
+export type WebScraperOptions = {
+    timeoutMS: number,
+    maxRetries: number,
+    renderJS: boolean,
+    partialSelector: string
+}
+
+export type WebScraperParams = {
+    url: string,
+    WebScraperOptions: WebScraperOptions
+}
+//-------------------------//
+
+
 export const ToolRegistry = {
     WebSearcherTool: {
         name: "WebSearcherTool",
+        tool_type: "mcp",
         description: "Search the web for latest URLs",
-        input: {} as { query: string },
+        input: {} as { prompt: string; requiredResults?: number },
         output: {} as { urls: string[] },
         execute: async (input) => {
             const tool = (await getMCPTools()).find(t => t.name === "WebSearcherTool");
-            if (!tool) throw new Error("MCP tool 'web_search' not found");
+            if (!tool) throw new Error("MCP tool 'WebSearcherTool' not found");
             const result = await tool.invoke(input);  // make sure invoke returns a Promise
             return result;
         }
@@ -24,12 +48,13 @@ export const ToolRegistry = {
 
     WebScraperTool: {
         name: "WebScraperTool",
+        tool_type: "mcp",
         description: "Scrape HTML from a URL",
-        input: {} as { url: string },
-        output: {} as { webContent: string },
+        input: {} as WebScraperParams,
+        output: {} as PageResult,
         execute: async (input) => {
             const tool = (await getMCPTools()).find(t => t.name === "WebScraperTool");
-            if (!tool) throw new Error("MCP tool 'web_scraper' not found");
+            if (!tool) throw new Error("MCP tool 'WebScraperTool' not found");
             const result = await tool.invoke(input);
             return result;
         }

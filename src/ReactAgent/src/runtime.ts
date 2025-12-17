@@ -21,6 +21,5 @@ export async function llmRuntime(input: string) {
   
     // Run the workflow
     const finalState = await agent.invoke(initialState);
-  
-    console.log("Workflow finished:", finalState.output);
-  }
+    return finalState;
+}

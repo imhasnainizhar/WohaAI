@@ -3,11 +3,13 @@ import { StateGraph, START, END, MemorySaver } from "@langchain/langgraph";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { env } from "@config/env.config";
 import { getMCPTools } from "@tools/externals/MCPTools";
-import { GraphState } from "@internals/types/graph";
+import { GraphState } from "@internals/types/agent";
 import { responseSchema } from "@internals/schemas/agent.schema";
 import { memorySchema } from '@internals/schemas/agent.schema';
 import pg from "pg"
 
+// Not used in main agent workflor currently
+// Just staying here for future needs
 
 // DB URI for Postgres Pool
 const DB_URI = env.AGENT_MEMORY_DB_URI

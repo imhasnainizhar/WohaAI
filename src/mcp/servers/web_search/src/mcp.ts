@@ -1,19 +1,18 @@
-// import { logger } from "@utils/logger";
+import { logger } from "@utils/logger";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod"
 import { webScraper } from '@tools/web_scraper.tool';
 import { webSearchTool } from '@tools/web_search.tool';
-import { WebScraperParams } from "./custom_types/input";
 
 
 export const server = new McpServer({
-  name: 'browsing',
+  name: 'WebToolsMCP',
   version: "1.0.0"
 });
 
-server.registerTool("web_search",
+server.registerTool("WebSearcherTool",
   {
-    title: "Web Search Tool",
+    title: "WebSearcher MCP Tool",
     description: "To browse internet",
     inputSchema: z.object({
       prompt: z.string().describe("Browsing prompt"),
@@ -21,7 +20,20 @@ server.registerTool("web_search",
     }),
   },
   async ({ prompt, requiredResults }) => {
+    logger.debug({
+      tool: "WebSearcherTool",
+      action: "tool_invoked",
+      params: { prompt, requiredResults }
+    }, "WebSearcherTool invoked");
+    
     const results = await webSearchTool({ prompt, requiredResults });
+    
+    logger.debug({
+      tool: "WebSearcherTool",
+      action: "tool_completed",
+      resultsCount: Array.isArray(results) ? results.length : 0
+    }, "WebSearcherTool completed successfully");
+    
     return {
       content: [
         {
@@ -33,25 +45,49 @@ server.registerTool("web_search",
   }
 )
 
-server.registerTool("web_scraper",
+server.registerTool("WebScraperTool",
   {
-    title: "Webpage Scraper",
+    title: "Webpage Scraper MCP Tool",
     description: "To scrape browsed pages to get data",
     inputSchema: z.object({
-      url: z.string(),
+      url: z.string().describe("URL of page to be scrapped for llm"),
       WebScraperOptions: z.object({
-        timeoutMS: z.number(),
+        timeoutMS: z.number().optional(),
         maxRetries: z.number(),
-        renderJS: z.boolean()
-      })
+        renderJS: z.boolean(),
+        partialSelector: z.string().optional()
+      }).describe("Options for web scraper tool. Options: timeoutMS, maxRetries & renderJS.")
     }),
   },
   async ({ url, WebScraperOptions }) => {
+    logger.debug({
+      tool: "WebScraperTool",
+      action: "tool_invoked",
+      params: { 
+        url, 
+        renderJS: WebScraperOptions?.renderJS,
+        maxRetries: WebScraperOptions?.maxRetries,
+        timeoutMS: WebScraperOptions?.timeoutMS,
+        partialSelector: WebScraperOptions?.partialSelector
+      }
+    }, "WebScraperTool invoked");
+    
     try {
       const result = await webScraper({
         url,
         WebScraperOptions
       });
+
+      logger.debug({
+        tool: "WebScraperTool",
+        action: "tool_completed",
+        url,
+        status: result.status,
+        contentType: result.contentType,
+        bodyLength: result.body?.length || 0,
+        renderJS: WebScraperOptions?.renderJS,
+        partialSelector: WebScraperOptions?.partialSelector
+      }, "WebScraperTool completed successfully");
 
       return {
         content: [
@@ -62,6 +98,15 @@ server.registerTool("web_scraper",
         ]
       };
     } catch (error: any) {
+      logger.error({
+        tool: "WebScraperTool",
+        action: "tool_error",
+        url,
+        error: error?.message || error?.toString(),
+        renderJS: WebScraperOptions?.renderJS,
+        partialSelector: WebScraperOptions?.partialSelector
+      }, "WebScraperTool failed");
+      
       return {
         content: [
           {
@@ -77,6 +122,3 @@ server.registerTool("web_scraper",
     }
   }
 )
-
-
-console.log("🧩 Booting Web MCP server...");

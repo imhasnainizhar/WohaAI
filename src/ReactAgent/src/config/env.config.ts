@@ -37,7 +37,7 @@ interface EnvConfig {
 // ✅ Build environment object
 export const env: EnvConfig = {
     NODE_ENV: p.NODE_ENV || "development",
-    WOAHAI_LLM_AGENT_PORT: p.WEB_SEARCH_MCP_PORT!,
+    WOAHAI_LLM_AGENT_PORT: p.WOAHAI_LLM_AGENT_PORT!,
     LOG_LEVEL: p.LOG_LEVEL || "debug",
     OPENAI_API_KEY: p.OPENAI_API_KEY!,
     AGENT_MEMORY_DB_URI: p.AGENT_MEMORY_DB_URI!,

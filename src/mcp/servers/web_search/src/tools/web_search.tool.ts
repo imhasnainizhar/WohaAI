@@ -22,9 +22,31 @@ import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { WebSearchParams } from "@custom_types/input";
 
+interface SerperSearchResult {
+    title: string;
+    snippet: string;
+    link: string;
+}
+
+interface SerperSearchResponse {
+    organic: SerperSearchResult[];
+    num_results: number;
+}
+
 export const webSearchTool = async ({prompt, requiredResults = 10}: WebSearchParams) => {
+    logger.debug({
+        action: "web_search_started",
+        prompt,
+        requiredResults
+    }, "Starting web search");
+    
     try {
         if (!env.SERPER_API_KEY) {
+            logger.error({
+                action: "web_search_error",
+                error: "SERPER_API_KEY is not set"
+            }, "SERPER_API_KEY missing");
+            
             throw new ServiceException(
                 ServiceResponse.error({
                     success: false,
@@ -37,8 +59,16 @@ export const webSearchTool = async ({prompt, requiredResults = 10}: WebSearchPar
                 })
             )
         }
+        
         const url = "https://google.serper.dev/search";
-        const response = await axios.post(url,
+        logger.debug({
+            action: "web_search_api_call",
+            url,
+            prompt,
+            num_results: requiredResults
+        }, "Calling Serper API");
+        
+        const response = await axios.post<SerperSearchResponse>(url,
             { 
                 q: prompt,
                 num_results: requiredResults,
@@ -50,15 +80,28 @@ export const webSearchTool = async ({prompt, requiredResults = 10}: WebSearchPar
                 },
             }
         );
+        
         const organic = response.data.organic || []
-        const results = organic.slice(0, response.data.num_results).map((r: any) => ({
+        const results = organic.slice(0, response.data.num_results).map((r: SerperSearchResult) => ({
             title: r.title,
             snippet: r.snippet,
             url: r.link,
         }));
+        
+        logger.debug({
+            action: "web_search_completed",
+            totalResults: organic.length,
+            returnedResults: results.length,
+            num_results: response.data.num_results
+        }, "Web search completed successfully");
+        
         return results;
     } catch (error) {
-        logger.debug(`Failed to search the web: ${error}`);
+        logger.error({
+            action: "web_search_failed",
+            error: error instanceof Error ? error.message : String(error),
+            prompt
+        }, "Failed to search the web");
         throw new Error("Failed to search the web");
     }
 };

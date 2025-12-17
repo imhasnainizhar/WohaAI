@@ -1,11 +1,13 @@
-import { AnnotationState } from '@workflows/ReactWorkflow';
-import { StateGraph, START, END, Annotation, AnnotationRoot } from '@langchain/langgraph';
-import { BaseMessage, HumanMessage, ToolMessage, ToolCall, AIMessage, SystemMessage } from 'langchain';
+import { StateGraph, START, END, Annotation } from '@langchain/langgraph';
+import { BaseMessage, HumanMessage, ToolMessage, ToolCall, SystemMessage, AIMessage } from 'langchain';
 import { toolsNode } from '@graph/ToolNodes/ToolNode';
-import { webScraperNode } from '@graph/ToolNodes/WebScraperNode';
-import { webSearchNode } from '@graph/ToolNodes/WebSearchNode';
-import llmNode from '@graph/LLMNodes/LLMNode';
 import { logger } from '@utils/logger';
+import { plannerNode } from '@graph/WorkflowNodes/PlaannerNode';
+import { responseNode } from '@graph/WorkflowNodes/ResponseNode';
+import summarizerNode from '@graph/ToolNodes/SummarizerNode';
+import { InitChatNode } from '@graph/WorkflowNodes/InitChatNode';
+import { workflowTransitionLogger } from '@utils/workflowTransitionLogger';
+import { PlannerOutput } from '@internals/types/agent';
 
 
 // Define the annotation schema for the workflow state
@@ -16,19 +18,42 @@ export const AnnotationState = Annotation.Root({
     input: Annotation<string>(),
     messages: Annotation<BaseMessage[]>({
         default: () => [],
-        reducer: (messages, newMessages) => [...messages, ...newMessages]
+        reducer: (messages, newMessages) => {
+            return [...messages, ...newMessages];
+        }
     }),
     tool_calls: Annotation<ToolCall[]>({
         default: () => [],
-        reducer: (_, new_call) => new_call
+        reducer: (_, new_tool_calls) => [...new_tool_calls]
     }),
     tool_exec_count: Annotation<number>({
         default: () => 0,
-        reducer: (_, newCount) => newCount
+        reducer: (count, newCount) => count + newCount
     }),
     tool_messages: Annotation<ToolMessage[]>({
         default: () => [],
         reducer: (tool_messages, newTool_messages) => [...tool_messages, ...newTool_messages]
+    }),
+    planner_action: Annotation<PlannerOutput>(),
+    tool_outputs: Annotation<String[]>({
+        default: () => [],
+        reducer: (tool_outputs, new_tool_outputs) => [...tool_outputs, ...new_tool_outputs]
+    }),
+    new_tool_output: Annotation<String[]>({
+        default: () => [],
+        reducer: (tool_outputs, new_tool_outputs) => [...new_tool_outputs]
+    }),
+    summarizer_path: Annotation<boolean>({
+        default: () => false,
+        reducer: (summarizerValue, newSummarizerValue) => newSummarizerValue
+    }),
+    summarized_tool_output: Annotation<String[]>({
+        default: () => [],
+        reducer: (summarized_tool_output, newSummarized_tool_output) => [...summarized_tool_output, ...newSummarized_tool_output]
+    }),
+    last_summary_index: Annotation<number>({
+        default: () => 0,
+        reducer: (_, newIndex) => newIndex
     }),
     memory: Annotation<string>({
         default: () => "",
@@ -38,78 +63,91 @@ export const AnnotationState = Annotation.Root({
     output: Annotation<string>({
         default: () => "",
         reducer: (output, newOutput) => newOutput
+    }),
+    errorMessages: Annotation<string[]>({
+        default: () => [],
+        reducer: (errorMessages, newErrorMessages) => [...errorMessages, ...newErrorMessages]
     })
 });
 
 export default async function reactAgentWorkflow() {
 
-    const llm = await llmNode();
-
-    // Internal Nodes
-    const InitChatNode = async (state: typeof AnnotationState.State) => {
-        logger.debug("Refining input...")
-        const refined = `Refined prompt for input: ${state.input}`;
-        logger.debug(`Refining input: ${state.input}`)
-        return { ...state, messages: [...state.messages, new HumanMessage(refined)], refinedInput: refined };
-    };
-
-    const FinalResponseNode = async (state: typeof AnnotationState.State) => {
-        logger.debug("Final Responding...")
-        const finalResult = await llm.invoke([...state.messages, ...state.tool_messages]);
-        logger.debug(`Response: ${finalResult.content}`)
-        return { ...state, messages: [...state.messages, finalResult], output: finalResult.content };
-    };
-
-    // Router Nodes
-    const llmRoutingNode = async (state: typeof AnnotationState.State) => {
-        
-    }
-
-
     // Creating Graph Workflow
     const workflow = new StateGraph(AnnotationState)
 
-        // Adding Nodes to Graph
+        // Added Workflow Nodes
         .addNode("InitChat", InitChatNode)
+
+        .addNode("Planner", plannerNode)
+
         .addNode("Tools", toolsNode)
-        .addNode("llmRouting", llmRoutingNode)
-        .addNode("WebSearch", webSearchNode)
-        .addNode("WebScraper", webScraperNode)
-        .addNode("FinalResponse", FinalResponseNode)
 
-        // Adding Edges to Graph
+        .addNode("Summarize", summarizerNode)
+
+        .addNode("Response", responseNode)
+
+        // Added Workflow Edges
         .addEdge(START, "InitChat")
-        .addEdge("InitChat", "WebSearch")
-        .addEdge("WebSearch", "RouterWebSearch")
+        .addEdge("InitChat", "Planner")
 
+        // Planner decides: tools or final
+        .addConditionalEdges("InitChat", workflowTransitionLogger("InitChat", (state) => {
+            return "Planner";
+        }), {
+            Planner: "Planner",
+        })
 
+        // Planner decides: tools or final
         .addConditionalEdges(
-            "RouterWebSearch",
-            (state) => state.tool_calls?.length > 0 ? "Tools" : "WebScraper",
+            "Planner",
+            workflowTransitionLogger("Planner", (state) => {
+                const hasPendingToolRequests = state.tool_calls.length > 0;
+
+                const hasNewToolOutputs =
+                    state.tool_outputs.length > (state.last_summary_index ?? 0) &&
+                    state.summarizer_path &&
+                    state.tool_calls.length === 0;
+
+                if (hasPendingToolRequests) return "Tools";
+                if (hasNewToolOutputs) return "Summarize";
+                // if (!hasPendingToolRequests && !state.summarizer_path) return "Response";
+                return "Response";
+            }),
             {
                 Tools: "Tools",
-                WebScraper: "WebScraper"
+                Summarize: "Summarize",
+                Response: "Response"
             }
         )
 
-        .addEdge("Tools", "RouterWebSearch")
-        .addEdge("WebScraper", "RouterWebScraper")
-
+        // After Tools, decide whether to summarize
         .addConditionalEdges(
-            "RouterWebScraper",
-            (state) => state.tool_calls?.length > 0 ? "Tools" : "FinalResponse",
+            "Tools",
+            workflowTransitionLogger(
+                "Tools",
+                (state) => {
+
+                    const needSummarization = state.tool_outputs.length && state.tool_outputs.length % 3 === 0;
+                    if (state.tool_calls.length > 0) return "Tools";
+                    if (needSummarization) return "Summarize";
+                    return "Planner";
+                }),
             {
-                Tools: "Tools",
-                FinalResponse: 'FinalResponse'
+                Summarize: "Summarize",
+                Planner: "Planner",
             }
         )
 
-        .addEdge("FinalResponse", END);
+        // Summarizer now flows to Planner for deciding is data enough to answer user question or not.
+        .addEdge("Summarize", "Planner")
+
+        // Final is decided by Planner.
+        .addEdge("Response", END);
 
     // Compiling Workflow
     return workflow.compile({
         checkpointer: undefined,
         store: undefined,
         cache: undefined,
-    });
+    })
 }

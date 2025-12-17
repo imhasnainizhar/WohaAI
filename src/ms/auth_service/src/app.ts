@@ -2,7 +2,6 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { json, urlencoded } from "body-parser";
-// import { errorHandler } from "@middleware/error_handler"; // Centralized error handling middleware
 import authRoutes from "@routes/auth.route";
 import { env } from "@config/env.config";
 import { connectRedis } from "@config/redis.config";
@@ -25,8 +24,5 @@ app.use(urlencoded({ extended: true })); // Parse URL-encoded payloads (e.g., fo
 })();
 
 app.use("/api/auth", authRoutes); // Mount auth-related routes under /api/auth
-
-// This middleware should come last to catch all errors from above routes
-// app.use(errorHandler);
 
 export default app;

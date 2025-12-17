@@ -45,6 +45,9 @@
             ],
             "@graph/*": [
                 "./src/graph/*"
+            ],          
+            "@server/*": [
+                "./src/server/*"
             ]
         },
         /* Output + Debugging */

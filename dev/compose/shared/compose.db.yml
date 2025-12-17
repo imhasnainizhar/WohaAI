@@ -14,18 +14,35 @@ services:
     networks:
       - microservices_net_01
 
-  postgres:
+  chat_postgres:
     image: postgres:16
-    container_name: postgres
+    container_name: chat_postgres_db
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_USER_DB}
+      POSTGRES_USER: ${CHAT_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CHAT_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${CHAT_POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${CHAT_POSTGRES_PORT}:${CHAT_POSTGRES_PORT}"
+    networks:
+      - microservices_net_01
+  ltm_vector_store:
+    image: qdrant/qdrant:latest
+    container_name: ltm_vector_store
+    restart: always
+    ports:
+      - "${LTM_VECTOR_STORE_PORT}:${LTM_VECTOR_STORE_PORT}"
+    networks:
+      - microservices_net_01
+  
+  stm_vector_store:
+    image: qdrant/qdrant:latest
+    container_name: stm_vector_store
+    restart: always
+    ports:
+      - "${STM_VECTOR_STORE_PORT}:${STM_VECTOR_STORE_PORT}"
     networks:
       - microservices_net_01
 

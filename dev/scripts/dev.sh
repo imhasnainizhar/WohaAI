@@ -8,7 +8,8 @@ docker compose \
   -f ../compose/infra/ngnix/compose.ngnix.yml \
   -f ../compose/shared/compose.cache.yml \
   -f ../compose/shared/compose.queue.yml \
-    -f ../compose/mcp/compose.mcp.yml \
+  -f ../compose/mcp/compose.mcp.yml \
+  -f ../compose/agents/compose.agents.yml \
   --env-file ../../.env \
   --env-file ../../.env.docker \
   up --build
