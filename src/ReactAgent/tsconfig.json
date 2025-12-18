@@ -15,41 +15,39 @@
         "noImplicitAny": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
+        "noUncheckedIndexedAccess": true,    
         /* Module + Imports */
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@app": [
-                "./src/app"
-            ],
             "@config/*": [
                 "./src/config/*"
-            ],
-            "@routes/*": [
-                "./src/routes/*"
             ],
             "@middleware/*": [
                 "./src/middleware/*"
             ],
-            "@schemas/*": [
-                "./src/schemas/*"
-            ],
-            "@services/*": [
-                "./src/services/*"
-            ],
-            "@controllers/*": [
-                "./src/controllers/*"
-            ],
             "@utils/*": [
                 "./src/utils/*"
             ],
-            "@custom_types/*": [
-                "./src/custom_types/*"
+            "@internals/*": [
+                "./src/internals/*"
             ],
-            "@errors/*": [
-                "./src/errors/*"
+            "@tools/*": [
+                "./src/tools/*"
+            ],
+            "@models/*": [
+                "./src/models/*"
+            ],
+            "@workflows/*": [
+                "./src/workflows/*"
+            ],
+            "@graph/*": [
+                "./src/graph/*"
+            ],          
+            "@server/*": [
+                "./src/server/*"
             ]
         },
         /* Output + Debugging */
@@ -58,8 +56,5 @@
     "include": [
         "src/**/*.ts"
     ],
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+    "exclude": ["node_modules", "dist", "build", ".cache"]
 }

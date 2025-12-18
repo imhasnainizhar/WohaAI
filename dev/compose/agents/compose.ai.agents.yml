@@ -1,0 +1,24 @@
+services:
+  woahai_react_agent:
+    build:
+      context: ../../../src/ReactAgent/
+      dockerfile: Dockerfile
+      target: development
+    container_name: WoahAIReactAgent
+    ports: 
+      - "${WOAHAI_LLM_AGENT_PORT}:${WOAHAI_LLM_AGENT_PORT}"
+    volumes:
+      - ../../../src/ReactAgent/src:/app/src
+    restart: always
+    env_file:
+      - ../../../.env
+      - ../../../.env.docker
+    networks:
+      - mcp_network_m
+      - woahai_agent_network
+
+networks:
+  mcp_network_m:
+    external: true
+  woahai_agent_network:
+    external: true
