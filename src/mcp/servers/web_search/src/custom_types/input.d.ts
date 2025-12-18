@@ -7,6 +7,7 @@ export type WebScraperOptions = {
     timeoutMS: number,
     maxRetries: number,
     renderJS: boolean
+    partialSelector: string
 }
 
 export type WebScraperParams = {
