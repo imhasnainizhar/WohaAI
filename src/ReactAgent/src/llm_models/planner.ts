@@ -1,18 +1,14 @@
-import { env } from "@config/env.config";
+import { env } from "@config/env.config.js";
 import { Runnable } from "@langchain/core/runnables";
 import { ChatOpenAI } from "@langchain/openai";
-import { getMCPTools } from "@tools/externals/MCPTools";
-import { logger } from "@utils/logger";
-import { PlannerDecision, PlannerDecisionSchema } from "@internals/schemas/planner.schema";
+import { getMCPTools } from "@tools/externals/MCPTools.js";
+import { logger } from "@utils/logger.js";
+import { PlannerDecision, PlannerDecisionSchema } from "@internals/schemas/planner.schema.js";
 
 let cachedLLM: Runnable | null = null;
 
 export async function plannerModel(): Promise<Runnable>{
     if(cachedLLM) return cachedLLM;
-
-    // const MCPTools = await getMCPTools();
-    // if (!MCPTools.length) throw new Error("No MCP tools available, Failed to load Tools.");
-    // logger.debug("MCP Tools Loaded")
 
     cachedLLM = new ChatOpenAI({
         model: "gpt-4o-2024-08-06",

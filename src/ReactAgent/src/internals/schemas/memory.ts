@@ -1,7 +1,8 @@
-// memoryDecision.schema.ts
 import { z } from "zod";
 
-export const memoryDecisionSchema = z.object({
+// This schema is used for api-level endorsement on llm to provide
+// structured output for memory related decisions.
+export const MemorySchema = z.object({
   shouldStore: z.boolean(),
   quadrant: z.enum([
     "FACTS",
@@ -9,9 +10,8 @@ export const memoryDecisionSchema = z.object({
     "PROJECTS",
     "EPISODIC",
   ]).nullable(),
-
   memory: z.string().nullable(),
   reason: z.string().nullable(),
 });
 
-export type MemoryDecision = z.infer<typeof memoryDecisionSchema>;
+export type MemorySchemaType = z.infer<typeof MemorySchema>;

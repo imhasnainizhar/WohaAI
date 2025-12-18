@@ -1,11 +1,11 @@
 import { AIMessage } from "langchain";
-import { AnnotationState } from "@workflows/ReactWorkflow";
-import { plannerModel } from "../../llm_models/planner.model";
-import { logger } from "@utils/logger";
-import { plannerPrompt } from "@internals/prompts/planner_prompt";
+import { AnnotationState } from "@workflows/ReactWorkflow.js";
+import { plannerModel } from "../../llm_models/planner.model.js";
+import { logger } from "@utils/logger.js";
+import { plannerPrompt } from "@internals/prompts/planner_prompt.js";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 import crypto from "crypto";
-import { PlannerDecision, ToolCall } from "@internals/schemas/planner.schema";
+import { PlannerDecision, ToolCall } from "@internals/schemas/planner.schema.js";
 
 // Planner node decides: call tools OR proceed to summarizer
 export const plannerNode = async (state: typeof AnnotationState.State) => {

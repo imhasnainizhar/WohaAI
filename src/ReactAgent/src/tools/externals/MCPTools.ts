@@ -1,6 +1,6 @@
 import { MultiServerMCPClient } from "@langchain/mcp-adapters";
-import { logger } from "@utils/logger";
-import { env } from "@config/env.config";
+import { logger } from "@utils/logger.js";
+import { env } from "@config/env.config.js";
 
 // Create MCP client
 const MCPClient = new MultiServerMCPClient({

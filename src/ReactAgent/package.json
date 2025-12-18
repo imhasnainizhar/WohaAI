@@ -18,6 +18,7 @@
     ],
     "author": "Hasnain Izhar",
     "license": "MIT",
+    "type": "module",
     "dependencies": {
         "@langchain/community": "^1.0.7",
         "@langchain/core": "^1.1.4",

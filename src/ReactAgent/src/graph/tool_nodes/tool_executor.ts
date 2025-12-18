@@ -1,9 +1,9 @@
-import { AnnotationState } from '@workflows/ReactWorkflow';
-import { ToolName, ToolOutput, ToolRegistry } from "@tools/registry";
+import { AnnotationState } from '@workflows/ReactWorkflow.js';
+import { ToolName, ToolOutput, ToolRegistry } from "@tools/registry.js";
 import { ToolMessage } from "langchain";
-import { ToolInput } from '@tools/registry';
-import { logger } from '@utils/logger';
-import { NormalizedToolOutput } from '@internals/types/agent';
+import { ToolInput } from '@tools/registry.js';
+import { logger } from '@utils/logger.js';
+import { NormalizedToolOutput } from '@internals/types/agent.js';
 
 export async function toolsNode(state: typeof AnnotationState.State) {
     // 🔧 Tool execution entry point

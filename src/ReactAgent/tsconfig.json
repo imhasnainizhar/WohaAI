@@ -15,12 +15,12 @@
         "noImplicitAny": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "noUncheckedIndexedAccess": true,    
+        "noUncheckedIndexedAccess": true,
         /* Module + Imports */
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
-        /* Path Aliases (modern way, no baseUrl needed) */
+        "baseUrl": ".",
         "paths": {
             "@config/*": [
                 "./src/config/*"
@@ -48,7 +48,7 @@
             ],
             "@graph/*": [
                 "./src/graph/*"
-            ],          
+            ],
             "@server/*": [
                 "./src/server/*"
             ]
@@ -57,7 +57,13 @@
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts"
-, "src/internals/memory/qdrant_client.mts"    ],
-    "exclude": ["node_modules", "dist", "build", ".cache"]
+        "src/**/*.js",
+        "src/**/*.ts",
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "build",
+        ".cache"
+    ]
 }

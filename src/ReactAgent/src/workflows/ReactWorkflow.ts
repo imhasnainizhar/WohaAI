@@ -1,14 +1,16 @@
 import { StateGraph, START, END, Annotation } from '@langchain/langgraph';
 import { BaseMessage, HumanMessage, ToolMessage, ToolCall, SystemMessage, AIMessage } from 'langchain';
-import { toolsNode } from '@graph/ToolNodes/ToolNode';
-import { logger } from '@utils/logger';
-import { plannerNode } from '@graph/WorkflowNodes/PlannerNode';
-import { responseNode } from '@graph/WorkflowNodes/ResponseNode';
-import summarizerNode from '@graph/ToolNodes/SummarizerNode';
-import { InitChatNode } from '@graph/WorkflowNodes/InitChatNode';
-import { workflowTransitionLogger } from '@utils/workflow_transitional_logger';
-import { PlannerDecision } from '@internals/schemas/planner.schema';
-
+import { toolsNode } from '@graph/ToolNodes/ToolNode.js';
+import { logger } from '@utils/logger.js';
+import { plannerNode } from '@graph/WorkflowNodes/PlannerNode.js';
+import { responseNode } from '@graph/WorkflowNodes/ResponseNode.js';
+import summarizerNode from '@graph/ToolNodes/SummarizerNode.js';
+import { InitChatNode } from '@graph/WorkflowNodes/InitChatNode.js';
+import { workflowTransitionLogger } from '@utils/workflow_transitional_logger.js';
+import { PlannerDecision } from '@internals/schemas/planner.schema.js';
+import { MemorySchemaType } from '@internals/schemas/memory.schema.js';
+import { MemoryStore } from '@internals/memory/store.js';
+import { memoryNode } from '@graph/WorkflowNodes/MemoryNode.js';
 
 // Define the annotation schema for the workflow state
 export const AnnotationState = Annotation.Root({
@@ -89,6 +91,8 @@ export default async function reactAgentWorkflow() {
         // Added Workflow Nodes
         .addNode("InitChat", InitChatNode)
 
+        .addNode("Memory", memoryNode)
+
         .addNode("Planner", plannerNode)
 
         .addNode("Tools", toolsNode)
@@ -99,10 +103,10 @@ export default async function reactAgentWorkflow() {
 
         // Added Workflow Edges
         .addEdge(START, "InitChat")
-        .addEdge("InitChat", "Planner")
+        .addEdge("InitChat", "Memory")
 
         // Planner decides: tools or final
-        .addConditionalEdges("InitChat", workflowTransitionLogger("InitChat", (state) => {
+        .addConditionalEdges("Memory", workflowTransitionLogger("Memory", (state) => {
             return "Planner";
         }), {
             Planner: "Planner",

@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express"
-import { logger } from "@utils/logger"
-import { env } from "@config/env.config"
-import router from "@server/chat.route";
+import { logger } from "@utils/logger.js"
+import { env } from "@config/env.config.js"
+import router from "@server/chat.route.js";
 
 const PORT = parseInt(env.WOAHAI_LLM_AGENT_PORT);
 

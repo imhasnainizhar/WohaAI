@@ -1,5 +1,5 @@
-import { AnnotationState } from "@workflows/ReactWorkflow";
-import { logger } from "./logger";
+import { AnnotationState } from "@workflows/ReactWorkflow.js";
+import { logger } from "./logger.js";
 
 type transitionFn = (state: typeof AnnotationState.State) => string;
 
