@@ -1,50 +1,41 @@
-services:
-  user_postgres_db:
-    image: postgres:16
-    container_name: user_postgres_db
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${USER_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${USER_POSTGRES_DB}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "${USER_POSTGRES_PORT}:${USER_POSTGRES_PORT}"
-    networks:
-      - microservices_net_01
+version: "3.9"
 
-  chat_postgres:
+services:
+  # ===========================
+  # Users Postgres DB
+  # ===========================
+  users_postgres_db:
     image: postgres:16
-    container_name: chat_postgres_db
-    restart: always
+    container_name: users_postgres_db
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: ${CHAT_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${CHAT_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${CHAT_POSTGRES_DB}
+      POSTGRES_USER: ${USERS_POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: USERS_POSTGRES_DB_PASSWORD
+      POSTGRES_DB: ${USERS_POSTGRES_DB_NAME}
+    ports:
+      - "${USERS_POSTGRES_DB_PORT}:${USERS_POSTGRES_DB_PORT}"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "${CHAT_POSTGRES_PORT}:${CHAT_POSTGRES_PORT}"
+      - users_postgres_data:/var/lib/postgresql/data
     networks:
-      - microservices_net_01
-  agent_memory_store:
-    image: qdrant/qdrant:latest
-    container_name: agent_memory_store
-    restart: always
+      - woahai_network
+
+  # ===========================
+  # Threads Postgres DB
+  # ===========================
+  threads_postgres_db:
+    image: postgres:16
+    container_name: threads_postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${THREADS_POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${THREADS_POSTGRES_DB_PASSWORD}
+      POSTGRES_DB: ${THREADS_POSTGRES_DB_NAME}
     ports:
-      - "${AGENT_MEMORY_STORE_PORT}:${AGENT_MEMORY_STORE_PORT}"
+      - "${THREADS_POSTGRES_DB_PORT}:${THREADS_POSTGRES_DB_PORT}"
+    volumes:
+      - threads_postgres_data:/var/lib/postgresql/data
     networks:
-      - microservices_net_01
-  
-  stm_vector_store:
-    image: qdrant/qdrant:latest
-    container_name: stm_vector_store
-    restart: always
-    ports:
-      - "${STM_VECTOR_STORE_PORT}:${STM_VECTOR_STORE_PORT}"
-    networks:
-      - microservices_net_01
+      - woahai_network
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -61,8 +52,14 @@ services:
       - microservices_net_01
 
 volumes:
+  users_postgres_data:
+  threads_postgres_data:
   pgdata:
 
 networks:
+  woahai_network:
+    driver: bridge
+  woahai_agent_network:
+    external: true
   microservices_net_01:
     external: true
