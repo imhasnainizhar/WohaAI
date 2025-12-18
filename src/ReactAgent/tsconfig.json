@@ -15,12 +15,12 @@
         "noImplicitAny": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "noUncheckedIndexedAccess": true,    
+        "noUncheckedIndexedAccess": true,
         /* Module + Imports */
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
-        /* Path Aliases (modern way, no baseUrl needed) */
+        "baseUrl": ".",
         "paths": {
             "@config/*": [
                 "./src/config/*"
@@ -37,15 +37,18 @@
             "@tools/*": [
                 "./src/tools/*"
             ],
-            "@models/*": [
-                "./src/models/*"
+            "@llm_models/*": [
+                "./src/llm_models/*"
+            ],
+            "@memory/*": [
+                "./src/memory/*"
             ],
             "@workflows/*": [
                 "./src/workflows/*"
             ],
             "@graph/*": [
                 "./src/graph/*"
-            ],          
+            ],
             "@server/*": [
                 "./src/server/*"
             ]
@@ -54,7 +57,13 @@
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.js",
+        "src/**/*.ts",
     ],
-    "exclude": ["node_modules", "dist", "build", ".cache"]
+    "exclude": [
+        "node_modules",
+        "dist",
+        "build",
+        ".cache"
+    ]
 }

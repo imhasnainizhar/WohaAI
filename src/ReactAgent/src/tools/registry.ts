@@ -1,5 +1,4 @@
-import llmNode from "@graph/WorkflowNodes/LLMNode";
-import { getMCPTools } from "@tools/externals/MCPTools";
+import { getMCPTools } from "@tools/externals/MCPTools.js";
 
 type ToolDefinition<I, O> = {
     name: string,
@@ -8,7 +7,6 @@ type ToolDefinition<I, O> = {
     output: O,
     execute: (input: I) => Promise<O>
 }
-
 
 //-------------------------//
 // These types will be shared through global shared directory
@@ -57,7 +55,7 @@ export const ToolRegistry = {
             const result = await tool.invoke(input);
             return result;
         }
-    },
+    }
 } satisfies Record<string, ToolDefinition<any, any>>;
 
 export type ToolName = keyof typeof ToolRegistry;

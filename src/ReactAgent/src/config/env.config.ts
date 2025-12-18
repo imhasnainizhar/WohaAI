@@ -2,7 +2,7 @@
 import dotenv from "dotenv";
 import process from "process";
 import path from "path";
-import { logger } from "@utils/logger";
+import { logger } from "@utils/logger.js";
 import { existsSync } from "fs";
 
 const p = process.env // Technique for convinience
@@ -26,6 +26,7 @@ if (!isProduction) {
 
 // --- Types for your env config ---
 interface EnvConfig {
+    AGENT_MEMORY_STORE_URI: string;
     NODE_ENV: string;
     WOAHAI_LLM_AGENT_PORT: string;
     AGENT_MEMORY_DB_URI: string,
@@ -36,6 +37,7 @@ interface EnvConfig {
 
 // ✅ Build environment object
 export const env: EnvConfig = {
+    AGENT_MEMORY_STORE_URI: p.AGENT_MEMORY_STORE_URI!,
     NODE_ENV: p.NODE_ENV || "development",
     WOAHAI_LLM_AGENT_PORT: p.WOAHAI_LLM_AGENT_PORT!,
     LOG_LEVEL: p.LOG_LEVEL || "debug",

@@ -1,6 +1,6 @@
-import { logger } from "@utils/logger";
+import { logger } from "@utils/logger.js";
 import { Request, Response } from "express";
-import { llmRuntime } from "../runtime";
+import { llmRuntime } from "../runtime.js";
 
 export const chatController = async (req: Request, res: Response) => {
     try {

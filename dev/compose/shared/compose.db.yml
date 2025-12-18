@@ -28,12 +28,12 @@ services:
       - "${CHAT_POSTGRES_PORT}:${CHAT_POSTGRES_PORT}"
     networks:
       - microservices_net_01
-  ltm_vector_store:
+  agent_memory_store:
     image: qdrant/qdrant:latest
-    container_name: ltm_vector_store
+    container_name: agent_memory_store
     restart: always
     ports:
-      - "${LTM_VECTOR_STORE_PORT}:${LTM_VECTOR_STORE_PORT}"
+      - "${AGENT_MEMORY_STORE_PORT}:${AGENT_MEMORY_STORE_PORT}"
     networks:
       - microservices_net_01
   
