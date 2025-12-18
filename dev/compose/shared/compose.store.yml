@@ -1,0 +1,18 @@
+services:
+  agent_memory_store:
+    image: qdrant/qdrant:latest
+    container_name: agent_memory_store
+    restart: always
+    ports:
+      - "${AGENT_MEMORY_STORE_PORT}:${AGENT_MEMORY_STORE_PORT}"
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=${AGENT_MEMORY_STORE_PORT}
+    env_file:
+      - ../../../.env
+      - ../../../.env.docker
+    networks:
+      - microservices_net_01
+
+networks:
+  microservices_net_01:
+    external: true

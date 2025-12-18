@@ -40,8 +40,8 @@
             "@llm_models/*": [
                 "./src/llm_models/*"
             ],
-            "@memory/*": [
-                "./src/memory/*"
+            "@db/*": [
+                "src/db/*"
             ],
             "@workflows/*": [
                 "./src/workflows/*"

@@ -3,7 +3,7 @@ import { Runnable } from "@langchain/core/runnables";
 import { ChatOpenAI } from "@langchain/openai";
 import { getMCPTools } from "@tools/externals/MCPTools.js";
 import { logger } from "@utils/logger.js";
-import { PlannerDecision, PlannerDecisionSchema } from "@internals/schemas/planner.schema.js";
+import { PlannerDecision, PlannerDecisionSchema } from "@internals/schemas/planner.js";
 
 let cachedLLM: Runnable | null = null;
 

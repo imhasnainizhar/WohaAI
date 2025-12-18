@@ -26,10 +26,27 @@ if (!isProduction) {
 
 // --- Types for your env config ---
 interface EnvConfig {
-    AGENT_MEMORY_STORE_URI: string;
+    // Qdrant store for memories for old chat sessions.
+    MEMORY_QDRANT_STORE_URI: string;
+    MEMORY_QDRANT_STORE_PORT: number;
+
+    // Postgres store for threads.
+    THREADS_POSTGRES_DB_URI: string;
+    THREADS_POSTGRES_DB_PORT: number;
+
+    // Redis store for caching memories in live chat session.
+    MEMORY_REDIS_STORE_URI: string;
+    MEMORY_REDIS_STORE_PASSWORD: string;
+    MEMORY_REDIS_STORE_USERNAME: string;
+
+    // Redis store for caching threads in live chat session.
+    THREADS_REDIS_STORE_URI: string;
+    THREADS_REDIS_STORE_PASSWORD: string;
+    THREADS_REDIS_STORE_USERNAME: string;
+
+    // Other environment configs...
     NODE_ENV: string;
     WOAHAI_LLM_AGENT_PORT: string;
-    AGENT_MEMORY_DB_URI: string,
     LOG_LEVEL: string;
     OPENAI_API_KEY: string;
     MCP_GATEWAY_PORT: number;
@@ -37,12 +54,29 @@ interface EnvConfig {
 
 // ✅ Build environment object
 export const env: EnvConfig = {
-    AGENT_MEMORY_STORE_URI: p.AGENT_MEMORY_STORE_URI!,
+    // Qdrant store for memories for old chat sessions.
+    MEMORY_QDRANT_STORE_URI: p.MEMORY_QDRANT_STORE_URI!,
+    MEMORY_QDRANT_STORE_PORT: parseInt(p.MEMORY_QDRANT_STORE_PORT!, 10),
+
+    // Postgres store for threads.
+    THREADS_POSTGRES_DB_URI: p.THREADS_POSTGRES_DB_URI!,
+    THREADS_POSTGRES_DB_PORT: parseInt(p.THREADS_POSTGRES_DB_PORT!, 10),
+
+    // Redis store for caching memories in live chat session.
+    MEMORY_REDIS_STORE_URI: p.MEMORY_REDIS_STORE_URI!,
+    MEMORY_REDIS_STORE_PASSWORD: p.MEMORY_REDIS_STORE_PASSWORD!,
+    MEMORY_REDIS_STORE_USERNAME: p.MEMORY_REDIS_STORE_USERNAME!,
+
+    // Redis store for caching threads in live chat session.
+    THREADS_REDIS_STORE_URI: p.THREADS_REDIS_STORE_URI!,
+    THREADS_REDIS_STORE_PASSWORD: p.THREADS_REDIS_STORE_PASSWORD!,
+    THREADS_REDIS_STORE_USERNAME: p.THREADS_REDIS_STORE_USERNAME!,
+
+    // Other environment configs...
     NODE_ENV: p.NODE_ENV || "development",
     WOAHAI_LLM_AGENT_PORT: p.WOAHAI_LLM_AGENT_PORT!,
     LOG_LEVEL: p.LOG_LEVEL || "debug",
     OPENAI_API_KEY: p.OPENAI_API_KEY!,
-    AGENT_MEMORY_DB_URI: p.AGENT_MEMORY_DB_URI!,
     MCP_GATEWAY_PORT: parseInt(p.MCP_GATEWAY_PORT!, 10),
 };
 

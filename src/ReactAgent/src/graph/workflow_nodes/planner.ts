@@ -1,11 +1,10 @@
-import { AIMessage } from "langchain";
+import { AIMessage, HumanMessage } from "langchain";
 import { AnnotationState } from "@workflows/ReactWorkflow.js";
-import { plannerModel } from "../../llm_models/planner.model.js";
+import { plannerModel } from "@llm_models/planner.js";
 import { logger } from "@utils/logger.js";
 import { plannerPrompt } from "@internals/prompts/planner_prompt.js";
-import { JsonOutputParser } from "@langchain/core/output_parsers";
 import crypto from "crypto";
-import { PlannerDecision, ToolCall } from "@internals/schemas/planner.schema.js";
+import { PlannerDecision, ToolCall } from "@internals/schemas/planner.js";
 
 // Planner node decides: call tools OR proceed to summarizer
 export const plannerNode = async (state: typeof AnnotationState.State) => {
@@ -16,20 +15,7 @@ export const plannerNode = async (state: typeof AnnotationState.State) => {
 
   logger.debug(`Planner context size: ${state.messages.length}`);
 
-  // Invoke LLM
-  const plannerOutput: AIMessage = await llm.invoke([
-    plannerSystemMessage,
-    ...state.summarized_tool_output,
-    ...state.messages,
-  ]);
-
-  const plannerContent = Array.isArray(plannerOutput)
-    ? plannerOutput[0].content
-    : plannerOutput.content;
-
-  logger.debug(`Planner raw content: ${plannerContent}`);
-
-  const parser = new JsonOutputParser<PlannerDecision>();
+  // Invoke LLM - withStructuredOutput returns the structured object directly
   let decision: PlannerDecision = {
     action: "Respond",
     reason: "No decision made",
@@ -37,13 +23,24 @@ export const plannerNode = async (state: typeof AnnotationState.State) => {
   };
 
   try {
-    // Parse planner output into typed PlannerDecision
-    decision = await parser.parse(plannerContent);
+    // Convert summarized_tool_output (strings) to HumanMessages
+    const summarizedToolMessages = state.summarized_tool_output.length > 0
+      ? [new HumanMessage(`Summarized tool outputs:\n${state.summarized_tool_output.join("\n\n")}`)]
+      : [];
+
+    // withStructuredOutput returns PlannerDecision directly, not AIMessage
+    decision = await llm.invoke([
+      plannerSystemMessage,
+      ...summarizedToolMessages,
+      ...state.messages.slice(-6).reverse(),
+    ]) as PlannerDecision;
+
+    logger.debug(`Planner decision received: ${JSON.stringify(decision)}`);
   } catch (err: any) {
-    logger.error(`Planner JSON parse failed: ${JSON.stringify(err)}`);
+    logger.error(`Planner invocation failed: ${JSON.stringify(err)}`);
     decision = {
       action: "Respond",
-      reason: err.message,
+      reason: err.message || "LLM invocation failed",
       tool_calls: [],
     } as PlannerDecision;
   }
@@ -65,8 +62,7 @@ export const plannerNode = async (state: typeof AnnotationState.State) => {
 
   // Build AIMessage with structured tool_calls
   const plannerMessage = new AIMessage({
-    ...plannerOutput,
-    content: "", // content not used when tool_calls exist
+    content: JSON.stringify(decision) ?? "", // content not used when tool_calls exist
     tool_calls: toolCalls,
     id: crypto.randomUUID(),
   });
@@ -81,7 +77,8 @@ export const plannerNode = async (state: typeof AnnotationState.State) => {
   return {
     planner_decision: decision,
     messages: [plannerMessage],
-    tool_calls: decision?.action === "Tools" ? toolCalls : [],
+    // tool_calls: decision?.action === "Tools" ? toolCalls : [],
+    tool_calls: [],
     tool_messages: [],
     summarizer_path: decision?.action === "Summarize",
   };

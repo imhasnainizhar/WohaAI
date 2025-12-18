@@ -1,6 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { Runnable } from "@langchain/core/runnables";
-import { MemorySchema, MemorySchemaType } from "@internals/schemas/memory.schema.js";
+import { MemorySchema, MemorySchemaType } from "@internals/schemas/memory.js";
 import { env } from "@config/env.config.js";
 
 let cachedModel: Runnable | null = null;

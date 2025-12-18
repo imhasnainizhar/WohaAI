@@ -4,8 +4,7 @@ import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { env } from "@config/env.config.js";
 import { getMCPTools } from "@tools/externals/MCPTools.js";
 import { GraphState } from "@internals/types/agent.js";
-import { responseSchema } from "@internals/schemas/agent.schema.js";
-import { memorySchema } from '@internals/schemas/agent.schema.js';
+import { responseSchema } from "@internals/schemas/agent.js";
 import pg from "pg"
 
 // Not used in main agent workflor currently
