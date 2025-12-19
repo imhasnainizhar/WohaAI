@@ -51,6 +51,9 @@
             ],
             "@server/*": [
                 "./src/server/*"
+            ],
+            "@generated/*": [
+                "./src/generated/*"
             ]
         },
         /* Output + Debugging */

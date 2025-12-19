@@ -35,7 +35,7 @@ export const ToolRegistry = {
         name: "WebSearcherTool",
         description: "Search the web for latest URLs",
         input: {} as { prompt: string; requiredResults?: number },
-        output: {} as { urls: string[] },
+        output: {} as any,  // TODO: add better output type
         execute: async (input) => {
             const tool = (await getMCPTools()).find(t => t.name === "WebSearcherTool");
             if (!tool) throw new Error("MCP tool 'WebSearcherTool' not found");

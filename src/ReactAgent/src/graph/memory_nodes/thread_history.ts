@@ -3,9 +3,8 @@ import { v7 as uuidv7 } from "uuid";
 import { prismaClient } from "@db/threads/prisma/prisma_client.js";
 import { AnnotationState } from "@workflows/ReactWorkflow.js";
 import { logger } from "@utils/logger.js";
-import { HumanMessage, AIMessage } from "langchain";
+import { HumanMessage, AIMessage, ToolMessage } from "langchain";
 
-// Save conversation history to database
 export async function threadHistoryNode(
   state: typeof AnnotationState.State
 ): Promise<typeof AnnotationState.State> {
@@ -16,71 +15,47 @@ export async function threadHistoryNode(
     return state;
   }
 
+  // Expect exactly one user → one AI for this workflow
+  const userMessage: string = state.input;
+  // Get the last AIMessage with content (final response), not planner messages with only tool_calls
+  const aiMessage = state.messages
+    .filter(m => m instanceof AIMessage && m.content && (typeof m.content === 'string' ? m.content.trim() !== '' : true))
+    .slice(-1)[0];
+
+  logger.debug(`User message: ${userMessage}`);
+  logger.debug(`AI message: ${aiMessage?.content}`);
+  if (!userMessage || !aiMessage) {
+    logger.warn("Incomplete turn (user or AI missing), skipping persistence");
+    return state;
+  }
+
   try {
-    // Get the last user message and AI response
-    const userMessages = state.messages.filter(m => m instanceof HumanMessage);
-    const aiMessages = state.messages.filter(m => m instanceof AIMessage);
+    // 1️⃣ Save user message first
+    await prismaClient.threadMessage.create({
+      data: {
+        id: uuidv7(),
+        conversationId: state.threadID,
+        role: "user",
+        content: userMessage,
+      },
+    });
 
-    const lastUserMessage = userMessages[userMessages.length - 1];
-    const lastAiMessage = aiMessages[aiMessages.length - 1];
+    // 2️⃣ Save AI message second
+    await prismaClient.threadMessage.create({
+      data: {
+        id: uuidv7(),
+        conversationId: state.threadID,
+        role: "assistant",
+        content:
+          typeof aiMessage.content === "string"
+            ? aiMessage.content
+            : JSON.stringify(aiMessage.content),
+      },
+    });
 
-    // Save user message if it exists and hasn't been saved
-    if (lastUserMessage) {
-      const existingUserMessage = await prismaClient.threadMessage.findFirst({
-        where: {
-          conversationId: state.threadID,
-          role: "user",
-          content: typeof lastUserMessage.content === "string" 
-            ? lastUserMessage.content 
-            : JSON.stringify(lastUserMessage.content),
-        },
-        orderBy: { turnId: "desc" },
-      });
-
-      if (!existingUserMessage) {
-        await prismaClient.threadMessage.create({
-          data: {
-            id: uuidv7(),
-            conversationId: state.threadID,
-            role: "user",
-            content: typeof lastUserMessage.content === "string" 
-              ? lastUserMessage.content 
-              : JSON.stringify(lastUserMessage.content),
-          },
-        });
-        logger.debug(`Saved user message to thread ${state.threadID}`);
-      }
-    }
-
-    // Save AI response if it exists and hasn't been saved
-    if (lastAiMessage && lastAiMessage.content) {
-      const existingAiMessage = await prismaClient.threadMessage.findFirst({
-        where: {
-          conversationId: state.threadID,
-          role: "assistant",
-          content: typeof lastAiMessage.content === "string" 
-            ? lastAiMessage.content 
-            : JSON.stringify(lastAiMessage.content),
-        },
-        orderBy: { turnId: "desc" },
-      });
-
-      if (!existingAiMessage) {
-        await prismaClient.threadMessage.create({
-          data: {
-            id: uuidv7(),
-            conversationId: state.threadID,
-            role: "assistant",
-            content: typeof lastAiMessage.content === "string" 
-              ? lastAiMessage.content 
-              : JSON.stringify(lastAiMessage.content),
-          },
-        });
-        logger.debug(`Saved AI message to thread ${state.threadID}`);
-      }
-    }
+    logger.debug(`Saved 1 conversation turn to thread ${state.threadID}`);
   } catch (error) {
-    logger.error(`Error saving thread history: ${error}`);
+    logger.error(`Error saving thread history: ${String(error)}`);
   }
 
   return state;

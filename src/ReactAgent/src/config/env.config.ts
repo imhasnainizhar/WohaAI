@@ -31,7 +31,7 @@ interface EnvConfig {
     MEMORY_QDRANT_STORE_PORT: number;
 
     // Postgres store for threads.
-    THREADS_POSTGRES_DB_URI: string;
+    THREADS_PRISMA_DB_URI: string;
     THREADS_POSTGRES_DB_PORT: number;
 
     // Redis store for caching memories in live chat session.
@@ -59,7 +59,7 @@ export const env: EnvConfig = {
     MEMORY_QDRANT_STORE_PORT: parseInt(p.MEMORY_QDRANT_STORE_PORT!, 10),
 
     // Postgres store for threads.
-    THREADS_POSTGRES_DB_URI: p.THREADS_POSTGRES_DB_URI!,
+    THREADS_PRISMA_DB_URI: p.THREADS_PRISMA_DB_URI!,
     THREADS_POSTGRES_DB_PORT: parseInt(p.THREADS_POSTGRES_DB_PORT!, 10),
 
     // Redis store for caching memories in live chat session.

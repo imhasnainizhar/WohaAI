@@ -14,11 +14,16 @@ services:
       - ../../../.env
       - ../../../.env.docker
     networks:
-      - mcp_network_m
-      - woahai_agent_network
+      - mcp_net
+      - woahai_data_net
+      - microservices_net
 
 networks:
-  mcp_network_m:
+  mcp_net:
     external: true
-  woahai_agent_network:
+
+  woahai_data_net:
+    external: true
+
+  microservices_net:
     external: true
