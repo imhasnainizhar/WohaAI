@@ -1,0 +1,78 @@
+/* [project]/src/styles/theme/theme.style.css [app-client] (css) */
+.bg-bg {
+  background-color: var(--color-bg);
+}
+
+.bg-bg-secondary {
+  background-color: var(--color-bg-secondary);
+}
+
+.bg-bg-tertiary {
+  background-color: var(--color-bg-tertiary);
+}
+
+.text-text {
+  color: var(--color-text);
+}
+
+.text-text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-gray-primary {
+  color: var(--color-gray-primary);
+}
+
+.text-gray-muted {
+  color: var(--color-gray-muted);
+}
+
+.text-link {
+  color: var(--color-link);
+}
+
+.text-link-hover:hover {
+  color: var(--color-link-hover);
+}
+
+.bg-bg-hover {
+  background-color: var(--color-bg-hover);
+}
+
+.card-bg {
+  background-color: var(--color-card);
+}
+
+.border-color {
+  border-color: var(--color-border);
+}
+
+.shadow-color {
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat-sans);
+}
+
+.font-calton {
+  font-family: var(--font-calton-elegance-sans);
+}
+
+.letter-spacing-primary {
+  letter-spacing: var(--letter-spacing-primary);
+}
+
+.letter-spacing-secondary {
+  letter-spacing: var(--letter-spacing-secondary);
+}
+
+.transition-hover {
+  transition: var(--hover-transition);
+}
+
+.transition-active {
+  transition: var(--active-transition);
+}
+
+/*# sourceMappingURL=src_styles_theme_theme_style_css_bad6b30c._.single.css.map*/

@@ -1,0 +1,123 @@
+/* [project]/src/styles/theme/main.global.css [app-client] (css) */
+@font-face {
+  font-family: Calton Elegance Sans;
+  src: url("/fonts/Calton Elegance Sans-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --color-bg: #121212;
+  --color-bg-secondary: #1a1a1a;
+  --color-bg-tertiary: #212121;
+  --color-text: #f2f2f2;
+  --color-text-secondary: #b3b3b3;
+  --color-border: #303030;
+  --color-shadow: #cccccc40;
+  --color-gray-primary: #595959;
+  --color-gray-muted: #fcfcfc1a;
+  --color-bg-hover: #333333e4;
+  --color-link: #009aff;
+  --color-link-hover: #005994;
+  --font-montserrat-sans: "Montserrat", sans-serif;
+  --font-calton-elegance-sans: "Calton Elegance Sans", sans-serif;
+  --hover-transition: all .65s;
+  --active-transition: all .1s ease;
+  --letter-spacing-primary: .06rem;
+  --letter-spacing-secondary: .08rem;
+}
+
+.light {
+  --color-bg: #fff;
+  --color-bg-secondary: #f2f2f2;
+  --color-bg-tertiary: #e6e6e6;
+  --color-text: #0d0d0d;
+  --color-text-secondary: #4d4d4d;
+  --color-card: #fafafa;
+  --color-border: #d9d9d9;
+  --color-shadow: #00000080;
+  --color-gray-muted: #0000000f;
+}
+
+@theme {
+  --color-bg: var(--color-bg) ; --color-bg-secondary: var(--color-bg-secondary) ; --color-bg-tertiary: var(--color-bg-tertiary) ; --color-text: var(--color-text) ; --color-text-secondary: var(--color-text-secondary) ; --color-card: var(--color-card) ; --color-border: var(--color-border) ; --color-shadow: var(--color-shadow) ; --color-link: var(--color-link) ; --color-link-hover: var(--color-link-hover) ; --color-gray-primary: var(--color-gray-primary) ; --color-gray-muted: var(--color-gray-muted) ; --color-bg-hover: var(--color-bg-hover) ; --font-montserrat-sans: var(--font-montserrat-sans) ; --font-calton-elegance-sans: var(--font-calton-elegance-sans) ;   --letter-spacing-primary: .06rem; --letter-spacing-secondary: .08rem; --hover-transition: all .65s; --active-transition: all .1s ease;
+}
+
+.shadow-light {
+  box-shadow: var(--color-boxShadow-light);
+}
+
+.shadow-dark {
+  box-shadow: var(--color-boxShadow-dark);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: auto;
+}
+
+::-webkit-scrollbar-track {
+  cursor: pointer;
+  background-color: #0000;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--theme-dark-black-third);
+  cursor: pointer;
+  border-radius: 60px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-corner {
+  background: none;
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+input:-webkit-autofill {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+input:-webkit-autofill:hover {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+input:-webkit-autofill:focus {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+input:-webkit-autofill:active {
+  caret-color: var(--white);
+  transition: background-color 9999s ease-out, color 9999s ease-out;
+  -webkit-box-shadow: none !important;
+  -webkit-text-fill-color: var(--white) !important;
+  color: var(--white) !important;
+}
+
+svg {
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  display: flex;
+}
+
+/*# sourceMappingURL=src_styles_theme_main_global_css_bad6b30c._.single.css.map*/

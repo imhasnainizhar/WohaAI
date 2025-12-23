@@ -5,23 +5,44 @@ import { logger } from '@utils/logger.js';
 export const memoryRedisClient = createClient({
     url: env.MEMORY_REDIS_STORE_URI,
     password: env.MEMORY_REDIS_STORE_PASSWORD,
-    username: env.MEMORY_REDIS_STORE_USERNAME,
     socket: {
+        connectTimeout: 5000,
         reconnectStrategy: (retries) => {
-            // exponential backoff up to 3 seconds
-            return Math.min(retries * 100, 3000);
+            const delay = Math.min(retries * 100, 3000);
+            logger.debug(`Memory Redis reconnect attempt #${retries}, next retry in ${delay}ms`);
+            return delay;
         },
     },
 });
 
-memoryRedisClient.on('error', (err) => logger.error('Memory Redis Client Error', err));
+// --- Event listeners for debugging ---
+memoryRedisClient.on('error', (err) => logger.error('Memory Redis Client Error: ' + JSON.stringify(err)));
+memoryRedisClient.on('connect', () => logger.debug('Memory Redis socket connected'));
+memoryRedisClient.on('ready', () => logger.info('✅ Memory Redis ready'));
+memoryRedisClient.on('end', () => logger.warn('Memory Redis connection closed'));
+memoryRedisClient.on('reconnecting', () => logger.warn(`Memory Redis reconnecting`));
 
+// --- Connection helper ---
 export const connectMemoryRedis = async () => {
+    if (memoryRedisClient.isOpen) {
+        return;
+    }
+    logger.debug(`Connecting to Memory Redis with URL: ${env.MEMORY_REDIS_STORE_URI}`);
     try {
-        if (!memoryRedisClient.isOpen) await memoryRedisClient.connect();
-        logger.info("✅ Memory Redis connected successfully");
-    } catch (err) {
-        logger.error("❌ Failed to connect to Memory Redis: " + (err as Error).message);
+        await memoryRedisClient.connect();
+        logger.info('✅ Memory Redis connected successfully');
+    } catch (err: any) {
+        logger.error('❌ Failed to connect to Memory Redis', err);
         process.exit(1);
+    }
+};
+
+// --- Optional helper to test a key ---
+export const testMemoryRedis = async () => {
+    try {
+        const ping = await memoryRedisClient.ping();
+        logger.info(`Memory Redis ping response: ${ping}`);
+    } catch (err: any) {
+        logger.error('Memory Redis test ping failed', err);
     }
 };

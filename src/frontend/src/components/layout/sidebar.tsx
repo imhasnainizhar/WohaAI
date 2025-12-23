@@ -1,139 +1,187 @@
 "use client";
 
-import MoreBar from "@components/layout/morebar";
+import MainMenu from "@components/layout/main-menu";
 import { useAppContext } from "@providers/AppContext";
 import { useRef, useState, useEffect } from "react";
 import { useTheme } from "@providers/ThemeProvider";
 import Image from "next/image";
+import UsernameCollapsablePlate from "@components/ui/cards/username-collapsable-plate"
+import { LuSquareLibrary } from "react-icons/lu";
+import { LuImage } from "react-icons/lu";
+import { MdHistoryEdu } from "react-icons/md";
+import { IoCreate } from "react-icons/io5";
+import { LuSearch } from "react-icons/lu";
 
-export default function SideBar() {
+
+export default function Sidebar() {
   const { theme } = useTheme();
   const darkTheme = theme === "dark";
 
-  const { toggleSearch, moreBarVisible, toggleMoreBar, setMoreBarVisible } =
-    useAppContext();
-  const moreBarRef = useRef<HTMLDivElement | null>(null);
-  const moreBarToggleBtnRef = useRef<HTMLDivElement | null>(null);
-  const [moreBarLeft, setMoreBarLeft] = useState<number | null>(null);
+  const {
+    toggleSearch,
+    toggleMainMenu,
+    mainMenuVisible,
+    setMainMenuVisible,
+    sidebarExpanded,
+    toggleSidebar,
+  } = useAppContext();
 
-  const updateMoreBarPosition = () => {
-    if (moreBarToggleBtnRef.current) {
-      const rect = moreBarToggleBtnRef.current.getBoundingClientRect();
-      const distanceFromRight = window.innerWidth - rect.left - 100;
-      setMoreBarLeft(distanceFromRight);
-    }
-  };
+  const ANIMATION_TIMER = 500
+  const [animationDone, setAnimationDone] = useState<Boolean>(true);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const mainMenuRef = useRef<HTMLDivElement | null>(null);
+  const mainMenuToggleBtnRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (moreBarVisible) updateMoreBarPosition();
-  }, [moreBarVisible]);
+    setAnimationDone(false);
 
+    const animationTimer = setTimeout(() => {
+      setAnimationDone(true)
+    }, ANIMATION_TIMER);
+
+    return () => clearTimeout(animationTimer);
+
+  }, [sidebarExpanded]
+  )
+
+  // Sidebar empty-area click (ONLY when collapsed)
+  const handleSidebarClick = (e: React.MouseEvent) => {
+    if (sidebarExpanded) return;
+
+    const target = e.target as HTMLElement;
+
+    // Anything interactive should NOT toggle sidebar
+    if (
+      target.closest(
+        "button, a, i, input, [data-no-sidebar-toggle]"
+      )
+    ) {
+      return;
+    }
+
+    toggleSidebar();
+  };
+
+
+  // Close Main Menu on outside click
   useEffect(() => {
     const closeIfOutside = (e: MouseEvent) => {
       if (
-        moreBarVisible &&
-        moreBarRef.current &&
-        !moreBarRef.current.contains(e.target as Node) &&
-        !moreBarToggleBtnRef.current?.contains(e.target as Node)
+        mainMenuVisible &&
+        mainMenuRef.current &&
+        !mainMenuRef.current.contains(e.target as Node) &&
+        !mainMenuToggleBtnRef.current?.contains(e.target as Node)
       ) {
-        setMoreBarVisible(false);
+        setMainMenuVisible(false);
       }
     };
     window.addEventListener("click", closeIfOutside);
     return () => window.removeEventListener("click", closeIfOutside);
-  }, [moreBarVisible]);
+  }, [mainMenuVisible]);
 
   const sidebarItems = [
     {
       label: "New Chat",
-      icon: (
-        <i
-          className="bx bx-edit"
-          style={{ fontSize: "24px", color: darkTheme ? "#fff" : "#000" }}
-        />
-      ),
+      icon: <IoCreate className="min-w-[20px] min-h-[20px]" />,
       onClick: null,
     },
     {
       label: "Search Chat",
-      icon: (
-        <i
-          className="bx bx-search"
-          style={{ fontSize: "24px", color: darkTheme ? "#fff" : "#000" }}
-        />
-      ),
+      icon: <LuSearch className="min-w-[20px] min-h-[20px]" />,
+      onClick: toggleSearch,
+    },
+    {
+      label: "Library",
+      icon: <LuSquareLibrary className="min-w-[20px] min-h-[20px]" />,
+      onClick: toggleSearch,
+    },
+    {
+      label: "Images",
+      icon: <LuImage className="min-w-[20px] min-h-[20px]" />,
+      onClick: toggleSearch,
+    },
+    {
+      label: "Chat History",
+      icon: <MdHistoryEdu className="min-w-[20px] min-h-[20px]" />,
       onClick: toggleSearch,
     },
   ];
 
   return (
     <div
-      className={`relative w-full h-full z-[100] ${
-        darkTheme ? "bg-dark-black-secondary" : "bg-light-white-secondary"
-      }`}
+      ref={sidebarRef}
+      data-sidebar-root
+      onClick={handleSidebarClick}
+      className={`
+        relative h-full bg-bg-secondary flex flex-col
+        transition-width duration-450 ease-in-out pt-2
+        ${sidebarExpanded ? "w-[245px]" : "cursor-w-resize w-[60px]"}
+      `}
     >
-      {/* Sidebar layout: header + main section */}
-      <div className="w-full h-full flex flex-col">
-        {/* Logo Section */}
-        <div className="p-4">
-          <Image
-            src={`/logos/${darkTheme ? "logo-white" : "logo-black"}.png`}
-            alt="Woah AI"
-            width={24}
-            height={24}
-          />
-        </div>
-
-        {/* Main content: top menu + bottom profile */}
-        <div className="flex flex-col justify-between flex-1 px-4 py-6">
-          {/* Top menu */}
-          <div className="flex flex-col gap-4">
-            {sidebarItems.map((item, idx) => (
-              <div
-                key={idx}
-                className={`flex items-center gap-3 cursor-pointer ${
-                  darkTheme ? "text-white" : "text-black"
-                }`}
-                onClick={item.onClick || undefined}
-              >
-                {item.icon}
-                <span className="text-sm font-medium truncate">
-                  {item.label}
-                </span>
-              </div>
-            ))}
+      {/* Logo + Collapse Button */}
+      <div className="p-4 flex items-center justify-between">
+        <Image
+          src={`/logos/${darkTheme ? "white_triangle" : "black_triangle"}.png`}
+          alt="Woah AI"
+          width={30}
+          height={30}
+        />
+        {sidebarExpanded && (
+          <div className="text-text transition hover:bg-bg-hover rounded-full cursor-pointer w-[25px] h-[25px] ">
+            <button
+              onClick={toggleSidebar}
+              className="cursor-pointer w-[25px] h-[25px] flex items-center justify-center"
+            >
+              <i className="bx bx-chevron-left text-xl" />
+            </button>
           </div>
-
-          {/* Bottom profile / account button */}
-          <div
-            className={`flex items-center gap-3 cursor-pointer ${
-              darkTheme ? "text-white" : "text-black"
-            }`}
-            ref={moreBarToggleBtnRef}
-            onClick={toggleMoreBar}
-          >
-            <i
-              className="bx bx-user"
-              style={{ fontSize: "24px", color: darkTheme ? "#fff" : "#000" }}
-            />
-            <span className="text-sm font-medium truncate">My Profile</span>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* MoreBar popup */}
-      {moreBarVisible && moreBarLeft !== null && (
-        <div
-          className="more-options-box morebar-visible"
-          ref={moreBarRef}
-          style={{
-            top: "60px",
-            right: moreBarLeft <= 0 ? "40px" : `${moreBarLeft}px`,
-          }}
-        >
-          <MoreBar onClickToggle={() => setMoreBarVisible(false)} />
+      {/* Menu */}
+      <div className="flex-1 flex flex-col justify-between px-2 py-4">
+        <div className="flex flex-col justify-start h-auto">
+          {sidebarItems.map((item, idx) => (
+            <button
+              key={idx}
+              className={`flex items-center px-2 w-auto h-auto rounded-[10px] truncate 
+                cursor-pointer text-text overflow-hidden hover:bg-bg-hover transition-all duration-[inherit]
+                ease-in-out justify-start`}
+              onClick={item.onClick || undefined}
+            >
+
+              <div className="flex items-center justify-center w-[36px] h-[36px]">
+                {item.icon}
+              </div>
+              <div
+                className={`
+    whitespace-nowrap overflow-hidden
+    transition-all duration-[inherit] ease-in-out
+    text-sm font-medium text-left
+    ${sidebarExpanded
+                    ? "opacity-100 w-[160px] ml-3"
+                    : "opacity-0 w-0 ml-0"}
+  `}
+              >
+                {item.label}
+              </div>
+
+            </button>
+          ))}
         </div>
-      )}
+
+        {/* Profile */}
+        <div
+          ref={mainMenuToggleBtnRef}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleMainMenu();
+          }}
+          className="flex items-center w-[250px] gap-3 cursor-pointer text-text overflow-hidden"
+        >
+          <UsernameCollapsablePlate />
+        </div>
+      </div>
     </div>
   );
 }

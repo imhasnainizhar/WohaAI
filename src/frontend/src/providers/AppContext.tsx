@@ -14,9 +14,14 @@ type AppContextType = {
   toggleSearch: () => void;
 
   // Morebar
-  moreBarVisible: boolean
-  setMoreBarVisible: (value: boolean) => void
-  toggleMoreBar: () => void
+  mainMenuVisible: boolean
+  setMainMenuVisible: (value: boolean) => void
+  toggleMainMenu: () => void
+
+  // Settings state
+  settingsVisible: boolean;
+  setSettingsVisible: (value: boolean) => void;
+  toggleSettings: () => void;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -29,11 +34,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [searchActive, setSearchActive] = useState<boolean>(false);
 
   // Morebar active state
-  const [moreBarVisible, setMoreBarVisible] = useState<boolean>(false);
+  const [mainMenuVisible, setMainMenuVisible] = useState<boolean>(false);
+
+  // Settings state
+  const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
 
   const toggleSidebar = () => setSidebarExpanded((prev) => !prev);
   const toggleSearch = () => setSearchActive((prev) => !prev);
-  const toggleMoreBar = () => setMoreBarVisible((prev) => !prev);
+  const toggleMainMenu = () => setMainMenuVisible((prev) => !prev);
+  const toggleSettings = () => setSettingsVisible((prev) => !prev);
 
   return (
     <AppContext.Provider
@@ -44,9 +53,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         searchActive,
         setSearchActive,
         toggleSearch,
-        moreBarVisible,
-        setMoreBarVisible,
-        toggleMoreBar,
+        mainMenuVisible,
+        setMainMenuVisible,
+        toggleMainMenu,
+        settingsVisible,
+        setSettingsVisible,
+        toggleSettings,
       }}
     >
       {children}

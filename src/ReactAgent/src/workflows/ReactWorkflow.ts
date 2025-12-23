@@ -8,24 +8,16 @@ import { InitChatNode } from '@graph/workflow_nodes/init_chat.js';
 import { workflowTransitionLogger } from '@utils/workflow_logger.js';
 import { PlannerDecision } from '@internals/schemas/planner.js';
 import { memoryNode } from '@graph/memory_nodes/memory.js';
-import { toolCallNode } from '@graph/workflow_nodes/tool_call.js';
+// import { toolCallNode } from '@graph/workflow_nodes/tool_call.js';
 import { threadHistoryNode } from '@graph/memory_nodes/thread_history.js';
 import { uuidv7 } from 'zod/v4';
+import { logger } from '@utils/logger.js';
 
 // Define the annotation schema for the workflow state
 export const AnnotationState = Annotation.Root({
-    userID: Annotation<string | undefined>({
-        default: () => "3hani213", // Just for testing purposes.
-        reducer: (userID, newUserID) => newUserID
-    }),
-    username: Annotation<string | undefined>({
-        default: () => "3hani213", // Just for testing purposes.
-        reducer: (username, newUsername) => newUsername
-    }),
-    sid: Annotation<string>({
-        default: () => "session_1",  // Just for testing purposes.
-        reducer: (sid, newSid) => newSid
-    }),
+    userID: Annotation<string>(),
+    username: Annotation<string>(),
+    sid: Annotation<string>(),
     threadID: Annotation<string>({
         default: () => uuidv7().toString(),
         // We will never change it, so we don't need to reduce it
@@ -109,7 +101,7 @@ export default async function reactAgentWorkflow() {
 
         .addNode("Planner", plannerNode)
 
-        .addNode("ToolCall", toolCallNode)
+        // .addNode("ToolCall", toolCallNode)
 
         .addNode("Tools", toolsNode)
 
@@ -122,7 +114,7 @@ export default async function reactAgentWorkflow() {
         // Added Workflow Edges
         .addEdge(START, "InitChat")
         .addConditionalEdges("InitChat", workflowTransitionLogger("InitChat", (state) => {
-            if (state.userID) return "Memory";
+            if (state && state.userID && state.userID.trim() !== "") return "Memory";
             return "Planner";
         }), {
             Memory: "Memory",
@@ -137,47 +129,47 @@ export default async function reactAgentWorkflow() {
         })
 
         // Planner decides: tools or final
-        // .addConditionalEdges(
-        //     "Planner",
-        //     workflowTransitionLogger("Planner", (state) => {
-        //         const hasPendingToolRequests = state.tool_calls.length > 0;
+        .addConditionalEdges(
+            "Planner",
+            workflowTransitionLogger("Planner", (state) => {
+                const hasPendingToolRequests = state.tool_calls.length > 0;
 
-        //         const hasNewToolOutputs = (
-        //             state.tool_outputs.length > (state.last_summary_index ?? 0)
-        //             && state.tool_outputs.length > 6
-        //             && state.tool_outputs.length % 3 === 0
-        //         ) || (
-        //                 state.summarizer_path && state.tool_calls.length === 0
-        //             );
+                const hasNewToolOutputs = (
+                    state.tool_outputs.length > (state.last_summary_index ?? 0)
+                    && state.tool_outputs.length > 6
+                    && state.tool_outputs.length % 3 === 0
+                ) || (
+                        state.summarizer_path && state.tool_calls.length === 0
+                    );
 
-        //         if (hasPendingToolRequests) return "Tools";
-        //         if (hasNewToolOutputs) return "Summarize";
-        //         return "Response";
-        //     }),
-        //     {
-        //         Tools: "Tools",
-        //         Summarize: "Summarize",
-        //         Response: "Response"
-        //     }
-        // )
+                if (hasPendingToolRequests) return "Tools";
+                if (hasNewToolOutputs) return "Summarize";
+                return "Response";
+            }),
+            {
+                Tools: "Tools",
+                Summarize: "Summarize",
+                Response: "Response"
+            }
+        )
 
-        .addConditionalEdges("Planner", workflowTransitionLogger("Planner", (state) => {
-            if (state.planner_decision.action === "Tools") return "ToolCall";
-            if (state.planner_decision.action === "Summarize") return "Summarize";
-            return "Response";
-        }), {
-            ToolCall: "ToolCall",
-            Summarize: "Summarize",
-            Response: "Response",
-        })
+        // .addConditionalEdges("Planner", workflowTransitionLogger("Planner", (state) => {
+        //     if (state.planner_decision.action === "Tools") return "ToolCall";
+        //     if (state.planner_decision.action === "Summarize") return "Summarize";
+        //     return "Response";
+        // }), {
+        //     ToolCall: "ToolCall",
+        //     Summarize: "Summarize",
+        //     Response: "Response",
+        // })
 
-        .addConditionalEdges("ToolCall", workflowTransitionLogger("ToolCall", (state) => {
-            if (state.tool_calls.length > 0) return "Tools";
-            return "Response";
-        }), {
-            Tools: "Tools",
-            Response: "Response",
-        })
+        // .addConditionalEdges("ToolCall", workflowTransitionLogger("ToolCall", (state) => {
+        //     if (state.tool_calls.length > 0) return "Tools";
+        //     return "Response";
+        // }), {
+        //     Tools: "Tools",
+        //     Response: "Response",
+        // })
 
         // After Tools, decide whether to summarize
         .addConditionalEdges(

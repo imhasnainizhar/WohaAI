@@ -20,7 +20,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - microservices_net_01
+      - microservices_net
 
   kafka-ui:
     image: provectuslabs/kafka-ui
@@ -34,7 +34,7 @@ services:
     depends_on:
       - kafka
     networks:
-      - microservices_net_01
+      - microservices_net
 
   redis_code_c:
     image: redis:7
@@ -45,8 +45,8 @@ services:
       redis-server --requirepass "${REDIS_PASSWORD_CODE_C}" --port ${REDIS_CODE_C_PORT}
     restart: always
     networks:
-      - microservices_net_01
+      - microservices_net
 
 networks:
-  microservices_net_01:
+  microservices_net:
     external: true

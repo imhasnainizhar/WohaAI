@@ -15,8 +15,7 @@ services:
       - ../../../.env
       - ../../../.env.docker
     networks:
-      - mcp_network_m
-      - woahai_agent_network
+      - mcp_net
 
   web_search_mcp:
     build:
@@ -33,12 +32,9 @@ services:
       - ../../../.env
       - ../../../.env.docker
     networks:
-      - mcp_network_m
-      - woahai_agent_network
+      - mcp_net
 
 
 networks:
-  mcp_network_m:
-    external: true
-  woahai_agent_network:
+  mcp_net:
     external: true

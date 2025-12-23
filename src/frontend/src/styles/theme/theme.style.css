@@ -1,55 +1,38 @@
-/* Dark Mode Classes */
+/* @language tailwindcss */
+/* ======================================================
+   THEME-NEUTRAL CLASSES (Maps to CSS Variables)
+====================================================== */
 
-.dark-bg-primary {
-  background-color: var(--theme-dark-black-primary);
-}
+/* Background colors */
+.bg-bg { background-color: var(--color-bg); }
+.bg-bg-secondary { background-color: var(--color-bg-secondary); }
+.bg-bg-tertiary { background-color: var(--color-bg-tertiary); }
 
-.dark-bg-secondary {
-  background-color: var(--theme-dark-black-secondary);
-}
 
-.dark-bg-third {
-  background-color: var(--theme-dark-black-third);
-}
 
-.dark-text-primary {
-  color: var(--theme-dark-white-primary);
-}
+/* Text colors */
+.text-text { color: var(--color-text); }
+.text-text-secondary { color: var(--color-text-secondary); }
+.text-gray-primary { color: var(--color-gray-primary); }
+.text-gray-muted { color: var(--color-gray-muted); }
+.text-link { color: var(--color-link); }
+.text-link-hover:hover { color: var(--color-link-hover); }
 
-.dark-text-secondary {
-  color: var(--theme-dark-white-secondary);
-}
+.bg-bg-hover { background-color: var(--color-bg-hover); }
 
-.dark-shadow {
-  box-shadow: 0px 0px 50px 0px var(--theme-color-boxShadow-dark);
-}
+/* Card / container colors */
+.card-bg { background-color: var(--color-card); }
+.border-color { border-color: var(--color-border); }
+.shadow-color { box-shadow: 0 4px 12px var(--color-shadow); }
 
-/* Light Mode Classes */
+/* Font families */
+.font-montserrat { font-family: var(--font-montserrat-sans); }
+.font-calton { font-family: var(--font-calton-elegance-sans); }
 
-.light-bg-primary {
-  background-color: var(--theme-light-white-primary);
-}
+/* Typography spacing */
+.letter-spacing-primary { letter-spacing: var(--letter-spacing-primary); }
+.letter-spacing-secondary { letter-spacing: var(--letter-spacing-secondary); }
 
-.light-bg-secondary {
-  background-color: var(--theme-light-white-secondary);
-}
-
-.light-bg-third {
-  background-color: var(--theme-light-white-third);
-}
-
-.light-text-primary {
-  color: var(--theme-light-black-primary);
-}
-
-.light-text-secondary {
-  color: var(--theme-light-black-secondary);
-}
-
-.light-shadow {
-  box-shadow: 0px 0px 50px 0px var(--theme-color-boxShadow-light);
-}
-
-.border-primary {
-  border: var(--theme-border-primary);
-}
+/* Transitions */
+.transition-hover { transition: var(--hover-transition); }
+.transition-active { transition: var(--active-transition); }

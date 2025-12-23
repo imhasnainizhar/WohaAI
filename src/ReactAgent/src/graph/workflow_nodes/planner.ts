@@ -1,10 +1,10 @@
-import { AIMessage, HumanMessage } from "langchain";
+import { AIMessage, HumanMessage, ToolMessage } from "langchain";
 import { AnnotationState } from "@workflows/ReactWorkflow.js";
 import { plannerModel } from "@llm_models/planner.js";
 import { logger } from "@utils/logger.js";
 import { plannerPrompt } from "@internals/prompts/planner_prompt.js";
 import crypto from "crypto";
-import { PlannerDecision, ToolCall } from "@internals/schemas/planner.js";
+import { PlannerDecision, PlannerToolCall } from "@internals/schemas/planner.js";
 
 // Planner node decides: call tools OR proceed to summarizer
 export const plannerNode = async (state: typeof AnnotationState.State) => {
@@ -32,7 +32,7 @@ export const plannerNode = async (state: typeof AnnotationState.State) => {
     decision = await llm.invoke([
       plannerSystemMessage,
       ...summarizedToolMessages,
-      ...state.messages.slice(-6).reverse(),
+      ...state.messages,
     ]) as PlannerDecision;
 
     logger.debug(`Planner decision received: ${JSON.stringify(decision)}`);
@@ -53,7 +53,7 @@ export const plannerNode = async (state: typeof AnnotationState.State) => {
   );
 
   // Assign unique IDs for each tool call
-  const toolCalls: ToolCall[] =
+  const toolCalls: PlannerToolCall[] =
     decision?.tool_calls?.map((tc) => ({
       ...tc,
       id: crypto.randomUUID(),
@@ -78,7 +78,7 @@ export const plannerNode = async (state: typeof AnnotationState.State) => {
     planner_decision: decision,
     messages: [plannerMessage],
     // tool_calls: decision?.action === "Tools" ? toolCalls : [],
-    tool_calls: [],
+    tool_calls: toolCalls,
     tool_messages: [],
     summarizer_path: decision?.action === "Summarize",
   };

@@ -1,0 +1,180 @@
+/* [project]/src/styles/pages/signin.style.css [app-client] (css) */
+.signin-page {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 750px;
+  display: flex;
+}
+
+.signin-page-content {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  max-width: 500px;
+  height: 500px;
+  display: flex;
+}
+
+.signin-decor {
+  scale: 1.5;
+}
+
+.signin-page-heading {
+  text-align: center;
+  font-family: Calton Elegance Sans;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.signin-credential-box {
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: auto;
+  height: 200px;
+  margin: 20px 0;
+  display: flex;
+}
+
+.input-group {
+  border: 1px solid var(--theme-gray-primary);
+  border-radius: 12px;
+  justify-content: start;
+  align-items: center;
+  width: 250px;
+  height: 40px;
+  display: flex;
+  position: relative;
+}
+
+.input-group input {
+  z-index: 1;
+  background-color: #0000;
+  border: none;
+  border-radius: 12px;
+  width: 235px;
+  height: 35px;
+  margin-left: 15px;
+}
+
+.input-group label {
+  color: var(--theme-gray-primary);
+  pointer-events: none;
+  font-size: 14px;
+  transition: all .3s linear;
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+}
+
+[data-theme="dark"] .input-group label {
+  background-color: var(--theme-dark-black-primary);
+}
+
+[data-theme="light"] .input-group label {
+  background-color: var(--theme-light-white-primary);
+}
+
+.input-group:focus-within label, .input-group input:not(:placeholder-shown) + label {
+  border-radius: 20px;
+  padding: 0 6px;
+  font-size: 10px;
+  top: -1px;
+}
+
+[data-theme="dark"] .input-group:focus-within label, [data-theme="dark"] .input-group input:not(:placeholder-shown) + label {
+  color: #fff;
+}
+
+[data-theme="light"] .input-group:focus-within label, [data-theme="light"] .input-group input:not(:placeholder-shown) + label {
+  color: #000;
+}
+
+.link-for-signup > * {
+  margin: 0 4px;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: all .1s linear;
+}
+
+a:hover {
+  color: var(--link-color-hover);
+}
+
+a:active {
+  color: var(--theme-gray-primary);
+}
+
+.signupRemember {
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: auto;
+  font-size: 16px;
+  display: flex;
+}
+
+.signupRemember input {
+  color: #0000;
+  border: 1px solid var(--light-dark-gray);
+  cursor: pointer;
+  background-color: #0000;
+  width: 15px;
+  height: 20px;
+}
+
+.signin-submit-btn {
+  background-color: #0000;
+  border: none;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  display: flex;
+}
+
+.signin-submit-btn button {
+  pointer-events: all;
+  touch-action: auto;
+  cursor: pointer;
+  border: none;
+  border-radius: 99999px;
+  width: 150px;
+  height: 40px;
+  font-family: Calton Elegance Sans;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all .3s linear;
+}
+
+.signin-submit-btn button:hover {
+  background-color: var(--theme-gray-primary);
+}
+
+.signin-submit-btn button:active {
+  background-color: var(--theme-dark-black-third);
+  transition: all linear;
+}
+
+.has-error {
+  border: 1px solid #ff3535;
+}
+
+.error-text {
+  color: #ff3535;
+  width: auto;
+  font-size: 12px;
+  position: absolute;
+  top: 45px;
+  left: 10px;
+}
+
+/*# sourceMappingURL=src_styles_pages_signin_style_cfb605f8.css.map*/
