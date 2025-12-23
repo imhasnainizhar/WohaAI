@@ -37,6 +37,9 @@
       "@styles/*": [
         "./src/styles/*"
       ],
+      "@internals/*": [
+        "./src/internals/*"
+      ],
       "@hooks/*": [
         "./src/hooks/*"
       ],

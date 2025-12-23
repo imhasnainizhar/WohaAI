@@ -6,13 +6,14 @@ import "boxicons/css/boxicons.min.css";
 import { AuthProvider } from "@providers/AuthProvider";
 import { ThemeProvider } from "@providers/ThemeProvider";
 import { AppProvider } from "@providers/AppContext";
+import { ReactLenis } from "@utils/react-lenis";
 
 export const metadata: Metadata = {
   title: "WoahGPT",
   icons: {
     icon: "/favicon.ico",
   },
-  description: "By Barlon Corporation.",
+  description: "By WoahAI Corporation.",
 };
 
 export default function RootLayout({
@@ -22,10 +23,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-w-[380px] max-w-[2560px] no-underline font-montserrat-sans tracking-letter-spacing-primary shadow-[0_0_50px_0_var(--theme-color-boxShadow-dark)]">
+      <body className="min-w-[380px] max-w-[2560px] h-screen
+      no-underline font-montserrat-sans tracking-letter-spacing-primary
+      shadow-[0_0_50px_0_var(--color-gray-primary)] bg-bg
+      ">
         <AppProvider>
           <ThemeProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <ReactLenis
+              root
+              options={{
+                lerp: 0.1,
+                touchMultiplier: 1.25,
+              }}
+            >
+              <div className="h-full w-full">{children}</div>
+            </ReactLenis>
           </ThemeProvider>
         </AppProvider>
       </body>

@@ -8,25 +8,45 @@ import { MemoryCollection, MemoryRecord } from "@internals/types/store.js";
 import { HumanMessage } from "langchain";
 import { connectMemoryRedis } from "@db/memory/redis/redis_client.js";
 import { memoryRedisClient } from "@db/memory/redis/redis_client.js";
+import crypto from "crypto";
 
 export const memoryNode = async (state: typeof AnnotationState.State) => {
   logger.debug("Memory Node Processing...");
 
-  if (!state.userID) {
+  // Guard against undefined state or missing userID
+  if (!state || !state.userID || state.userID.trim() === "") {
+    logger.debug("Memory Node: No userID provided, skipping memory operations");
     return {
-      memory: []
+      memory: ""
     }
   }
 
-  await connectMemoryRedis();
+  try {
+    await connectMemoryRedis();
+  } catch (err: any) {
+    logger.warn(`Failed to connect to Memory Redis, continuing without memory cache: ${err.message}`);
+    // Continue without Redis - memory operations will still work with Qdrant
+  }
+
   const redis = memoryRedisClient;
 
-  try {
-    const value = await redis.get(`memory:${state.userID}`);
-    logger.debug(`MemoryNode: retrieved memory ${value}`);
-  } catch (err) {
-    logger.error(`No memory found for user ${state.userID}: ${err}`);
+  // Only use Redis if connected
+  if (redis && redis.isOpen) {
+    try {
+      const value = await redis.get(`memory:${state.userID}`);
+      logger.debug(`MemoryNode: retrieved memory ${value}`);
+    } catch (err: any) {
+      logger.warn(`Failed to retrieve memory from Redis for user ${state.userID}: ${err.message}`);
+      // Continue without Redis cache
+    }
+  } else {
+    logger.debug('Memory Redis not connected, skipping cache operations');
   }
+
+  (async () => {
+    await memoryStore.initCollections();
+    console.log("Qdrant collections initialized");
+  })();
 
   const llm = await memoryModel();
 
@@ -57,7 +77,7 @@ export const memoryNode = async (state: typeof AnnotationState.State) => {
   ]) as ReturnType<typeof MemorySchema.parse>;
 
   // 3️⃣ Persist memory if approved
-  if (parsed.shouldStore && parsed.quadrant && parsed.memory) {
+  if (parsed.shouldStore && parsed.quadrant && parsed.memory && state.userID) {
     await memoryStore.addMemory({
       id: crypto.randomUUID(),
       collection: parsed.quadrant as MemoryCollection,
@@ -78,7 +98,15 @@ export const memoryNode = async (state: typeof AnnotationState.State) => {
     fetchedLTM: flattenedMemory
   };
 
-  await redis.set(`memory:${state.userID}`, JSON.stringify(newSTM));
+  // Only set Redis if userID exists and Redis is connected
+  if (state.userID && redis && redis.isOpen) {
+    try {
+      await redis.set(`memory:${state.userID}`, JSON.stringify(newSTM));
+    } catch (err: any) {
+      logger.warn(`Failed to save memory to Redis for user ${state.userID}: ${err.message}`);
+      // Continue without Redis cache - memory is still stored in Qdrant
+    }
+  }
 
   return {
     memory: newLTM,

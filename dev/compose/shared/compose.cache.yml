@@ -10,34 +10,54 @@ services:
     networks:
       - microservices_net
       - woahai_data_net
+    volumes:
+      - auth_redis_data:/data
 
   memory_redis_store:
     image: redis:7
     container_name: memory_redis_store
     ports:
-      - "${MEMORY_REDIS_STORE_PORT}:${MEMORY_REDIS_STORE_PORT}"
-    command: >
-      redis-server --requirepass "${MEMORY_REDIS_STORE_PASSWORD}" --port ${MEMORY_REDIS_STORE_PORT}
+      - "${MEMORY_REDIS_STORE_PORT}:6379"
+    command:
+      - redis-server
+      - "--requirepass"
+      - "${MEMORY_REDIS_STORE_PASSWORD}"
     restart: always
     networks:
       - microservices_net
       - woahai_data_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "memory_redis_pass", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    volumes:
+      - memory_redis_data:/data
 
   threads_redis_store:
     image: redis:7
     container_name: threads_redis_store
     ports:
-      - "${THREADS_REDIS_STORE_PORT}:${THREADS_REDIS_STORE_PORT}"
-    command: >
-      redis-server --requirepass "${THREADS_REDIS_STORE_PASSWORD}" --port ${THREADS_REDIS_STORE_PORT}
+      - "${THREADS_REDIS_STORE_PORT}:6379"
+    command:
+      - redis-server
+      - "--requirepass"
+      - "${THREADS_REDIS_STORE_PASSWORD}"
     restart: always
     networks:
       - microservices_net
       - woahai_data_net
+    volumes:
+      - threads_redis_data:/data
+
+volumes:
+  memory_redis_data:
+  threads_redis_data:
+  auth_redis_data:
 
 networks:
   microservices_net:
     external: true
-    
+
   woahai_data_net:
     external: true

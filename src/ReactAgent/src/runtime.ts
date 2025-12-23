@@ -14,9 +14,9 @@ export async function llmRuntime(input: string) {
       searchResult: "",
       scrapedResult: "",
       output: "",
-      userID: undefined,
-      username: undefined,
-      sid: "session_1",
+      userID: "hani212",
+      username: "hani212",
+      sid: "hani_session_1",
     };
   
     // Run the workflow

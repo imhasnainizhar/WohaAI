@@ -1,5 +1,6 @@
 "use client";
 
+import { logger } from "@utils/logger";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
@@ -25,31 +26,28 @@ function getCookie(name: string): string | undefined {
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState<Theme>("dark");
 
+  // Initialize from cookie
   useEffect(() => {
     const cookieTheme = (getCookie("theme") as Theme) || "dark";
     setTheme(cookieTheme);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme: Theme = theme === "dark" ? "light" : "dark";
-    document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
+  logger.debug("Theme Cookie value: " + theme);
+  console.log("Theme Cookie value: " + theme);
 
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(() => {
-        window.location.reload();
-      });
-    } else {
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    }
+  // Update html class and cookie when theme changes
+  useEffect(() => {
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
+    document.cookie = `theme=${theme}; path=/; max-age=31536000`;
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
-  useEffect(() => {
-    console.log("Client theme cookie value:", getCookie("theme"));
-console.log("Provider theme state:", theme);
-
-  }, [])
+  logger.debug("ThemeProvider initialized with theme: " + theme);
+  console.log("ThemeProvider initialized with theme: " + theme);
 
   return (
     <ThemeContext.Provider

@@ -9,6 +9,8 @@ export const InitChatNode = async (state: typeof AnnotationState.State) => {
   try {
     logger.debug("InitChatNode Processing...");
 
+    logger.debug(`ID: ${state.userID}`);
+
     if (!state.input || state.input.trim() === "") {
       return { messages: [new SystemMessage("Empty user input")], errorMessages: ["Empty user input"]};
     }
