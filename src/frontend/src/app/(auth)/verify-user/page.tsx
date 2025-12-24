@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import "@styles/pages/verify-email.style.css";
-import { VerificationCodeSchema } from "@lib/validators/verification-code-validator-schema";
+import { VerificationCodeSchema } from "@lib/schemas/verification-code";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useEffect, useState } from "react";
-import { signUpSchema } from "@lib/validators/signup-validation-schema";
+import { signUpSchema } from "@lib/schemas/signup-validation";
 import { useRouter } from "next/navigation";
 
 type VerificationCodeValidator = z.infer<typeof VerificationCodeSchema>;
@@ -106,7 +106,7 @@ export default function VerifyEmail() {
         console.error("❌ Verification failed:", err);
         setVerifyEmailError("Invalid Verification Code");
         return;
-      }  
+      }
 
       const signUpRes = await fetch(SIGNUP_SERVICE_URI, {
         method: "POST",

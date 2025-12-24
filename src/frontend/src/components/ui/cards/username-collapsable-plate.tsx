@@ -1,10 +1,10 @@
 "use client";
 
-import { User } from "@providers/AuthProvider";
+import { User } from "@providers/auth";
 import { useState } from "react";
 import Image from "next/image";
 import { HiOutlineUserCircle } from "react-icons/hi2";
-import { useAppContext } from "@providers/AppContext";
+import { useAppContext } from "@providers/app";
 
 export default function UsernameCollapsablePlate() {
   const { sidebarExpanded } = useAppContext();
@@ -24,13 +24,13 @@ export default function UsernameCollapsablePlate() {
     <div
       className={`
         flex items-center justify-center rounded-[12px]
-        cursor-pointer hover:bg-bg-hover
+        cursor-pointer hover:bg-bg-btn-hover
         transition-colors duration-300
         overflow-hidden
       `}
     >
       {/* Avatar (fixed, layout anchor) */}
-      <div className="w-[40px] h-[40px] m-1 p-1 rounded-full flex items-center justify-center overflow-hidden">
+      <div className="min-w-[40px] min-h-[40px] p-1 rounded-full flex items-center justify-center overflow-hidden">
         {userInfo?.profilePicture ? (
           <Image
             src={userInfo.profilePicture}

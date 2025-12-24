@@ -5,8 +5,8 @@ import PathChecker from "@lib/page-path-checker";
 import TextArea from "@components/ui/input/textareaa";
 import "@styles/theme/main.global.css";
 import "boxicons/css/boxicons.min.css";
-import { useTheme } from "@providers/ThemeProvider";
-import { useAppContext } from "@providers/AppContext";
+import { useTheme } from "@providers/theme";
+import { useAppContext } from "@providers/app";
 
 export default function ChatPage() {
   const { theme } = useTheme();

@@ -1,4 +1,4 @@
-import { Registry } from "@custom_types/gateway"
+import { Registry } from "@internals/types/gateway"
 
 export const REGISTRY: Registry = [
     // { id: "1", url: "http://localhost:9092/mcp" },  // For Local

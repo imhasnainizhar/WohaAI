@@ -1,5 +1,5 @@
 import app from "@app";
-import { env } from "@config/env.config";
+import { env } from "@config/env";
 
 const PORT = env.AUTH_SERVICE_PORT;
 

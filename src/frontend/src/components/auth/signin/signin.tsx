@@ -5,11 +5,11 @@ import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
-import { useTheme } from "@providers/ThemeProvider"
+import { useTheme } from "@providers/theme"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signInSchema } from "@lib/validators/signin-validation-schema"
+import { signInSchema } from "@lib/schemas/signin-validation"
 import Link from "next/link"
-import { useAppContext } from "@providers/AppContext"
+import { useAppContext } from "@providers/app"
 
 type SignInInput = z.infer<typeof signInSchema>;
 

@@ -1,16 +1,8 @@
 /* @language tailwindcss */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap");
 @import "tailwindcss";
 /* @import "tw-animate-css/dist/tw-animate.css"; */
 
 @custom-variant dark (&:is(.dark *));
-
-@font-face {
-  font-family: "Calton Elegance Sans";
-  src: url("/fonts/Calton Elegance Sans-Regular.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
 
 /* ======================================================
 | THEME TOKENS (DARK = DEFAULT)
@@ -24,25 +16,26 @@
 
   /* Text Colors */
   --color-text-primary: hsl(0, 0%, 95%);
-  --color-text-secondary: hsl(218, 11%, 75%);
-  --color-text-muted: hsl(217, 7%, 66%);
+  --color-text-secondary: hsl(0, 0%, 76%);
+  --color-text-muted: hsl(180, 0%, 52%);
   --color-text-inverse-primary: hsl(0, 0%, 5%);
   --color-text-inverse-secondary: hsl(0, 0%, 15%);
 
   /* Btn Colors */
   --color-bg-btn: hsl(0, 0%, 90%);
   --color-text-btn: hsl(0, 0%, 5%);
-  --color-bg-btn-hover: hsl(0, 0%, 50%);
-  --color-bg-btn-active: hsla(0, 0%, 35%, 0.806);
+  --color-bg-btn-hover: hsl(0, 0%, 50%, 0.362);
+  --color-bg-btn-active: hsla(0, 0%, 35%, 0.362);
 
-  --color-text-hover: hsl(0, 0%, 70%);
-  --color-text-active: hsl(0, 0%, 20%);
+  --color-text-hover: hsla(0, 0%, 70%, 0.572);
+  --color-text-active: hsla(0, 0%, 20%, 0.572);
 
-  --color-border-primary: hsla(0, 0%, 25%, 0.751);
-  --color-border-secondary: hsl(0, 0%, 20%, 0.751);
-
+  --color-border-primary: hsla(0, 0%, 25%, 0.554);
+  --color-border-secondary: hsl(0, 0%, 15%, 0.554);
   --color-shadow-primary: hsla(0, 0%, 10%, 0.84);
   --color-shadow-secondary: rgba(71, 70, 70, 0.25);
+
+  --color-translucent-bg: hsla(0, 0%, 10%, 0.5);
 
   --color-gray-primary: hsl(0, 0%, 35%);
   --color-gray-muted: hsla(0, 0%, 99%, 0.102);
@@ -108,24 +101,25 @@
   --color-text-inverse: hsl(220, 13%, 96%);
 
   /* Btn Colors */
-  --color-bg-btn: hsl(220, 100%, 56%);
+  --color-bg-btn: hsl(0, 0%, 5%);
   --color-text-btn: hsl(0, 0%, 100%);
-  --color-bg-btn-hover: hsl(220, 90%, 48%);
-  --color-bg-btn-active: hsl(220, 90%, 36%);
 
-  --color-text-hover: hsl(220, 13%, 30%);
-  --color-text-active: hsl(220, 13%, 20%);
+  /* --color-bg-btn-hover: hsl(0, 0%, 5%, 0.362);
+  --color-bg-btn-active: hsl(0, 0%, 75%, 0.362); */
+
+  --color-text-hover: hsl(0, 0%, 41%, 0.362);
+  --color-text-active: hsl(0, 0%, 20%, 0.362);
 
   /* Borders / Shadows */
-  --color-border-primary: hsla(220, 15%, 85%, 1);
-  --color-border-secondary: hsla(220, 12%, 80%, 1);
+  /* --color-border-primary: hsla(0, 0%, 25%, 0.751);
+  --color-border-secondary: hsla(0, 0%, 57%, 0.751); */
 
-  --color-shadow-primary: hsla(220, 15%, 70%, 0.25);
+  --color-shadow-primary: hsla(0, 0%, 10%, 0.25);
   --color-shadow-secondary: rgba(0, 0, 0, 0.08);
 
   /* Grays */
-  --color-gray-primary: hsl(220, 10%, 55%);
-  --color-gray-muted: hsla(220, 15%, 20%, 0.06);
+  --color-gray-primary: hsl(240, 0%, 48%);
+  --color-gray-muted: hsla(0, 0%, 31%, 0.06)
 
   /* Links */
   --color-link: rgb(0, 102, 204);
@@ -163,6 +157,9 @@
   --color-border-primary: var(--color-border-primary);
   --color-border-secondary: var(--color-border-secondary);
 
+  /* === Translucent Background === */
+  --color-translucent-bg: var(--color-translucent-bg);
+
   /* === Shadows === */
   --color-shadow-primary: var(--color-shadow-primary);
   --color-shadow-secondary: var(--color-shadow-secondary);
@@ -178,12 +175,6 @@
   /* === Fonts === */
   --font-montserrat-sans: var(--font-montserrat-sans);
   --font-calton-elegance-sans: var(--font-calton-elegance-sans);
-
-  /* === Misc Design Tokens === */
-  --letter-spacing-primary: var(--letter-spacing-primary);
-  --letter-spacing-secondary: var(--letter-spacing-secondary);
-  --hover-transition: var(--hover-transition);
-  --active-transition: var(--active-transition);
 }
 
 ::-webkit-scrollbar {
@@ -226,12 +217,25 @@ input:-webkit-autofill:active {
   transition: background-color 9999s ease-out, color 9999s ease-out;
 }
 
-svg{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: auto;
-  width: auto;
+::selection {
+  background: hsla(0, 0%, 20%, 0.705); /* highlight bg */
+  color: white;
+}
+
+/* Firefox needs this */
+::-moz-selection {
+  background: hsla(0, 0%, 20%, 0.705);
+  color: white;
+}
+
+svg, i, a, button, input, image, label {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @theme inline {
