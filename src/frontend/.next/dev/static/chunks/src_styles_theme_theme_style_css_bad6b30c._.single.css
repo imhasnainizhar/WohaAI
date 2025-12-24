@@ -1,0 +1,110 @@
+/* [project]/src/styles/theme/theme.style.css [app-client] (css) */
+.bg-bg-primary {
+  background-color: var(--color-bg-primary);
+}
+
+.bg-bg-secondary {
+  background-color: var(--color-bg-secondary);
+}
+
+.bg-bg-tertiary {
+  background-color: var(--color-bg-tertiary);
+}
+
+.text-text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-text-hover {
+  color: var(--color-text-hover);
+}
+
+.text-text-active {
+  color: var(--color-text-active);
+}
+
+.text-gray-muted {
+  color: var(--color-gray-muted);
+}
+
+.text-inverse {
+  color: var(--color-text-inverse);
+}
+
+.border-primary {
+  border-color: var(--color-border-primary);
+}
+
+.border-secondary {
+  border-color: var(--color-border-secondary);
+}
+
+.bg-btn-color {
+  background-color: var(--color-bg-btn);
+}
+
+.text-btn-color {
+  color: var(--color-text-btn);
+}
+
+.bg-btn-hover {
+  background-color: var(--color-bg-btn-hover);
+}
+
+.bg-btn-active {
+  background-color: var(--color-bg-btn-active);
+}
+
+.color-gray-primary {
+  color: var(--color-gray-primary);
+}
+
+.color-gray-muted {
+  color: var(--color-gray-muted);
+}
+
+.shadow-color-primary {
+  box-shadow: 0 4px 12px var(--color-shadow-primary);
+}
+
+.shadow-color-secondary {
+  box-shadow: 0 4px 12px var(--color-shadow-secondary);
+}
+
+.link-color {
+  color: var(--color-link);
+}
+
+.link-color-hover {
+  color: var(--color-link-hover);
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat-sans);
+}
+
+.font-calton {
+  font-family: var(--font-calton-elegance-sans);
+}
+
+.letter-spacing-primary {
+  letter-spacing: var(--letter-spacing-primary);
+}
+
+.letter-spacing-secondary {
+  letter-spacing: var(--letter-spacing-secondary);
+}
+
+.transition-hover {
+  transition: var(--hover-transition);
+}
+
+.transition-active {
+  transition: var(--active-transition);
+}
+
+/*# sourceMappingURL=src_styles_theme_theme_style_css_bad6b30c._.single.css.map*/

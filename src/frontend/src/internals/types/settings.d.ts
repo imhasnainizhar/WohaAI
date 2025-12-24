@@ -30,7 +30,7 @@ export interface SettingItem {
   action?: SettingAction;
 }
 
-export interface SettingSection {
+export interface SettingSectionType {
   id: string;
   label: string;
   items: SettingItem[];

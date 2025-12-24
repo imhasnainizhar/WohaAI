@@ -1,6 +1,6 @@
-import { SettingSection, SettingItem } from "@internals/types/settings";
+import { SettingSectionType, SettingItem } from "@internals/types/settings";
 
-const settingsSchema: SettingSection[] = [
+const settingsSchema: SettingSectionType[] = [
   {
     id: "general",
     label: "General",
