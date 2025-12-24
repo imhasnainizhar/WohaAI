@@ -28,8 +28,8 @@
             "@utils/*": [
                 "./src/utils/*"
             ],
-            "@custom_types/*": [
-                "./src/custom_types/*"
+            "@internals/*": [
+                "./src/internals/*"
             ],
             "@tools/*": [
                 "./src/tools/*"

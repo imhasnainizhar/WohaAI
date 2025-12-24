@@ -2,7 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { server as mcpServer } from "./mcp";
-import { env } from "@config/env.config";
+import { env } from "@config/env";
 import { logger } from "@utils/logger";
 
 const PORT = Number(env.WEB_SEARCH_MCP_PORT);

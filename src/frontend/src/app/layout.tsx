@@ -3,9 +3,9 @@ import "@styles/theme/main.global.css";
 import "@styles/dist/main.global.css";
 import "@styles/theme/theme.style.css";
 import "boxicons/css/boxicons.min.css";
-import { AuthProvider } from "@providers/AuthProvider";
-import { ThemeProvider } from "@providers/ThemeProvider";
-import { AppProvider } from "@providers/AppContext";
+import { AuthProvider } from "@providers/auth";
+import { ThemeProvider } from "@providers/theme";
+import { AppProvider } from "@providers/app";
 import { ReactLenis } from "@utils/react-lenis";
 
 export const metadata: Metadata = {

@@ -1,5 +1,7 @@
 {
   "app": {
+    "[project]/src/app/(auth)/signin/page": [],
+    "[project]/src/app/(auth)/signup/page": [],
     "[project]/src/app/(chat)/page": []
   },
   "appUsingSizeAdjust": false,

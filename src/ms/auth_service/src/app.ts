@@ -2,9 +2,9 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { json, urlencoded } from "body-parser";
-import authRoutes from "@routes/auth.route";
-import { env } from "@config/env.config";
-import { connectRedis } from "@config/redis.config";
+import authRoutes from "@routes/auth";
+import { env } from "@config/env";
+import { connectRedis } from "@config/redis";
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use(cookieParser()); // Parse cookies from incoming requests
 app.use(json()); // Parse JSON payloads from incoming requests
 app.use(urlencoded({ extended: true })); // Parse URL-encoded payloads (e.g., form submissions)
 
-( async () => {
+(async () => {
   await connectRedis();
 })();
 

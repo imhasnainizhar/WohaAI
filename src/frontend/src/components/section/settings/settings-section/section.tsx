@@ -12,7 +12,6 @@ export const SettingSection: React.FC<Props> = ({ section }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold mb-2">{section.label}</h2>
       {section.items.map((item) => (
         <SettingsItem key={item.id} item={item} />
       ))}

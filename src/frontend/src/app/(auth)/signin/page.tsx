@@ -5,11 +5,13 @@ import "@styles/pages/signin.style.css";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "@lib/validators/signin-validation-schema";
-import { useTheme } from "@providers/ThemeProvider";
+import { signInSchema } from "@lib/schemas/signin-validation";
+import { useTheme } from "@providers/theme";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import z from "zod";
+import { Alert, AlertTitle } from "@lib/components/ui/alert"
+import { AlertCircleIcon } from "lucide-react"
 
 type SignInInput = z.infer<typeof signInSchema>;
 
@@ -93,7 +95,7 @@ export default function SignIn() {
               const url = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&prompt=select_account`;
               window.location.href = url;
             }}
-            className="flex items-center justify-center cursor-pointer gap-[15px] relative w-full max-w-[340px] h-[50px] rounded-[50px] border border-secondary border-solid font-sans font-medium">
+            className="flex items-center justify-center cursor-pointer gap-[15px] relative w-full max-w-[340px] h-[50px] rounded-[50px] border border-border-secondary border-solid font-sans font-medium hover:bg-bg-btn-hover transition-all duration-300 ease-in-out">
             <span><Image src="/logos/google-logo-svg.svg" alt="google" width={24} height={24} /></span>
             <span
               className="text-text"
@@ -110,7 +112,7 @@ export default function SignIn() {
             onSubmit={handleSubmit(onSignIn)}
           >
             <div
-              className={`w-full max-w-[340px] h-[50px] rounded-[50px] flex items-center justify-center border border-secondary border-solid text-text ${errors.email ? "border border-[rgb(255,53,53)]" : ""}`}
+              className={`w-full max-w-[340px] h-[50px] rounded-[50px] flex items-center justify-center border border-border-secondary border-solid text-text ${errors.email ? "border border-[rgb(255,53,53)]" : ""}`}
               data-theme={theme}
             >
               <div className="relative flex items-center justify-start w-full max-w-[340px] h-[50px] pl-4">
@@ -119,33 +121,45 @@ export default function SignIn() {
                   {...register("email")}
                   className="peer w-full h-full bg-transparent cursor-pointer z-20 rounded-[50px] font-sans font-small focus:outline-none"
                 />
-                <label htmlFor="email" className="absolute z-10
-                    peer-placeholder-shown:text-gray-400 dark:peer-placeholder-shown:text-gray-500 
-                    peer-focus:text-black dark:peer-focus:text-white
-                ">Email</label>
+                <label
+                  htmlFor="email"
+                  className="
+                    absolute left-6
+                    text-[16px]
+                    text-gray-400
+                    transition-all duration-300
+                    spacing-[2px]
+
+                    /* Start state */
+                    top-1/2 -translate-y-1/2
+
+                    /* When typing OR focused */
+                    peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-[12px]
+                    peer-focus:text-text-primary peer-focus:left-[25px] bg-bg-primary rounded-[6px] w-10
+                    peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 text-center
+                    peer-placeholder-shown:text-text-gray-muted
+                ">
+                  Email
+                </label>
                 {errors.email && (
-                  <p
-                    className="
-                    absolute top-1/2 left-[15px] -translate-y-1/2
-                    text-[14px] text-(--theme-gray-primary)
-                    transition-all duration-300 linear
-                    pointer-events-none"
-                  >{errors.email.message}</p>
+                  <Alert variant="destructive" className="absolute top-[55px] left-3.5 bg-transparent border-none w-[200px] h-[50px] text-[15px]">
+                    <AlertCircleIcon />
+                    <AlertTitle>{errors.email.message}</AlertTitle>
+                  </Alert>
                 )}
               </div>
             </div>
             <div className="w-full flex justify-center bg-transparent border-none">
               <button
                 className="
-                  w-[150px] h-[40px] 
+                  w-[150px] h-10 btn-text-color btn-bg-color
                   rounded-full
                   text-[16px]
                   border-none cursor-pointer font-sans font-medium
-                  transition-all duration-300 linear
                   pointer-events-auto touch-auto
-                  hover:bg-(--theme-gray-primary)
+                  hover:bg-btn-hover
                   active:bg-(--theme-dark-black-third)
-                  active:duration-0 text-btn-text bg-btn-color"
+                  active:duration-0 hover:bg-btn-hover active:bg-btn-active transition-all duration-300 linear"
                 type="submit"
               >
                 Continue
@@ -153,7 +167,7 @@ export default function SignIn() {
             </div>
 
             {signInError && (
-              <p className="error-textabsolute top-[45px] left-[10px] text-[12px] text-[rgb(255,53,53)] w-auto" style={{ textAlign: "center", marginTop: "10px" }}>
+              <p className="error-textabsolute top-[45px] left-2.5 text-[12px] text-[#ff3535] w-auto" style={{ textAlign: "center", marginTop: "10px" }}>
                 {signInError}
               </p>
             )}

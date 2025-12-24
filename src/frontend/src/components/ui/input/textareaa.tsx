@@ -1,5 +1,5 @@
 "use client";
-import { useTheme } from "@providers/ThemeProvider";
+import { useTheme } from "@providers/theme";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
@@ -60,8 +60,8 @@ export default function TextArea() {
       {/* Gradient Shadow Behind Buttons */}
       <div
         className={`absolute bottom-[50px] left-0 w-full h-[50px] pointer-events-none z-0 ${darkTheme
-            ? "bg-linear-to-t from-bg-bg/90 to-transparent"
-            : "bg-linear-to-t from-bg-primary/90 to-transparent"
+          ? "bg-linear-to-t from-bg-bg/90 to-transparent"
+          : "bg-linear-to-t from-bg-primary/90 to-transparent"
           }`}
       ></div>
 
@@ -69,7 +69,7 @@ export default function TextArea() {
       <div className="relative flex items-center justify-between z-10">
         <div className="flex gap-3 items-center justify-start">
           <span
-            className={`border border-solid border-secondary rounded-[90px] w-[80px] h-[35px] flex 
+            className={`border border-solid border-primary rounded-[90px] w-[80px] h-[35px] flex 
               items-center justify-center cursor-pointer text-text-primary`}
           >
             Tools
@@ -82,8 +82,8 @@ export default function TextArea() {
           </span>
         </div>
         <div
-          className={`border border-solid border-secondary rounded-full flex items-center 
-            justify-center cursor-pointer w-[35px] h-[35px] text-text-secondary`}
+          className={`border border-solid border-primary rounded-full flex items-center 
+            justify-center cursor-pointer w-[35px] h-[35px] text-text-primary`}
         >
           <Image
             src={"/icons/arrow-up-stroke.png"}

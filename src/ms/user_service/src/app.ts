@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
-import userRoutes from "@routes/user.route";
-import { env } from "@config/env.config";
-import { connectRedis } from "@config/redis.config";
+import userRoutes from "@routes/user";
+import { env } from "@config/env";
+import { connectRedis } from "@config/redis";
 
 const app = express();
 
@@ -17,8 +17,8 @@ app.use(
 app.use(express.json());
 
 // Connecting Redis
-( async () => {
-  await connectRedis();
+(async () => {
+    await connectRedis();
 })();
 
 // Routes

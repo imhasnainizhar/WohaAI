@@ -1,32 +1,26 @@
 /* [project]/src/styles/theme/main.global.css [app-client] (css) */
 @custom-variant dark (& :is(. dark * ));
 
-@font-face {
-  font-family: Calton Elegance Sans;
-  src: url("/fonts/Calton Elegance Sans-Regular.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
-
 :root {
   --color-bg-primary: #0d0d0d;
   --color-bg-secondary: #1a1a1a;
   --color-bg-tertiary: #262626;
   --color-text-primary: #f2f2f2;
-  --color-text-secondary: #b8bdc6;
-  --color-text-muted: #a2a7ae;
+  --color-text-secondary: #c2c2c2;
+  --color-text-muted: #858585;
   --color-text-inverse-primary: #0d0d0d;
   --color-text-inverse-secondary: #262626;
   --color-bg-btn: #e6e6e6;
   --color-text-btn: #0d0d0d;
-  --color-bg-btn-hover: gray;
-  --color-bg-btn-active: #595959ce;
-  --color-text-hover: #b3b3b3;
-  --color-text-active: #333;
-  --color-border-primary: #404040c0;
-  --color-border-secondary: #333333c0;
+  --color-bg-btn-hover: #8080805c;
+  --color-bg-btn-active: #5959595c;
+  --color-text-hover: #b3b3b392;
+  --color-text-active: #33333392;
+  --color-border-primary: #4040408d;
+  --color-border-secondary: #2626268d;
   --color-shadow-primary: #1a1a1ad6;
   --color-shadow-secondary: #47464640;
+  --color-translucent-bg: #1a1a1a80;
   --color-gray-primary: #595959;
   --color-gray-muted: #fcfcfc1a;
   --color-link: #009aff;
@@ -115,24 +109,19 @@
   --color-text-secondary: #565e6c;
   --color-text-muted: #666f7f;
   --color-text-inverse: #f3f4f6;
-  --color-bg-btn: #1f69ff;
+  --color-bg-btn: #0d0d0d;
   --color-text-btn: #fff;
-  --color-bg-btn-hover: #0c56e9;
-  --color-bg-btn-active: #0940ae;
-  --color-text-hover: #434956;
-  --color-text-active: #2c313a;
-  --color-border-primary: #d3d7de;
-  --color-border-secondary: #c6cad2;
-  --color-shadow-primary: #a7afbe40;
+  --color-text-hover: #6969695c;
+  --color-text-active: #3333335c;
+  --color-shadow-primary: #1a1a1a40;
   --color-shadow-secondary: #00000014;
-  --color-gray-primary: #818898;
-  --color-gray-muted: #2b303b0f;
-  --color-link: #06c;
+  --color-gray-primary: #7a7a7a;
+  --color-gray-muted: #4f4f4f0f   --color-link: #06c;
   --color-link-hover: #004890;
 }
 
 @theme {
-    --bg-primary: var(--color-bg-primary) ; --bg-secondary: var(--color-bg-secondary) ; --bg-tertiary: var(--color-bg-tertiary) ;   --color-text-primary: var(--color-text-primary) ; --color-text-secondary: var(--color-text-secondary) ; --color-text-muted: var(--color-text-muted) ; --color-text-inverse: var(--color-text-inverse) ;   --color-bg-btn: var(--color-bg-btn) ; --color-text-btn: var(--color-text-btn) ; --color-bg-btn-hover: var(--color-bg-btn-hover) ; --color-bg-btn-active: var(--color-bg-btn-active) ;   --color-text-primary: var(--color-text-primary) ; --color-text-secondary: var(--color-text-secondary) ; --color-text-muted: var(--color-text-muted) ; --color-text-inverse: var(--color-text-inverse) ; --color-text-hover: var(--color-text-hover) ; --color-text-active: var(--color-text-active) ;   --color-border-primary: var(--color-border-primary) ; --color-border-secondary: var(--color-border-secondary) ;   --color-shadow-primary: var(--color-shadow-primary) ; --color-shadow-secondary: var(--color-shadow-secondary) ;   --color-gray-primary: var(--color-gray-primary) ; --color-gray-muted: var(--color-gray-muted) ;   --color-link: var(--color-link) ; --color-link-hover: var(--color-link-hover) ;   --font-montserrat-sans: var(--font-montserrat-sans) ; --font-calton-elegance-sans: var(--font-calton-elegance-sans) ;   --letter-spacing-primary: var(--letter-spacing-primary) ; --letter-spacing-secondary: var(--letter-spacing-secondary) ; --hover-transition: var(--hover-transition) ; --active-transition: var(--active-transition) ;
+    --bg-primary: var(--color-bg-primary) ; --bg-secondary: var(--color-bg-secondary) ; --bg-tertiary: var(--color-bg-tertiary) ;   --color-text-primary: var(--color-text-primary) ; --color-text-secondary: var(--color-text-secondary) ; --color-text-muted: var(--color-text-muted) ; --color-text-inverse: var(--color-text-inverse) ;   --color-bg-btn: var(--color-bg-btn) ; --color-text-btn: var(--color-text-btn) ; --color-bg-btn-hover: var(--color-bg-btn-hover) ; --color-bg-btn-active: var(--color-bg-btn-active) ;   --color-text-primary: var(--color-text-primary) ; --color-text-secondary: var(--color-text-secondary) ; --color-text-muted: var(--color-text-muted) ; --color-text-inverse: var(--color-text-inverse) ; --color-text-hover: var(--color-text-hover) ; --color-text-active: var(--color-text-active) ;   --color-border-primary: var(--color-border-primary) ; --color-border-secondary: var(--color-border-secondary) ;   --color-translucent-bg: var(--color-translucent-bg) ;   --color-shadow-primary: var(--color-shadow-primary) ; --color-shadow-secondary: var(--color-shadow-secondary) ;   --color-gray-primary: var(--color-gray-primary) ; --color-gray-muted: var(--color-gray-muted) ;   --color-link: var(--color-link) ; --color-link-hover: var(--color-link-hover) ;   --font-montserrat-sans: var(--font-montserrat-sans) ; --font-calton-elegance-sans: var(--font-calton-elegance-sans) ;
 }
 
 ::-webkit-scrollbar {
@@ -196,12 +185,19 @@ input:-webkit-autofill:active {
   caret-color: var(--color-text) !important;
 }
 
-svg {
-  justify-content: center;
-  align-items: center;
-  width: auto;
-  height: auto;
-  display: flex;
+::selection {
+  color: #fff;
+  background: #333333b4;
+}
+
+::selection {
+  color: #fff;
+  background: #333333b4;
+}
+
+svg, i, a, button, input, image, label, .no-select {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 @theme inline {

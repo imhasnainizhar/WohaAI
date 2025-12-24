@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@providers/AuthProvider";
+import { User } from "@providers/auth";
 import { useState } from "react";
 import Image from "next/image";
 import { HiOutlineUserCircle } from "react-icons/hi2";
@@ -22,13 +22,14 @@ export default function UsernamePlate() {
     <div
       className={`
         flex items-center justify-start rounded-[12px]
-        cursor-pointer hover:bg-bg-hover
+        cursor-pointer hover:bg-bg-btn-hover
+        active:bg-bg-btn-active
         transition-colors duration-300
         overflow-hidden w-full
       `}
     >
       {/* Avatar (fixed, layout anchor) */}
-      <div className="w-[40px] h-[40px] p-1 m-1 rounded-full flex items-center justify-center overflow-hidden">
+      <div className="w-auto h-auto p-1 m-1 rounded-full flex items-center justify-center overflow-hidden">
         {userInfo?.profilePicture ? (
           <Image
             src={userInfo.profilePicture}
@@ -38,7 +39,7 @@ export default function UsernamePlate() {
             className="rounded-full"
           />
         ) : (
-          <HiOutlineUserCircle className="w-[40px] h-[40px]" />
+          <HiOutlineUserCircle className="min-w-[30px] min-h-[30px]" />
         )}
       </div>
 

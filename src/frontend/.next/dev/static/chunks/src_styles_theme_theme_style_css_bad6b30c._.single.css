@@ -43,19 +43,19 @@
   border-color: var(--color-border-secondary);
 }
 
-.bg-btn-color {
+.btn-bg-color {
   background-color: var(--color-bg-btn);
 }
 
-.text-btn-color {
+.btn-text-color {
   color: var(--color-text-btn);
 }
 
-.bg-btn-hover {
+.btn-hover {
   background-color: var(--color-bg-btn-hover);
 }
 
-.bg-btn-active {
+.btn-active {
   background-color: var(--color-bg-btn-active);
 }
 
@@ -75,6 +75,10 @@
   box-shadow: 0 4px 12px var(--color-shadow-secondary);
 }
 
+.translucent-bg {
+  background-color: var(--color-translucent-bg);
+}
+
 .link-color {
   color: var(--color-link);
 }
@@ -83,28 +87,20 @@
   color: var(--color-link-hover);
 }
 
-.font-montserrat {
-  font-family: var(--font-montserrat-sans);
+.transition-color-hover:hover {
+  transition: background-color .3s, color .3s;
 }
 
-.font-calton {
-  font-family: var(--font-calton-elegance-sans);
+.transition-all-hover:hover {
+  transition: all .3s;
 }
 
-.letter-spacing-primary {
-  letter-spacing: var(--letter-spacing-primary);
+.transition-color-active:active {
+  transition: background-color, color;
 }
 
-.letter-spacing-secondary {
-  letter-spacing: var(--letter-spacing-secondary);
-}
-
-.transition-hover {
-  transition: var(--hover-transition);
-}
-
-.transition-active {
-  transition: var(--active-transition);
+.transition-all-active:active {
+  transition: all;
 }
 
 /*# sourceMappingURL=src_styles_theme_theme_style_css_bad6b30c._.single.css.map*/

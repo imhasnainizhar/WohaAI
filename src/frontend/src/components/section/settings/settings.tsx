@@ -2,39 +2,62 @@
 
 import { SettingSection } from "@components/section/settings/settings-section/section"
 import { SettingSectionType } from "@internals/types/settings"
-import { useAppContext } from "@providers/AppContext";
+import { useAppContext } from "@providers/app";
 import { useState } from "react";
+import UsernamePlate from "@components/ui/cards/username-plate";
+
 interface Props {
   schema: SettingSectionType[];
 }
 
 export function Settings({ schema }: Props) {
-  const { settingsVisible } = useAppContext();
+  const { settingsVisible, setSettingsVisible } = useAppContext();
   const [activeSectionId, setActiveSectionId] = useState<SettingSectionType>(schema[0]);
   return (
     (settingsVisible ? (
-      <div className="fixed top-0 right-0 transition-all duration-500 ease-in-out w-[450px] h-[700px] 
-    bg-bg-secondary rounded-l-[25px] z-120 p-8 space-y-8">
-        <section className="space-y-4 overflow-auto h-auto">
-          <h2 className="text-sm font-semibold uppercase text-gray-400">
-            Settings
-          </h2>
-          <div className="rounded-xl border border-gray-800 bg-gray-900 divide-y divide-gray-800">
-            <div>
-              {schema.map(section => (
-                <button
-                  key={section.id}
-                  onClick={() => {
-                    setActiveSectionId(section)
-                  }}
-                  className="w-full p-2 text-left text-gray-400 hover:bg-gray-800">{section.label}
-                </button>
-              ))}
+      <div className="fixed bg-translucent-bg w-full h-full flex items-center justify-center transition-all duration-500 ease-in-out
+    z-120 py-8 space-y-8">
+        <section className="flex items-start justify-start flex-col space-y-2 overflow-hidden w-[640px] h-[700px] bg-bg-secondary rounded-[25px]">
+          <div className="flex items-center justify-center h-full w-full min-h-[500px]">
+            <div className="flex flex-col items-start justify-start gap-4 bg-bg-primary h-full p-5 w-[220px]">
+              <div className="w-full h-auto">
+                <UsernamePlate />
+              </div>
+              <div className="rounded-x-[25px] w-[150px] h-full flex flex-col items-start justify-start gap-2">
+                {schema.map(section => (
+                  <div
+                    key={section.id}
+                    onClick={() => {
+                      setActiveSectionId(section)
+                    }}
+                    className="flex items-center justify-start pl-2 w-full h-[35px] text-left hover:bg-bg-btn-hover transition-all
+                    duration-200 ease-in-out cursor-pointer rounded-[12px]">{section.label}
+                  </div>
+                ))}
+              </div>
             </div>
-            <SettingSection section={activeSectionId} />
+            {/* <div className="h-full w-px border border-solid border-border-secondary"></div> */}
+            <div className="w-full h-full px-4 pt-6 flex flex-col items-start justify-start gap-2">
+              <div className="w-full h-[30px] flex items-center justify-between"
+              >
+                <h2 className="text-xl font-bold mb-2">{activeSectionId.label}</h2>
+                <div
+                  className="w-[30px] h-[30px] cursor-pointer hover:bg-bg-btn-hover rounded-[999%]
+                transition-all duration-200 ease-in-out"
+                  onClick={() => {
+                    setSettingsVisible(false)
+                  }}
+                >
+                  <div className="w-full h-[30px] flex justify-center items-center text-text-primary font-medium text-[14px]">X</div>
+                </div>
+              </div>
+              <div className="w-full h-full">
+                <SettingSection section={activeSectionId} />
+              </div>
+            </div>
           </div>
-        </section>
-      </div>
+        </section >
+      </div >
     ) : null)
   );
 }

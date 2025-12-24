@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { env } from '@config/env.config';
+import { env } from '@config/env';
 import { logger } from '@utils/logger';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import MCPGatewayServer from './gateway';

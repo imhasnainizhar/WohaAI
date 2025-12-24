@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import TransitionalLink from "@utils/TransitionalLink";
+import TransitionalLink from "@utils/transitional-link";
 import "@styles/components/layouts/morebar.style.css";
-import { useTheme } from "@providers/ThemeProvider";
-import { useAppContext } from "@providers/AppContext";
+import { useTheme } from "@providers/theme";
+import { useAppContext } from "@providers/app";
 import UsernamePlate from "@components/ui/cards/username-plate";
+import Link from "next/link";
 
 type Props = {
   onClickToggle: () => void;
@@ -59,7 +60,7 @@ export default function MainMenu({ onClickToggle, position }: Props) {
 
             {/* SignOut */}
             <div
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-hover transition-all duration-300 ease-in-out rounded-[13px]"
+              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
               onClick={(e) => {
                 e.stopPropagation();
                 // signOut logic here
@@ -70,7 +71,7 @@ export default function MainMenu({ onClickToggle, position }: Props) {
 
             {/* Settings */}
             <div
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-hover transition-all duration-300 ease-in-out rounded-[13px]"
+              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
               onClick={(e) => {
                 e.stopPropagation();
                 toggleSettings();
@@ -92,28 +93,28 @@ export default function MainMenu({ onClickToggle, position }: Props) {
             </div>
 
             {/* SignIn */}
-            <div
-            onClick={() => setSignin(true)}
-              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-hover cursor-pointer transition-all duration-300 ease-in-out rounded-[13px]"
+            <Link
+              href="/signin"
+              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active cursor-pointer transition-all duration-300 ease-in-out rounded-[13px]"
             >
               <div>
                 SignIn
               </div>
-            </div>
+            </Link>
 
             {/* SignUp */}
-            <div
-              onClick={() => setSignin(true)}
-              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover: transition-all duration-300 ease-in-out rounded-[13px]"
+            <Link
+              href="/signup"
+              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active cursor-pointer transition-all duration-300 ease-in-out rounded-[13px]"
             >
               <div>
                 SignUp
               </div>
-            </div>
+            </Link>
 
             {/* Dark/Light toggle */}
             <button
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-hover transition-all duration-300 ease-in-out rounded-[13px]"
+              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
               onClick={(e) => {
                 e.stopPropagation();
                 toggleTheme();
@@ -124,7 +125,7 @@ export default function MainMenu({ onClickToggle, position }: Props) {
 
             {/* Settings */}
             <button
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-hover transition-all duration-300 ease-in-out rounded-[13px]"
+              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
               onClick={(e) => {
                 e.stopPropagation();
                 toggleSettings();

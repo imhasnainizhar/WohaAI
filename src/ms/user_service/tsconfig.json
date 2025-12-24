@@ -8,7 +8,7 @@
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         /* Project Structure */
-        "rootDir": "./src",
+        "rootDir": ".",
         "outDir": "./dist",
         /* Type Checking */
         "strict": true,
@@ -19,6 +19,10 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
+        "types": [
+            "node",
+            "jest"
+        ],
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
             "@app": [
@@ -48,7 +52,7 @@
             "@custom_types/*": [
                 "./src/custom_types/*"
             ],
-            "@errors/*":[
+            "@errors/*": [
                 "./src/errors/*"
             ]
         },
@@ -56,7 +60,8 @@
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "tests/**/*.ts"
     ],
     "exclude": [
         "node_modules",

@@ -46,21 +46,19 @@
             "@utils/*": [
                 "./src/utils/*"
             ],
-            "@custom_types/*": [
-                "./src/custom_types/*"
+            "@internals/*": [
+                "./src/internals/*"
             ],
             "@errors/*": [
                 "./src/errors/*"
-            ],
-            "@session_utils/*": [
-                "./src/session_utils/*"
             ],
         },
         /* Output + Debugging */
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "tests/**/*.ts"
     ],
     "exclude": [
         "node_modules",

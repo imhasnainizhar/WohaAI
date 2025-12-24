@@ -1,20 +1,20 @@
- 
- 
+
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState, useEffect } from "react";
-import CAPTCHA from "@lib/security/ReCAPTCHA";
+import CAPTCHA from "@lib/security/re-captcha";
 import Image from "next/image";
 import "@styles/pages/signup.style.css";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema } from "@lib/validators/signup-validation-schema";
+import { signUpSchema } from "@lib/schemas/signup-validation";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import "react-datepicker/dist/react-datepicker.css";
-import { useTheme } from "@providers/ThemeProvider";
+import { useTheme } from "@providers/theme";
 
 type SignUpInput = z.infer<typeof signUpSchema>;
 
@@ -94,11 +94,10 @@ export default function SignUp() {
 
   return (
     <div
-      className={`signup-page ${
-        darkTheme
-          ? "dark-bg-primary dark-text-secondary"
-          : "light-bg-primary light-text-secondary"
-      }`}
+      className={`signup-page ${darkTheme
+        ? "dark-bg-primary dark-text-secondary"
+        : "light-bg-primary light-text-secondary"
+        }`}
       data-theme={theme}
     >
       <div className="signup-b">
@@ -120,9 +119,8 @@ export default function SignUp() {
             >
               <div className="double-field-group">
                 <div
-                  className={`input-group ${
-                    errors.FirstName ? "has-error" : ""
-                  }`}
+                  className={`input-group ${errors.FirstName ? "has-error" : ""
+                    }`}
                   data-theme={theme}
                 >
                   <input
@@ -130,9 +128,8 @@ export default function SignUp() {
                     type="text"
                     {...register("FirstName")}
                     placeholder="   "
-                    className={`${
-                      darkTheme ? "dark-text-primary" : "light-text-primary"
-                    }`}
+                    className={`${darkTheme ? "dark-text-primary" : "light-text-primary"
+                      }`}
                   />
                   <label htmlFor="firstName">First Name</label>
                   {errors.FirstName && (
@@ -140,9 +137,8 @@ export default function SignUp() {
                   )}
                 </div>
                 <div
-                  className={`input-group ${
-                    errors.LastName ? "has-error" : ""
-                  }`}
+                  className={`input-group ${errors.LastName ? "has-error" : ""
+                    }`}
                   data-theme={theme}
                 >
                   <input
@@ -150,9 +146,8 @@ export default function SignUp() {
                     type="text"
                     {...register("LastName")}
                     placeholder="   "
-                    className={`${
-                      darkTheme ? "dark-text-primary" : "light-text-primary"
-                    }`}
+                    className={`${darkTheme ? "dark-text-primary" : "light-text-primary"
+                      }`}
                   />
                   <label htmlFor="secondName">Last Name</label>
                   {errors.LastName && (
@@ -169,9 +164,8 @@ export default function SignUp() {
                     id="email"
                     {...register("email")}
                     placeholder="   "
-                    className={`${
-                      darkTheme ? "dark-text-primary" : "light-text-primary"
-                    }`}
+                    className={`${darkTheme ? "dark-text-primary" : "light-text-primary"
+                      }`}
                   />
                   <label htmlFor="email">Email</label>
                   {errors.email && (
@@ -181,9 +175,8 @@ export default function SignUp() {
               </div>
               <div className="double-field-group">
                 <div
-                  className={`input-group ${
-                    errors.password ? "has-error" : ""
-                  }`}
+                  className={`input-group ${errors.password ? "has-error" : ""
+                    }`}
                   data-theme={theme}
                 >
                   <input
@@ -191,9 +184,8 @@ export default function SignUp() {
                     type="password"
                     {...register("password")}
                     placeholder="   "
-                    className={`${
-                      darkTheme ? "dark-text-primary" : "light-text-primary"
-                    }`}
+                    className={`${darkTheme ? "dark-text-primary" : "light-text-primary"
+                      }`}
                   />
                   <label htmlFor="password">New Password</label>
                   {errors.password && (
@@ -201,9 +193,8 @@ export default function SignUp() {
                   )}
                 </div>
                 <div
-                  className={`input-group ${
-                    errors.confirmPassword ? "has-error" : ""
-                  }`}
+                  className={`input-group ${errors.confirmPassword ? "has-error" : ""
+                    }`}
                   data-theme={theme}
                 >
                   <input
@@ -211,9 +202,8 @@ export default function SignUp() {
                     type="password"
                     {...register("confirmPassword")}
                     placeholder="   "
-                    className={`${
-                      darkTheme ? "dark-text-primary" : "light-text-primary"
-                    }`}
+                    className={`${darkTheme ? "dark-text-primary" : "light-text-primary"
+                      }`}
                   />
                   <label htmlFor="confirmPassword">Confirm Password</label>
                   {errors.confirmPassword && (
@@ -240,11 +230,10 @@ export default function SignUp() {
 
               <div className={`signup-submit-btn`}>
                 <button
-                  className={`${
-                    darkTheme
-                      ? "light-bg-primary light-text-primary"
-                      : "dark-bg-primary dark-text-primary"
-                  }`}
+                  className={`${darkTheme
+                    ? "light-bg-primary light-text-primary"
+                    : "dark-bg-primary dark-text-primary"
+                    }`}
                   type="submit"
                 >
                   Sign Up

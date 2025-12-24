@@ -1,5 +1,5 @@
 // src/utils/redis_client.ts
-import { redisClient } from "@config/redis.config";
+import { redisClient } from "@config/redis";
 import { logger } from "@utils/logger";
 
 export const setCache = async (key: string, value: string, ttlSeconds?: number) => {
