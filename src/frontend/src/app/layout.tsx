@@ -24,8 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-w-[380px] max-w-[2560px] h-screen
-      no-underline font-montserrat-sans tracking-letter-spacing-primary
-      shadow-[0_0_50px_0_var(--color-gray-primary)] bg-bg
+      no-underline font-sans tracking-letter-spacing-primary bg-bg-primary
       ">
         <AppProvider>
           <ThemeProvider>

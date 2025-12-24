@@ -41,14 +41,14 @@ export default function TextArea() {
         transition: "min-height 0.2s ease, max-height 0.2s ease",
       }}
       className={`flex flex-col justify-between gap-3.5 p-2 pb-1 rounded-[25px] w-full 
-        relative border border-solid border-border bg-bg-tertiary`}
+        relative border border-solid border-primary bg-bg-tertiary`}
     >
       <textarea
         ref={textArea}
         placeholder="Ask me anything..."
         className={`w-full max-w-[700px] min-w-[280px] resize-none text-left text-[15px] 
-          font-montserrat-sans pl-[5px] whitespace-pre-wrap wrap-break-word 
-          leading-[24px] focus:outline-none rounded-md p-2 pb-[4px] touch-auto 
+          pl-[5px] whitespace-pre-wrap wrap-break-word border-none
+          leading-[24px] focus:outline-none rounded-md p-2 pb-[4px] touch-auto
           [webkit-overflow-scrolling:touch] text-text-primary bg-bg-tertiary`}
         style={{
           minHeight: "40px",
@@ -69,7 +69,7 @@ export default function TextArea() {
       <div className="relative flex items-center justify-between z-10">
         <div className="flex gap-3 items-center justify-start">
           <span
-            className={`border border-solid border-border rounded-[90px] w-[80px] h-[35px] flex 
+            className={`border border-solid border-secondary rounded-[90px] w-[80px] h-[35px] flex 
               items-center justify-center cursor-pointer text-text-primary`}
           >
             Tools
@@ -82,8 +82,8 @@ export default function TextArea() {
           </span>
         </div>
         <div
-          className={`border border-solid border-border rounded-full flex items-center 
-            justify-center cursor-pointer w-[35px] h-[35px] text-text-primary`}
+          className={`border border-solid border-secondary rounded-full flex items-center 
+            justify-center cursor-pointer w-[35px] h-[35px] text-text-secondary`}
         >
           <Image
             src={"/icons/arrow-up-stroke.png"}

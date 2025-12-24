@@ -22,6 +22,11 @@ type AppContextType = {
   settingsVisible: boolean;
   setSettingsVisible: (value: boolean) => void;
   toggleSettings: () => void;
+
+  // Signin comp state
+  signin: boolean;
+  setSignin: (value: boolean) => void;
+  toggleSignin: () => void;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -29,6 +34,9 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   // Sidebar expansion state
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(false);
+
+  // Signin comp state
+  const [ signin, setSignin ] = useState<boolean>(false)
 
   // Search box active state
   const [searchActive, setSearchActive] = useState<boolean>(false);
@@ -43,6 +51,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleSearch = () => setSearchActive((prev) => !prev);
   const toggleMainMenu = () => setMainMenuVisible((prev) => !prev);
   const toggleSettings = () => setSettingsVisible((prev) => !prev);
+  const toggleSignin = () => setSignin((prev) => !prev)
 
   return (
     <AppContext.Provider
@@ -59,6 +68,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         settingsVisible,
         setSettingsVisible,
         toggleSettings,
+        signin,
+        setSignin,
+        toggleSignin,
       }}
     >
       {children}
