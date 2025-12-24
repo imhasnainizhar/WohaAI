@@ -4,26 +4,40 @@
 ====================================================== */
 
 /* Background colors */
-.bg-bg { background-color: var(--color-bg); }
+.bg-bg-primary { background-color: var(--color-bg-primary); }
 .bg-bg-secondary { background-color: var(--color-bg-secondary); }
 .bg-bg-tertiary { background-color: var(--color-bg-tertiary); }
 
 
-
 /* Text colors */
-.text-text { color: var(--color-text); }
+.text-text-primary { color: var(--color-text-primary); }
 .text-text-secondary { color: var(--color-text-secondary); }
-.text-gray-primary { color: var(--color-gray-primary); }
+
+.text-text-hover { color: var(--color-text-hover); }
+.text-text-active { color: var(--color-text-active); }
+
 .text-gray-muted { color: var(--color-gray-muted); }
-.text-link { color: var(--color-link); }
-.text-link-hover:hover { color: var(--color-link-hover); }
+.text-inverse { color: var(--color-text-inverse); }
+/* Border colors */
+.border-primary { border-color: var(--color-border-primary); }
+.border-secondary { border-color: var(--color-border-secondary); }
 
-.bg-bg-hover { background-color: var(--color-bg-hover); }
+/* Button colors */
+.bg-btn-color { background-color: var(--color-bg-btn); }
+.text-btn-color { color: var(--color-text-btn); }
+.bg-btn-hover { background-color: var(--color-bg-btn-hover); }
+.bg-btn-active { background-color: var(--color-bg-btn-active); }
 
-/* Card / container colors */
-.card-bg { background-color: var(--color-card); }
-.border-color { border-color: var(--color-border); }
-.shadow-color { box-shadow: 0 4px 12px var(--color-shadow); }
+.color-gray-primary { color: var(--color-gray-primary); }
+.color-gray-muted { color: var(--color-gray-muted); }
+
+/* Shadow Colors */
+.shadow-color-primary { box-shadow: 0 4px 12px var(--color-shadow-primary); }
+.shadow-color-secondary { box-shadow: 0 4px 12px var(--color-shadow-secondary); }
+
+/* Link Colors */
+.link-color { color: var(--color-link); }
+.link-color-hover { color: var(--color-link-hover); }
 
 /* Font families */
 .font-montserrat { font-family: var(--font-montserrat-sans); }

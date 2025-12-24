@@ -23,7 +23,7 @@ type Props = {
 export default function MainMenu({ onClickToggle, position }: Props) {
   const { darkTheme, toggleTheme } = useTheme();
   const mainMenuRef = useRef<HTMLDivElement>(null);
-  const { toggleSettings } = useAppContext();
+  const { toggleSettings, setSignin } = useAppContext();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,7 +42,7 @@ export default function MainMenu({ onClickToggle, position }: Props) {
 
   return (
     <div
-      className="fixed border border-solid border-border rounded-[18px] bg-bg-tertiary w-full h-auto"
+      className="fixed border border-solid border-primary rounded-[18px] bg-bg-tertiary w-full h-auto"
       style={position}
       onClick={stopClick} // Stop all clicks from bubbling outside
     >
@@ -51,7 +51,7 @@ export default function MainMenu({ onClickToggle, position }: Props) {
           <div className="flex flex-col items-start justify-center gap-1 text-text rounded-[25px] text-[15px] font-montserrat-sans h-auto">
             {/* Username plate */}
             <div
-              className="flex items-center justify-center border-b border-solid border-border w-full h-auto"
+              className="flex items-center justify-center border-b border-solid border-secondary w-full h-auto"
               onClick={stopClick}
             >
               <UsernamePlate />
@@ -83,7 +83,7 @@ export default function MainMenu({ onClickToggle, position }: Props) {
           <div className="flex flex-col items-start justify-center gap-1 text-text rounded-[25px] text-[15px] font-montserrat-sans h-auto">
             {/* Username plate */}
             <div
-              className="border-b border-solid border-border w-full h-full flex items-center justify-center"
+              className="border-b border-solid border-primary w-full h-full flex items-center justify-center"
               onClick={stopClick}
             >
               <div className="flex items-center justify-center mb-2 w-[197px] h-[50px]">
@@ -92,24 +92,24 @@ export default function MainMenu({ onClickToggle, position }: Props) {
             </div>
 
             {/* SignIn */}
-            <TransitionalLink
-              href="/auth/signin"
-              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-hover transition-all duration-300 ease-in-out rounded-[13px]"
+            <div
+            onClick={() => setSignin(true)}
+              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-hover cursor-pointer transition-all duration-300 ease-in-out rounded-[13px]"
             >
-              <div onClick={onClickToggle}>
+              <div>
                 SignIn
               </div>
-            </TransitionalLink>
+            </div>
 
             {/* SignUp */}
-            <TransitionalLink
-              href="/auth/signup"
-              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-hover transition-all duration-300 ease-in-out rounded-[13px]"
+            <div
+              onClick={() => setSignin(true)}
+              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover: transition-all duration-300 ease-in-out rounded-[13px]"
             >
-              <div onClick={onClickToggle}>
+              <div>
                 SignUp
               </div>
-            </TransitionalLink>
+            </div>
 
             {/* Dark/Light toggle */}
             <button

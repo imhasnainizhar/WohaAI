@@ -13,7 +13,7 @@ export default function ChatPage() {
   const { sidebarExpanded } = useAppContext();
 
   return (
-    <div className="text-text-secondary h-full w-full bg-bg">
+    <div className="text-text-secondary h-full w-full bg-bg-primary">
       <PathChecker />
 
       <div className="flex h-full w-full">
@@ -39,7 +39,7 @@ export default function ChatPage() {
 
                 <p
                   className="min-w-[300px] max-w-[600px] w-full px-4 text-center pb-2.5
-                             text-[14px] text-text-secondary"
+                             text-[14px] text-text-secondary font-sans"
                 >
                   WoahGPT now has our smartest, fastest, most useful model yet,
                   with thinking built in — so you get the best answer, every time.

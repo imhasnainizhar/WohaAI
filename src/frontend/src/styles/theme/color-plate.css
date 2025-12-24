@@ -1,23 +1,16 @@
 :root {
-  /* === Dark Theme Group === */
-  --theme-dark-black-primary: hsl(0, 0%, 5%);
-  --theme-dark-black-secondary: hsl(0, 0%, 15%);
-  --theme-dark-black-third: hsl(0, 0%, 20%);
-  --theme-dark-white-primary: hsl(0, 0%, 95%);
-  --theme-dark-white-secondary: hsl(0, 0%, 70%);
-  --theme-color-boxShadow-light: hsla(0, 0%, 80%, 0.25);
 
-  /* === Light Theme Group === */
-  --theme-light-white-primary: hsl(0, 0%, 100%);
-  --theme-light-white-secondary: hsl(0, 0%, 95%);
-  --theme-light-white-third: hsl(0, 0%, 90%);
-  --theme-light-black-primary: hsl(0, 0%, 5%);
-  --theme-light-black-secondary: hsl(0, 0%, 30%);
-  --theme-color-boxShadow-dark: rgba(0, 0, 0, 0.5);
+--color-cod-gray-50:  hsl(0, 0%, 96%);
+--color-cod-gray-100: hsl(0, 0%, 91%);
+--color-cod-gray-200: hsl(0, 0%, 85%);
+--color-cod-gray-300: hsl(0, 0%, 70%);
+--color-cod-gray-400: hsl(0, 0%, 55%);
+--color-cod-gray-500: hsl(0, 0%, 40%);
+--color-cod-gray-600: hsl(0, 0%, 36%);
+--color-cod-gray-700: hsl(0, 0%, 31%);
+--color-cod-gray-800: hsl(0, 0%, 27%);
+--color-cod-gray-900: hsl(0, 0%, 14%);
+--color-cod-gray-950: hsl(0, 0%, 5%);
 
-  /* === Mix Theme Group === */
-  --theme-gray-primary: hsl(0, 0%, 35%);
-  --link-color: rgb(0, 154, 255);
-  --link-color-hover: rgb(0, 89, 148);
-  --theme-border-primary:hsla(0, 0%, 99%, 0.102);
+
 }

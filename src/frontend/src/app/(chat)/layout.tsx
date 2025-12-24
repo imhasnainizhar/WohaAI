@@ -14,10 +14,7 @@ export default function ChatLayout({
 }) {
     const { mainMenuVisible, setMainMenuVisible } = useAppContext();
     return (
-        <div className="h-full w-full bg-bg text-text-secondary overflow-hidden">
-            <div>
-
-            </div>
+        <div className="h-full w-full bg-bg-primary text-text-primary overflow-hidden">
             <div className="flex h-full w-full">
                 <div className="shrink-0 transition-all duration-750 ease-in-out 
                 max-[910px]:bg-bg-secondary max-[910px]:absolute
@@ -28,7 +25,7 @@ export default function ChatLayout({
                 {/* Chat Page */}
                 <section className="h-full w-full flex flex-col justify-center align-center">
                     <main className="flex flex-col justify-center h-full  
-                        w-full bg-bg border border-border border-solid">
+                        w-full bg-bg-primary border border-primary border-solid">
                         {children}
                     </main>
                 </section>
