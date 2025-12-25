@@ -49,8 +49,8 @@
             "@utils/*": [
                 "./main/utils/*"
             ],
-            "@custom_types/*": [
-                "./main/custom_types/*"
+            "@domain/*": [
+                "./main/domain/*"
             ],
             "@errors/*": [
                 "./main/errors/*"

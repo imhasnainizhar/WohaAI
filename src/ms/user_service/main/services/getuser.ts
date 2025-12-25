@@ -1,6 +1,6 @@
 import { prisma } from '@utils/prisma_client';
 import { ServiceResponse } from '@utils/response';
-import { sanitizeUser } from '@custom_types/user';
+import { sanitizeUser } from '@domain/types/user';
 
 interface GetUserParams {
   userID?: string;

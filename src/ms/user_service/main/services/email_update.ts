@@ -2,7 +2,7 @@ import { prisma } from "@utils/prisma_client";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/response";
 import { ServiceException } from "@utils/response";
-import { EmailUpdate } from "@custom_types/update/email_update";
+import { EmailUpdate } from "@domain/types/update/email_update";
 
 /**
  * @service emailUpdateService

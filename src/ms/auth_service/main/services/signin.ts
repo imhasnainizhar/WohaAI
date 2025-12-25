@@ -6,7 +6,7 @@ import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { env, EXPIRATION } from "@config/env";
 import { createUserSession } from "@utils/create_user_session";
-import { ClientData } from "../internals/types/session";
+import { ClientData } from "../domain/types/session";
 
 /**
  * Core business logic for user sign-in.

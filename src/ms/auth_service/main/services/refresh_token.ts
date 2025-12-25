@@ -8,7 +8,7 @@ import {
   UserSessionRefresh,
   ActiveSessionRecord,
   activeSessionSelect
-} from "@internals/types/session";
+} from "../domain/types/session";
 
 export async function refreshTokenService<T>(data: UserSessionRefresh) {
   try {

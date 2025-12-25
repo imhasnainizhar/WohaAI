@@ -1,0 +1,522 @@
+/**
+ * web_scraper.tool.ts
+ *
+ * Web Page Scraper tool for an MCP runtime.
+ * - Fetches and extracts content from web pages
+ * - Supports content extraction via native fetch API with configurable timeouts
+ * - Provides utility functions for scraping and parsing HTML content
+ * - Includes error handling and retry logic for robust web content retrieval
+ *
+ * USAGE:
+ *  - Import and call webScraper({ url, WebScraperOptions }) with target URL
+ *  - Configure timeout and retry logic as needed
+ *  - Set renderJS: true for JavaScript-rendered pages (requires Playwright)
+ *
+ * NOTE:
+ *  - This tool uses native fetch API for HTTP requests with simple HTML parsing
+ *  - Designed for lightweight content extraction without heavy dependencies
+ *  - Playwright is only loaded when renderJS is true
+ *  - Consider rate limiting and robots.txt compliance in production use
+ */
+
+
+import { WebScraperParams } from "@domain/types/input";
+import { logger } from "@utils/logger";
+
+export interface PageResult {
+  status: number;
+  contentType?: string;
+  body: string;
+}
+
+/**
+ * Robust web scraper with retries, dynamic timeout, and partial content extraction
+ */
+export async function webScraper({
+  url,
+  WebScraperOptions
+}: WebScraperParams): Promise<PageResult> {
+  if (!/^https?:\/\//i.test(url)) throw new Error(`Invalid URL: ${url}`);
+
+  const {
+    maxRetries = 3,
+    timeoutMS = 30000, // longer timeout for heavy pages
+    renderJS = false,
+    partialSelector // optional: CSS selector for main content
+  } = WebScraperOptions;
+
+  logger.debug({
+    action: "web_scraper_started",
+    url,
+    renderJS,
+    maxRetries,
+    timeoutMS,
+    partialSelector
+  });
+
+  let attempt = 0;
+  let lastError: any;
+
+  while (attempt <= maxRetries) {
+    try {
+      logger.debug({ action: "web_scraper_attempt", attempt: attempt + 1 }, `Scraping attempt ${attempt + 1}/${maxRetries + 1}`);
+
+      const result = renderJS
+        ? await fetchRenderedPage(url, timeoutMS, partialSelector)
+        : await fetchStaticPage(url, timeoutMS, partialSelector);
+
+      if (result.body && result.body.length > 50) {
+        logger.debug({ action: "web_scraper_success", url, status: result.status, bodyLength: result.body.length });
+        return result;
+      }
+
+      throw new Error("Empty or insufficient response");
+
+    } catch (err: any) {
+      lastError = err;
+
+      const shouldRetry =
+        err.name === "AbortError" ||
+        err.code === "ECONNRESET" ||
+        err.code === "ETIMEDOUT" ||
+        err.message?.includes("timeout") ||
+        err.message?.includes("Empty") ||
+        (err.status && err.status >= 500 && err.status < 600);
+
+      if (shouldRetry && attempt < maxRetries) {
+        attempt++;
+        const waitTime = 500 * attempt;
+        logger.debug({ action: "web_scraper_retry", attempt, waitTime, error: err.message }, `Retrying after ${waitTime}ms`);
+        await wait(waitTime);
+        continue;
+      }
+
+      throw err;
+    }
+  }
+
+  logger.error({ action: "web_scraper_failed", url, lastError: lastError?.message ?? "Unknown error" });
+  throw new Error(`Failed to fetch ${url} after ${maxRetries + 1} attempts: ${lastError?.message ?? "Unknown error"}`);
+}
+
+async function fetchStaticPage(url: string, timeoutMS: number, partialSelector?: string): Promise<PageResult> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMS);
+
+  try {
+    const resp = await fetch(url, { signal: controller.signal, redirect: "follow" });
+    if (!resp.ok) throw { status: resp.status, message: resp.statusText };
+
+    let body = await resp.text();
+    if (partialSelector) {
+      // naive partial extraction for static pages
+      const match = body.match(new RegExp(`<${partialSelector}[^>]*>([\\s\\S]*?)<\\/${partialSelector}>`, "i"));
+      if (match) body = match[1];
+    }
+
+    return { status: resp.status, contentType: resp.headers.get("content-type") ?? "text/html", body: sanitizeHTML(body) };
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+async function fetchRenderedPage(url: string, timeoutMS: number, partialSelector?: string): Promise<PageResult> {
+  const playwright = await import("playwright");
+  const browser = await playwright.chromium.launch({ headless: true, args: ["--no-sandbox"] });
+  const page = await browser.newPage();
+
+  try {
+    const resp = await page.goto(url, { timeout: timeoutMS, waitUntil: "networkidle" });
+    let body = partialSelector ? await page.$eval(partialSelector, el => el.innerHTML).catch(() => "") : await page.content();
+    const contentType = resp?.headers()["content-type"] ?? "text/html; charset=utf-8";
+
+    return { status: resp?.status() ?? 200, contentType, body: sanitizeHTML(body) };
+  } finally {
+    await browser.close();
+  }
+}
+
+function sanitizeHTML(html: string): string {
+  return html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+             .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+             .replace(/\s+/g, " ")
+             .trim();
+}
+
+function wait(ms: number) { return new Promise(res => setTimeout(res, ms)); }
+
+
+
+// import { WebScraperParams } from "@custom_types/input";
+// import { logger } from "@utils/logger";
+
+// export interface PageResult {
+//   status: number;
+//   contentType?: string;
+//   body: string;
+// }
+
+/**
+ * OpenAI-style universal page fetcher
+ * Handles static + dynamic (JS) pages without third-party services.
+ */
+// export async function webScraper(
+//   {
+//     url,
+//     WebScraperOptions
+//   }: WebScraperParams): Promise<PageResult> {
+//   if (!/^https?:\/\//i.test(url)) throw new Error(`Invalid URL: ${url}`);
+//   const { maxRetries, timeoutMS = 10000, renderJS } = WebScraperOptions;
+
+//   logger.debug({
+//     action: "web_scraper_started",
+//     url,
+//     renderJS,
+//     maxRetries,
+//     timeoutMS
+//   }, `Starting web scrape (renderJS: ${renderJS})`);
+
+//   let attempt = 0;
+//   let lastError: any;
+
+//   while (attempt <= maxRetries) {
+//     try {
+//       logger.debug({
+//         action: "web_scraper_attempt",
+//         url,
+//         attempt: attempt + 1,
+//         maxRetries: maxRetries + 1,
+//         renderJS
+//       }, `Scraping attempt ${attempt + 1}/${maxRetries + 1}`);
+      
+//       const result = renderJS
+//         ? await fetchRenderedPage(url, timeoutMS)
+//         : await fetchStaticPage(url, timeoutMS);
+
+//       // Check for valid content (reduced threshold for smaller pages)
+//       if (result.body && result.body.length > 50) {
+//         logger.debug({
+//           action: "web_scraper_success",
+//           url,
+//           status: result.status,
+//           contentType: result.contentType,
+//           bodyLength: result.body.length,
+//           renderJS
+//         }, "Web scrape completed successfully");
+//         return result;
+//       }
+//       throw new Error("Empty or insufficient response");
+//     } catch (err: any) {
+//       lastError = err;
+//       const shouldRetry = 
+//         err.name === "AbortError" ||
+//         err.code === "ECONNRESET" ||
+//         err.code === "ETIMEDOUT" ||
+//         err.message?.includes("timeout") ||
+//         err.message?.includes("Empty") ||
+//         (err.status && err.status >= 500 && err.status < 600);
+
+//       if (shouldRetry && attempt < maxRetries) {
+//         attempt++;
+//         const waitTime = 300 * attempt;
+//         logger.debug({
+//           action: "web_scraper_retry",
+//           url,
+//           attempt,
+//           waitTime,
+//           error: err.message
+//         }, `Retrying after ${waitTime}ms`);
+//         await wait(waitTime);
+//         continue;
+//       }
+//       throw err;
+//     }
+//   }
+
+//   logger.error({
+//     action: "web_scraper_failed",
+//     url,
+//     maxRetries: maxRetries + 1,
+//     lastError: lastError?.message ?? "Unknown error"
+//   }, `Failed to fetch ${url} after ${maxRetries + 1} attempts`);
+  
+//   throw new Error(`Failed to fetch ${url} after ${maxRetries + 1} attempts: ${lastError?.message ?? "Unknown error"}`);
+// }
+
+// async function fetchStaticPage(url: string, timeoutMS: number): Promise<PageResult> {
+//   logger.debug({
+//     action: "fetch_static_page",
+//     url,
+//     timeoutMS
+//   }, "Fetching static page");
+  
+//   const controller = new AbortController();
+//   const id = setTimeout(() => controller.abort(), timeoutMS);
+
+//   try {
+//     const resp = await fetch(url, {
+//       signal: controller.signal,
+//       redirect: "follow",
+//       headers: {
+//         "User-Agent":
+//           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+//         Accept:
+//           "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+//         "Accept-Language": "en-US,en;q=0.9",
+//       },
+//     });
+
+//     logger.debug({
+//       action: "fetch_static_page_response",
+//       url,
+//       status: resp.status,
+//       statusText: resp.statusText,
+//       contentType: resp.headers.get("content-type")
+//     }, "Received response from static page fetch");
+
+//     // Check HTTP status before processing
+//     if (!resp.ok && resp.status >= 500) {
+//       const error: any = new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+//       error.status = resp.status;
+//       throw error;
+//     }
+
+//     const contentType = resp.headers.get("content-type") ?? undefined;
+
+//     // More lenient content type check
+//     if (
+//       contentType &&
+//       !contentType.includes("text") &&
+//       !contentType.includes("json") &&
+//       !contentType.includes("xml") &&
+//       !contentType.includes("html")
+//     ) {
+//       logger.warn({
+//         action: "fetch_static_page_unsupported_type",
+//         url,
+//         contentType
+//       }, `Unsupported content type: ${contentType}`);
+//       throw new Error(`Unsupported content type: ${contentType}`);
+//     }
+
+//     const body = await resp.text();
+    
+//     logger.debug({
+//       action: "fetch_static_page_success",
+//       url,
+//       status: resp.status,
+//       contentType,
+//       bodyLength: body.length,
+//       sanitizedLength: sanitizeHTML(body).length
+//     }, "Static page fetched and sanitized");
+    
+//     // Return error status but still provide body for 4xx errors (client might want to see it)
+//     return { 
+//       status: resp.status, 
+//       contentType, 
+//       body: sanitizeHTML(body) 
+//     };
+//   } catch (err: any) {
+//     logger.error({
+//       action: "fetch_static_page_error",
+//       url,
+//       error: err.message,
+//       errorName: err.name,
+//       errorCode: err.code,
+//       errorStatus: err.status
+//     }, "Failed to fetch static page");
+    
+//     // Re-throw abort errors and network errors
+//     if (err.name === "AbortError" || err.code === "ECONNRESET" || err.code === "ETIMEDOUT") {
+//       throw err;
+//     }
+//     // Re-throw HTTP errors
+//     if (err.status) {
+//       throw err;
+//     }
+//     // Wrap other errors
+//     throw new Error(`Failed to fetch ${url}: ${err.message ?? "Unknown error"}`);
+//   } finally {
+//     clearTimeout(id);
+//   }
+// }
+
+// /** Optional: JS-rendered fallback using Playwright */
+// async function fetchRenderedPage(url: string, timeoutMS: number): Promise<PageResult> {
+//   logger.debug({
+//     action: "fetch_rendered_page_start",
+//     url,
+//     timeoutMS
+//   }, "Starting rendered page fetch with Playwright (renderJS: true)");
+  
+//   // Dynamic import to avoid loading Playwright when not needed
+//   let chromium: any;
+//   try {
+//     logger.debug({
+//       action: "playwright_import",
+//       url
+//     }, "Importing Playwright");
+    
+//     const playwright = await import("playwright");
+//     chromium = playwright.chromium;
+    
+//     logger.debug({
+//       action: "playwright_imported",
+//       url
+//     }, "Playwright imported successfully");
+//   } catch (err) {
+//     logger.error({
+//       action: "playwright_import_failed",
+//       url,
+//       error: err instanceof Error ? err.message : String(err)
+//     }, "Failed to import Playwright");
+    
+//     throw new Error(
+//       "Playwright is required for JavaScript rendering. Install it with: npm install playwright && npx playwright install"
+//     );
+//   }
+
+//   let browser: any;
+//   try {
+//     logger.debug({
+//       action: "browser_launch",
+//       url
+//     }, "Launching Chromium browser");
+    
+//     // Launch browser with options suitable for containerized environments
+//     browser = await chromium.launch({ 
+//       headless: true,
+//       args: [
+//         '--no-sandbox',
+//         '--disable-setuid-sandbox',
+//         '--disable-dev-shm-usage',
+//         '--disable-accelerated-2d-canvas',
+//         '--disable-gpu'
+//       ]
+//     });
+    
+//     logger.debug({
+//       action: "browser_launched",
+//       url
+//     }, "Chromium browser launched successfully");
+//   } catch (err: any) {
+//     logger.error({
+//       action: "browser_launch_failed",
+//       url,
+//       error: err.message
+//     }, "Failed to launch browser");
+    
+//     // Check if the error is about missing browser executables
+//     if (err.message?.includes("Executable doesn't exist") || 
+//         err.message?.includes("browserType.launch") ||
+//         err.message?.includes("chromium") ||
+//         err.message?.includes("playwright")) {
+//       throw new Error(
+//         `Playwright browsers are not installed. Please run: npx playwright install chromium\n` +
+//         `Original error: ${err.message}`
+//       );
+//     }
+//     throw new Error(`Failed to launch browser: ${err.message ?? "Unknown error"}`);
+//   }
+
+//   const page = await browser.newPage();
+//   logger.debug({
+//     action: "page_created",
+//     url
+//   }, "New page created");
+
+//   try {
+//     logger.debug({
+//       action: "page_navigate",
+//       url,
+//       timeout: timeoutMS,
+//       waitUntil: "domcontentloaded"
+//     }, "Navigating to URL");
+    
+//     const resp = await page.goto(url, { 
+//       timeout: timeoutMS, 
+//       waitUntil: "domcontentloaded" 
+//     });
+    
+//     logger.debug({
+//       action: "page_navigated",
+//       url,
+//       status: resp?.status(),
+//       statusText: resp?.statusText()
+//     }, "Page navigation completed");
+    
+//     if (!resp || !resp.ok()) {
+//       const status = resp?.status() ?? 500;
+//       if (status >= 500) {
+//         const error: any = new Error(`HTTP ${status}: ${resp?.statusText() ?? "Server Error"}`);
+//         error.status = status;
+//         throw error;
+//       }
+//     }
+
+//     logger.debug({
+//       action: "page_content_extract",
+//       url
+//     }, "Extracting page content");
+    
+//     const body = await page.content();
+//     const contentType =
+//       resp?.headers()["content-type"] ?? "text/html; charset=utf-8";
+    
+//     logger.debug({
+//       action: "fetch_rendered_page_success",
+//       url,
+//       status: resp?.status() ?? 200,
+//       contentType,
+//       bodyLength: body.length,
+//       sanitizedLength: sanitizeHTML(body).length
+//     }, "Rendered page fetched and sanitized successfully");
+    
+//     return { 
+//       status: resp?.status() ?? 200, 
+//       contentType, 
+//       body: sanitizeHTML(body) 
+//     };
+//   } catch (err: any) {
+//     logger.error({
+//       action: "fetch_rendered_page_error",
+//       url,
+//       error: err.message,
+//       errorName: err.name,
+//       errorStatus: err.status,
+//       timeoutMS
+//     }, "Failed to fetch rendered page");
+    
+//     // Re-throw HTTP errors
+//     if (err.status) {
+//       throw err;
+//     }
+//     // Re-throw timeout errors
+//     if (err.message?.includes("timeout") || err.name === "TimeoutError") {
+//       throw new Error(`Timeout after ${timeoutMS}ms: ${err.message}`);
+//     }
+//     throw err;
+//   } finally {
+//     if (browser) {
+//       logger.debug({
+//         action: "browser_close",
+//         url
+//       }, "Closing browser");
+//       await browser.close();
+//     }
+//   }
+// }
+
+// /** Sanitize HTML for embeddings/vectorization */
+// function sanitizeHTML(html: string): string {
+//   return html
+//     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+//     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+//     .replace(/\s+/g, " ")
+//     .trim();
+// }
+
+// /** Utility delay */
+// function wait(ms: number) {
+//   return new Promise((res) => setTimeout(res, ms));
+// }

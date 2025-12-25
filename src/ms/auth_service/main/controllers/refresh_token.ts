@@ -4,7 +4,7 @@ import { sendResponse, ServiceException } from "@utils/response";
 import { logger } from "@utils/logger";
 import { env } from "@config/env";
 import { verifyJwtToken } from "@utils/jwt";
-import { UserSessionRefresh } from "../internals/types/session";
+import { UserSessionRefresh } from "../domain/types/session";
 import { getClientInfo } from "../utils/get_client_data";
 
 /**

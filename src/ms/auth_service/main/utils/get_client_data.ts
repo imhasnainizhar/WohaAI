@@ -1,6 +1,6 @@
 import UAParser from "ua-parser-js";
 import { Request } from "express";
-import { ClientData } from "../internals/types/session";
+import { ClientData } from "../domain/types/session";
 
 export function getClientInfo(req: Request): ClientData {
     const ua = req.headers['user-agent'] || "";

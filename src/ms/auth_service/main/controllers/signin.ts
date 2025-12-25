@@ -3,7 +3,7 @@ import { signinService } from "@services/signin";
 import { sendResponse } from "@utils/response";
 import { logger } from "@utils/logger";
 import { getClientInfo } from "@utils/get_client_data";
-import { ClientData } from "../internals/types/session";
+import { ClientData } from "../domain/types/session";
 
 /**
  * @controller signinController

@@ -8,7 +8,7 @@
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         /* Project Structure */
-        "rootDir": "./src",
+        "rootDir": "main",
         "outDir": "./dist",
         /* Type Checking */
         "strict": true,
@@ -22,45 +22,45 @@
         "isolatedModules": true,
         "paths": {
             "@config/*": [
-                "./src/config/*"
+                "./main/config/*"
             ],
             "@middleware/*": [
-                "./src/middleware/*"
+                "./main/middleware/*"
             ],
             "@utils/*": [
-                "./src/utils/*"
+                "./main/utils/*"
             ],
-            "@internals/*": [
-                "./src/internals/*"
+            "@domain/*": [
+                "./main/domain/*"
             ],
             "@tools/*": [
-                "./src/tools/*"
+                "./main/tools/*"
             ],
             "@llm/*": [
-                "./src/llm/*"
+                "./main/llm/*"
             ],
             "@db/*": [
-                "./src/db/*"
+                "./main/db/*"
             ],
             "@workflows/*": [
-                "./src/workflows/*"
+                "./main/workflows/*"
             ],
             "@graph/*": [
-                "./src/graph/*"
+                "./main/graph/*"
             ],
             "@server/*": [
-                "./src/server/*"
+                "./main/server/*"
             ],
             "@generated/*": [
-                "./src/generated/*"
+                "./main/generated/*"
             ]
         },
         /* Output + Debugging */
         "sourceMap": true
     },
     "include": [
-        "src/**/*.js",
-        "src/**/*.ts",
+        "main/**/*.js",
+        "main/**/*.ts",
     ],
     "exclude": [
         "node_modules",

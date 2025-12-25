@@ -45,8 +45,8 @@
             "@utils/*": [
                 "./main/utils/*"
             ],
-            "@internals/*": [
-                "./main/internals/*"
+            "@domain/*": [
+                "./main/domain/*"
             ],
             "@errors/*": [
                 "./main/errors/*"

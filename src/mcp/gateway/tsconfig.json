@@ -9,7 +9,7 @@
         "moduleResolution": "NodeNext",
         "allowSyntheticDefaultImports": true,
         /* Project Structure */
-        "rootDir": "./src",
+        "rootDir": "main",
         "outDir": "./dist",
         /* Type Checking */
         "strict": true,
@@ -23,23 +23,23 @@
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
             "@config/*": [
-                "./src/config/*"
+                "./main/config/*"
             ],
             "@utils/*": [
-                "./src/utils/*"
+                "./main/utils/*"
             ],
-            "@internals/*": [
-                "./src/internals/*"
+            "@domain/*": [
+                "./main/domain/*"
             ],
             "@tools/*": [
-                "./src/tools/*"
+                "./main/tools/*"
             ],
         },
         /* Output + Debugging */
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts"
+        "main/**/*.ts"
     ],
     "exclude": [
         "node_modules",

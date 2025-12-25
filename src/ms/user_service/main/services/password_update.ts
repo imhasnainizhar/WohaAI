@@ -1,4 +1,4 @@
-import { PasswordUpdate } from "@custom_types/update/password_update";
+import { PasswordUpdate } from "@domain/types/update/password_update";
 import { prisma } from "@utils/prisma_client";
 import argon2 from "argon2";
 import { logger } from "@utils/logger";

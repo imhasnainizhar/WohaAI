@@ -1,4 +1,4 @@
-import { UsernameUpdate } from "@custom_types/update/username_update";
+import { UsernameUpdate } from "@domain/types/update/username_update";
 import { prisma } from "@utils/prisma_client";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/response";
