@@ -1,8 +1,8 @@
-import { createUserService } from "../../src/services/createuser";
-import { prisma } from "../../src/utils/prisma_client";
-import { getCache, deleteCache } from "../../src/utils/redis_client";
-import { ServiceException, ServiceResponse } from "../../src/utils/response";
-import { logger } from "../../src/utils/logger";
+import { createUserService } from "../../main/services/createuser";
+import { prisma } from "../../main/utils/prisma_client";
+import { getCache, deleteCache } from "../../main/utils/redis_client";
+import { ServiceException, ServiceResponse } from "../../main/utils/response";
+import { logger } from "../../main/utils/logger";
 
 // Mock Logger
 jest.mock("@utils/logger", () => ({
