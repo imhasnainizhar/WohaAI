@@ -26,41 +26,41 @@
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
             "@app": [
-                "./src/app"
+                "./main/app"
             ],
             "@config/*": [
-                "./src/config/*"
+                "./main/config/*"
             ],
             "@routes/*": [
-                "./src/routes/*"
+                "./main/routes/*"
             ],
             "@middleware/*": [
-                "./src/middleware/*"
+                "./main/middleware/*"
             ],
             "@schemas/*": [
-                "./src/schemas/*"
+                "./main/schemas/*"
             ],
             "@services/*": [
-                "./src/services/*"
+                "./main/services/*"
             ],
             "@controllers/*": [
-                "./src/controllers/*"
+                "./main/controllers/*"
             ],
             "@utils/*": [
-                "./src/utils/*"
+                "./main/utils/*"
             ],
             "@custom_types/*": [
-                "./src/custom_types/*"
+                "./main/custom_types/*"
             ],
             "@errors/*": [
-                "./src/errors/*"
+                "./main/errors/*"
             ]
         },
         /* Output + Debugging */
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts",
+        "main/**/*.ts",
         "tests/**/*.ts"
     ],
     "exclude": [

@@ -1,0 +1,1 @@
+This is the nginx configuration file for the Woah_GenAI_ChatBot project.
