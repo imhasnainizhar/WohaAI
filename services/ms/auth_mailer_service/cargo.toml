@@ -1,0 +1,22 @@
+[package]
+name = "mailer_service"
+version = "0.0.5"
+edition = "2021"
+authors = ["Hasnain Izhar"] 
+description = "Mailer Service for WoahAI Backend to send notification emails to users"
+license = "MIT"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+lettre = "0.10"
+tera = "1.14"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+fluvio = "0.12"
+
+
+[profile.release]
+opt-level = "z"
+debug = true
+
