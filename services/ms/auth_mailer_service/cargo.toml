@@ -2,21 +2,24 @@
 name = "mailer_service"
 version = "0.0.5"
 edition = "2021"
-authors = ["Hasnain Izhar"] 
+authors = ["Hasnain Izhar"]
 description = "Mailer Service for WoahAI Backend to send notification emails to users"
 license = "MIT"
 
 [dependencies]
-axum = "0.7"
+axum = "0.8.8"
 tokio = { version = "1", features = ["full"] }
-lettre = "0.10"
+lettre = { version = "0.11", features = ["tokio1-native-tls"] }
 tera = "1.14"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-fluvio = "0.12"
-
-
+fluvio = "0.24.4"
+log = "0.4.29"
+env_logger = "0.10.0"
+env = "1.0.1"
+anyhow = "1.0.100"
+lazy_static = "1.4"
+futures-lite = "1.12.1"
 [profile.release]
 opt-level = "z"
 debug = true
-
