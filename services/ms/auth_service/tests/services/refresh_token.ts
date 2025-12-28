@@ -9,7 +9,7 @@ import { ServiceException } from "../../src/utils/response";
 // MOCKS
 jest.mock("jsonwebtoken");
 jest.mock("argon2");
-jest.mock("@utils/prisma_client", () => ({
+jest.mock("@utils/prisma", () => ({
   prisma: {
     userSession: {
       findFirst: jest.fn(),

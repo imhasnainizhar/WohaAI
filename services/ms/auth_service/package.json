@@ -44,6 +44,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@fluvio/client": "^0.14.9",
     "@prisma/client": "^7.2.0",
     "@types/ua-parser-js": "^0.7.39",
     "argon2": "^0.44.0",

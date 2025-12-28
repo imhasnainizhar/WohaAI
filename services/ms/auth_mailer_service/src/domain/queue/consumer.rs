@@ -1,26 +1,31 @@
+use crate::config::env::Env;
 use crate::domain::types::service::VerificationEmail;
 use anyhow::{anyhow, Result};
-use fluvio::{Fluvio, Offset};
-use fluvio::consumer::ConsumerConfigExtBuilder;
 use fluvio::consumer::PartitionConsumer;
+use fluvio::FluvioConfig;
+use fluvio::{Fluvio, Offset};
 use futures_lite::StreamExt;
-use serde_json::from_slice;
+use serde_json::{from_slice, to_string};
 use tokio::time::{timeout, Duration};
 
 pub async fn get_verification_email_data() -> Result<VerificationEmail> {
-    let fluvio = Fluvio::connect().await?;
-    
-    // 1. Create a partition-specific consumer
-    let consumer = fluvio.partition_consumer("verification-emails", 0).await?;
+    let env = Env::load();
+    let fluvio_api_uri = &env.fluvio_api_uri;
+    std::env::set_var("FLUVIO_SC", fluvio_api_uri);
 
-    // 2. Start stream from the very end (waiting for new) 
-    // or Offset::from_end(1) to get the last sent message
+    // Connect to Fluvio
+    let fluvio = Fluvio::connect().await?;
+
+    // Create a partition consumer for topic "verification-emails", partition 0
+    let consumer: PartitionConsumer = fluvio.partition_consumer("verification-emails", 0).await?;
+
+    // Stream the latest message (Offset::from_end(1) gets last sent message)
     let mut stream = consumer
-        .stream(Offset::end()) 
+        .stream(Offset::from_end(1))
         .await
         .map_err(|e| anyhow!("Stream error: {}", e))?;
 
-    // 3. Use timeout to prevent hanging the test/service
+    // Wait max 5 seconds for a message
     let record_result = timeout(Duration::from_secs(5), stream.next())
         .await
         .map_err(|_| anyhow!("Timed out waiting for verification email on topic"))?;

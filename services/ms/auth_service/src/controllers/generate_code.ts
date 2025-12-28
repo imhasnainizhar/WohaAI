@@ -1,6 +1,6 @@
 import { env } from "@config/env";
 import { Request, Response } from "express";
-import { generateVerificationCodeService } from "@services/verifications/generate_code";
+import { generateVerificationCodeService } from "@services/signup/generate_code";
 import { logger } from "@utils/logger";
 import { verifyJwtToken } from "@utils/jwt";
 import { sendResponse } from "@utils/response";
@@ -38,7 +38,7 @@ export const generateVerificationCodeController = async (req: Request, res: Resp
     const signupSessionID = sessionPayload.sid ?? sessionPayload.signupSessionID;
 
     // Generate verification code
-    const serviceResult = await generateVerificationCodeService( signupSessionID );
+    const serviceResult = await generateVerificationCodeService(signupSessionID);
 
     // Respond
     return sendResponse({

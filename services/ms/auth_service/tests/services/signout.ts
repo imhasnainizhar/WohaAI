@@ -16,7 +16,7 @@ jest.mock("@utils/jwt", () => ({
     createJwtToken: jest.fn(),
 }));
 
-jest.mock("@utils/prisma_client", () => ({
+jest.mock("@utils/prisma", () => ({
     prisma: {
         userSession: {
             findFirst: jest.fn(),

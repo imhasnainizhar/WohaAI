@@ -41,6 +41,7 @@ pub struct Env {
     pub mailer_user_password: String,
     pub mailer_email_from: String,
     pub mailer_secure: String,
+    pub fluvio_api_uri: String,
 }
 
 impl Env {
@@ -56,6 +57,11 @@ impl Env {
                 .expect("MAILER_USER_PASSWORD env var not set"),
             mailer_email_from: env::var("MAILER_EMAIL_FROM").expect("MAIL_FROM env var not set"),
             mailer_secure: env::var("MAILER_SECURE").expect("MAILER_SECURE env var not set"),
+            fluvio_api_uri: env::var("FLUVIO_API_URI").expect("FLUVIO_API_URI env var not set"),
         }
+    }
+
+    pub fn set_env(key: &str, value: &str) {
+        env::set_var(key, value);
     }
 }

@@ -16,7 +16,7 @@ jest.mock("@utils/logger", () => ({
     }
 }));
 
-jest.mock("@utils/prisma_client", () => ({
+jest.mock("@utils/prisma", () => ({
     prisma: {
         user: {
             findFirst: jest.fn(),

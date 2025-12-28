@@ -5,7 +5,7 @@ import { ServiceException } from "../../../src/utils/response";
 import { EXPIRATION, env } from "@config/env";
 
 // Mocked Dependencies
-jest.mock("@utils/redis_client", () => ({
+jest.mock("@utils/redis", () => ({
   getCache: jest.fn(),
   setCache: jest.fn(),
   deleteCache: jest.fn(),

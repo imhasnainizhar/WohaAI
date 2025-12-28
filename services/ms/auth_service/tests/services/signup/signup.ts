@@ -4,8 +4,8 @@ import { prisma } from "@utils/prisma";
 import { ServiceException } from "../../../src/utils/response";
 import { setCache } from "@utils/redis";
 
-jest.mock("@utils/redis_client");
-jest.mock("@utils/prisma_client", () => ({
+jest.mock("@utils/redis");
+jest.mock("@utils/prisma", () => ({
   prisma: {
     user: { findUnique: jest.fn() }
   }

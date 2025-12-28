@@ -5,16 +5,15 @@ import { createJwtToken } from "@utils/jwt";
 import { randomUUID } from "crypto";
 import { env, EXPIRATION } from "@config/env";
 import { ServiceException } from "../../../src/utils/response";
-import { logger } from "@utils/logger";
 
-jest.mock("@utils/prisma_client", () => ({
+jest.mock("@utils/prisma", () => ({
     prisma: {
         user: {
             findUnique: jest.fn(),
         },
     },
 }));
-jest.mock("@utils/redis_client", () => ({
+jest.mock("@utils/redis", () => ({
     setCache: jest.fn(),
     getCache: jest.fn(),
 }));
