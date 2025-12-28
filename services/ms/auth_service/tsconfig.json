@@ -48,6 +48,9 @@
             "@domain/*": [
                 "./src/domain/*"
             ],
+            "@internals/*": [
+                "./src/internals/*"
+            ],
             "@errors/*": [
                 "./src/errors/*"
             ],

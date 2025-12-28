@@ -1,3 +1,5 @@
+// This file is mostly legacy type for this project's service
+
 export interface ServiceResponse<T> {
   success: true;
   statusCode: number;
