@@ -1,6 +1,6 @@
 import { signupInitService } from "@services/signup/signup_init";
-import { prisma } from "@utils/prisma_client";
-import { setCache } from "@utils/redis_client";
+import { prisma } from "@utils/prisma";
+import { setCache } from "@utils/redis";
 import { createJwtToken } from "@utils/jwt";
 import { randomUUID } from "crypto";
 import { env, EXPIRATION } from "@config/env";

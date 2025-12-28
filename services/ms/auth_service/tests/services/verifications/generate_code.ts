@@ -1,5 +1,5 @@
 import { generateVerificationCodeService } from "@services/verifications/generate_code";
-import { setCache, getCache } from "@utils/redis_client";
+import { setCache, getCache } from "@utils/redis";
 
 // Mock dependencies
 jest.mock("@utils/redis_client", () => ({

@@ -1,19 +1,19 @@
 import { signoutService } from "@services/signout";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 
 // Mock dependencies
 jest.mock("@utils/logger", () => ({
-  logger: {
-    debug: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-    fatal: jest.fn(),
-  }
+    logger: {
+        debug: jest.fn(),
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+        fatal: jest.fn(),
+    }
 }));
 
 jest.mock("@utils/jwt", () => ({
-  createJwtToken: jest.fn(),
+    createJwtToken: jest.fn(),
 }));
 
 jest.mock("@utils/prisma_client", () => ({

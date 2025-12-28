@@ -1,4 +1,4 @@
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
 

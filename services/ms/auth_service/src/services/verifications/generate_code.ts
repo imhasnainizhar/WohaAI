@@ -1,5 +1,5 @@
 import { logger } from "@utils/logger";
-import { setCache, getCache } from "@utils/redis_client";
+import { setCache, getCache } from "@utils/redis";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { EXPIRATION } from "@config/env";
 
@@ -18,9 +18,9 @@ export const generateVerificationCodeService = async (signupSessionId: string): 
       return ServiceResponse.error<{ code: string }>({
         success: false,
         statusCode: 400,
-          message: "Invalid session ID or session expired",
+        message: "Invalid session ID or session expired",
         errorType: "session_expired",
-        })
+      })
     }
 
     const pendingUserStr = await getCache(`pending_signup:${signupSessionId}`)

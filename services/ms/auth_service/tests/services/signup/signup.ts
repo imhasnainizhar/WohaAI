@@ -1,8 +1,8 @@
 import { validateDisplayNameService, validateEmailService, validatePasswordService } from "@services/signup/signup";
-import * as redisClientUtils from "@utils/redis_client";
-import { prisma } from "@utils/prisma_client";
+import * as redisClientUtils from "@utils/redis";
+import { prisma } from "@utils/prisma";
 import { ServiceException } from "../../../src/utils/response";
-import { setCache } from "@utils/redis_client";
+import { setCache } from "@utils/redis";
 
 jest.mock("@utils/redis_client");
 jest.mock("@utils/prisma_client", () => ({

@@ -1,9 +1,9 @@
 import { createJwtToken } from "@utils/jwt";
 import { randomUUID } from "crypto";
 import { ServiceResponse, ServiceException } from "@utils/response";
-import { setCache } from "@utils/redis_client";
+import { setCache } from "@utils/redis";
 import { UserName, usernameSchema } from "@schemas/signup_validation";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { logger } from "@utils/logger";
 
