@@ -1,11 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import "@styles/pages/signin.style.css";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "@lib/schemas/signin-validation";
+import { signInSchema } from "@lib/schemas/signin";
 import { useTheme } from "@providers/theme";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

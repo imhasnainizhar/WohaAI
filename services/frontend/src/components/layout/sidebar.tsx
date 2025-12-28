@@ -1,6 +1,5 @@
 "use client";
 
-import MainMenu from "@components/layout/main-menu";
 import { useAppContext } from "@providers/app";
 import { useRef, useState, useEffect } from "react";
 import { useTheme } from "@providers/theme";
@@ -13,6 +12,7 @@ import { IoCreate } from "react-icons/io5";
 import { LuSearch } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { LeftArrowButton } from "@components/ui/buttons/left-arrow";
 
 
 export default function Sidebar() {
@@ -132,14 +132,10 @@ export default function Sidebar() {
           height={30}
         />
         {sidebarExpanded && (
-          <div className="text-text transition hover:bg-bg-btn-hover rounded-full cursor-pointer w-[25px] h-[25px] ">
-            <button
-              onClick={toggleSidebar}
-              className="cursor-pointer w-[25px] h-[25px] flex items-center justify-center"
-            >
-              <i className="bx bx-chevron-left text-xl" />
-            </button>
-          </div>
+          <LeftArrowButton
+            onClick={toggleSidebar}
+            className="cursor-pointer w-[25px] h-[25px] flex items-center justify-center"
+          />
         )}
       </div>
 

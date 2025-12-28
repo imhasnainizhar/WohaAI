@@ -3,7 +3,7 @@
 import Sidebar from "@components/layout/sidebar";
 import PathChecker from "@lib/page-path-checker";
 import TextArea from "@components/ui/input/textareaa";
-import "@styles/theme/main.global.css";
+import "@styles/main/main.global.css";
 import "boxicons/css/boxicons.min.css";
 import { useTheme } from "@providers/theme";
 import { useAppContext } from "@providers/app";

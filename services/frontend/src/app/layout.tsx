@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import "@styles/theme/main.global.css";
+import "@styles/main/main.global.css";
 import "@styles/dist/main.global.css";
-import "@styles/theme/theme.style.css";
+import "@styles/main/theme.style.css";
 import "boxicons/css/boxicons.min.css";
-import { AuthProvider } from "@providers/auth";
 import { ThemeProvider } from "@providers/theme";
 import { AppProvider } from "@providers/app";
 import { ReactLenis } from "@utils/react-lenis";
@@ -11,7 +10,7 @@ import { ReactLenis } from "@utils/react-lenis";
 export const metadata: Metadata = {
   title: "WoahGPT",
   icons: {
-    icon: "/favicon.ico",
+    icon: "./logos/white_triangle.png",
   },
   description: "By WoahAI Corporation.",
 };

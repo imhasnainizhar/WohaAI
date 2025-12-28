@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useEffect, useState } from "react";
-import { signUpSchema } from "@lib/schemas/signup-validation";
+import { signUpSchema } from "@lib/schemas/signup";
 import { useRouter } from "next/navigation";
 
 type VerificationCodeValidator = z.infer<typeof VerificationCodeSchema>;
