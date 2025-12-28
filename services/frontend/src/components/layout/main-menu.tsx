@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import TransitionalLink from "@utils/transitional-link";
-import "@styles/components/layouts/morebar.style.css";
 import { useTheme } from "@providers/theme";
 import { useAppContext } from "@providers/app";
 import UsernamePlate from "@components/ui/cards/username-plate";

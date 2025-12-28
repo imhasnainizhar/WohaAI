@@ -1,7 +1,6 @@
 "use client"
 
 import ReCAPTCHA from "react-google-recaptcha";
-import "@styles/lib/captcha-box.style.css"
 import { useRef } from "react";
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
