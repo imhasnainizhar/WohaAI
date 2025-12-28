@@ -13,39 +13,44 @@ services:
     env_file:
       - ../../../.env
       - ../../../.env.docker
-    # environment:
-    #   - NODE_ENV=${NODE_ENV}
-
-    #   - JWT_ACCESS_SECRET_KEY=${JWT_ACCESS_SECRET_KEY}
-    #   - JWT_REFRESH_SECRET_KEY=${JWT_REFRESH_SECRET_KEY}
-    #   - JWT_PRIVATE_ACCESS_SECRET_KEY=${JWT_PRIVATE_ACCESS_SECRET_KEY}
-
-    #   - REFRESH_TOKEN_NAME=${REFRESH_TOKEN_NAME}
-    #   - ACCESS_TOKEN_NAME=${ACCESS_TOKEN_NAME}
-    #   - PRIVATE_ACCESS_TOKEN_NAME=${PRIVATE_ACCESS_TOKEN_NAME}
-
-    #   - POSTGRES_PROVIDER=${POSTGRES_PROVIDER}
-    #   - PRISMA_USER_DATABASE_URI=${PRISMA_USER_DATABASE_URI}
-    #   - AUTH_SERVICE_PORT:${AUTH_SERVICE_PORT}
     networks:
       - microservices_net
 
   user-service:
     build:
-      context: ../../../src/ms/user_service/
+      context: ../../../services/ms/user_service/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: user-service
     ports:
-      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+      - "${USERS_POSTGRES_DB_INTERNAL_PORT}:${USERS_POSTGRES_DB_EXTERNAL_PORT}"
     volumes:
-      - ../../../src/ms/user_service/src:/app/src
+      - ../../../services/ms/user_service/src:/app/src
     restart: always
     env_file:
       - ../../../.env
       - ../../../.env.docker
     networks:
       - microservices_net
+
+  auth-mailer-service:
+    build:
+      context: ../../../services/ms/auth_mailer_service/
+      dockerfile: Dockerfile
+      target: ${NODE_ENV}
+    container_name: auth-mailer-service
+    ports:
+      - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
+    volumes:
+      - ../../../services/ms/auth_mailer_service/src:/app/src
+    restart: always
+    env_file:
+      - ../../../.env
+      - ../../../.env.docker
+    networks:
+      - microservices_net
+    environment:
+      - RUST_BACKTRACE=1
 
 networks:
   microservices_net:

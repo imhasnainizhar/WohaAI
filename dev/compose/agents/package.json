@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@langchain/openai": "^1.2.0",
-    "uuid": "^13.0.0"
-  },
-  "devDependencies": {
-    "tsx": "^4.21.0"
-  }
-}

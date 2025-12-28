@@ -1,5 +1,5 @@
 import argon2 from "argon2";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import { logger } from "@utils/logger";
 import { ClientData, UserSession } from "../domain/types/session";
 import { ServiceResponse } from "@utils/response";

@@ -1,5 +1,5 @@
 import { signinService } from "@services/signin";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import { createUserSession } from "@utils/create_user_session";
@@ -7,33 +7,33 @@ import { env } from "@config/env";
 
 // Mock dependencies
 jest.mock("@utils/logger", () => ({
-  logger: {
-    debug: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-    fatal: jest.fn(),
-  }
+    logger: {
+        debug: jest.fn(),
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+        fatal: jest.fn(),
+    }
 }));
 
 jest.mock("@utils/prisma_client", () => ({
-  prisma: {
-    user: {
-      findFirst: jest.fn(),
+    prisma: {
+        user: {
+            findFirst: jest.fn(),
+        }
     }
-  }
 }))
 
 jest.mock("jsonwebtoken", () => ({
-  sign: jest.fn(),
+    sign: jest.fn(),
 }));
 
 jest.mock("argon2", () => ({
-  verify: jest.fn(),
+    verify: jest.fn(),
 }));
 
 jest.mock("@utils/create_user_session", () => ({
-  createUserSession: jest.fn(),
+    createUserSession: jest.fn(),
 }));
 
 

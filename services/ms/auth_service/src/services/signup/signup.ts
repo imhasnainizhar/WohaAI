@@ -1,7 +1,7 @@
 import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
-import { prisma } from "@utils/prisma_client";
-import { setCache, getCache, deleteCache, getPending } from "@utils/redis_client";
+import { prisma } from "@utils/prisma";
+import { setCache, getCache, deleteCache, getPending } from "@utils/redis";
 import {
   displayNameSchema,
   Email,

@@ -1,7 +1,7 @@
 import { EXPIRATION } from "@config/env";
 import { createJwtToken } from "@utils/jwt";
 import { logger } from "@utils/logger";
-import { getCache, deleteCache, setCache } from "@utils/redis_client";
+import { getCache, deleteCache, setCache } from "@utils/redis";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { env } from "@config/env";
 

@@ -1,19 +1,61 @@
 use std::env;
+use std::path::Path;
+
+use dotenvy::from_path;
+use tracing::{debug, info};
+
+pub fn init_env() {
+    // Detect Docker
+    let is_docker = Path::new("/.dockerenv").exists();
+
+    // Detect production mode
+    let is_production = matches!(env::var("NODE_ENV"), Ok(v) if v == "production");
+
+    if !is_production {
+        let env_path = if is_docker {
+            // For docker development
+            Path::new("/app/.env")
+        } else {
+            // For local development
+            Path::new("../../../../../.env")
+        };
+
+        match from_path(env_path) {
+            Ok(_) => {
+                debug!("Loaded environment from: {}", env_path.display());
+            }
+            Err(err) => {
+                debug!("Did not load env file '{}': {}", env_path.display(), err);
+            }
+        }
+    } else {
+        info!("Running in production — skipping .env load");
+    }
+}
 
 pub struct Env {
-    pub email: String,
-    pub password: String,
-    pub provider_port: String,
-    pub provider_host: String,
+    pub auth_mailer_service_port: String,
+    pub mailer_host: String,
+    pub mailer_port: String,
+    pub mailer_user_email: String,
+    pub mailer_user_password: String,
+    pub mailer_email_from: String,
+    pub mailer_secure: String,
 }
 
 impl Env {
     pub fn load() -> Self {
         Self {
-            email: env::var("EMAIL").expect("EMAIL env var not set"),
-            password: env::var("PASSWORD").expect("PASSWORD env var not set"),
-            provider_port: env::var("PROVIDER_PORT").expect("PROVIDER_PORT env var not set"),
-            provider_host: env::var("PROVIDER_HOST").expect("PROVIDER_HOST env var not set"),
+            auth_mailer_service_port: env::var("AUTH_MAILER_SERVICE_PORT")
+                .expect("AUTH_MAILER_SERVICE_PORT env var not set"),
+            mailer_host: env::var("MAILER_HOST").expect("MAILER_HOST env var not set"),
+            mailer_port: env::var("MAILER_PORT").expect("MAILER_PORT env var not set"),
+            mailer_user_email: env::var("MAILER_USER_EMAIL")
+                .expect("MAILER_USER_EMAIL env var not set"),
+            mailer_user_password: env::var("MAILER_USER_PASSWORD")
+                .expect("MAILER_USER_PASSWORD env var not set"),
+            mailer_email_from: env::var("MAILER_EMAIL_FROM").expect("MAIL_FROM env var not set"),
+            mailer_secure: env::var("MAILER_SECURE").expect("MAILER_SECURE env var not set"),
         }
     }
 }

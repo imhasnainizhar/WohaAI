@@ -1,6 +1,6 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import { signInSchema, SigInUser } from "@schemas/signin_validation";
 import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
