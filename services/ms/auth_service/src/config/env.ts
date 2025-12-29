@@ -20,7 +20,7 @@ if (!isProduction) {
     : path.resolve(__dirname, "../../../../../.env"); // local monorepo
   const envResult = dotenv.config({ path: envPath });
   dotenvExpand.expand(envResult);
-  logger?.debug(`Loaded environment from: ${envPath}`);
+  logger.debug(`Loaded environment from: ${envPath}`);
 }
 
 const secure = (p.NODE_ENV === "production") ? true : false
@@ -114,8 +114,8 @@ for (const [key, value] of Object.entries(env)) {
 
 if (missing.length > 0) {
   const msg = `❌ Missing or misconfigured environment variables:\n${missing.join("\n")}`;
-  logger?.fatal(msg);
+  logger.fatal(msg);
   throw new Error(msg);
 }
 
-logger?.fatal("✅ All environment variables loaded correctly");
+logger.fatal("✅ All environment variables loaded correctly");

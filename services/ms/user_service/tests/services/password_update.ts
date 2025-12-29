@@ -1,9 +1,9 @@
 import { passwordUpdateService } from "@services/password_update";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import argon2 from "argon2";
 import { ServiceException } from "@utils/response";
 
-jest.mock("@utils/prisma_client", () => ({
+jest.mock("@utils/prisma", () => ({
   prisma: {
     user: {
       update: jest.fn(),

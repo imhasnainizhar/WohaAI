@@ -21,7 +21,7 @@ export function DatePicker({ name, placeholder = "Select date", register, theme,
     return (
         <Controller
             name={name}
-            control={control }
+            control={control}
             render={({ field, fieldState }) => {
                 const selectedDate = field.value
 
@@ -30,8 +30,6 @@ export function DatePicker({ name, placeholder = "Select date", register, theme,
                         <PopoverTrigger asChild>
                             <RoundedDataSelector
                                 label={placeholder}
-                                name={name}
-                                register={register}
                                 value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : ""}
                                 error={fieldState.error}
                                 theme={theme}

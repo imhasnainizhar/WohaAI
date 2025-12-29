@@ -1,7 +1,7 @@
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { logger } from "@utils/logger";
-import { getCache, deleteCache } from '@utils/redis_client';
+import { getCache, deleteCache } from '@utils/redis';
 
 interface CreateUserInput {
   username: string;

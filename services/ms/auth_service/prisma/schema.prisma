@@ -1,6 +1,5 @@
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 // Ignore this error, everything is working, this is just prisma bug I think.
@@ -32,12 +31,12 @@ model Card {
 }
 
 model UserSession {
-  userSessionID     String   @id @default(uuid())
+  userSessionID     String    @id @default(uuid())
   refreshTokenHash  String
-  createdAt         DateTime @default(now())
-  revoked           Boolean  @default(false)
+  createdAt         DateTime  @default(now())
+  revoked           Boolean   @default(false)
   revokedAt         DateTime?
-  rememberMe        Boolean  @default(false)
+  rememberMe        Boolean   @default(false)
   userIPAddress     String
   userDeviceID      String
   userDeviceName    String
@@ -46,5 +45,5 @@ model UserSession {
   userDeviceOS      String
 
   userID String
-  user   User @relation(fields: [userID], references: [userID])
+  user   User   @relation(fields: [userID], references: [userID])
 }

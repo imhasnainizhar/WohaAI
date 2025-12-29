@@ -44,6 +44,8 @@ export const SignupUsernameSchema = z.object({
 
 export type SignupUsernameInput = z.infer<typeof SignupUsernameSchema>;
 
+export const UserInfoZodUnion = z.union([SignupEmailSchema, SignupUsernameSchema]);
+
 export const SignupPasswordSchema = z.object({
   password: z
     .string()

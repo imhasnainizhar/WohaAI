@@ -1,6 +1,6 @@
 import { createUserService } from '@services/createuser';
-import { prisma } from '@utils/prisma_client';
-import { getCache, deleteCache } from '@utils/redis_client';
+import { prisma } from '@utils/prisma';
+import { getCache, deleteCache } from '@utils/redis';
 import { ServiceException } from '@utils/response';
 import { logger } from '@utils/logger';
 
@@ -16,7 +16,7 @@ jest.mock('@utils/logger', () => ({
 }));
 
 // Mocking Prisma
-jest.mock('@utils/prisma_client', () => ({
+jest.mock('@utils/prisma', () => ({
   prisma: {
     user: {
       create: jest.fn(),
@@ -25,7 +25,7 @@ jest.mock('@utils/prisma_client', () => ({
 }));
 
 // Mocking Redis Caching
-jest.mock('@utils/redis_client', () => ({
+jest.mock('@utils/redis', () => ({
   getCache: jest.fn(),
   deleteCache: jest.fn(),
 }));

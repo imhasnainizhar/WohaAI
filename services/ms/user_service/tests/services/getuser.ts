@@ -1,135 +1,80 @@
-import { createUserService } from "../../src/services/createuser";
-import { prisma } from "../../src/utils/prisma_client";
-import { getCache, deleteCache } from "../../src/utils/redis_client";
-import { ServiceException, ServiceResponse } from "../../src/utils/response";
-import { logger } from "../../src/utils/logger";
+import { getUserService } from '@services/getuser';
+import { prisma } from '@utils/prisma';
+import { sanitizeUser } from '@domain/types/user';
+import { ServiceResponse } from '@utils/response';
 
-// Mock Logger
-jest.mock("@utils/logger", () => ({
-    logger: {
-        debug: jest.fn(),
-        info: jest.fn(),
-        error: jest.fn(),
-        fatal: jest.fn()
-    }
-}))
-
-// Mocking Prisma
-jest.mock('@utils/prisma_client', () => ({
-    prisma: {
-        user: {
-            create: jest.fn(),
-        },
+// Mock prisma and sanitizeUser
+jest.mock('@utils/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
     },
+  },
 }));
 
-// Mocking Redis Caching
-jest.mock('@utils/redis_client', () => ({
-    getCache: jest.fn(),
-    deleteCache: jest.fn(),
+jest.mock('@domain/types/user', () => ({
+  sanitizeUser: jest.fn(),
 }));
 
-const mockedPrisma = prisma as jest.Mocked<typeof prisma>;
-const mockedGetCache = getCache as jest.MockedFunction<typeof getCache>;
-const mockedDeleteCache = deleteCache as jest.MockedFunction<typeof deleteCache>;
-const mockedLogger = logger as jest.Mocked<typeof logger>;
+describe('getUserService', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-describe("getUserService", () => {
-    const userData = {
-        email: 'new@example.com',
-        userFirstName: 'New',
-        userLastName: 'User',
-        username: 'newuser',
-        hashedPassword: 'password123',
-        signupSessionID: '2843hani_tests'
-    };
+  it('should return error if neither userID nor username is provided', async () => {
+    const result = await getUserService({});
+    expect(result).toEqual(ServiceResponse.error({
+      success: false,
+      statusCode: 400,
+      message: "Either userId or username is required",
+      errorType: "invalid_input",
+    }));
+  });
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
+  it('should return error if user is not found by ID', async () => {
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-    it("should create a user successfully", async () => {
-        // Mock Redis returning a valid payload
-        mockedGetCache.mockResolvedValue(JSON.stringify({ email: userData.email }));
+    const result = await getUserService({ userID: '123' });
 
-        // Mock Prisma returning the created user
-        const mockUser = {
-            userID: "user123",
-            email: userData.email,
-            username: userData.username,
-            userFirstName: userData.userFirstName,
-            userLastName: userData.userLastName,
-            createdAt: new Date(),
-        };
-        mockedPrisma.user.create.mockResolvedValue(mockUser as any);
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { userID: '123' } });
+    expect(result).toEqual(ServiceResponse.error({
+      success: false,
+      statusCode: 404,
+      message: 'User not found with ID: 123',
+      errorType: "not_found",
+    }));
+  });
 
-        const result = await createUserService(userData);
+  it('should return error if user is not found by username', async () => {
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-        expect(result.success).toBe(true);
-        expect(result?.data?.user).toEqual(mockUser);
-        expect(mockedGetCache).toHaveBeenCalledWith(`pending_signup:${userData.signupSessionID}`);
-        expect(mockedPrisma.user.create).toHaveBeenCalledWith({
-            data: {
-                email: userData.email,
-                hashedPassword: userData.hashedPassword,
-                userFirstName: userData.userFirstName,
-                userLastName: userData.userLastName,
-                username: userData.username,
-            },
-            select: {
-                userID: true,
-                email: true,
-                username: true,
-                userFirstName: true,
-                userLastName: true,
-                createdAt: true,
-            },
-        });
-        expect(mockedDeleteCache).toHaveBeenCalledWith(`pending_signup:${userData.signupSessionID}`);
-        expect(mockedLogger.info).toHaveBeenCalledWith(expect.stringContaining("User created successfully"));
-    });
+    const result = await getUserService({ username: 'john' });
 
-    it("should throw unauthorized error if Redis payload is missing", async () => {
-        mockedGetCache.mockResolvedValue(null);
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { username: 'john' } });
+    expect(result).toEqual(ServiceResponse.error({
+      success: false,
+      statusCode: 404,
+      message: `User not found with username: ${'john'}`,
+      errorType: "not_found",
+    }));
+  });
 
-        await expect(createUserService(userData)).rejects.toThrow(ServiceException);
-        await expect(createUserService(userData)).rejects.toMatchObject({
-            response: expect.objectContaining({ statusCode: 401 }),
-        });
-        expect(mockedPrisma.user.create).not.toHaveBeenCalled();
-        expect(mockedDeleteCache).not.toHaveBeenCalled();
-    });
+  it('should return success if user is found', async () => {
+    const rawUser = { userID: '123', username: 'john', password: 'secret' };
+    const sanitizedUser = { userID: '123', username: 'john' };
 
-    it("should throw data tampered error if email mismatch", async () => {
-        mockedGetCache.mockResolvedValue(JSON.stringify({ email: "wrong@example.com" }));
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue(rawUser);
+    (sanitizeUser as jest.Mock).mockReturnValue(sanitizedUser);
 
-        await expect(createUserService(userData)).rejects.toThrow(ServiceException);
-        await expect(createUserService(userData)).rejects.toMatchObject({
-            response: expect.objectContaining({ statusCode: 403 }),
-        });
-        expect(mockedPrisma.user.create).not.toHaveBeenCalled();
-        expect(mockedDeleteCache).not.toHaveBeenCalled();
-    });
+    const result = await getUserService({ userID: '123' });
 
-    it("should throw internal server error if Prisma fails", async () => {
-        mockedGetCache.mockResolvedValue(JSON.stringify({ email: userData.email }));
-        mockedPrisma.user.create.mockRejectedValue(new Error("DB down"));
-
-        await expect(createUserService(userData)).rejects.toThrow(ServiceException);
-        await expect(createUserService(userData)).rejects.toMatchObject({
-            response: expect.objectContaining({ statusCode: 500 }),
-        });
-
-        expect(mockedDeleteCache).not.toHaveBeenCalled();
-    });
-
-    it("should log errors correctly", async () => {
-        mockedGetCache.mockRejectedValue(new Error("Redis down"));
-
-        await expect(createUserService(userData)).rejects.toThrow(ServiceException);
-        expect(mockedLogger.error).toHaveBeenCalledWith(
-            "❌ createUserService error:",
-            expect.any(Error)
-        );
-    });
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { userID: '123' } });
+    expect(sanitizeUser).toHaveBeenCalledWith(rawUser);
+    expect(result).toEqual(ServiceResponse.success({
+      success: true,
+      statusCode: 200,
+      message: "User found",
+      data: sanitizedUser,
+    }));
+  });
 });
