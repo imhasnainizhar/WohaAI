@@ -1,8 +1,8 @@
 import { emailUpdateService } from "@services/email_update";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import { logger } from "@utils/logger";
 
-jest.mock("@utils/prisma_client", () => ({
+jest.mock("@utils/prisma", () => ({
   prisma: {
     user: {
       update: jest.fn(),

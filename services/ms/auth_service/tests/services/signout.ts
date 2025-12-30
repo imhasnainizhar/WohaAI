@@ -1,5 +1,5 @@
 import { signoutService } from "@services/signout";
-import { prisma } from "@utils/prisma";
+import { prisma } from "../../src/clients/prisma";
 
 // Mock dependencies
 jest.mock("@utils/logger", () => ({

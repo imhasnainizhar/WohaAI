@@ -1,4 +1,4 @@
-import { confirmSignupEmailService } from "@services/signup/confirm_email";
+import { confirmSignupEmailService } from "@services/signup/verification/confirm_email";
 import { getCache, setCache, deleteCache } from "@utils/redis";
 import { createJwtToken } from "@utils/jwt";
 import { ServiceException } from "../../../src/utils/response";

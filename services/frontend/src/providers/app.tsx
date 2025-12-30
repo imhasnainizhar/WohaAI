@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 type AppContextType = {
   // Sidebar state
@@ -27,6 +27,9 @@ type AppContextType = {
   signin: boolean;
   setSignin: (value: boolean) => void;
   toggleSignin: () => void;
+
+  // Can go back state
+  canGoBack: boolean;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -36,7 +39,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(false);
 
   // Signin comp state
-  const [ signin, setSignin ] = useState<boolean>(false)
+  const [signin, setSignin] = useState<boolean>(false)
 
   // Search box active state
   const [searchActive, setSearchActive] = useState<boolean>(false);
@@ -52,6 +55,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleMainMenu = () => setMainMenuVisible((prev) => !prev);
   const toggleSettings = () => setSettingsVisible((prev) => !prev);
   const toggleSignin = () => setSignin((prev) => !prev)
+
+  const [canGoBack, setCanGoBack] = useState(false)
+
+  useEffect(() => {
+    const ref = document.referrer
+    const origin = window.location.origin
+
+    if (ref && ref.startsWith(origin)) {
+      setCanGoBack(true)
+    }
+  }, [])
+
 
   return (
     <AppContext.Provider
@@ -71,6 +86,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         signin,
         setSignin,
         toggleSignin,
+        canGoBack,
       }}
     >
       {children}

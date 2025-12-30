@@ -1,6 +1,6 @@
 import { validateDisplayNameService, validateEmailService, validatePasswordService } from "@services/signup/signup";
 import * as redisClientUtils from "@utils/redis";
-import { prisma } from "@utils/prisma";
+import { prisma } from "../../../src/clients/prisma";
 import { ServiceException } from "../../../src/utils/response";
 import { setCache } from "@utils/redis";
 

@@ -4,6 +4,7 @@ interface ClassicButtonProps {
   text?: string
   className?: string
   onClick?: () => void
+  disabled?: boolean
 }
 
 const ClassicButton = forwardRef<HTMLButtonElement, ClassicButtonProps>(
@@ -11,7 +12,8 @@ const ClassicButton = forwardRef<HTMLButtonElement, ClassicButtonProps>(
     {
       text = "Continue",
       className = "",
-      onClick = () => { }
+      onClick = () => { },
+      disabled = false,
     },
     ref
   ) => {
@@ -20,6 +22,7 @@ const ClassicButton = forwardRef<HTMLButtonElement, ClassicButtonProps>(
         <button
           onClick={onClick}
           ref={ref}
+          disabled={disabled}
           className={`btn-text-color btn-bg-color
             border-none cursor-pointer font-sans
             pointer-events-auto touch-auto w-[140px] h-[40px] rounded-[50px] font-medium text-[16px]

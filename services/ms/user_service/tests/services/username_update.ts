@@ -1,9 +1,9 @@
 import { usernameUpdateService } from '@services/username_update';
-import { prisma } from '@utils/prisma_client';
+import { prisma } from '@utils/prisma';
 import { ServiceException } from '@utils/response';
 
 // Mock Prisma
-jest.mock('@utils/prisma_client', () => ({
+jest.mock('@utils/prisma', () => ({
     prisma: {
         user: {
             update: jest.fn(),

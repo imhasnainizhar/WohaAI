@@ -1,5 +1,5 @@
 import { UsernameUpdate } from "@domain/types/update/username_update";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/response";
 import { ServiceException } from "@utils/response";

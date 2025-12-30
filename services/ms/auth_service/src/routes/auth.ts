@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { signupInitController } from '../controllers/signup_init';
-import { confirmUserEmailController } from '@controllers/signup';
-import { signoutController } from "@controllers/signout";
-import { signinController } from "@controllers/signin";
-import { refreshTokenController } from "@controllers/refresh_token";
-import { generateVerificationCodeController } from "@controllers/generate_code";
-import { validateEmailController } from '@controllers/signup';
-import { validatePasswordController } from '@controllers/signup';
-import { validateDisplayNameController } from "@controllers/signup";
+import { signupInitController } from '../handlers/signup_init';
+import { confirmUserEmailController } from '../handlers/signup';
+import { signoutController } from "../handlers/signout";
+import { signinController } from "../handlers/signin";
+import { refreshTokenController } from "../handlers/refresh_token";
+import { generateVerificationCodeController } from "../handlers/generate_code";
+import { validateEmailController } from '../handlers/signup';
+import { validatePasswordController } from '../handlers/signup';
+import { validateDisplayNameController } from "../handlers/signup";
 
 const router = Router();
 

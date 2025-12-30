@@ -2,7 +2,7 @@
 
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
-import { prisma } from "@utils/prisma";
+import { prisma } from "../../src/clients/prisma";
 import { refreshTokenService } from "@services/refresh_token";
 import { ServiceException } from "../../src/utils/response";
 

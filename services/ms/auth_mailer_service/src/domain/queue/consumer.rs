@@ -9,10 +9,6 @@ use serde_json::{from_slice, to_string};
 use tokio::time::{timeout, Duration};
 
 pub async fn get_verification_email_data() -> Result<VerificationEmail> {
-    let env = Env::load();
-    let fluvio_api_uri = &env.fluvio_api_uri;
-    std::env::set_var("FLUVIO_SC", fluvio_api_uri);
-
     // Connect to Fluvio
     let fluvio = Fluvio::connect().await?;
 

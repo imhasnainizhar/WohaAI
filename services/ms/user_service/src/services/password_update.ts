@@ -1,5 +1,5 @@
 import { PasswordUpdate } from "@domain/types/update/password_update";
-import { prisma } from "@utils/prisma_client";
+import { prisma } from "@utils/prisma";
 import argon2 from "argon2";
 import { logger } from "@utils/logger";
 import { ServiceResponse } from "@utils/response";

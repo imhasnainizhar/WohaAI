@@ -1,4 +1,4 @@
-import { prisma } from '@utils/prisma_client';
+import { prisma } from '@utils/prisma';
 import { ServiceResponse } from '@utils/response';
 import { sanitizeUser } from '@domain/types/user';
 
