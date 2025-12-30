@@ -9,6 +9,7 @@ interface InputFieldProps {
   error?: any;
   theme?: string;
   className?: string;
+  cacheBeingUsed?: boolean;
 }
 
 export const RoundedInputField = ({
@@ -18,6 +19,7 @@ export const RoundedInputField = ({
   error,
   theme,
   className,
+  cacheBeingUsed,
 }: InputFieldProps) => {
   const [inputValue, setInputValue] = useState("")
 
@@ -51,7 +53,7 @@ export const RoundedInputField = ({
           className={`
             absolute left-6 text-gray-primary transition-all duration-300
             spacing-[2px] w-auto p-1
-            ${hasValue ? "top-0 -translate-y-1/2 text-[12px] text-text-primary left-[25px]" : "top-1/2 -translate-y-1/2"}
+            ${hasValue || cacheBeingUsed ? "top-0 -translate-y-1/2 text-[12px] text-text-primary left-[25px]" : "top-1/2 -translate-y-1/2"}
             peer-focus:top-0
             peer-focus:-translate-y-1/2
             peer-focus:text-[12px]

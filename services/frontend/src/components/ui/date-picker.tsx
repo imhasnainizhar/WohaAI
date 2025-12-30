@@ -9,13 +9,14 @@ import { RoundedDataSelector } from "./input/date/rounded-selector"
 
 interface DatePickerProps {
     name: string
-    placeholder?: string
+    label?: string
     register: any
     theme?: string
     control: any
+    cacheBeingUsed?: boolean
 }
 
-export function DatePicker({ name, placeholder = "Select date", register, theme, control  }: DatePickerProps) {
+export function DatePicker({ name, label = "Select date", register, theme, control, cacheBeingUsed }: DatePickerProps) {
     const [open, setOpen] = useState(false)
 
     return (
@@ -29,10 +30,11 @@ export function DatePicker({ name, placeholder = "Select date", register, theme,
                     <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild>
                             <RoundedDataSelector
-                                label={placeholder}
+                                label={label}
                                 value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : ""}
                                 error={fieldState.error}
                                 theme={theme}
+                                cacheBeingUsed={cacheBeingUsed}
                             />
                         </PopoverTrigger>
 

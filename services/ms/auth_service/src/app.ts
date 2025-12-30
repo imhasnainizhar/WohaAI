@@ -4,8 +4,8 @@ import cors from "cors";
 import { json, urlencoded } from "body-parser";
 import authRoutes from "@routes/auth";
 import { env } from "@config/env";
-import { connectRedis } from "@config/redis";
 import { errorHandler } from "@middleware/async_handler";
+import { createRedisClient } from "shared/clients/redis";
 
 const app = express();
 
@@ -29,7 +29,15 @@ app.use(urlencoded({ extended: true }));
 app.use(errorHandler);
 
 (async () => {
-  await connectRedis();
+  await createRedisClient({
+    url: env.AUTH_REDIS_STORE_URI,
+    logger: {
+      info: (msg: string) => console.log(msg),
+      warn: (msg: string) => console.warn(msg),
+      error: (msg: string) => console.error(msg),
+    },
+    exitOnFail: true,
+  });
 })();
 
 // Mount auth-related routes under /api/auth

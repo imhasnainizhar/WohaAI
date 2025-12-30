@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { SignupPasswordInput, SignupPasswordSchema } from "@lib/schemas/signup";
 import { useTheme } from "@providers/theme";
 
-export default function Password(next: (next: any) => void) {
+export default function SignupPassword({ next }: { next: (next: any) => void }) {
     const { theme } = useTheme();
     const darkTheme = theme === "dark";
 
@@ -23,7 +23,7 @@ export default function Password(next: (next: any) => void) {
             method="POST"
             onSubmit={handleSubmit(next)}
         >
-            <div className="w-[85%]">
+            <div className="w-[85%] h-[50%]">
                 <RoundedInputField
                     label="Password"
                     name="password"
@@ -32,7 +32,7 @@ export default function Password(next: (next: any) => void) {
                     theme={darkTheme ? "dark" : "light"}
                 />
             </div>
-            <div className="w-[85%]">
+            <div className="w-[85%] h-[50%]">
                 <RoundedInputField
                     label="Confirm Password"
                     name="confirmPassword"
@@ -43,7 +43,5 @@ export default function Password(next: (next: any) => void) {
             </div>
             <ClassicButton text="Continue" />
         </form>
-
-
     )
 }

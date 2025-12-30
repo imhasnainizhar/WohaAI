@@ -34,13 +34,13 @@
                 "./src/middleware/*"
             ],
             "@schemas/*": [
-                "./src/schemas/*"
+                "../../shared/zod/schemas/schemas/*"
             ],
             "@services/*": [
                 "./src/services/*"
             ],
             "@controllers/*": [
-                "./src/controllers/*"
+                "src/handlers/*"
             ],
             "@utils/*": [
                 "./src/utils/*"
@@ -54,6 +54,9 @@
             "@errors/*": [
                 "./src/errors/*"
             ],
+            "clients/*": [
+                "./src/clients/*"
+            ]
         },
         /* Output + Debugging */
         "sourceMap": true

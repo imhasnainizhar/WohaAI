@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DatePicker } from "@components/ui/date-picker"
 import { RoundedInputField } from "@components/ui/input/fields/rounded";
 import { useTheme } from "@providers/theme";
@@ -8,13 +8,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupPersonalInfoSchema, SignupPersonalInfoInput } from "@lib/schemas/signup";
 import ClassicButton from "@components/ui/buttons/classic-button";
+import { PersonalData } from "@internals/types/auth"
 
 export default function SignupPersonalInfo({
     next,
+    data,
 }: {
     next: (next: any) => void;
+    data?: PersonalData;
 }) {
     const [personalInputError, setPersonalInputError] = useState<string>("")
+    const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
     const { theme } = useTheme();
     const darkTheme = theme === "dark";
 
@@ -22,12 +26,21 @@ export default function SignupPersonalInfo({
         register,
         handleSubmit,
         control,
+        reset,
         formState: { errors, isValid, isSubmitting },
     } = useForm<SignupPersonalInfoInput>({
         resolver: zodResolver(SignupPersonalInfoSchema),
     });
 
     const SIGNUP_API_URI = process.env.NEXT_PUBLIC_SIGNUP_API_URI!;
+
+    useEffect(() => {
+        if (data?.firstName && data?.lastName && data?.dateOfBirth) {
+            reset({ firstName: data.firstName, lastName: data.lastName, dateOfBirth: data.dateOfBirth }); // populate with cached data
+            setCacheBeingUsed(true);
+        }
+    }, [data, reset]);
+
 
     const onSignupPersonalInput = async (signupPersonalInput: SignupPersonalInfoInput) => {
         setPersonalInputError("");
@@ -69,6 +82,7 @@ export default function SignupPersonalInfo({
                     register={register}
                     error={errors.firstName}
                     theme={darkTheme ? "dark" : "light"}
+                    cacheBeingUsed={cacheBeingUsed}
                 />
             </div>
             <div className="w-[85%]">
@@ -78,15 +92,17 @@ export default function SignupPersonalInfo({
                     register={register}
                     error={errors.lastName}
                     theme={darkTheme ? "dark" : "light"}
+                    cacheBeingUsed={cacheBeingUsed}
                 />
             </div>
             <div className="w-[85%]">
                 <DatePicker
-                    name="date"
+                    name="dateOfBirth"
                     register={register}
                     control={control}
-                    placeholder="Date of Birth"
+                    label="Date of Birth"
                     theme={darkTheme ? "dark" : "light"}
+                    cacheBeingUsed={cacheBeingUsed}
                 />
             </div>
             <ClassicButton text="Continue" />

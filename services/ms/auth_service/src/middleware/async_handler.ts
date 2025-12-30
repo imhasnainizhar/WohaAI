@@ -1,33 +1,29 @@
 import { Request, Response, NextFunction } from "express";
-import { ServiceException, sendResponse } from "@utils/response";
+import { ServiceException } from "@utils/response";
 
-export const errorHandler = (
-  err: unknown,
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) => {
+export const asyncHandler =
+  (
+    controller: (req: Request, res: Response, next: NextFunction) => Promise<any>
+  ) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await controller(req, res, next);
+    } catch (err) {
 
-  // Known domain error
-  if (err instanceof ServiceException) {
-    return sendResponse({
-      res,
-      success: false,
-      statusCode: err.response.statusCode,
-      message: err.response.message,
-      errors: err.response.errors,
-      errorType: err.response.errorType,
-      path: req.originalUrl,
-    });
-  }
+      // If the service already wrapped it — pass through
+      // Service exceptions are thrown by services, controller are just to make calls to services
+      if (err instanceof ServiceException) {
+        return next(err);
+      }
 
-  // Unknown fallback
-  return sendResponse({
-    res,
-    success: false,
-    statusCode: 500,
-    message: "Unexpected internala error occurred.",
-    errorType: "unknown_internal_server_error",
-    path: req.originalUrl,
-  });
-};
+      // Otherwise, wrap unknown errors into a ServiceException
+      return next(
+        new ServiceException({
+          success: false,
+          statusCode: 500,
+          message: "Internal server error",
+          errorType: "internal_server_error",
+        })
+      );
+    }
+  };

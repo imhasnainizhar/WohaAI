@@ -5,18 +5,24 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema } from "@lib/schemas/signin";
 import { useTheme } from "@providers/theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import z from "zod";
 import ClassicButton from "@components/ui/buttons/classic-button";
 import { RoundedInputField } from "@components/ui/input/fields/rounded";
 import { GetStartedSchema } from "@lib/schemas/get-started";
 import { GetStartedType } from "@lib/schemas/get-started";
+import { useAppContext } from "@providers/app";
 
-export default function GetStarted({next}: {next: (next: any) => void}) {
+export interface AuthNextStepResponse {
+    nextStep: "email" | "username" | "password";
+}
+
+export default function GetStarted({ next, setNextStep, data }: { next: (next: any) => void, setNextStep: any, data?: any }) {
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm<GetStartedType>({
         resolver: zodResolver(GetStartedSchema),
@@ -25,24 +31,57 @@ export default function GetStarted({next}: {next: (next: any) => void}) {
     const router = useRouter();
     const { theme } = useTheme();
     const darkTheme = theme === "dark";
+    const { canGoBack } = useAppContext();
+    const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
+
+    useEffect(() => {
+        if (data?.usernameOrEmail) {
+            reset({ usernameOrEmail: data.usernameOrEmail }); // populate with cached data
+            setCacheBeingUsed(true);
+        }
+    }, [data, reset]);
 
 
-    const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [signInError, setSignInError] = useState<string>("");
+
+    const mockRes = async (values: GetStartedType): Promise<AuthNextStepResponse> => {
+        const res = await fetch("/api/mock/auth/new-signin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: values.usernameOrEmail.includes("@") ? undefined : values.usernameOrEmail,
+                email: values.usernameOrEmail.includes("@") ? values.usernameOrEmail : undefined,
+            }),
+        });
+
+        // if (!res.ok) throw new Error("Mock API failed");
+
+        console.log(res)
+        const data = await res.json();
+        return data.body.nextStep; // { nextStep: "email" | "username" | "password" }
+    };
 
     const GET_STARTED_API_URI = process.env.NEXT_PUBLIC_GET_STARTED_API_URI!;
 
-    const mockRes = async (data: GetStartedType) => await fetch("/api/mock/auth/new-signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            username: data.usernameOrEmail.includes("@") ? undefined : data.usernameOrEmail,
-            email: data.usernameOrEmail.includes("@") ? data.usernameOrEmail : undefined,
-        }),
-    });
+    const onSubmit = async (values: GetStartedType) => {
+        setSignInError("");
 
+        try {
+            // Call your mock API
+            const result = await mockRes(values);
 
-    const onGetStarted = async (GetStartedData: GetStartedType) => {
+            // Update next step
+            setNextStep(result);
+
+            // Pass actual field values to parent
+            next(values);
+        } catch (err) {
+            console.error(err);
+            setSignInError("Failed to proceed. Try again.");
+        }
+    };
+
+    const onGetStarted = async (GetStartedData: GetStartedType, next: any) => {
         setSignInError("");
 
         try {
@@ -54,7 +93,6 @@ export default function GetStarted({next}: {next: (next: any) => void}) {
                 },
                 body: JSON.stringify({
                     ...GetStartedData,
-                    rememberMe,
                 }),
             });
 
@@ -64,22 +102,30 @@ export default function GetStarted({next}: {next: (next: any) => void}) {
                 setSignInError(data.message || "Failed to sign in.");
                 return;
             }
+
+             // Update next step
+            setNextStep(data.body.nextStep);
+
+            // Pass actual field values to parent
+            next(GetStartedData);
+
         } catch (error) {
             console.error("SignIn Error:", error);
             setSignInError("An unexpected error occurred. Please try again.");
         }
     };
-
     return (
         <div
-            className={`p-4 w-full h-auto flex items-center justify-start bg-bg-primary`}
+            className={`p-4 w-full h-auto flex items-center justify-start`}
             data-theme={theme}
         >
-
             <div className="flex flex-col items-center justify-start rounded-[16px] gap-[30px] w-full h-[400px] max-w-[500px]">
                 <div className="w-full">
-                    <div onClick={() => router.back()} className="flex items-center justify-end
+                    {/* This enhances UI/UX */}
+                    {canGoBack && (
+                        <div onClick={() => router.back()} className="flex items-center justify-end
           w-auto text-[14px] text-text hover:text-gray-500 cursor-pointer hover:bg-hover transition-all duration-300 ease-in-out">X</div>
+                    )}
                 </div>
                 <div className="flex flex-col max-w-[340px] w-full justify-center items-center gap-[8px] mt-50px">
                     <div className="flex flex-col items-center justify-center gap-[14px]">
@@ -114,7 +160,7 @@ export default function GetStarted({next}: {next: (next: any) => void}) {
                     <form
                         className="my-[20px] flex flex-col items-center justify-start gap-[20px] w-full max-w-[340px] h-auto"
                         method="POST"
-                        onSubmit={handleSubmit(next)}
+                        onSubmit={handleSubmit(onSubmit)}
                     >
                         <RoundedInputField
                             label="Username or Email"
@@ -122,8 +168,9 @@ export default function GetStarted({next}: {next: (next: any) => void}) {
                             register={register}
                             error={errors.usernameOrEmail}
                             theme={darkTheme ? "dark" : "light"}
+                            cacheBeingUsed={cacheBeingUsed}
                         />
-                        <ClassicButton onClick={() => mockRes} className="mt-4"/>
+                        <ClassicButton className="mt-4" />
                     </form>
                 </div>
             </div>

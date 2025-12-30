@@ -1,6 +1,6 @@
 // __tests__/generateVerificationCodeService.test.ts
 import { Fluvio } from "@fluvio/client";
-import { generateVerificationCodeService } from "@services/signup/generate_code";
+import { generateVerificationCodeService } from "@services/signup/verification/send_email";
 import { setCache, getCache } from "@utils/redis";
 import { ServiceException } from "@utils/response";
 

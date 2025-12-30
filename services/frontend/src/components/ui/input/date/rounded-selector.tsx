@@ -8,6 +8,7 @@ interface DataSelectorProps {
   error?: any
   theme?: string
   className?: string
+  cacheBeingUsed?: boolean
 
   // add this
   active?: boolean
@@ -16,7 +17,7 @@ interface DataSelectorProps {
 export const RoundedDataSelector = forwardRef<
   HTMLDivElement,
   DataSelectorProps & React.HTMLAttributes<HTMLDivElement>
->(({ value, label, error, theme, className, active = false, ...rest }, ref) => {
+>(({ value, label, error, theme, className, active = false, cacheBeingUsed = false, ...rest }, ref) => {
 
   const hasValue = !!value
   const float = hasValue || active   // 👈 key logic
@@ -34,6 +35,7 @@ export const RoundedDataSelector = forwardRef<
         ${className || ""}
       `}
       data-theme={theme}
+      data-cache-being-used={cacheBeingUsed}
     >
       <div className="relative flex items-center justify-start w-full h-[50px] pl-4">
 
@@ -52,7 +54,7 @@ export const RoundedDataSelector = forwardRef<
           className={`
             absolute left-6 text-gray-primary transition-all duration-300
             spacing-[2px] w-auto p-1
-            ${hasValue ? "top-0 -translate-y-1/2 text-[12px] text-text-primary left-[25px]" : "top-1/2 -translate-y-1/2"}
+            ${hasValue || cacheBeingUsed ? "top-0 -translate-y-1/2 text-[12px] text-text-primary left-[25px]" : "top-1/2 -translate-y-1/2"}
             peer-focus:top-0
             peer-focus:-translate-y-1/2
             peer-focus:text-[12px]

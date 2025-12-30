@@ -30,24 +30,36 @@ const sameSite = (p.NODE_ENV === "production" ? "none" : "lax") as
 
 // --- Types for your env config ---
 interface EnvConfig {
+  // Env and security configs
   NODE_ENV: string;
   AUTH_SERVICE_PORT: string;
   SECURE_COOKIE_OPTION: boolean;
   SAME_SITE_COOKIE_OPTION: "lax" | "strict" | "none";
 
+  // URIs
   USERS_PRISMA_DB_URI: string;
   AUTH_REDIS_STORE_URI: string;
   AUTH_FLUVIO_API_URI: string;
 
+  // Secret keys
   JWT_ACCESS_SECRET_KEY: string;
   JWT_REFRESH_SECRET_KEY: string;
   JWT_PRIVATE_ACCESS_SECRET_KEY: string;
   JWT_SIGNUP_SESSION_SECRET_KEY: string;
+  JWT_SIGNIN_SESSION_SECRET_KEY: string;
 
+  // Token names
   REFRESH_TOKEN_NAME: string;
   ACCESS_TOKEN_NAME: string;
   PRIVATE_ACCESS_TOKEN_NAME: string;
   SIGNUP_SESSION_TOKEN_NAME: string;
+  SIGNIN_SESSION_TOKEN_NAME: string;
+
+  // Redis session keys
+  ACTIVE_SIGNIN_SESSION_KEY: string;
+  ACTIVE_SIGNUP_SESSION_KEY: string;
+
+  // Others
   CLIENT_ORIGIN: string;
   COOKIE_DOMAIN: string;
 }
@@ -60,7 +72,6 @@ export const EXPIRATION = {
   PRIVATE_ACCESS_SESSION_COOKIE: 10 * 60 * 1000, // 10 minutes in ms
 
   JWT_REFRESH_SESSION_TOKEN: "365d",
-  JWT_REFRESH_REMEMBER_OFF_SESSION_TOKEN: "6h",
   REFRESH_SESSION_COOKIE: 365 * 25 * 60 * 60 * 1000, // 365 days in ms
 
   JWT_SIGNUP_SESSION_TOKEN: "10m", // 10 minutes in seconds (for email/username validation flow)
@@ -70,6 +81,10 @@ export const EXPIRATION = {
   JWT_SIGNUP_SESSION_TOKEN_EXTENDED: "30m", // 30 minutes in seconds (for post email-verification signup flow)
   SIGNUP_SESSION_COOKIE_EXTENDED: 30 * 60 * 1000, // 30 minutes for cookie, in ms
   REDIS_SIGNUP_SESSION_TTL_EXTENDED: 30 * 60, // Match signup session (30 min)
+
+  JWT_SIGNIN_SESSION_TOKEN: "10m", // 10 minutes in seconds (for email/username validation flow)
+  SIGNIN_SESSION_COOKIE: 10 * 60 * 1000, // 10 minutes for cookie, in ms
+  REDIS_SIGNIN_SESSION_TTL: 10 * 60, // Match signin session (10 min),
 };
 
 export const env: EnvConfig = {
@@ -93,6 +108,14 @@ export const env: EnvConfig = {
   ACCESS_TOKEN_NAME: p.ACCESS_TOKEN_NAME || "",
   PRIVATE_ACCESS_TOKEN_NAME: p.PRIVATE_ACCESS_TOKEN_NAME || "",
   SIGNUP_SESSION_TOKEN_NAME: p.SIGNUP_SESSION_TOKEN_NAME!,
+
+  // For signin sessions
+  SIGNIN_SESSION_TOKEN_NAME: p.SIGNIN_SESSION_TOKEN_NAME!,
+  JWT_SIGNIN_SESSION_SECRET_KEY: p.JWT_SIGNIN_SESSION_SECRET_KEY!,
+
+  // Redis session keys
+  ACTIVE_SIGNIN_SESSION_KEY: p.ACTIVE_SIGNIN_SESSION_KEY!,
+  ACTIVE_SIGNUP_SESSION_KEY: p.ACTIVE_SIGNUP_SESSION_KEY!,
 
   CLIENT_ORIGIN: p.CLIENT_ORIGIN!,
 

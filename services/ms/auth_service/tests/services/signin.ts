@@ -1,5 +1,5 @@
 import { signinService } from "@services/signin";
-import { prisma } from "@utils/prisma";
+import { prisma } from "../../src/clients/prisma";
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import { createUserSession } from "@utils/create_user_session";

@@ -1,28 +1,20 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-type ResponseData = {
-  usernameExists: boolean;
-  emailExists: boolean;
-};
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const { username, email } = body;
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ usernameExists: false, emailExists: false });
+  console.log("Mock signin check:", { username, email });
+
+  // Logic to determine next step
+  let nextStep: "email" | "username" | "password" = "email";
+
+  if (username) {
+    nextStep = "password";
+  } else if (email) {
+    nextStep = "username";
   }
 
-  // Get data from request body
-  const { username, email } = req.body;
-
-  console.log("Received signup check:", { username, email });
-
-  // MOCK LOGIC: always say username and email do NOT exist
-  const response: ResponseData = {
-    usernameExists: false,
-    emailExists: false,
-  };
-
-  res.status(200).json(response);
+  return NextResponse.json({ body: { nextStep } });
 }
