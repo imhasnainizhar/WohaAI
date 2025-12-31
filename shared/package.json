@@ -1,0 +1,41 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared stuff for repo",
+  "keywords": [
+    "ai",
+    "agents",
+    "typescript",
+    "rust",
+    "openai",
+    "models"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "WoahAI"
+  },
+  "license": "MIT",
+  "author": "Hasnain Izhar",
+  "type": "commonjs",
+  "main": "index.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "@redis/client": "^5.10.0",
+    "@types/express": "^5.0.6",
+    "express": "^5.2.1",
+    "pino": "^10.1.0",
+    "redis": "^5.10.0",
+    "tsconfig-paths": "^4.2.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "prisma": "^7.2.0"
+  }
+}

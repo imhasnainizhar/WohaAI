@@ -1,0 +1,66 @@
+{
+    "compilerOptions": {
+        /* Language and Environment */
+        "target": "ES2022",
+        "lib": [
+            "ES2022"
+        ],
+        "module": "NodeNext",
+        "moduleResolution": "node16",
+        "allowSyntheticDefaultImports": true,
+        /* Project Structure */
+        "outDir": "./dist",
+        /* Type Checking */
+        "strict": true,
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        /* Module + Imports */
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        /* Path Aliases (modern way, no baseUrl needed) */
+        "paths": {
+            "@config/*": [
+                "./config/*"
+            ],
+            "@clients/*": [
+                "./clients/*"
+            ],
+            "@middleware/*": [
+                "./middleware/*"
+            ],
+            "@zod/*": [
+                "./zod/*"
+            ],
+            "@utils/*": [
+                "./utils/*"
+            ],
+            "@domain/*": [
+                "./domain/*"
+            ],
+            "@errors/*": [
+                "./errors/*"
+            ],
+            "lib/*": [
+                "./lib/*"
+            ],
+            "@regex/*": [
+                "./regex/*"
+            ],
+        },
+        /* Output + Debugging */
+        "sourceMap": true
+    },
+    "include": [
+        "utils/**/*.ts",
+        "zod/schemas/**/*.ts",
+        "errors/**/*.ts",
+        "lib/**/*.ts",
+        "domain/**/*.ts",
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
