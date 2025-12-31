@@ -30,17 +30,17 @@
             "@routes/*": [
                 "./src/routes/*"
             ],
-            "@middleware/*": [
-                "./src/middleware/*"
+            "@middlewares/*": [
+                "./src/middlewares/*"
             ],
             "@schemas/*": [
-                "../../shared/zod/schemas/schemas/*"
+                "./src/schemas/*"
             ],
             "@services/*": [
                 "./src/services/*"
             ],
-            "@controllers/*": [
-                "src/handlers/*"
+            "@handlers/*": [
+                "./src/handlers/*"
             ],
             "@utils/*": [
                 "./src/utils/*"
@@ -48,13 +48,13 @@
             "@domain/*": [
                 "./src/domain/*"
             ],
-            "@internals/*": [
-                "./src/internals/*"
-            ],
             "@errors/*": [
                 "./src/errors/*"
             ],
-            "clients/*": [
+            "@shared/*": [
+                "../../../shared/*"
+            ],
+            "@clients/*": [
                 "./src/clients/*"
             ]
         },

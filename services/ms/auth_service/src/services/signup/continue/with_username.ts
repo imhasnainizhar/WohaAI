@@ -1,18 +1,19 @@
 import { internalError, throwConflictError, throwValidationError } from "@errors/auth";
 import { logger } from "@utils/logger";
 import { getSignupCache, setSignupCache } from "@utils/redis";
-import { SignupWithUsernameInterface } from "shared/domain/interfaces/auth/interface";
 import { prisma } from "../../../clients/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { ServiceException, ServiceResponse } from "@utils/response";
-import { SignupUsernameSchema } from "shared/zod/schemas/auth/signup";
+import { UsernameSignupSchema } from "@shared/zod/schemas/auth/signup/continue/with_username";
+import { ContinueWithUsernameDTO } from "@shared/domain/interfaces/auth/signup/dto";
+
 
 /**
  * continueWithUsername api is a proceeding step after username during signup
  * if user selects username at get started step.
  */
 
-export default async function continueWithUsername({ signupSessionID, username }: SignupWithUsernameInterface) {
+export default async function continueWithUsernameService({ signupSessionID, username }: ContinueWithUsernameDTO) {
     try {
         logger.debug("Continuing with username...");
 
@@ -21,7 +22,7 @@ export default async function continueWithUsername({ signupSessionID, username }
             throwValidationError("Invalid signup session ID.", "signupSessionID");
         }
 
-        const parsed = SignupUsernameSchema.safeParse({ username: username.trim() });
+        const parsed = UsernameSignupSchema.safeParse({ username: username.trim() });
         if (!parsed.success) throwValidationError(parsed.error, "username");
 
         const validatedUsername = parsed.data?.username;

@@ -4,7 +4,7 @@ import cors from "cors";
 import { json, urlencoded } from "body-parser";
 import authRoutes from "@routes/auth";
 import { env } from "@config/env";
-import { errorHandler } from "@middleware/async_handler";
+import { errorHandler } from "./middlewares/async_handler";
 import { createRedisClient } from "shared/clients/redis";
 
 const app = express();

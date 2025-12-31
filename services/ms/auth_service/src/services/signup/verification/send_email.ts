@@ -1,8 +1,9 @@
 import { logger } from "@utils/logger";
 import { setCache, getCache } from "@utils/redis";
 import { ServiceResponse, ServiceException } from "@utils/response";
-import { EXPIRATION } from "@config/env";
+import { env, EXPIRATION } from "@config/env";
 import getProducer from "@domain/producer/producer"
+import { SendVerificationEmailDTO } from "@shared/domain/interfaces/auth/signup/dto";
 
 /**
  * Topic used for outbound email events.
@@ -27,15 +28,15 @@ const EMAIL_TOPIC = "verification-emails";
  *    like expired sessions – instead we return error responses.
  *  - We only throw ServiceException for true system failures.
  */
-export const generateVerificationCodeService = async (
-  signupSessionId: string
+export const sendVerificationEmailService = async (
+  {signupSessionID}: SendVerificationEmailDTO 
 ): Promise<ServiceResponse<{ code: string }>> => {
 
   let pendingEmail: string | undefined;
 
   try {
     // ---- Input validation ----
-    if (!signupSessionId || signupSessionId.length < 6) {
+    if (!signupSessionID || signupSessionID.length < 6) {
       return ServiceResponse.error({
         success: false,
         statusCode: 400,
@@ -45,7 +46,7 @@ export const generateVerificationCodeService = async (
     }
 
     // ---- Fetch pending user session ----
-    const pendingUserStr = await getCache(`pending_signup:${signupSessionId}`);
+    const pendingUserStr = await getCache(`${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`);
 
     if (!pendingUserStr) {
       return ServiceResponse.error({
@@ -63,11 +64,11 @@ export const generateVerificationCodeService = async (
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     logger.debug(
-      `[VERIFICATION] Generated code for ${pendingEmail} (Session ${signupSessionId})`
+      `[VERIFICATION] Generated code for ${pendingEmail} (Session ${signupSessionID})`
     );
 
     // ---- Cache code against session ----
-    const cacheKey = `verification_code:${signupSessionId}`;
+    const cacheKey = `verification_code:${signupSessionID}`;
     const stored = await setCache(
       cacheKey,
       JSON.stringify({ email: pendingEmail, code }),
@@ -76,7 +77,7 @@ export const generateVerificationCodeService = async (
 
     if (!stored) {
       logger.error(
-        `[VERIFICATION] Failed to cache code for ${pendingEmail} (Session ${signupSessionId})`
+        `[VERIFICATION] Failed to cache code for ${pendingEmail} (Session ${signupSessionID})`
       );
       throw new ServiceException(
         ServiceResponse.error({
@@ -95,14 +96,14 @@ export const generateVerificationCodeService = async (
       type: "signup_verification_code",
       email: pendingEmail,
       code,
-      sessionId: signupSessionId,
+      sessionId: signupSessionID,
       createdAt: new Date().toISOString(),
     });
 
     await producer.send("", event);
 
     logger.info(
-      `[VERIFICATION] Fluvio event dispatched for ${pendingEmail} (Session ${signupSessionId})`
+      `[VERIFICATION] Fluvio event dispatched for ${pendingEmail} (Session ${signupSessionID})`
     );
 
     // ---- Respond to API caller ----

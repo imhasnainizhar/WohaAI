@@ -4,6 +4,7 @@ import { logger } from "@utils/logger";
 import { getCache, deleteCache, setCache } from "@utils/redis";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { env } from "@config/env";
+import { VerifyUserEmailDTO } from "@shared/domain/interfaces/auth/signup/dto";
 
 /**
  * Verify the email verification code and return a short-lived token for next signup step.
@@ -19,14 +20,14 @@ import { env } from "@config/env";
  * @param verificationCode - User-provided code (6-digit number)
  */
 
-export const confirmSignupEmailService = async (
-  verificationCode: string,
-  signupSessionId: string,
-  email: string
-): Promise<ServiceResponse<any>> => {
+export const verifyUserEmailService = async (
+{  verificationCode,
+  signupSessionID,
+  email
+}: VerifyUserEmailDTO): Promise<ServiceResponse<any>> => {
   try {
     // Guard clause for missing inputs
-    if (!signupSessionId || !verificationCode) {
+    if (!signupSessionID || !verificationCode) {
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
@@ -56,7 +57,7 @@ export const confirmSignupEmailService = async (
       );
     }
 
-    const pendingUserStr = await getCache(`pending_signup:${signupSessionId}`)
+    const pendingUserStr = await getCache(`pending_signup:${signupSessionID}`)
     const pendingEmail = JSON.parse(pendingUserStr!).email
 
     if (pendingEmail !== email) {
@@ -72,7 +73,7 @@ export const confirmSignupEmailService = async (
      * @todo
      * Create a kafka queue for setting verification codes and ailing them to users.
      */
-    const redisCodeCache = await getCache(`verification_code:${signupSessionId}`);
+    const redisCodeCache = await getCache(`verification_code:${signupSessionID}`);
 
     if (!redisCodeCache) {
       throw new ServiceException(
@@ -100,25 +101,25 @@ export const confirmSignupEmailService = async (
     }
 
     // Code is valid → delete it from Redis
-    await deleteCache(`verification_code:${signupSessionId}`);
+    await deleteCache(`verification_code:${signupSessionID}`);
 
     // Generate a short-lived validation token for next signup step
     const validationToken = createJwtToken(
-      { signupSessionId },
+      { signupSessionID },
       env.JWT_SIGNUP_SESSION_SECRET_KEY,
       { expiresIn: Number(EXPIRATION.JWT_SIGNUP_SESSION_TOKEN_EXTENDED) }
     );
 
     const confirmedEmail = pendingEmail; // Email going to be in redis status updated
 
-    const confirmEmailCacheKey = `email_confirmed:${signupSessionId}`
+    const confirmEmailCacheKey = `email_confirmed:${signupSessionID}`
     await setCache(confirmEmailCacheKey, confirmedEmail, EXPIRATION.REDIS_SIGNUP_SESSION_TTL_EXTENDED)
 
     // Creating Signup Session Cookie
     const cookies = [
       {
         name: env.SIGNUP_SESSION_TOKEN_NAME,
-        value: signupSessionId,
+        value: validationToken,
         options: {
           httpOnly: true,
           secure: env.SECURE_COOKIE_OPTION,
@@ -129,7 +130,7 @@ export const confirmSignupEmailService = async (
       }
     ]
 
-    logger.info(`✅ ${pendingEmail} successfully verified for session: ${signupSessionId}`);
+    logger.info(`✅ ${pendingEmail} successfully verified for session: ${signupSessionID}`);
 
     // Return standardized success response
     return ServiceResponse.success({
