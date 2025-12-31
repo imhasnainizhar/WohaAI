@@ -1,16 +1,23 @@
+import { RefreshTokenDTO } from '@shared/domain/interfaces/auth/refresh/dto';
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
-import { prisma } from "../clients/prisma";
+import { prisma } from "@clients/prisma";
 import { logger } from "@utils/logger";
 import { env, EXPIRATION } from "@config/env";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import {
   UserSessionRefresh,
   ActiveSessionRecord,
-  activeSessionSelect
-} from "../domain/types/session";
+  ActiveSessionSelect
+} from "@domain/types/session";
 
-export async function refreshTokenService<T>(data: UserSessionRefresh) {
+
+/**
+ * @description This is handler service to refresh access token
+ * This service does not need zod validator as dto depends on http-only cookies and req headers.
+ * @param dto : RefreshTokenDTO
+ */
+export async function refreshToken<T>({ cookies, userIPAddress }: RefreshTokenDTO) {
   try {
     const { JWT_REFRESH_SECRET_KEY, JWT_ACCESS_SECRET_KEY } = env;
 
@@ -27,10 +34,22 @@ export async function refreshTokenService<T>(data: UserSessionRefresh) {
 
     //  Verify token
     let payload: (JwtPayload & { userSessionID?: string }) | null = null;
+    const refreshToken = cookies[env.REFRESH_TOKEN_NAME];
+
+    if (!refreshToken) {
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 401,
+          message: "Refresh token not found.",
+          errorType: "token_error",
+        })
+      );
+    }
 
     try {
       const decoded = jwt.verify(
-        data.refreshSessionToken,
+        refreshToken,
         JWT_REFRESH_SECRET_KEY
       );
       payload = typeof decoded === "string" ? null : decoded;
@@ -78,7 +97,7 @@ export async function refreshTokenService<T>(data: UserSessionRefresh) {
           revoked: false,
           userSessionID: payload.userSessionID
         },
-        select: activeSessionSelect,
+        select: ActiveSessionSelect,
       });
     } catch (e: any) {
       logger.error("DB query failed during refresh", e);
@@ -110,7 +129,7 @@ export async function refreshTokenService<T>(data: UserSessionRefresh) {
     try {
       isValid = await argon2.verify(
         activeSessionsRecord.refreshTokenHash,
-        data.refreshSessionToken
+        refreshToken
       );
     } catch (e: any) {
       logger.error("Argon2 verification failed", e);
@@ -169,7 +188,7 @@ export async function refreshTokenService<T>(data: UserSessionRefresh) {
       data: {
         refreshTokenHash: newRefreshTokenHash,
         revokedAt: null,
-        userIPAddress: data.userIPAddress
+        userIPAddress: userIPAddress
       },
     });
 

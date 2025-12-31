@@ -1,8 +1,14 @@
 import UAParser from "ua-parser-js";
-import { Request } from "express";
 import { ClientData } from "../domain/types/session";
+import { Request } from "express";
 
-export function getClientInfo(req: Request): ClientData {
+
+/**
+ * @description This is handler util to get client data from request headers
+ * @param req : Request
+ * @returns ClientData
+ */
+export function getClientData(req: Request): ClientData {
     const ua = req.headers['user-agent'] || "";
     const parser = new (UAParser as any)(ua);
     const device = parser.getDevice();       // { model, type, vendor }

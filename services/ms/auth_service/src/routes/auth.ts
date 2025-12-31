@@ -1,27 +1,20 @@
 import { Router } from "express";
-import { signupInitController } from '../handlers/signup_init';
-import { confirmUserEmailController } from '../handlers/signup';
-import { signoutController } from "../handlers/signout";
-import { signinController } from "../handlers/signin";
-import { refreshTokenController } from "../handlers/refresh_token";
-import { generateVerificationCodeController } from "../handlers/generate_code";
-import { validateEmailController } from '../handlers/signup';
-import { validatePasswordController } from '../handlers/signup';
-import { validateDisplayNameController } from "../handlers/signup";
+import { getStartedHandler } from "@handlers/signup/get_started";
+import { continueWithEmailHandler } from "@handlers/signup/continue/with_email";
+import { continueWithUsernameHandler } from "@handlers/signup/continue/with_username";
+import { sendVerificationEmailHandler } from "@handlers/signup/verification/send_email";
+import { verifyUserEmailHandler } from "@handlers/signup/verification/verify_email";
+import { completeSignupHandler } from "@handlers/signup/complete_signup";
 
 const router = Router();
 
 // Auth routes
-router.post("/signin", signinController);
-router.post("/signout", signoutController);
-router.post("/refresh", refreshTokenController);
+router.post("/get-started", getStartedHandler);
+router.post("/continue/with-email", continueWithEmailHandler);
+router.post("/continue/with-username", continueWithUsernameHandler);
+router.post("/send-verification-email", sendVerificationEmailHandler);
+router.post("/verify-user-email", verifyUserEmailHandler);
+router.post("/complete-signup", completeSignupHandler);
 
-router.post("/init-signup", signupInitController);
-router.post("/validate-display-name", validateDisplayNameController);
-router.post("/validate-email", validateEmailController);
-router.post("/validate-password", validatePasswordController);
-
-router.get("/generate-verification-code", generateVerificationCodeController);
-router.post("/verify-email", confirmUserEmailController);
 
 export default router;

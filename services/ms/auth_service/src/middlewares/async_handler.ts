@@ -3,11 +3,11 @@ import { ServiceException } from "@utils/response";
 
 export const asyncHandler =
   (
-    controller: (req: Request, res: Response, next: NextFunction) => Promise<any>
+    handler: (req: Request, res: Response, next: NextFunction) => Promise<any>
   ) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await controller(req, res, next);
+      await handler(req, res, next);
     } catch (err) {
 
       // If the service already wrapped it — pass through

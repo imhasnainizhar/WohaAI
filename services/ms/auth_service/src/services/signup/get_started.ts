@@ -5,32 +5,15 @@ import { setCache } from "@utils/redis";
 import { prisma } from "../../clients/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { logger } from "@utils/logger";
-import { GetStartedSchema, GetStartedType } from "shared/zod/schemas/auth/get_started";
-import { GetStartedApiResponse } from "shared/domain/types/auth/services";
+import { GetStartedSchema, GetStartedType } from "@shared/zod/schemas/auth/signup/get_started";
+import { GetStartedApiData } from "@shared/domain/interfaces/auth/signup/signup";
+import { GetStartedDTO } from "@shared/domain/interfaces/auth/signup/dto";
 
-export const getStartedService = async (body: GetStartedType) => {
+
+export const getStartedService = async (dto: GetStartedDTO) => {
   try {
-    // Validate the user idnetifier wheather a username or email, using Zod schema
-    logger.debug("🧩 Validating user identifier input...");
-    const parsed = GetStartedSchema.safeParse(body);
-    if (!parsed.success) {
-      logger.warn({
-        message: `⚠️ User identifier validation failed`,
-        issues: parsed.error.issues,
-      });
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 400,
-          message: `Invalid ${parsed?.error?.flatten().fieldErrors?.usernameOrEmail?.[0]}.`,
-          errorType: "validation_error",
-          errors: parsed.error.flatten().fieldErrors,
-        })
-      );
-    }
-
     // Taking type and value of user identifier
-    const { type, value } = parsed.data.usernameOrEmail;
+    const { type, value } = dto.usernameOrEmail;
     const identifierType = type;
     const identifier = value;
 
@@ -61,7 +44,7 @@ export const getStartedService = async (body: GetStartedType) => {
 
       // Optionally cache session info in Redis if needed
       await setCache(
-        `${env.ACTIVE_SIGNIN_SESSION_KEY}:${signinSessionID}`,
+        `${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signinSessionID}`,
         JSON.stringify({ userID: existingUser.userID }),
         EXPIRATION.REDIS_SIGNIN_SESSION_TTL
       );
@@ -107,7 +90,7 @@ export const getStartedService = async (body: GetStartedType) => {
     logger.debug("💾 Caching pending signup session in Redis...");
     const tempUser = { [identifierType]: identifier };
     await setCache(
-      `${env.ACTIVE_SIGNUP_SESSION_KEY}:${signupSessionID}`,
+      `${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`,
       JSON.stringify(tempUser),
       EXPIRATION.REDIS_SIGNUP_SESSION_TTL
     );
@@ -136,10 +119,10 @@ export const getStartedService = async (body: GetStartedType) => {
         identifierType,
         identifier,
         already_exists: false,
-      },
+      } as GetStartedApiData,
       message: `${identifierType} available and session initialized: ${identifier}`,
       cookies: signupSessionCookies,
-    } as GetStartedApiResponse);
+    });
   } catch (error: any) {
     if (error instanceof ServiceException) throw error;
     // Log fatal server error

@@ -27,7 +27,7 @@ export interface UserSessionRefresh {
   userIPAddress: string
 }
 
-export const activeSessionSelect: Prisma.UserSessionSelect = {
+export const ActiveSessionSelect: Prisma.UserSessionSelect = {
   refreshTokenHash: true,
   userSessionID: true,
   userDeviceID: true,
@@ -45,4 +45,4 @@ export const activeSessionSelect: Prisma.UserSessionSelect = {
 };
 
 export type ActiveSessionRecord =
-  Prisma.UserSessionGetPayload<{ select: typeof activeSessionSelect }>;
+  Prisma.UserSessionGetPayload<{ select: typeof ActiveSessionSelect }>;

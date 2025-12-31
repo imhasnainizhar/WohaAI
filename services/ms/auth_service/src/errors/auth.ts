@@ -4,8 +4,8 @@ import { ServiceException, ServiceResponse } from "@utils/response";
 /**
  * Throws standardized validation error response for Zod schema failures.
  */
-export const throwValidationError = (error: any, field: string) => {
-  logger.warn({ message: `${field} validation failed`, issues: error.issues });
+export const throwValidationError = (error: any, field: string): never => {
+  logger.debug({ message: `${field} validation failed`, issues: error.issues });
   throw new ServiceException(
     ServiceResponse.error({
       success: false,
@@ -20,8 +20,8 @@ export const throwValidationError = (error: any, field: string) => {
 /**
  * Throws a conflict error (e.g., duplicate email in database).
  */
-export const throwConflictError = (field: string, message: string) => {
-  logger.warn(`Conflict on field: ${field} → ${message}`);
+export const throwConflictError = (field: string, message: string): never => {
+  logger.debug(`Conflict on field: ${field} → ${message}`);
   throw new ServiceException(
     ServiceResponse.error({
       success: false,
@@ -38,8 +38,8 @@ export const throwConflictError = (field: string, message: string) => {
  * 
  * This prevents reuse of expired sessions or bypassing signup verification flow.
  */
-export const throwSessionExpired = () => {
-  logger.warn("Session timed out or invalid.");
+export const throwSessionExpired = (): never => {
+  logger.debug("Session timed out or invalid.");
   throw new ServiceException(
     ServiceResponse.error({
       success: false,
@@ -53,8 +53,9 @@ export const throwSessionExpired = () => {
 /**
  * Standardized internal error response for unexpected failures.
  */
-export const internalError = (err?: any) =>
-  new ServiceException(
+export const internalError = (err?: any) => {
+  logger.error({ message: "Internal server error", error: err?.message });
+  throw new ServiceException(
     ServiceResponse.error({
       success: false,
       statusCode: 500,
@@ -62,3 +63,4 @@ export const internalError = (err?: any) =>
       errorType: "internal_server_error",
     })
   );
+}

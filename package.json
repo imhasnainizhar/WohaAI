@@ -2,6 +2,7 @@
   "name": "woahai_repo",
   "private": true,
   "workspaces": [
-    "services/*"
+    "./services/*",
+    "./shared/*"
   ]
 }
