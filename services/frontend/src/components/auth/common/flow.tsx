@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SignupEmailSchema, SignupPasswordSchema, SignupPersonalInfoSchema, SignupUsernameSchema } from "@lib/schemas/signup";
+import { SignupEmailSchema,
+  SignupPasswordSchema,
+  SignupPersonalInfoSchema,
+  SignupUsernameSchema 
+} from "@lib/schemas/signup";
 import SignupPersonalInfo from "../signup/personal";
 import { LeftArrowButton } from "@components/ui/buttons/left-arrow";
 import { GetStartedSchema } from "@lib/schemas/get-started";
