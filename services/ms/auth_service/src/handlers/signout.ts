@@ -1,29 +1,31 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@middlewares/async_handler";
 import { sendResponse } from "@packages/shared/utils/response";
-import { verifyUserEmailService } from "@services/signup/verification/confirm_email";
+import { signoutService } from "@services/signout";
+import { RefreshTokenPayload } from "@packages/shared/common/auth/jwt/types";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { SignupSessionPayload } from "@packages/shared/common/auth/jwt/types";
 import { throwSessionExpired } from "@packages/shared/errors/auth/errors";
 
 /**
- * Handler for user signup verification verify email.
- * Validates input & calls for verify email service.
+ * Handler for user sign-out.
+ * Validates input, verifies tokens and identity, and calls for signout service.
  */
-export const verifyUserEmailHandler = asyncHandler(
+export const signoutHandler = asyncHandler(
     async (req: Request, res: Response) => {
-        const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
-        const payload = jwt.verify(token, env.JWT_SIGNUP_SESSION_SECRET_KEY) as SignupSessionPayload;
+        // Verify user session token
+        const userSessionToken = req.cookies[env.REFRESH_TOKEN_NAME];
+        const payload = jwt.verify(userSessionToken, env.JWT_REFRESH_SECRET_KEY) as RefreshTokenPayload;
 
         // If payload is not valid, throw session expired error
         if (!payload) throwSessionExpired();
 
-        // Getting signupSessionID from payload
-        const signupSessionID = payload.signupSessionID;
+        // Getting userID & userSessionID from payload
+        const userID = payload.sub;    // Same as userID
+        const userSessionID = payload.userSessionID;
 
         // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await verifyUserEmailService({ signupSessionID, verificationCode: req.body.verificationCode });
+        const result = await signoutService(userID, userSessionID);
 
         // Handler only returns response
         return sendResponse({

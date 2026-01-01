@@ -4,7 +4,7 @@ import { logger } from "@utils/logger";
 import { getCache, deleteCache, setCache } from "@utils/redis";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { env } from "@config/env";
-import { VerifyUserEmailDTO } from "@shared/domain/interfaces/auth/signup/dto";
+import { VerifyUserEmailDTO } from "@packages/shared/auth/signup/dto";
 
 /**
  * Verify the email verification code and return a short-lived token for next signup step.
@@ -16,14 +16,15 @@ import { VerifyUserEmailDTO } from "@shared/domain/interfaces/auth/signup/dto";
  * 4. Validate user email state not change when compared to redis state of signup data.
  * 5. Verify code for email verification.
  * 6. Return extended session token with success response.
- * 7. Now user can request user creation api to get created finally.
- * @param verificationCode - User-provided code (6-digit number)
+ * 7. Now user can validate further data through other services & 
+ *    request user creation api to get created finally.
+ * @param {verificationCode, signupSessionID, email} : VerifyUserEmailDTO
+ * @returns ServiceResponse<any>
  */
 
 export const verifyUserEmailService = async (
 {  verificationCode,
   signupSessionID,
-  email
 }: VerifyUserEmailDTO): Promise<ServiceResponse<any>> => {
   try {
     // Guard clause for missing inputs
@@ -60,14 +61,18 @@ export const verifyUserEmailService = async (
     const pendingUserStr = await getCache(`pending_signup:${signupSessionID}`)
     const pendingEmail = JSON.parse(pendingUserStr!).email
 
-    if (pendingEmail !== email) {
-      return ServiceResponse.error({
-        success: false,
-        statusCode: 409,
-        message: "Requested email mismatched with pending email",
-        errorType: "signup_state_conflict"
-      })
+    if (!pendingEmail) {
+      throw new ServiceException(
+        ServiceResponse.error({
+          success: false,
+          statusCode: 404,
+          message: "Pending user not found",
+          errorType: "not_found",
+          errors: { session_id: ["Pending user not found"] },
+        })
+      );
     }
+
     // Retrieve stored code from Redis using sessionId
     /**
      * @todo
@@ -137,7 +142,6 @@ export const verifyUserEmailService = async (
       success: true,
       statusCode: 200,
       message: "Verification successful",
-      data: { validationToken },
       cookies,
     });
   } catch (err: any) {

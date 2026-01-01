@@ -1,13 +1,30 @@
 import argon2 from "argon2";
 import { prisma } from "../clients/prisma";
 import { logger } from "@utils/logger";
-import { ClientData, UserSession } from "@domain/types/session";
+import { ClientData } from "@packages/shared/common/auth/types";
+import { UserSession } from "@prisma/client";
 
+/**
+ * 
+ * @param { 
+ * userID: string;
+ * clientData: ClientData;
+ * refreshToken: string;
+ * userSessionID?: string; 
+ * }
+ * @returns UserSession
+ */
 export const createUserSession = async (
-  userID: string,
-  clientData: ClientData,
-  refreshToken: string,
-): Promise<UserSession> => {
+  { userID,
+    clientData,
+    refreshToken,
+    userSessionID,
+  }: {
+    userID: string;
+    clientData: ClientData;
+    refreshToken: string;
+    userSessionID?: string;
+  }): Promise<UserSession> => {
   try {
     const refreshTokenHash = await argon2.hash(refreshToken);
 
@@ -17,10 +34,11 @@ export const createUserSession = async (
 
     const session = await prisma.userSession.create({
       data: {
+        userSessionID: userSessionID ?? "Unknown",
         refreshTokenHash,
         userID,
         revoked: false,
-        userIPAddress: clientData.userIPAddress ?? "unknown",
+        userIPAddress: clientData.userIPAddress ?? "Unknown",
         userDeviceID: `${clientData.userDeviceType ?? "Unknown"}-${crypto.randomUUID()}`,
         userDeviceName: clientData.userDeviceName ?? "Unknown Device",
         userDeviceType: clientData.userDeviceType ?? "Unknown",

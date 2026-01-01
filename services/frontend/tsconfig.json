@@ -54,6 +54,9 @@
       ],
       "@config/*": [
         "./src/config/*"
+      ],
+      "@packages/*": [
+        "../../packages/*"
       ]
     },
     "plugins": [

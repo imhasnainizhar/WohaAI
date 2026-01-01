@@ -1,10 +1,11 @@
 import UAParser from "ua-parser-js";
-import { ClientData } from "../domain/types/session";
+import { ClientData } from "@packages/shared/common/auth/types";
 import { Request } from "express";
 
 
 /**
- * @description This is handler util to get client data from request headers
+ * @description This is handler level util mainly to get client data from request headers.
+ * But can be used everywhere as per needs.
  * @param req : Request
  * @returns ClientData
  */

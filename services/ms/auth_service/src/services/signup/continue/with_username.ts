@@ -4,8 +4,8 @@ import { getSignupCache, setSignupCache } from "@utils/redis";
 import { prisma } from "../../../clients/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { ServiceException, ServiceResponse } from "@utils/response";
-import { UsernameSignupSchema } from "@shared/zod/schemas/auth/signup/continue/with_username";
-import { ContinueWithUsernameDTO } from "@shared/domain/interfaces/auth/signup/dto";
+import { UsernameSignupSchema } from "@packages/shared/auth/signup/schemas";
+import { ContinueWithUsernameDTO } from "@packages/shared/auth/signup/dto";
 
 
 /**

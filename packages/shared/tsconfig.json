@@ -6,7 +6,7 @@
             "ES2022"
         ],
         "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "moduleResolution": "node16",
         "allowSyntheticDefaultImports": true,
         /* Project Structure */
         "outDir": "./dist",
@@ -21,49 +21,37 @@
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@app": [
-                "./src/app"
+            "@common/*": [
+                "./common/*"
             ],
-            "@config/*": [
-                "./src/config/*"
+            "@middleware/*": [
+                "./middleware/*"
             ],
-            "@routes/*": [
-                "./src/routes/*"
-            ],
-            "@middlewares/*": [
-                "./src/middlewares/*"
-            ],
-            "@schemas/*": [
-                "./src/schemas/*"
-            ],
-            "@services/*": [
-                "./src/services/*"
-            ],
-            "@handlers/*": [
-                "./src/handlers/*"
+            "@auth/*": [
+                "./auth/*"
             ],
             "@utils/*": [
-                "./src/utils/*"
-            ],
-            "@internals/*": [
-                "./src/internals/*"
+                "./utils/*"
             ],
             "@errors/*": [
-                "./src/errors/*"
+                "./errors/*"
             ],
-            "@packages/*": [
-                "../../../packages/*"
+            "lib/*": [
+                "./lib/*"
             ],
-            "@clients/*": [
-                "./src/clients/*"
-            ]
+            "@regex/*": [
+                "./regex/*"
+            ],
         },
         /* Output + Debugging */
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts",
-        "tests/**/*.ts"
+        "utils/**/*.ts",
+        "zod/schemas/**/*.ts",
+        "errors/**/*.ts",
+        "lib/**/*.ts",
+        "auth/domain/**/*.ts", "auth/cookie.ts",
     ],
     "exclude": [
         "node_modules",
