@@ -8,11 +8,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ClassicButton from "@components/ui/buttons/classic-button";
 import { RoundedInputField } from "@components/ui/input/fields/rounded";
-import { GetStartedSchema } from "@packages/shared/zod/schemas/auth/signup/get_started";
-import { GetStartedType } from "@packages/shared/zod/schemas/auth/signup/get_started";
+import { GetStartedSchema } from "@packages/shared/auth/signup/schemas";
+import { GetStartedType } from "@packages/shared/auth/signup/types";
 import { useAppContext } from "@providers/app";
-import { GetStartedApiData } from "@packages/shared/domain/types/auth/signup/types";
-import { ApiResponseOptions } from "@packages/shared/domain/types/api/response";
+import { GetStartedResponseData } from "@packages/shared/auth/signup/response/types";
+import { ApiResponseOptions } from "@packages/shared/common/response/response";
 
 export interface AuthNextStepResponse {
     nextStep: "email" | "username" | "password";
@@ -79,7 +79,7 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
                 }),
             });
 
-            const res: ApiResponseOptions<GetStartedApiData> = await result.json();
+            const res: ApiResponseOptions<GetStartedResponseData> = await result.json();
             const data = res.data;
 
             if (!res.success) {
