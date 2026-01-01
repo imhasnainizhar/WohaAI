@@ -2,7 +2,7 @@ import { asyncHandler } from '@middlewares/async_handler';
 import { Request, Response } from "express";
 import { sendResponse } from "@utils/response";
 import { getStartedService } from "@services/signup/get_started";
-import { GetStartedSchema } from "@shared/zod/schemas/auth/signup/get_started";
+import { GetStartedSchema } from "@packages/shared/zod/schemas/auth/signup/get_started";
 import { throwValidationError } from "@errors/auth";
 
 export const getStartedHandler = asyncHandler(

@@ -1,19 +1,6 @@
 import { Response } from "express";
-
-/* -------------------------------------------------------
-   COOKIE TYPE
--------------------------------------------------------- */
-export interface Cookie {
-  name: string;
-  value: string;
-  options: {
-    httpOnly: boolean;
-    secure: boolean;
-    sameSite: "lax" | "strict" | "none";
-    path: string;
-    maxAge?: number;
-  };
-}
+import { Cookie } from "../../common/cookie";
+import { ApiResponseOptions } from "../../auth/domain/types/api/response";
 
 /* -------------------------------------------------------
    SERVICE RESPONSE (for internal services)
@@ -72,21 +59,6 @@ export class ServiceResponse<T = unknown> {
       errors: params.errors,
     });
   }
-}
-
-/* -------------------------------------------------------
-   API RESPONSE (for controllers)
--------------------------------------------------------- */
-export interface ApiResponseOptions<T = unknown> {
-  res: Response;
-  success?: boolean; // defaults handled inside sendResponse
-  statusCode?: number;
-  message: string;
-  data?: T;
-  cookies?: Cookie[];
-  errors?: Record<string, string[]>;
-  errorType?: string;
-  path?: string;
 }
 
 /**

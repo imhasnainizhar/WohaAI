@@ -21,23 +21,17 @@
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@config/*": [
-                "./config/*"
-            ],
-            "@clients/*": [
-                "./clients/*"
+            "@common/*": [
+                "./common/*"
             ],
             "@middleware/*": [
                 "./middleware/*"
             ],
-            "@zod/*": [
-                "./zod/*"
+            "@auth/*": [
+                "./auth/*"
             ],
             "@utils/*": [
                 "./utils/*"
-            ],
-            "@domain/*": [
-                "./domain/*"
             ],
             "@errors/*": [
                 "./errors/*"
@@ -57,7 +51,7 @@
         "zod/schemas/**/*.ts",
         "errors/**/*.ts",
         "lib/**/*.ts",
-        "domain/**/*.ts",
+        "auth/domain/**/*.ts", "auth/cookie.ts",
     ],
     "exclude": [
         "node_modules",

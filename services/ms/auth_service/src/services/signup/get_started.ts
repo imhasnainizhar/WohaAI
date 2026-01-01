@@ -5,12 +5,11 @@ import { setCache } from "@utils/redis";
 import { prisma } from "../../clients/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { logger } from "@utils/logger";
-import { GetStartedSchema, GetStartedType } from "@shared/zod/schemas/auth/signup/get_started";
-import { GetStartedApiData } from "@shared/domain/interfaces/auth/signup/signup";
-import { GetStartedDTO } from "@shared/domain/interfaces/auth/signup/dto";
+import { GetStartedSchema, GetStartedType } from "@packages/shared/zod/schemas/auth/signup/get_started";
+import { GetStartedApiData } from "@packages/shared/domain/types/auth/signup/types";
+import { GetStartedDTO } from "@packages/shared/domain/types/auth/signup/dto";
 
-
-export const getStartedService = async (dto: GetStartedDTO) => {
+export const getStartedService = async (dto: GetStartedDTO): Promise<ServiceResponse<GetStartedApiData>> => {
   try {
     // Taking type and value of user identifier
     const { type, value } = dto.usernameOrEmail;
@@ -119,7 +118,7 @@ export const getStartedService = async (dto: GetStartedDTO) => {
         identifierType,
         identifier,
         already_exists: false,
-      } as GetStartedApiData,
+      },
       message: `${identifierType} available and session initialized: ${identifier}`,
       cookies: signupSessionCookies,
     });

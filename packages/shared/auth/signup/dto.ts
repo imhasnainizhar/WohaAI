@@ -1,5 +1,3 @@
-import { confirmPassword } from './../../../../zod/objects/auth/user';
-
 export interface ContinueWithEmailDTO {
     signupSessionID: string;
     email: string;

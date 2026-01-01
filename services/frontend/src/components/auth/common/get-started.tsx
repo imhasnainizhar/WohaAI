@@ -3,16 +3,16 @@
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "@lib/schemas/signin";
 import { useTheme } from "@providers/theme";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import z from "zod";
 import ClassicButton from "@components/ui/buttons/classic-button";
 import { RoundedInputField } from "@components/ui/input/fields/rounded";
-import { GetStartedSchema } from "@lib/schemas/get-started";
-import { GetStartedType } from "@lib/schemas/get-started";
+import { GetStartedSchema } from "@packages/shared/zod/schemas/auth/signup/get_started";
+import { GetStartedType } from "@packages/shared/zod/schemas/auth/signup/get_started";
 import { useAppContext } from "@providers/app";
+import { GetStartedApiData } from "@packages/shared/domain/types/auth/signup/types";
+import { ApiResponseOptions } from "@packages/shared/domain/types/api/response";
 
 export interface AuthNextStepResponse {
     nextStep: "email" | "username" | "password";
@@ -24,7 +24,7 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<GetStartedType>({
+    } = useForm<{ usernameOrEmail: string }, any, GetStartedType>({
         resolver: zodResolver(GetStartedSchema),
     });
 
@@ -44,23 +44,6 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
 
     const [signInError, setSignInError] = useState<string>("");
 
-    const mockRes = async (values: GetStartedType): Promise<AuthNextStepResponse> => {
-        const res = await fetch("/api/mock/auth/new-signin", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                username: values.usernameOrEmail.includes("@") ? undefined : values.usernameOrEmail,
-                email: values.usernameOrEmail.includes("@") ? values.usernameOrEmail : undefined,
-            }),
-        });
-
-        // if (!res.ok) throw new Error("Mock API failed");
-
-        console.log(res)
-        const data = await res.json();
-        return data.body.nextStep; // { nextStep: "email" | "username" | "password" }
-    };
-
     const GET_STARTED_API_URI = process.env.NEXT_PUBLIC_GET_STARTED_API_URI!;
 
     const onSubmit = async (values: GetStartedType) => {
@@ -68,7 +51,7 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
 
         try {
             // Call your mock API
-            const result = await mockRes(values);
+            const result = await onGetStarted(values, next);
 
             // Update next step
             setNextStep(result);
@@ -81,33 +64,39 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
         }
     };
 
-    const onGetStarted = async (GetStartedData: GetStartedType, next: any) => {
+    const onGetStarted = async (param: GetStartedType, next: any) => {
         setSignInError("");
 
         try {
-            const res = await fetch(GET_STARTED_API_URI, {
+            const result = await fetch(GET_STARTED_API_URI, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    ...GetStartedData,
+                    ...param,
                 }),
             });
 
-            const data = await res.json();
+            const res: ApiResponseOptions<GetStartedApiData> = await result.json();
+            const data = res.data;
 
-            if (!res.ok) {
-                setSignInError(data.message || "Failed to sign in.");
+            if (!res.success) {
+                setSignInError(res.message || "Failed to sign in.");
                 return;
             }
 
-             // Update next step
-            setNextStep(data.body.nextStep);
+            if (data === undefined) {
+                setSignInError("Failed to sign in.");
+                return;
+            }
+
+            // Update next step
+            setNextStep(data.identifierType === "email" ? "verify-email" : "take-username");
 
             // Pass actual field values to parent
-            next(GetStartedData);
+            next(data);
 
         } catch (error) {
             console.error("SignIn Error:", error);

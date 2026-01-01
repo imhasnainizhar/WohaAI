@@ -1,4 +1,7 @@
-export type Cookie = {
+/* -------------------------------------------------------
+   COOKIE TYPE
+-------------------------------------------------------- */
+export interface Cookie {
   name: string;
   value: string;
   options: {
