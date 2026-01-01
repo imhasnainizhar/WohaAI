@@ -5,11 +5,13 @@ import { setCache } from "@utils/redis";
 import { prisma } from "../../clients/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { logger } from "@utils/logger";
-import { GetStartedSchema, GetStartedType } from "@packages/shared/zod/schemas/auth/signup/get_started";
-import { GetStartedApiData } from "@packages/shared/domain/types/auth/signup/types";
-import { GetStartedDTO } from "@packages/shared/domain/types/auth/signup/dto";
+import { GetStartedSchema } from "@packages/shared/auth/signup/schemas";
+import { GetStartedType } from "@packages/shared/auth/signup/types";
+import { GetStartedResponseData } from "@packages/shared/auth/signup/response/types";
+import { GetStartedDTO } from "@packages/shared/auth/signup/dto";
 
-export const getStartedService = async (dto: GetStartedDTO): Promise<ServiceResponse<GetStartedApiData>> => {
+
+export const getStartedService = async (dto: GetStartedDTO): Promise<ServiceResponse<GetStartedResponseData>> => {
   try {
     // Taking type and value of user identifier
     const { type, value } = dto.usernameOrEmail;

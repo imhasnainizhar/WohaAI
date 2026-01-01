@@ -1,5 +1,5 @@
 import { asyncHandler } from "@middlewares/async_handler";
-import { ClientData } from "@domain/types/session";
+import { ClientData } from "../../internals/types/session";
 import { getClientData } from "@utils/get_client_data";
 import { refreshToken } from "@services/refresh/refresh_token";
 import { sendResponse, ServiceException, ServiceResponse } from "@utils/response";

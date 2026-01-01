@@ -1,7 +1,7 @@
 import argon2 from "argon2";
 import { prisma } from "../clients/prisma";
 import { logger } from "@utils/logger";
-import { ClientData, UserSession } from "@domain/types/session";
+import { ClientData, UserSession } from "../internals/types/session";
 
 export const createUserSession = async (
   userID: string,

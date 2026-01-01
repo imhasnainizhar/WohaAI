@@ -1,5 +1,5 @@
 import UAParser from "ua-parser-js";
-import { ClientData } from "../domain/types/session";
+import { ClientData } from "../internals/types/session";
 import { Request } from "express";
 
 

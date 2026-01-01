@@ -2,7 +2,7 @@ import { logger } from "@utils/logger";
 import { setCache, getCache } from "@utils/redis";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { env, EXPIRATION } from "@config/env";
-import getProducer from "@domain/producer/producer"
+import getProducer from "../../../internals/producer/producer"
 import { SendVerificationEmailDTO } from "@shared/domain/interfaces/auth/signup/dto";
 
 /**
@@ -29,7 +29,7 @@ const EMAIL_TOPIC = "verification-emails";
  *  - We only throw ServiceException for true system failures.
  */
 export const sendVerificationEmailService = async (
-  {signupSessionID}: SendVerificationEmailDTO 
+  { signupSessionID }: SendVerificationEmailDTO
 ): Promise<ServiceResponse<{ code: string }>> => {
 
   let pendingEmail: string | undefined;

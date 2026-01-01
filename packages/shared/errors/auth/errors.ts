@@ -1,29 +1,40 @@
-import { logger } from "@utils/common/logger";
-import { ServiceException, ServiceResponse } from "@utils/common/response";
+// shared/errors/index.ts
+import { logger } from "@utils/logger";
+import { ServiceException, ServiceResponse } from "@utils/response";
+import { ZodError } from "zod";
+import { StandardError } from "@errors/types";
+import { sanitizedFieldErrors } from "@errors/field";
+
 
 /**
- * Throws standardized validation error response for Zod schema failures.
+ * Throws a standardized validation error response for Zod schema failures.
+ * @param error - ZodError from validation
+ * @param field - Name of the field that failed validation
  */
-export const throwValidationError = (error: any, field: string) => {
-  logger.warn({ message: `${field} validation failed`, issues: error.issues });
+export const throwValidationError = (error: ZodError, field?: string): never => {
+  const fieldName = field ?? "input";
+  logger.debug({ message: `${fieldName} validation failed`, issues: error.issues });
+
   throw new ServiceException(
-    ServiceResponse.error({
+    ServiceResponse.error<StandardError>({
       success: false,
       statusCode: 400,
-      message: `Invalid ${field}.`,
+      message: `Invalid ${fieldName}.`,
       errorType: "validation_error",
-      errors: error.flatten().fieldErrors,
+      errors: sanitizedFieldErrors(error),
     })
   );
 };
 
 /**
- * Throws a conflict error (e.g., duplicate email in database).
+ * Throws a standardized conflict error (e.g., duplicate record in DB).
+ * @param field - Name of the conflicting field
+ * @param message - Custom conflict message
  */
-export const throwConflictError = (field: string, message: string) => {
-  logger.warn(`Conflict on field: ${field} → ${message}`);
+export const throwConflictError = (field: string, message: string): never => {
+  logger.debug(`Conflict on field: ${field} → ${message}`);
   throw new ServiceException(
-    ServiceResponse.error({
+    ServiceResponse.error<StandardError>({
       success: false,
       statusCode: 409,
       message,
@@ -34,31 +45,67 @@ export const throwConflictError = (field: string, message: string) => {
 };
 
 /**
- * Throws when the Redis signup session is missing or expired.
- * 
- * This prevents reuse of expired sessions or bypassing signup verification flow.
+ * Throws a standardized error when a session is expired or invalid.
+ * Useful for signup/login flows or token validation.
  */
-export const throwSessionExpired = () => {
-  logger.warn("Session timed out or invalid.");
+export const throwSessionExpired = (): never => {
+  logger.debug("Session expired or invalid.");
   throw new ServiceException(
-    ServiceResponse.error({
+    ServiceResponse.error<StandardError>({
       success: false,
       statusCode: 400,
-      message: "Invalid or expired signup session and tokens.",
+      message: "Invalid or expired session.",
       errorType: "validation_error",
     })
   );
 };
 
 /**
- * Standardized internal error response for unexpected failures.
+ * Throws a standardized internal server error for unexpected failures.
+ * @param err - Optional error object for logging
  */
-export const internalError = (err?: any) =>
-  new ServiceException(
-    ServiceResponse.error({
+export const internalError = (err?: any): never => {
+  logger.error({ message: "Internal server error", error: err?.message });
+  throw new ServiceException(
+    ServiceResponse.error<StandardError>({
       success: false,
       statusCode: 500,
       message: err?.message ?? "Something went wrong on our side",
       errorType: "internal_server_error",
     })
   );
+};
+
+/**
+ * Throws a forbidden access error (HTTP 403)
+ * @param message - Optional custom message
+ */
+export const throwForbiddenError = (message?: string): never => {
+  const msg = message ?? "You do not have permission to perform this action.";
+  logger.debug(msg);
+  throw new ServiceException(
+    ServiceResponse.error<StandardError>({
+      success: false,
+      statusCode: 403,
+      message: msg,
+      errorType: "forbidden_error",
+    })
+  );
+};
+
+/**
+ * Throws a not found error (HTTP 404)
+ * @param resource - Optional resource name
+ */
+export const throwNotFoundError = (resource?: string): never => {
+  const msg = resource ? `${resource} not found.` : "Resource not found.";
+  logger.debug(msg);
+  throw new ServiceException(
+    ServiceResponse.error<StandardError>({
+      success: false,
+      statusCode: 404,
+      message: msg,
+      errorType: "not_found_error",
+    })
+  );
+};

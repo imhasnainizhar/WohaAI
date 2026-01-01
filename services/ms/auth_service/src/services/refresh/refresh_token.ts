@@ -9,7 +9,7 @@ import {
   UserSessionRefresh,
   ActiveSessionRecord,
   ActiveSessionSelect
-} from "@domain/types/session";
+} from "../../internals/types/session";
 
 
 /**

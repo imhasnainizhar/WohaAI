@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { Cookie } from "../../common/cookie";
+import { Cookie } from "../common/cookie";
 import { ApiResponseOptions } from "../../auth/domain/types/api/response";
 
 /* -------------------------------------------------------
