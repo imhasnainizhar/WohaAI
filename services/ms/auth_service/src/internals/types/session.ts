@@ -1,25 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export interface ClientData {
-  userDeviceName: string;
-  userDeviceType: string;
-  userDeviceID: string;
-  userDeviceBrowser: string;
-  userDeviceOS: string;
-  userIPAddress: string;
-}
-
-export interface UserSession {
-  userID: string;
-  userSessionID: string;
-  userDeviceName: string;
-  userDeviceType: string;
-  userDeviceBrowser: string;
-  userDeviceOS: string;
-  userIPAddress: string;
-}
-
-
+// Interface for user session refresh
 export interface UserSessionRefresh {
   refreshSessionToken: string,
   userID: string,
@@ -27,6 +8,8 @@ export interface UserSessionRefresh {
   userIPAddress: string
 }
 
+// Selecting fields from UserSession
+// To get active session record from DB
 export const ActiveSessionSelect: Prisma.UserSessionSelect = {
   refreshTokenHash: true,
   userSessionID: true,
@@ -44,5 +27,6 @@ export const ActiveSessionSelect: Prisma.UserSessionSelect = {
   },
 };
 
+// Type for active session record
 export type ActiveSessionRecord =
   Prisma.UserSessionGetPayload<{ select: typeof ActiveSessionSelect }>;

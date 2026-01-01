@@ -4,7 +4,7 @@ import { continueWithEmailHandler } from "@handlers/signup/continue/with_email";
 import { continueWithUsernameHandler } from "@handlers/signup/continue/with_username";
 import { sendVerificationEmailHandler } from "@handlers/signup/verification/send_email";
 import { verifyUserEmailHandler } from "@handlers/signup/verification/verify_email";
-import { completeSignupHandler } from "@handlers/signup/complete_signup";
+import { completeSignupHandler } from "@handlers/signup/complete";
 
 const router = Router();
 

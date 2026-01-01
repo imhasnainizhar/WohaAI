@@ -1,40 +1,24 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
-import { prisma } from "../../clients/prisma";
-import { signInSchema, SigInUser } from "shared/schemas/signin";
+import { prisma } from "../clients/prisma";
 import { logger } from "@utils/logger";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import { env, EXPIRATION } from "@config/env";
 import { createUserSession } from "@utils/create_user_session";
-import { ClientData } from "../domain/types/session";
+import { SigninDTO } from "@packages/shared/auth/signin/dto";
+
 
 /**
  * Core business logic for user sign-in.
  * Validates input, verifies credentials, generates JWT tokens, and returns cookies.
  */
 export const signinService = async <T>(
-  body: SigInUser,
-  clientData: ClientData
-): Promise<ServiceResponse<T>> => {
+  { usernameOrEmail,
+    password,
+    clientData
+  }: SigninDTO): Promise<ServiceResponse<T>> => {
   try {
-
-    // Validate the request body using Zod schema
-    const parsed = signInSchema.safeParse(body);
-    if (!parsed.success) {
-      // If validation fails, log the error and throw structured ServiceException
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 400,
-          message: "Invalid input fields.",
-          errorType: "validation_error",
-          errors: parsed.error.flatten().fieldErrors,
-        })
-      );
-    }
-    const { username, password, email } = body;
-
-    if (!email && !username) {
+    if (!usernameOrEmail.value) {
       throw new ServiceException(
         ServiceResponse.error({
           success: false,
@@ -46,9 +30,9 @@ export const signinService = async <T>(
       );
     }
 
-    // ✅ Fetch full user record for authentication
+    // Fetch full user record for authentication
     const user = await prisma.user.findFirst({
-      where: { OR: [{ email }, { username }] },
+      where: { OR: [{ username: usernameOrEmail.value }, { email: usernameOrEmail.value }] },
       select: {
         userID: true,
         userFirstName: true,
@@ -70,7 +54,7 @@ export const signinService = async <T>(
       );
     }
 
-    // ✅ Verify password
+    // Verify password
     const isPasswordCorrect = await argon2.verify(user.hashedPassword, password);
     if (!isPasswordCorrect) {
       throw new ServiceException(
@@ -83,7 +67,7 @@ export const signinService = async <T>(
       );
     }
 
-    // ✅ Ensure JWT keys are available
+    // Ensure JWT keys are available
     const { JWT_ACCESS_SECRET_KEY, JWT_REFRESH_SECRET_KEY } = env;
     if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
       throw new ServiceException(
@@ -96,15 +80,23 @@ export const signinService = async <T>(
       );
     }
 
-    // 🧩 Step 1: Generate refresh token
+    // Generate session ID
+    const userSessionID = crypto.randomUUID();
+
+    // Generate refresh token with session ID
     const refreshToken = jwt.sign(
-      { sub: user.userID },
+      { sub: user.userID, userSessionID },
       JWT_REFRESH_SECRET_KEY,
       { expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions
     );
 
-    // 🧩 Step 2: Create a session record in DB (hash refresh token, store device/IP info)
-    const session = await createUserSession(user.userID, clientData, refreshToken);
+    // Create a session record in DB (hash refresh token, store device/IP info)
+    const session = await createUserSession({
+      userID: user.userID,
+      clientData,
+      refreshToken,
+      userSessionID,
+    });
 
     const finalRefreshToken = jwt.sign(
       { sub: user.userID, userSessionID: session.userSessionID },
@@ -112,7 +104,7 @@ export const signinService = async <T>(
       { expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions
     );
 
-    // 🧩 Step 3: Generate access token tied to this session
+    // Generate access token tied to this session
     const accessToken = jwt.sign(
       {
         sub: user.userID,
@@ -124,7 +116,7 @@ export const signinService = async <T>(
       { expiresIn: EXPIRATION.JWT_ACCESS_SESSION_TOKEN } as SignOptions
     );
 
-    // 🧩 Step 4: Prepare cookies
+    // Prepare cookies
     const sameSite = env.SAME_SITE_COOKIE_OPTION;
     const secureSite = env.SECURE_COOKIE_OPTION;
 
@@ -162,7 +154,7 @@ export const signinService = async <T>(
       device: session.userDeviceName,
     });
 
-    // ✅ Step 5: Return unified service response
+    // Return unified service response
     return ServiceResponse.success({
       success: true,
       statusCode: 200,

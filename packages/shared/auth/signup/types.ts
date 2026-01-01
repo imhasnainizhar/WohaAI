@@ -8,9 +8,6 @@ import { GetStartedSchema,
     verifyUserEmailSchema
 } from './schemas';
 
-export interface SignupSessionPayload extends JwtPayload {
-    signupSessionID: string;
-}
 
 export type GetStartedType = z.infer<typeof GetStartedSchema>;
 export type sendVerificationEmail = z.infer<typeof sendVerificationEmailSchema>;

@@ -23,7 +23,6 @@ export interface CompleteSignupDTO {
     firstName: string;
     lastName: string;
     password: string;
-    confirmPassword: string;
     dateOfBirth: Date;
 }
 
@@ -37,6 +36,5 @@ export interface SendVerificationEmailDTO {
 
 export interface VerifyUserEmailDTO {
     signupSessionID: string;
-    email: string;
     verificationCode: string;
 }

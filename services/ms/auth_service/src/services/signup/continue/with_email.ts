@@ -1,11 +1,10 @@
 import { internalError, throwConflictError, throwValidationError } from "@errors/auth";
 import { logger } from "@utils/logger";
 import { getSignupCache, setSignupCache } from "@utils/redis";
-import { ContinueWithEmailDTO } from "@shared/domain/interfaces/auth/signup/dto";
+import { ContinueWithEmailDTO } from "@packages/shared/auth/signup/dto";
 import { prisma } from "../../../clients/prisma";
-import { env, EXPIRATION } from "@config/env";
 import { ServiceException, ServiceResponse } from "@utils/response";
-import { EmailSignupSchema } from "@shared/zod/schemas/auth/signup/continue/with_email";
+import { EmailSignupSchema } from "@packages/shared/auth/signup/schemas";
 
 /**
  * continueWithEmail api is a proceeding step after username during signup

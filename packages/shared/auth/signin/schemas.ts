@@ -2,7 +2,7 @@ import z from "zod";
 import { signupRegex } from "../../regex/auth";
 import { Password } from "../zod/objects/user";
 
-export const SignInSchema = z.object({
+export const SigninSchema = z.object({
   usernameOrEmail: z
     .string()
     .min(1, "Required")

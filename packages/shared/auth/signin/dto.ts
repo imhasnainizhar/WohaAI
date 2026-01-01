@@ -1,4 +1,7 @@
+import { ClientData } from "@packages/shared/common/auth/types";
+
 export interface SigninDTO {
-    usernameOrEmail: string;
+    usernameOrEmail: { type: "email" | "username"; value: string };
     password: string;
+    clientData: ClientData;
 }

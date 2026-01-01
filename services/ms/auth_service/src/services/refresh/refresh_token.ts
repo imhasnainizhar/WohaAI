@@ -1,4 +1,4 @@
-import { RefreshTokenDTO } from '@shared/domain/interfaces/auth/refresh/dto';
+import { RefreshTokenDTO } from '@packages/shared/auth/refresh/dto';
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@clients/prisma";
@@ -6,10 +6,11 @@ import { logger } from "@utils/logger";
 import { env, EXPIRATION } from "@config/env";
 import { ServiceResponse, ServiceException } from "@utils/response";
 import {
-  UserSessionRefresh,
   ActiveSessionRecord,
   ActiveSessionSelect
 } from "../../internals/types/session";
+import { throwSessionExpired } from '@errors/auth';
+import { AccessTokenPayload, RefreshTokenPayload } from '@packages/shared/common/auth/jwt/types';
 
 
 /**
@@ -17,7 +18,7 @@ import {
  * This service does not need zod validator as dto depends on http-only cookies and req headers.
  * @param dto : RefreshTokenDTO
  */
-export async function refreshToken<T>({ cookies, userIPAddress }: RefreshTokenDTO) {
+export async function refreshTokenService<T>({ cookies, userIPAddress }: RefreshTokenDTO) {
   try {
     const { JWT_REFRESH_SECRET_KEY, JWT_ACCESS_SECRET_KEY } = env;
 
@@ -36,16 +37,7 @@ export async function refreshToken<T>({ cookies, userIPAddress }: RefreshTokenDT
     let payload: (JwtPayload & { userSessionID?: string }) | null = null;
     const refreshToken = cookies[env.REFRESH_TOKEN_NAME];
 
-    if (!refreshToken) {
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 401,
-          message: "Refresh token not found.",
-          errorType: "token_error",
-        })
-      );
-    }
+    if (!refreshToken) throwSessionExpired();
 
     try {
       const decoded = jwt.verify(
@@ -54,16 +46,7 @@ export async function refreshToken<T>({ cookies, userIPAddress }: RefreshTokenDT
       );
       payload = typeof decoded === "string" ? null : decoded;
     } catch (e: any) {
-      if (e.name === "TokenExpiredError") {
-        throw new ServiceException(
-          ServiceResponse.error({
-            success: false,
-            statusCode: 401,
-            message: "Refresh token expired.",
-            errorType: "token_expired",
-          })
-        );
-      }
+      if (e.name === "TokenExpiredError") throwSessionExpired();
 
       throw new ServiceException(
         ServiceResponse.error({
@@ -76,16 +59,7 @@ export async function refreshToken<T>({ cookies, userIPAddress }: RefreshTokenDT
     }
 
     // Checking payload
-    if (!payload?.sub || !payload?.userSessionID) {
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 401,
-          message: "Invalid refresh token payload.",
-          errorType: "invalid_token",
-        })
-      );
-    }
+    if (!payload?.sub || !payload?.userSessionID) return throwSessionExpired();
 
     // Fetch Session
     let activeSessionsRecord: ActiveSessionRecord | null = null;
@@ -149,32 +123,43 @@ export async function refreshToken<T>({ cookies, userIPAddress }: RefreshTokenDT
         data: { revoked: true, revokedAt: new Date() }
       });
 
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 401,
-          message: "Session expired, require signin.",
-          errorType: "session_expired",
-        })
-      );
+      throwSessionExpired();
     }
 
     // Get user through record
     const user = activeSessionsRecord.user;
 
+    const refreshTokenPayload: RefreshTokenPayload = {
+      sub: user.userID,
+      jti: crypto.randomUUID(),
+      userID: user.userID,
+      userSessionID: payload.userSessionID,
+      emailVerified: true,
+      email: user.email,
+      username: user.username,
+    };
+
+    // Prepare access token payload
+    const accessPayload: AccessTokenPayload = {
+      sub: user.userID,
+      jti: crypto.randomUUID(),
+      userID: user.userID,
+      userSessionID: payload.userSessionID,
+      emailVerified: true,
+      email: user.email,
+      username: user.username,
+      role: "user",
+    };
+
     // Issue tokens(Refresh and access, refresh token just for new expiry)
     const newAccessToken = jwt.sign(
-      {
-        sub: user.userID,
-        email: user.email,
-        name: `${user.userFirstName} ${user.userLastName}`
-      },
+      accessPayload,
       JWT_ACCESS_SECRET_KEY,
       { expiresIn: EXPIRATION.JWT_ACCESS_SESSION_TOKEN } as SignOptions
     );
 
     const newRefreshToken = jwt.sign(
-      { sub: user.userID, userSessionID: payload.userSessionID },
+      refreshTokenPayload,
       JWT_REFRESH_SECRET_KEY,
       { expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions
     );

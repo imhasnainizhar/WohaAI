@@ -5,6 +5,11 @@ import { getStartedService } from "@services/signup/get_started";
 import { GetStartedSchema } from "@packages/shared/auth/signup/schemas";
 import { throwValidationError } from "@errors/auth";
 
+/**
+ * Handler for user signup get started.
+ * Validates input and calls for get started service.
+ * Then service create signup session if user is new.
+ */
 export const getStartedHandler = asyncHandler(
     async (req: Request, res: Response) => {
         // Parsing request body

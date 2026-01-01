@@ -5,12 +5,14 @@ import { setCache } from "@utils/redis";
 import { prisma } from "../../clients/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { logger } from "@utils/logger";
-import { GetStartedSchema } from "@packages/shared/auth/signup/schemas";
-import { GetStartedType } from "@packages/shared/auth/signup/types";
 import { GetStartedResponseData } from "@packages/shared/auth/signup/response/types";
 import { GetStartedDTO } from "@packages/shared/auth/signup/dto";
 
-
+/**
+ * @description This is service to get started with signup, taking email or username.
+ * @param dto : GetStartedDTO
+ * @returns ServiceResponse<GetStartedResponseData>
+ */
 export const getStartedService = async (dto: GetStartedDTO): Promise<ServiceResponse<GetStartedResponseData>> => {
   try {
     // Taking type and value of user identifier
