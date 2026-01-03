@@ -6,7 +6,7 @@ services:
       target: ${NODE_ENV}
       additional_contexts:
         packages: ../../../packages/
-    container_name: auth-service
+    container_name: ${AUTH_CONTAINER_NAME}
     ports:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     volumes:
@@ -15,16 +15,17 @@ services:
     restart: always
     env_file:
       - ../../../.env
-      - ../../../.env.docker
     networks:
       - microservices_net
 
   user-service:
     build:
       context: ../../../services/ms/user_service/
+      additional_contexts:
+        packages: ../../../packages/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: user-service
+    container_name: ${USER_CONTAINER_NAME}
     ports:
       - "${USERS_POSTGRES_DB_INTERNAL_PORT}:${USERS_POSTGRES_DB_EXTERNAL_PORT}"
     volumes:
@@ -32,16 +33,17 @@ services:
     restart: always
     env_file:
       - ../../../.env
-      - ../../../.env.docker
     networks:
       - microservices_net
 
   auth-mailer-service:
     build:
       context: ../../../services/ms/auth_mailer_service/
+      additional_contexts:
+        packages: ../../../packages/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: auth-mailer-service
+    container_name: ${AUTH_MAILER_CONTAINER_NAME}
     ports:
       - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
     volumes:
@@ -49,11 +51,26 @@ services:
     restart: always
     env_file:
       - ../../../.env
-      - ../../../.env.docker
     networks:
       - microservices_net
-    environment:
-      - RUST_BACKTRACE=1
+
+  # captcha_verification_service:
+  #   build:
+  #     context: ../src/ms/captcha_verification_service/
+  #     additional_contexts:
+  #       packages: ../../../packages/
+  #     dockerfile: Dockerfile
+  #     target: ${NODE_ENV}
+  #     container_name: ${CAPTCHA_VERIFICATION_CONTAINER_NAME}
+  #   ports:
+  #     - "${CAPTCHA_VERIFICATION_PORT}:${CAPTCHA_VERIFICATION_PORT}"
+  #   volumes:
+  #     - ../src/ms/captcha_verification_service/src:/app/src
+  #   restart: always
+  #   environment:
+  #     - NODE_ENV=${NODE_ENV}
+  #     - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+  #     - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
 
 networks:
   microservices_net:

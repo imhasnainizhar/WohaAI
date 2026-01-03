@@ -1,18 +1,17 @@
 services:
   frontend_app:
     build:
-      context: ../../../src/frontend
+      context: ../../../services/frontend
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: frontend_app
+    container_name: ${FRONTEND_APP_CONTAINER_NAME}
     ports:
       - "${FRONTEND_APP_PORT}:${FRONTEND_APP_PORT}"
     volumes:
-      - ../../../src/frontend/src:/app/src
+      - ../../../services/frontend/src:/app/src
     restart: always
     env_file:
       - ../../../.env
-      - ../../../.env.docker
     networks:
       - microservices_net_01
 networks:

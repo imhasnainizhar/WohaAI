@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@middlewares/async_handler";
-import { sendResponse } from "@shared/utils/response";
+import { sendResponse } from "@packages/shared/utils";
 import { verifyUserEmailService } from "@services/signup/verification/confirm_email";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
 import { SignupSessionPayload } from "@shared/common/auth/jwt/types";
-import { throwSessionExpired } from "@shared/errors/auth/errors";
+import { throwSessionExpired } from "@packages/shared/errors";
 
 /**
  * Handler for user signup verification verify email.
