@@ -4,7 +4,7 @@ services:
   # ===========================
   users_postgres_db:
     image: postgres:16
-    container_name: users_postgres_db
+    container_name: ${USERS_POSTGRES_DB_HOST}
     restart: always
     environment:
       POSTGRES_USER: ${USERS_POSTGRES_DB_USER}
@@ -23,7 +23,7 @@ services:
   # ===========================
   threads_postgres_db:
     image: postgres:16
-    container_name: threads_postgres_db
+    container_name: ${THREADS_POSTGRES_DB_HOST}
     restart: always
     environment:
       POSTGRES_USER: ${THREADS_POSTGRES_DB_USER}
@@ -39,7 +39,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - woahai_data_net
+      - data_net
       - microservices_net
 
   pgadmin_gui:
@@ -47,15 +47,15 @@ services:
     container_name: pgadmin_gui
     restart: always
     depends_on:
-      - users_postgres_db
-      - threads_postgres_db
+      - ${USERS_POSTGRES_DB_HOST}
+      - ${THREADS_POSTGRES_DB_HOST}
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@dev.com
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
     networks:
-    - woahai_data_net
+    - data_net
     - microservices_net
 
 volumes:
@@ -64,7 +64,7 @@ volumes:
   pgdata:
 
 networks:
-  woahai_data_net:
+  data_net:
     external: true
 
   microservices_net:
