@@ -1,17 +1,16 @@
-import { RefreshTokenDTO } from '@packages/shared/auth/refresh/dto';
+import { RefreshTokenDTO } from '@packages/shared/auth';
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@clients/prisma";
-import { logger } from "@utils/logger";
+import { logger } from "@packages/shared/utils";
 import { env, EXPIRATION } from "@config/env";
-import { ServiceResponse, ServiceException } from "@utils/response";
 import {
   ActiveSessionRecord,
   ActiveSessionSelect
-} from "../../internals/types/session";
-import { throwSessionExpired } from '@errors/auth';
-import { AccessTokenPayload, RefreshTokenPayload } from '@packages/shared/common/auth/jwt/types';
-
+} from "@internals/types/session";
+import { throwSessionExpired } from '@packages/shared/errors';
+import { AccessTokenPayload, RefreshTokenPayload } from '@packages/shared/common';
+import { ServiceException, ServiceResponse } from '@packages/shared/utils';
 
 /**
  * @description This is handler service to refresh access token
@@ -118,10 +117,12 @@ export async function refreshTokenService<T>({ cookies, userIPAddress }: Refresh
     }
 
     if (!isValid) {
+      console.log("DEBUG: Hash mismatch, revoking session...");
       await prisma.userSession.update({
         where: { userSessionID: payload.userSessionID },
         data: { revoked: true, revokedAt: new Date() }
       });
+      console.log("DEBUG: Session revoked.");
 
       throwSessionExpired();
     }
@@ -186,7 +187,6 @@ export async function refreshTokenService<T>({ cookies, userIPAddress }: Refresh
       data: {
         newAccessToken,
         newRefreshToken,
-        user,
       } as T,
     });
 

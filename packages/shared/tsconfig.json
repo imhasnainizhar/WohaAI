@@ -1,12 +1,14 @@
 {
     "compilerOptions": {
+        "composite": true,
+        "declaration": true,
         /* Language and Environment */
         "target": "ES2022",
         "lib": [
             "ES2022"
         ],
         "module": "NodeNext",
-        "moduleResolution": "node16",
+        "moduleResolution": "NodeNext",
         "allowSyntheticDefaultImports": true,
         /* Project Structure */
         "outDir": "./dist",
@@ -21,37 +23,15 @@
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@common/*": [
-                "./common/*"
-            ],
-            "@middleware/*": [
-                "./middleware/*"
-            ],
-            "@auth/*": [
-                "./auth/*"
-            ],
-            "@utils/*": [
-                "./utils/*"
-            ],
-            "@errors/*": [
-                "./errors/*"
-            ],
-            "lib/*": [
-                "./lib/*"
-            ],
-            "@regex/*": [
-                "./regex/*"
-            ],
+            "@shared/*": [
+                "./*"
+            ]
         },
         /* Output + Debugging */
         "sourceMap": true
     },
     "include": [
-        "utils/**/*.ts",
-        "zod/schemas/**/*.ts",
-        "errors/**/*.ts",
-        "lib/**/*.ts",
-        "auth/domain/**/*.ts", "auth/cookie.ts",
+        "**/*.ts",
     ],
     "exclude": [
         "node_modules",

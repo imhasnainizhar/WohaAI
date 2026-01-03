@@ -1,9 +1,9 @@
 // shared/errors/index.ts
-import { logger } from "@utils/logger";
-import { ServiceException, ServiceResponse } from "@utils/response";
+import { logger } from "@shared/utils/logger";
+import { ServiceException, ServiceResponse } from "@shared/utils/response"
 import { ZodError } from "zod";
-import { StandardError } from "@errors/types";
-import { sanitizedFieldErrors } from "@errors/field";
+import { StandardError } from "./types";
+import { sanitizedFieldErrors } from "./field";
 
 
 /**
@@ -64,7 +64,7 @@ export const throwSessionExpired = (): never => {
  * Throws a standardized internal server error for unexpected failures.
  * @param err - Optional error object for logging
  */
-export const internalError = (err?: any): never => {
+export const throwInternalError = (err?: any): never => {
   logger.error({ message: "Internal server error", error: err?.message });
   throw new ServiceException(
     ServiceResponse.error<StandardError>({

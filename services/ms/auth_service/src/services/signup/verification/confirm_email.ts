@@ -1,10 +1,10 @@
 import { EXPIRATION } from "@config/env";
-import { createJwtToken } from "@utils/jwt";
-import { logger } from "@utils/logger";
-import { getCache, deleteCache, setCache } from "@utils/redis";
-import { ServiceResponse, ServiceException } from "@utils/response";
+import { createJwtToken } from "../../../internals/utils/jwt";
+import { logger } from "../../../internals/utils/logger";
+import { getCache, deleteCache, setCache } from "../../../internals/utils/redis";
+import { ServiceResponse, ServiceException } from "../../../internals/utils/response";
 import { env } from "@config/env";
-import { VerifyUserEmailDTO } from "@packages/shared/auth/signup/dto";
+import { VerifyUserEmailDTO } from "@shared/auth/signup/dto";
 
 /**
  * Verify the email verification code and return a short-lived token for next signup step.

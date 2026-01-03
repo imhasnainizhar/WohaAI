@@ -1,12 +1,12 @@
 import { asyncHandler } from "@middlewares/async_handler";
-import { throwValidationError } from "@errors/auth";
+import { throwValidationError } from "@packages/shared/errors";
 import continueWithEmailService from "@services/signup/continue/with_email";
-import { SignupSessionPayload } from "@packages/shared/common/auth/jwt/types";
-import { EmailSignupSchema } from "@packages/shared/auth/signup/schemas";
+import { SignupSessionPayload } from "@packages/shared/common";
+import { EmailSignupSchema } from "@packages/shared/auth";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { sendResponse } from "@packages/shared/utils/response";
-import { throwSessionExpired } from "@packages/shared/errors/auth/errors";
+import { sendResponse } from "@packages/shared/utils";
+import { throwSessionExpired } from "@packages/shared/errors";
 
 
 /**

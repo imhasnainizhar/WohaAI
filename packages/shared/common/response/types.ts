@@ -1,4 +1,4 @@
-import { Cookie } from "../../common/cookie";
+import { Cookie } from "@shared/common/auth/cookie";
 import { Response } from "express";
 
 /* -------------------------------------------------------

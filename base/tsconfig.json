@@ -1,0 +1,36 @@
+{
+   "compilerOptions": {
+      /* =========================
+         Module Resolution & Target
+      ========================== */
+      "target": "ES2022",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "lib": ["ES2022"],
+      "types": ["node"],
+  
+      /* =========================
+         Monorepo Path Aliases
+      ========================== */
+      "baseUrl": ".",
+      "paths": {
+        "@packages/*": ["packages/*"],
+      },
+  
+      /* =========================
+         TS Strictness
+      ========================== */
+      "strict": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "forceConsistentCasingInFileNames": true,
+  
+      /* =========================
+         Output Behavior (per-project)
+      ========================== */
+      "resolveJsonModule": true
+    },
+  "include": ["packages/**/*.ts", "services/**/*.ts"]
+}
+  

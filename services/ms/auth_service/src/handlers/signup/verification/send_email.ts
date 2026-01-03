@@ -3,9 +3,9 @@ import { asyncHandler } from "@middlewares/async_handler";
 import { sendVerificationEmailService } from "@services/signup/verification/send_email";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { SignupSessionPayload } from "@packages/shared/common/auth/jwt/types";
-import { throwSessionExpired } from "@packages/shared/errors/auth/errors";
-import { sendResponse } from "@packages/shared/utils/response";
+import { SignupSessionPayload } from "@packages/shared/common";
+import { throwSessionExpired } from "@packages/shared/errors";
+import { sendResponse } from "@packages/shared/utils";
 
 /**
  * Handler for user signup verification send email.

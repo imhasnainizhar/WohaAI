@@ -1,7 +1,9 @@
 {
-  "name": "shared",
+  "name": "@packages/shared",
   "version": "1.0.0",
   "description": "Shared stuff for repo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "keywords": [
     "ai",
     "agents",
@@ -16,13 +18,46 @@
   },
   "license": "MIT",
   "author": "Hasnain Izhar",
-  "type": "commonjs",
-  "main": "index.ts",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "packages:dev": "tsc -w",
+    "packages:build": "tsc"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./errors": {
+      "import": "./dist/errors/index.js",
+      "require": "./dist/errors/index.js",
+      "types": "./dist/errors/index.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/auth/index.js",
+      "require": "./dist/auth/index.js",
+      "types": "./dist/auth/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./regex": {
+      "import": "./dist/regex/index.js",
+      "require": "./dist/regex/index.js",
+      "types": "./dist/regex/index.d.ts"
+    },
+    "./lib": {
+      "import": "./dist/lib/index.js",
+      "require": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    },
+    "./common": {
+      "import": "./dist/common/index.js",
+      "require": "./dist/common/index.js",
+      "types": "./dist/common/index.d.ts"
+    }
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",

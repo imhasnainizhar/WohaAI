@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ServiceException, sendResponse } from "@utils/response";
+import { ServiceException, sendResponse } from "@shared/utils/response";
 
 export const errorHandler = (
   err: unknown,

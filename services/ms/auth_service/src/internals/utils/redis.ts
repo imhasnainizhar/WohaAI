@@ -1,7 +1,7 @@
 // src/utils/redis_client.ts
 import { env, EXPIRATION } from "@config/env";
-import { throwSessionExpired } from "@errors/auth";
-import { logger } from "@utils/logger";
+import { throwSessionExpired } from "@internals/errors/auth";
+import { logger } from "./logger";
 import { redisClient } from "@clients/redis";
 
 /** 

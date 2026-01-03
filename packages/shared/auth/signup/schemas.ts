@@ -2,7 +2,7 @@ import z from "zod";
 import { FirstName, LastName, DateOfBirth, Password, ConfirmPassword } from "../zod/objects/user";
 import { Email } from "../zod/objects/user";
 import { Username } from "../zod/objects/user";
-import { signupRegex } from "../../regex/auth";
+import { signupRegex } from "../../regex/auth/signup";
 import { VerificationCode } from "../zod/objects/verification";
 import { SignupSessionID } from "../zod/objects/session";
 

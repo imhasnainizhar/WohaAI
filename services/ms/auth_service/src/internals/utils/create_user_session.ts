@@ -1,7 +1,7 @@
 import argon2 from "argon2";
-import { prisma } from "../clients/prisma";
-import { logger } from "@utils/logger";
-import { ClientData } from "@packages/shared/common/auth/types";
+import { prisma } from "../../clients/prisma";
+import { logger } from "./logger";
+import { ClientData } from "@shared/common/auth/types";
 import { UserSession } from "@prisma/client";
 
 /**

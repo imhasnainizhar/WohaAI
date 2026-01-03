@@ -1,5 +1,5 @@
 import UAParser from "ua-parser-js";
-import { ClientData } from "@packages/shared/common/auth/types";
+import { ClientData } from "@shared/common/auth/types";
 import { Request } from "express";
 
 

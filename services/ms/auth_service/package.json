@@ -7,9 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "dev": "concurrently \"nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/server.ts\"",
+    "build": "tsc -b -w ../../../packages/shared ./ && tsc-alias -p .",
+    "start": "nodemon dist/server.js",
     "prepare": "npm run prisma:generate",
     "postinstall": "",
     "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
@@ -27,6 +27,7 @@
   "author": "Hasnain Izhar",
   "license": "MIT",
   "dependencies": {
+    "@packages/shared": "1.0.0",
     "@fluvio/client": "^0.14.9",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
@@ -38,6 +39,7 @@
     "express": "^5.1.0",
     "ioredis": "^5.8.1",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "pg": "^8.16.3",
     "pino": "^10.1.0",
     "pino-pretty": "^13.1.2",
@@ -56,11 +58,13 @@
     "@types/nodemon": "^1.19.6",
     "@types/redis": "^4.0.10",
     "@types/ua-parser-js": "^0.7.39",
+    "concurrently": "^9.2.1",
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
     "prisma": "^7.2.0",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
   }

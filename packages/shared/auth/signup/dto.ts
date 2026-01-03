@@ -28,10 +28,6 @@ export interface CompleteSignupDTO {
 
 export interface SendVerificationEmailDTO {
     signupSessionID: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    verificationCode: string;
 }
 
 export interface VerifyUserEmailDTO {

@@ -1,5 +1,5 @@
 import z from "zod";
-import { signupRegex } from "../../regex/auth";
+import { signupRegex } from "../../regex/auth/signup";
 import { Password } from "../zod/objects/user";
 
 export const SigninSchema = z.object({

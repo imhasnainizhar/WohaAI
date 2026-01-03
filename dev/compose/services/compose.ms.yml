@@ -4,11 +4,14 @@ services:
       context: ../../../services/ms/auth_service/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
+      additional_contexts:
+        packages: ../../../packages/
     container_name: auth-service
     ports:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     volumes:
       - ../../../services/ms/auth_service/src:/app/src
+      - ../../../packages/:/app/packages
     restart: always
     env_file:
       - ../../../.env

@@ -1,10 +1,24 @@
 // __tests__/generateVerificationCodeService.test.ts
+import { env } from "@config/env";
 import { Fluvio } from "@fluvio/client";
-import { generateVerificationCodeService } from "@services/signup/verification/send_email";
-import { setCache, getCache } from "@utils/redis";
-import { ServiceException } from "@utils/response";
+import { SendVerificationEmailDTO } from "@shared/auth/signup/dto";
+import { sendVerificationEmailService } from "@services/signup/verification/send_email";
+import { setCache, getCache } from "../../../../src/internals/utils/redis";
+import { ServiceException } from "../../../../src/internals/utils/response";
 
+// Mocks
 jest.mock("@utils/redis");
+
+// Mock logger to suppress console output during tests
+jest.mock("@utils/logger", () => ({
+  logger: {
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+    info: jest.fn(),
+    fatal: jest.fn(),
+  },
+}));
 
 jest.mock("@fluvio/client", () => {
   const mockSend = jest.fn().mockResolvedValue(true);
@@ -23,6 +37,13 @@ describe("generateVerificationCodeService", () => {
   const signupSessionId = "session123";
   const pendingEmail = "user@example.com";
   const pendingUserStr = JSON.stringify({ email: pendingEmail });
+  const dto: SendVerificationEmailDTO = {
+    signupSessionID: signupSessionId,
+    firstName: "John",
+    lastName: "Doe",
+    email: pendingEmail,
+    verificationCode: "123456",
+  };
 
   let mockSend: jest.Mock;
 
@@ -42,24 +63,22 @@ describe("generateVerificationCodeService", () => {
   });
 
   it("should generate a verification code and send Fluvio event", async () => {
-    const response = await generateVerificationCodeService(signupSessionId);
+    const response = await sendVerificationEmailService(dto);
 
     expect(response.success).toBe(true);
-    expect(response.data?.code).toHaveLength(6);
-    expect(getCache).toHaveBeenCalledWith(`pending_signup:${signupSessionId}`);
+    expect(getCache).toHaveBeenCalledWith(`${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionId}`);
     expect(setCache).toHaveBeenCalled();
     expect(mockSend).toHaveBeenCalled();
 
     const eventPayload = JSON.parse(mockSend.mock.calls[0][1]);
     expect(eventPayload.email).toBe(pendingEmail);
-    expect(eventPayload.code).toBe(response.data?.code);
     expect(eventPayload.sessionId).toBe(signupSessionId);
   });
 
   it("should return error if session does not exist", async () => {
     (getCache as jest.Mock).mockResolvedValue(null);
 
-    const response = await generateVerificationCodeService(signupSessionId);
+    const response = await sendVerificationEmailService(dto);
     expect(response.success).toBe(false);
     expect(response.errorType).toBe("session_expired");
   });
@@ -67,7 +86,7 @@ describe("generateVerificationCodeService", () => {
   it("should throw ServiceException if Redis fails to store code", async () => {
     (setCache as jest.Mock).mockResolvedValue(false);
 
-    await expect(generateVerificationCodeService(signupSessionId))
+    await expect(sendVerificationEmailService(dto))
       .rejects
       .toThrow(ServiceException);
   });

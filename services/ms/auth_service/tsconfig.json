@@ -21,9 +21,6 @@
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@app": [
-                "./src/app"
-            ],
             "@config/*": [
                 "./src/config/*"
             ],
@@ -42,28 +39,27 @@
             "@handlers/*": [
                 "./src/handlers/*"
             ],
-            "@utils/*": [
-                "./src/utils/*"
-            ],
             "@internals/*": [
                 "./src/internals/*"
             ],
-            "@errors/*": [
-                "./src/errors/*"
-            ],
-            "@packages/*": [
-                "../../../packages/*"
-            ],
             "@clients/*": [
                 "./src/clients/*"
-            ]
+            ],
+            /* Shared Package Root Alias */
+            "@shared/*": [
+                "../../../packages/shared/dist/*"
+            ],
         },
         /* Output + Debugging */
         "sourceMap": true
     },
+    "references": [
+        {
+            "path": "../../../packages/shared/"
+        }
+    ],
     "include": [
-        "src/**/*.ts",
-        "tests/**/*.ts"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules",

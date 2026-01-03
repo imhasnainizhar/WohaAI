@@ -1,6 +1,6 @@
 import { Response } from "express";
-import { Cookie } from "../common/auth/cookie";
-import { ApiResponseOptions } from "../../auth/domain/types/api/response";
+import { Cookie } from "@shared/common/auth/cookie";
+import { ApiResponseOptions } from "@shared/common/response/types";
 
 /* -------------------------------------------------------
    SERVICE RESPONSE (for internal services)

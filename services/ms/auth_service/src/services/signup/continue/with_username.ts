@@ -1,11 +1,10 @@
-import { internalError, throwConflictError, throwValidationError } from "@errors/auth";
-import { logger } from "@utils/logger";
-import { getSignupCache, setSignupCache } from "@utils/redis";
-import { prisma } from "../../../clients/prisma";
-import { env, EXPIRATION } from "@config/env";
-import { ServiceException, ServiceResponse } from "@utils/response";
-import { UsernameSignupSchema } from "@packages/shared/auth/signup/schemas";
-import { ContinueWithUsernameDTO } from "@packages/shared/auth/signup/dto";
+import { throwInternalError, throwConflictError, throwValidationError, throwSessionExpired } from "@packages/shared/errors";
+import { logger } from "@packages/shared/utils";
+import { getSignupCache, setSignupCache } from "@internals/utils/redis";
+import { prisma } from "@clients/prisma";
+import { ServiceException, ServiceResponse } from "@packages/shared/utils";
+import { UsernameSignupSchema } from "@packages/shared/auth";
+import { ContinueWithUsernameDTO } from "@packages/shared/auth";
 
 
 /**
@@ -19,8 +18,8 @@ export default async function continueWithUsernameService({ signupSessionID, use
 
         const pending = await getSignupCache(signupSessionID);
         if (!pending) {
-            throwValidationError("Invalid signup session ID.", "signupSessionID");
-        }
+            throwSessionExpired();
+        };
 
         const parsed = UsernameSignupSchema.safeParse({ username: username.trim() });
         if (!parsed.success) throwValidationError(parsed.error, "username");
@@ -61,6 +60,6 @@ export default async function continueWithUsernameService({ signupSessionID, use
             stack: error?.stack,
         });
 
-        throw internalError();
+        throw throwInternalError();
     }
 }

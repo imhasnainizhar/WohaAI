@@ -1,8 +1,4 @@
 import z from "zod";
-import { SignInSchema } from "./schemas";
+import { SigninSchema } from "./schemas";
 
-export type SigninSessionPayload = {
-    signinSessionID: string;
-};
-
-export type SignInType = z.infer<typeof SignInSchema>;
+export type SignInType = z.infer<typeof SigninSchema>;
