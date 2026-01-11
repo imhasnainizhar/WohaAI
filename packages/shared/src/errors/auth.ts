@@ -1,6 +1,6 @@
 // shared/errors/index.ts
-import { logger } from "@shared/utils/logger";
-import { ServiceException, ServiceResponse } from "@shared/utils/response"
+import { logger } from "../utils/logger";
+import { ServiceException, ServiceResponse } from "../utils/response"
 import { ZodError } from "zod";
 import { StandardError } from "./types";
 import { sanitizedFieldErrors } from "./field";

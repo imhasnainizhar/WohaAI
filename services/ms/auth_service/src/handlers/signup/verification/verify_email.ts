@@ -4,7 +4,7 @@ import { sendResponse } from "@packages/shared/utils";
 import { verifyUserEmailService } from "@services/signup/verification/confirm_email";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { SignupSessionPayload } from "@shared/common/auth/jwt/types";
+import { SignupSessionPayload } from "@packages/shared/common";
 import { throwSessionExpired } from "@packages/shared/errors";
 
 /**

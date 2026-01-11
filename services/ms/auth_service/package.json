@@ -27,7 +27,6 @@
   "author": "Hasnain Izhar",
   "license": "MIT",
   "dependencies": {
-    "@packages/shared": "1.0.0",
     "@fluvio/client": "^0.14.9",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",

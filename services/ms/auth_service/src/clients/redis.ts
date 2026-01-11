@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { logger } from "../internals/utils/logger";
 import { env } from "@config/env";
-import { throwInternalError } from "@shared/errors/auth";
+import { throwInternalError } from "@packages/shared/errors";
 
 const redisUrl = env.AUTH_REDIS_STORE_URI;
 

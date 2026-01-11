@@ -11,7 +11,8 @@
         "moduleResolution": "NodeNext",
         "allowSyntheticDefaultImports": true,
         /* Project Structure */
-        "outDir": "./dist",
+        "outDir": "dist",
+        "rootDir": "src",
         /* Type Checking */
         "strict": true,
         "noImplicitAny": true,
@@ -24,15 +25,13 @@
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
             "@shared/*": [
-                "./*"
+                "./src/*"
             ]
         },
         /* Output + Debugging */
         "sourceMap": true
     },
-    "include": [
-        "**/*.ts",
-    ],
+    "include": ["src"],
     "exclude": [
         "node_modules",
         "dist"

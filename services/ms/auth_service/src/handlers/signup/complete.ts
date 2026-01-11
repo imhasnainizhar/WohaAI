@@ -1,6 +1,6 @@
 import { SignupSessionPayload } from '@packages/shared/common';
 import { Request, Response } from "express";
-import { asyncHandler } from "../../middlewares/async_handler";
+import { asyncHandler } from "@middlewares/async_handler";
 import { sendResponse } from "@packages/shared/utils";
 import { completeSignupService } from "@services/signup/complete";
 import { CompleteSignupSchema } from "@packages/shared/auth";

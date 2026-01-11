@@ -36,7 +36,10 @@ app.use(errorHandler);
   }
 })();
 
-// Mount auth-related routes under /api/auth
-app.use("/api/auth", authRoutes);
+// Mount auth-related routes
+app.use("/", authRoutes);
+app.use("/hi", (req, res) => {
+  res.json({status: 200, text: "hello"})
+})
 
 export default app;

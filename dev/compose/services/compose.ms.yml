@@ -6,17 +6,23 @@ services:
       target: ${NODE_ENV}
       additional_contexts:
         packages: ../../../packages/
-    container_name: ${AUTH_CONTAINER_NAME}
+    container_name: ${AUTH_SERVICE_CONTAINER_NAME}
     ports:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     volumes:
-      - ../../../services/ms/auth_service/src:/app/src
-      - ../../../packages/:/app/packages
+      - ../../../services/ms/auth_service/src:/app/services/ms/auth_service/src
+      - ../../../packages/shared/dist:/app/packages/shared/dist
     restart: always
     env_file:
       - ../../../.env
     networks:
       - microservices_net
+      - data_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://auth-service:${AUTH_SERVICE_PORT}/health"] # Replace with your actual health check command
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   user-service:
     build:
@@ -25,9 +31,9 @@ services:
         packages: ../../../packages/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: ${USER_CONTAINER_NAME}
+    container_name: ${USER_SERVICE_CONTAINER_NAME}
     ports:
-      - "${USERS_POSTGRES_DB_INTERNAL_PORT}:${USERS_POSTGRES_DB_EXTERNAL_PORT}"
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     volumes:
       - ../../../services/ms/user_service/src:/app/src
     restart: always
@@ -35,6 +41,13 @@ services:
       - ../../../.env
     networks:
       - microservices_net
+      - data_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://${user-service}:${USER_SERVICE_PORT}/health"] # Replace with your actual health check command
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 
   auth-mailer-service:
     build:
@@ -43,7 +56,7 @@ services:
         packages: ../../../packages/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: ${AUTH_MAILER_CONTAINER_NAME}
+    container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
     ports:
       - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
     volumes:
@@ -53,7 +66,12 @@ services:
       - ../../../.env
     networks:
       - microservices_net
-
+      - data_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"] # Replace with your actual health check command
+      interval: 30s
+      timeout: 10s
+      retries: 3
   # captcha_verification_service:
   #   build:
   #     context: ../src/ms/captcha_verification_service/
@@ -67,11 +85,15 @@ services:
   #   volumes:
   #     - ../src/ms/captcha_verification_service/src:/app/src
   #   restart: always
-  #   environment:
-  #     - NODE_ENV=${NODE_ENV}
-  #     - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
-  #     - CAPTCHA_VERIFICATION_PORT=${CAPTCHA_VERIFICATION_PORT}
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/health"] # Replace with your actual health check command
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
 
 networks:
   microservices_net:
+    external: true
+
+  data_net:
     external: true

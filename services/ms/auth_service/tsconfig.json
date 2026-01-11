@@ -46,7 +46,7 @@
                 "./src/clients/*"
             ],
             /* Shared Package Root Alias */
-            "@shared/*": [
+            "@packages/shared/*": [
                 "../../../packages/shared/dist/*"
             ],
         },

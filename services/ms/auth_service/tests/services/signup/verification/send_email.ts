@@ -1,7 +1,7 @@
 // __tests__/generateVerificationCodeService.test.ts
 import { env } from "@config/env";
 import { Fluvio } from "@fluvio/client";
-import { SendVerificationEmailDTO } from "@shared/auth/signup/dto";
+import { SendVerificationEmailDTO } from "@packages/shared/auth";
 import { sendVerificationEmailService } from "@services/signup/verification/send_email";
 import { setCache, getCache } from "../../../../src/internals/utils/redis";
 import { ServiceException } from "../../../../src/internals/utils/response";

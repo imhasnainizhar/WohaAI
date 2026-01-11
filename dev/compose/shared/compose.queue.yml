@@ -14,3 +14,6 @@ services:
 networks:
   microservices_net:
     external: true
+  
+  data_net:
+    external: true

@@ -5,7 +5,7 @@ import { signinService } from "@services/signin";
 import { SigninSessionPayload } from "@packages/shared/common";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { SigninSchema } from "@shared/auth/signin/schemas";
+import { SigninSchema } from "@packages/shared/auth/signin/schemas";
 import { throwSessionExpired, throwValidationError } from "@packages/shared/errors";
 import { getClientData } from "../internals/utils/get_client_data";
 

@@ -4,7 +4,7 @@ services:
       context: ../../../services/frontend
       dockerfile: Dockerfile
       target: ${NODE_ENV}
-    container_name: ${FRONTEND_APP_CONTAINER_NAME}
+    container_name: ${FRONTEND_CONTAINER_NAME}
     ports:
       - "${FRONTEND_APP_PORT}:${FRONTEND_APP_PORT}"
     volumes:

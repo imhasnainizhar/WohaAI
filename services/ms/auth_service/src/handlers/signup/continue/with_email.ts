@@ -7,6 +7,7 @@ import { env } from "@config/env";
 import jwt from "jsonwebtoken";
 import { sendResponse } from "@packages/shared/utils";
 import { throwSessionExpired } from "@packages/shared/errors";
+import { Request, Response } from "express";
 
 
 /**
@@ -15,7 +16,7 @@ import { throwSessionExpired } from "@packages/shared/errors";
  * After user get started with username then they are required for email, validated and cached
  * through this handler's service.
  */
-export const continueWithEmailHandler = asyncHandler(async (req, res) => {
+export const continueWithEmailHandler = asyncHandler(async (req: Request, res: Response) => {
     // Verify signup session token
     const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
     const payload = jwt.verify(token, env.JWT_SIGNUP_SESSION_SECRET_KEY) as SignupSessionPayload;

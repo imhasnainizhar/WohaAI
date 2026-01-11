@@ -15,7 +15,7 @@ services:
     volumes:
       - users_postgres_data:/var/lib/postgresql/data
     networks:
-      - woahai_data_net
+      - data_net
       - microservices_net
 
   # ===========================
@@ -47,8 +47,8 @@ services:
     container_name: pgadmin_gui
     restart: always
     depends_on:
-      - ${USERS_POSTGRES_DB_HOST}
-      - ${THREADS_POSTGRES_DB_HOST}
+      - users_postgres_db
+      - threads_postgres_db
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@dev.com
       PGADMIN_DEFAULT_PASSWORD: admin123

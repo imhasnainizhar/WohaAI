@@ -4,7 +4,7 @@ import { setCache } from "@internals/utils/redis";
 import { createJwtToken } from "@internals/utils/jwt";
 import { env, EXPIRATION } from "@config/env";
 import { ServiceException } from "@internals/utils/response";
-import { GetStartedDTO } from "@shared/auth/signup/dto";
+import { GetStartedDTO } from "@packages/shared/auth";
 
 // Mock external dependencies (DB, Redis, JWT, Logger)
 jest.mock("@clients/prisma", () => ({

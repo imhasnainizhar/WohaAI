@@ -1,8 +1,8 @@
-import { ClientData } from '@shared/common/auth/types';
+import { ClientData } from '@packages/shared/common/auth/types';
 import { asyncHandler } from "@middlewares/async_handler";
-import { getClientData } from "../../internals/utils/get_client_data";
+import { getClientData } from "@internals/utils/get_client_data";
 import { refreshTokenService } from "@services/refresh/refresh_token";
-import { sendResponse, ServiceException, ServiceResponse } from "../../internals/utils/response";
+import { sendResponse, ServiceException, ServiceResponse } from "@packages/shared/utils";
 import { Request, Response } from "express";
 import { env } from '@config/env';
 import jwt from 'jsonwebtoken';

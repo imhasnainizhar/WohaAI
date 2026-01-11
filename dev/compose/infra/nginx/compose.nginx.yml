@@ -10,7 +10,9 @@ services:
       - ../../../../services/nginx/conf.d:/etc/nginx/conf.d:ro
       - ../../../../services/nginx/proxy_params:/etc/nginx/proxy_params:ro
     networks:
-      - microservices_net_01
+      - microservices_net
+
+
 networks:
-  microservices_net_01:
+  microservices_net:
     external: true
