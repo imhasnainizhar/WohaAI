@@ -1,10 +1,10 @@
-import { internalError, throwConflictError, throwValidationError } from "@errors/auth";
-import { logger } from "@utils/logger";
-import { getSignupCache, setSignupCache } from "@utils/redis";
-import { ContinueWithEmailDTO } from "@packages/shared/auth/signup/dto";
-import { prisma } from "../../../clients/prisma";
-import { ServiceException, ServiceResponse } from "@utils/response";
-import { EmailSignupSchema } from "@packages/shared/auth/signup/schemas";
+import { throwInternalError, throwConflictError, throwValidationError, throwSessionExpired } from "@packages/shared/errors";
+import { logger } from "@packages/shared/utils";
+import { getSignupCache, setSignupCache } from "@internals/utils/redis";
+import { ContinueWithEmailDTO } from "@packages/shared/auth";
+import { prisma } from "@clients/prisma";
+import { ServiceException, ServiceResponse } from "@packages/shared/utils";
+import { EmailSignupSchema } from "@packages/shared/auth";
 
 /**
  * continueWithEmail api is a proceeding step after username during signup
@@ -17,7 +17,7 @@ export default async function continueWithEmailService({ signupSessionID, email 
 
         const pending = await getSignupCache(signupSessionID);
         if (!pending) {
-            throwValidationError("Invalid signup session ID.", "signupSessionID");
+            throwSessionExpired();
         }
 
         const parsed = EmailSignupSchema.safeParse({ email: email.trim() });
@@ -59,6 +59,6 @@ export default async function continueWithEmailService({ signupSessionID, email 
             stack: error?.stack,
         });
 
-        throw internalError();
+        throw throwInternalError();
     }
 }

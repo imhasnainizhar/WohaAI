@@ -1,12 +1,12 @@
-import { createJwtToken } from "@utils/jwt";
+import { createJwtToken } from "@internals/utils/jwt";
 import { randomUUID } from "crypto";
-import { ServiceResponse, ServiceException } from "@utils/response";
-import { setCache } from "@utils/redis";
-import { prisma } from "../../clients/prisma";
+import { ServiceResponse, ServiceException } from "@packages/shared/utils";
+import { setCache } from "@internals/utils/redis";
+import { prisma } from "@clients/prisma";
 import { env, EXPIRATION } from "@config/env";
-import { logger } from "@utils/logger";
-import { GetStartedResponseData } from "@packages/shared/auth/signup/response/types";
-import { GetStartedDTO } from "@packages/shared/auth/signup/dto";
+import { logger } from "@packages/shared/utils";
+import { GetStartedResponseData } from "@packages/shared/auth";
+import { GetStartedDTO } from "@packages/shared/auth";
 
 /**
  * @description This is service to get started with signup, taking email or username.

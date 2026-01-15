@@ -1,14 +1,14 @@
-import { SignupSessionPayload } from '@packages/shared/common/auth/jwt/types';
+import { SignupSessionPayload } from '@packages/shared/common';
 import { Request, Response } from "express";
-import { asyncHandler } from "../../middlewares/async_handler";
-import { sendResponse } from "@packages/shared/utils/response";
+import { asyncHandler } from "@middlewares/async_handler";
+import { sendResponse } from "@packages/shared/utils";
 import { completeSignupService } from "@services/signup/complete";
-import { CompleteSignupSchema } from "@packages/shared/auth/signup/schemas";
-import { CompleteSignupDTO } from "@packages/shared/auth/signup/dto";
-import { throwValidationError } from "@packages/shared/errors/auth/errors";
+import { CompleteSignupSchema } from "@packages/shared/auth";
+import { CompleteSignupDTO } from "@packages/shared/auth";
+import { throwValidationError } from "@packages/shared/errors";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { throwSessionExpired } from '@packages/shared/errors/auth/errors';
+import { throwSessionExpired } from '@packages/shared/errors';
 
 /**
  * Handler for user signup complete.

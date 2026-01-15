@@ -1,8 +1,8 @@
-import { logger } from "@utils/logger";
-import { ServiceResponse, ServiceException } from "@utils/response";
-import { setSignupCache, getSignupCache } from "@utils/redis";
-import { CompleteSignupDTO } from "@packages/shared/auth/signup/dto";
-import { internalError, throwSessionExpired } from "@errors/auth";
+import { logger } from "@packages/shared/utils";
+import { ServiceResponse, ServiceException } from "@packages/shared/utils";
+import { setSignupCache, getSignupCache } from "@internals/utils/redis";
+import { CompleteSignupDTO } from "@packages/shared/auth";
+import { throwInternalError, throwSessionExpired } from "@packages/shared/errors";
 
 /**
  * Validates and records the user's display name in an active signup session.
@@ -65,6 +65,6 @@ export const completeSignupService = async (dto: CompleteSignupDTO) => {
 
         if (error instanceof ServiceException) throw error; // already standardized
 
-        throw internalError(error);
+        throw throwInternalError(error);
     }
 };

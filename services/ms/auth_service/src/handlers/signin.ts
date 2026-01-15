@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/async_handler";
-import { sendResponse } from "@packages/shared/utils/response";
+import { sendResponse } from "@packages/shared/utils";
 import { signinService } from "@services/signin";
-import { SigninSessionPayload } from "@packages/shared/auth/signin/types";
+import { SigninSessionPayload } from "@packages/shared/common";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
 import { SigninSchema } from "@packages/shared/auth/signin/schemas";
-import { throwSessionExpired, throwValidationError } from "@packages/shared/errors/auth/errors";
-import { getClientData } from "@utils/get_client_data";
+import { throwSessionExpired, throwValidationError } from "@packages/shared/errors";
+import { getClientData } from "../internals/utils/get_client_data";
 
 /**
  * Handler for user sign-in.

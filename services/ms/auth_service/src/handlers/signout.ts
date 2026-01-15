@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@middlewares/async_handler";
-import { sendResponse } from "@packages/shared/utils/response";
+import { sendResponse } from "@packages/shared/utils";
 import { signoutService } from "@services/signout";
-import { RefreshTokenPayload } from "@packages/shared/common/auth/jwt/types";
+import { RefreshTokenPayload } from "@packages/shared/common";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { throwSessionExpired } from "@packages/shared/errors/auth/errors";
+import { throwSessionExpired } from "@packages/shared/errors";
 
 /**
  * Handler for user sign-out.

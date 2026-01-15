@@ -1,11 +1,11 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
-import { prisma } from "../clients/prisma";
-import { logger } from "@utils/logger";
-import { ServiceResponse, ServiceException } from "@utils/response";
+import { prisma } from "@clients/prisma";
+import { logger } from "@packages/shared/utils";
+import { ServiceResponse, ServiceException } from "@packages/shared/utils";
 import { env, EXPIRATION } from "@config/env";
-import { createUserSession } from "@utils/create_user_session";
-import { SigninDTO } from "@packages/shared/auth/signin/dto";
+import { createUserSession } from "@internals/utils/create_user_session";
+import { SigninDTO } from "@packages/shared/auth";
 
 
 /**
@@ -161,7 +161,7 @@ export const signinService = async <T>(
       message: "Login successful.",
       data: {
         user: {
-          id: user.userID,
+          userID: user.userID,
           firstName: user.userFirstName,
           lastName: user.userLastName,
           email: user.email,

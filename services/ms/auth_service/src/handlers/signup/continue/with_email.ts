@@ -1,12 +1,13 @@
 import { asyncHandler } from "@middlewares/async_handler";
-import { throwValidationError } from "@errors/auth";
+import { throwValidationError } from "@packages/shared/errors";
 import continueWithEmailService from "@services/signup/continue/with_email";
-import { SignupSessionPayload } from "@packages/shared/common/auth/jwt/types";
-import { EmailSignupSchema } from "@packages/shared/auth/signup/schemas";
+import { SignupSessionPayload } from "@packages/shared/common";
+import { EmailSignupSchema } from "@packages/shared/auth";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
-import { sendResponse } from "@packages/shared/utils/response";
-import { throwSessionExpired } from "@packages/shared/errors/auth/errors";
+import { sendResponse } from "@packages/shared/utils";
+import { throwSessionExpired } from "@packages/shared/errors";
+import { Request, Response } from "express";
 
 
 /**
@@ -15,7 +16,7 @@ import { throwSessionExpired } from "@packages/shared/errors/auth/errors";
  * After user get started with username then they are required for email, validated and cached
  * through this handler's service.
  */
-export const continueWithEmailHandler = asyncHandler(async (req, res) => {
+export const continueWithEmailHandler = asyncHandler(async (req: Request, res: Response) => {
     // Verify signup session token
     const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
     const payload = jwt.verify(token, env.JWT_SIGNUP_SESSION_SECRET_KEY) as SignupSessionPayload;

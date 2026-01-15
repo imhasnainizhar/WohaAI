@@ -1,7 +1,7 @@
 services:
     auth_mailer_queue:
       image: quay.io/fluvio/fluvio:latest
-      container_name: auth_mailer_queue
+      container_name: ${AUTH_FLUVIO_API_HOST}
       ports:
         - "${AUTH_FLUVIO_CONTROL_PANE_PORT}:${AUTH_FLUVIO_CONTROL_PANE_PORT}"
         - "${AUTH_FLUVIO_API_PORT}:${AUTH_FLUVIO_API_PORT}"
@@ -13,4 +13,7 @@ services:
 
 networks:
   microservices_net:
+    external: true
+  
+  data_net:
     external: true

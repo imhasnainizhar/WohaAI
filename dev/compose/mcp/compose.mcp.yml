@@ -2,35 +2,37 @@
 services:
   mcp_gateway:
     build:
-      context: ../../../src/mcp/gateway
+      context: ../../../services/mcp/gateway
+      additional_contexts:
+        packages: ../../../packages/
       dockerfile: Dockerfile
       target: development
-    container_name: mcp_gateway
+    container_name: ${MCP_GATEWAY_CONTAINER_NAME}
     ports: 
       - "${MCP_GATEWAY_PORT}:${MCP_GATEWAY_PORT}"
     volumes:
-      - ../../../src/mcp/gateway:/app
+      - ../../../services/mcp/gateway:/app/
     restart: always
     env_file:
       - ../../../.env
-      - ../../../.env.docker
     networks:
       - mcp_net
 
   web_search_mcp:
     build:
-      context: ../../../src/mcp/servers/web_search
+      context: ../../../services/mcp/servers/web_search
+      additional_contexts:
+        packages: ../../../packages/
       dockerfile: Dockerfile
       target: development
-    container_name: web_search_mcp
+    container_name: ${WEB_SEARCH_MCP_CONTAINER_NAME}
     ports:
       - "${WEB_SEARCH_MCP_PORT}:${WEB_SEARCH_MCP_PORT}"
     volumes:
-      - ../../../src/mcp/servers/web_search/src:/app/src
+      - ../../../services/mcp/servers/web_search/src:/app/src
     restart: always
     env_file:
       - ../../../.env
-      - ../../../.env.docker
     networks:
       - mcp_net
 

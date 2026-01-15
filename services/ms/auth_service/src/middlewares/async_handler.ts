@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ServiceException } from "@utils/response";
+import { ServiceException } from "../internals/utils/response";
 
 export const asyncHandler =
   (

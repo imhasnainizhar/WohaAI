@@ -1,41 +1,29 @@
-// Module declared at @internals/modules/fluvio.d.ts
-import { Fluvio, Producer } from "@fluvio/client";
-import { env } from "@config/env";
+// import Fluvio, { RecordSet } from "@fluvio/client";
+// import { env } from "@config/env";
 
-// Fluvio configs
-const fluvioConfig = {
-    url: env.AUTH_FLUVIO_API_URI,
-};
+// // Cache producers per topic
+// const producers = new Map<
+//   string,
+//   Awaited<ReturnType<InstanceType<typeof Fluvio>["topicProducer"]>>
+// >();
 
-// Declaring producer as typeof Producer, init as null
-// To cache producer for future uses.
-let producer: typeof Producer | null = null;
+// /**
+//  * Get or create a Fluvio producer for a topic
+//  */
+// export async function getProducer(topic: string) {
+//   if (producers.has(topic)) {
+//     return producers.get(topic)!;
+//   }
 
-/**
- * This function returns a producer for the fluvio event-streaming.
- * If producer is already initialized, it returns the cached producer.
- * 
- * @param topic The topic name for the producer.
- * We take this param's topic name from env mostly.
- * 
- * @returns producer
- */
-export async function getProducer(topic: string): Promise<typeof Producer> {
-    // If producer is already initialized, return it
-    if (producer) return producer;
+//   // Connect the client once
+//   const fluvio = await Fluvio.connect({
+//     // Optional: host override; leave blank to use your default config
+//     host: env.AUTH_FLUVIO_API_URI,
+//   });
 
-    // Otherwise, create a new producer
-    const fluvio = new Fluvio();
+//   // Create the producer from the instance
+//   const producer = await fluvio.topicProducer(topic);
 
-    // Connect to fluvio
-    await fluvio.connect(fluvioConfig);
-
-    // Create producer
-    producer = await fluvio.topicProducer(topic);
-
-    // Return producer
-    return producer;
-}
-
-
-
+//   producers.set(topic, producer);
+//   return producer;
+// }

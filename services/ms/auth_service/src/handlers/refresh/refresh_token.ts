@@ -1,13 +1,13 @@
 import { ClientData } from '@packages/shared/common/auth/types';
 import { asyncHandler } from "@middlewares/async_handler";
-import { getClientData } from "@utils/get_client_data";
+import { getClientData } from "@internals/utils/get_client_data";
 import { refreshTokenService } from "@services/refresh/refresh_token";
-import { sendResponse, ServiceException, ServiceResponse } from "@utils/response";
+import { sendResponse, ServiceException, ServiceResponse } from "@packages/shared/utils";
 import { Request, Response } from "express";
 import { env } from '@config/env';
 import jwt from 'jsonwebtoken';
-import { RefreshTokenPayload } from '@packages/shared/common/auth/jwt/types';
-import { throwSessionExpired } from '@packages/shared/errors/auth/errors';
+import { RefreshTokenPayload } from '@packages/shared/common';
+import { throwSessionExpired } from '@packages/shared/errors';
 
 
 /**

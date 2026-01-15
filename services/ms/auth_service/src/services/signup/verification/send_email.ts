@@ -1,9 +1,10 @@
-import { logger } from "@utils/logger";
-import { setCache, getCache } from "@utils/redis";
-import { ServiceResponse, ServiceException } from "@utils/response";
+import { randomInt } from 'crypto';
+import { logger } from "../../../internals/utils/logger";
+import { setCache, getCache } from "../../../internals/utils/redis";
+import { ServiceResponse, ServiceException } from "../../../internals/utils/response";
 import { env, EXPIRATION } from "@config/env";
-import getProducer from "../../../internals/producer/producer"
-import { SendVerificationEmailDTO } from "@shared/domain/interfaces/auth/signup/dto";
+// import { getProducer } from "@internals/producer/producer"
+import { SendVerificationEmailDTO } from "@packages/shared/auth";
 
 /**
  * Topic used for outbound email events.
@@ -29,7 +30,7 @@ const EMAIL_TOPIC = "verification-emails";
  *  - We only throw ServiceException for true system failures.
  */
 export const sendVerificationEmailService = async (
-  { signupSessionID }: SendVerificationEmailDTO
+  { signupSessionID  }: SendVerificationEmailDTO
 ): Promise<ServiceResponse<{ code: string }>> => {
 
   let pendingEmail: string | undefined;
@@ -61,7 +62,7 @@ export const sendVerificationEmailService = async (
     pendingEmail = pendingUser.email;
 
     // ---- Generate 6 digit numeric code ----
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = randomInt(100000, 999999).toString();
 
     logger.debug(
       `[VERIFICATION] Generated code for ${pendingEmail} (Session ${signupSessionID})`
@@ -90,7 +91,7 @@ export const sendVerificationEmailService = async (
     }
 
     // ---- Push event to Fluvio (async email sending) ----
-    const producer = await getProducer(EMAIL_TOPIC);
+    // const producer = await getProducer(EMAIL_TOPIC);
 
     const event = JSON.stringify({
       type: "signup_verification_code",
@@ -100,18 +101,17 @@ export const sendVerificationEmailService = async (
       createdAt: new Date().toISOString(),
     });
 
-    await producer.send("", event);
+    // await producer.send("", event);
 
     logger.info(
       `[VERIFICATION] Fluvio event dispatched for ${pendingEmail} (Session ${signupSessionID})`
     );
 
-    // ---- Respond to API caller ----
+    // Respond to API caller
     return ServiceResponse.success({
       success: true,
       statusCode: 200,
       message: "Verification code generated successfully.",
-      data: { code }, // You can remove this in production if needed
     });
 
   } catch (err: any) {

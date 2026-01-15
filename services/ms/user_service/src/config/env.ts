@@ -28,7 +28,7 @@ const secure = (p.NODE_ENV === "production") ? true : false
 const sameSite = (p.NODE_ENV === "production" ? "none" : "lax") as
   "none" | "lax" | "strict";
 
-// --- Types for your env config ---
+// Interface for your env config
 interface EnvConfig {
   NODE_ENV: string;
   USER_SERVICE_PORT: string;

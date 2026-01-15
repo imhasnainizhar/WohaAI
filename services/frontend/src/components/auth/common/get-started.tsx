@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ClassicButton from "@components/ui/buttons/classic-button";
 import { RoundedInputField } from "@components/ui/input/fields/rounded";
-import { GetStartedSchema } from "@packages/shared/auth/signup/schemas";
-import { GetStartedType } from "@packages/shared/auth/signup/types";
+import { GetStartedSchema } from "@packages/shared/auth";
+import { GetStartedType } from "@packages/shared/auth";
 import { useAppContext } from "@providers/app";
-import { GetStartedResponseData } from "@packages/shared/auth/signup/response/types";
-import { ApiResponseOptions } from "@packages/shared/common/response/response";
+import { GetStartedResponseData } from "@packages/shared/auth";
+import { ApiResponseOptions } from "@packages/shared/common";
+import { env } from "@config/env";
 
 export interface AuthNextStepResponse {
     nextStep: "email" | "username" | "password";
@@ -28,11 +29,14 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
         resolver: zodResolver(GetStartedSchema),
     });
 
+    const GET_STARTED_API_URI = `${env.NEXT_PUBLIC_AUTH_API_URI!}/get-started`;
+
     const router = useRouter();
     const { theme } = useTheme();
     const darkTheme = theme === "dark";
     const { canGoBack } = useAppContext();
     const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
+    const [signInError, setSignInError] = useState<string>("");
 
     useEffect(() => {
         if (data?.usernameOrEmail) {
@@ -41,10 +45,6 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
         }
     }, [data, reset]);
 
-
-    const [signInError, setSignInError] = useState<string>("");
-
-    const GET_STARTED_API_URI = process.env.NEXT_PUBLIC_GET_STARTED_API_URI!;
 
     const onSubmit = async (values: GetStartedType) => {
         setSignInError("");
@@ -64,18 +64,18 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
         }
     };
 
-    const onGetStarted = async (param: GetStartedType, next: any) => {
+    const onGetStarted = async (reqData: GetStartedType, next: any) => {
         setSignInError("");
 
         try {
             const result = await fetch(GET_STARTED_API_URI, {
                 method: "POST",
-                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({
-                    ...param,
+                    ...reqData,
                 }),
             });
 

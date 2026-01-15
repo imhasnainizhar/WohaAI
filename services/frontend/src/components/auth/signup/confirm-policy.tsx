@@ -11,7 +11,7 @@ export default function ConfirmPolicy() {
                         <div>Policy & Terms Agreement</div>
                         <div>By clicking, You agree to our Privacy Policy and Terms of Use.</div>
                     </div>
-                    <ClassicButton text="I Agree" />
+                    <ClassicButton text="Agree & Continue" />
                 </div>
             </div>
         </div>
