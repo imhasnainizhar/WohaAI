@@ -80,7 +80,7 @@ export const EXPIRATION = {
 // --- Env object ---
 export const env: EnvConfig = {
   NODE_ENV: p.NODE_ENV || "development",
-  AUTH_SERVICE_PORT: p.AUTH_SERVICE_PORT || "3000",
+  AUTH_SERVICE_PORT: p.AUTH_SERVICE_PORT!,
   SECURE_COOKIE_OPTION: secure,
   SAME_SITE_COOKIE_OPTION: sameSite,
 
@@ -126,4 +126,5 @@ if (missing.length > 0) {
   throw new Error(msg);
 }
 
+logger.debug(`Client origin config: ${env.CLIENT_ORIGIN}`)
 logger.fatal("✅ All environment variables loaded correctly");

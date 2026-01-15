@@ -5,6 +5,7 @@ import authRoutes from "@routes/auth";
 import { logger } from "@internals/utils/logger";
 import { errorHandler } from "@middlewares/error_handler";
 import { connectRedis } from "@clients/redis";
+import cors from "cors";
 
 const app = express();
 
@@ -36,9 +37,16 @@ app.use(errorHandler);
   }
 })();
 
+const corsOptions = {
+  origin: "http://localhost:3000", // frontend origin
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // if using cookies or auth headers
+};
+
 // Mount auth-related routes
-app.use("/", authRoutes);
-app.use("/hi", (req, res) => {
+app.use("/", cors(corsOptions), authRoutes);
+app.use("/hi", cors(corsOptions), (req, res) => {
   res.json({status: 200, text: "hello"})
 })
 
