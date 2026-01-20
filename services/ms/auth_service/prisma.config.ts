@@ -4,14 +4,17 @@ import { defineConfig } from "prisma/config";
 import * as fs from "fs";
 import * as path from "path";
 import * as dotenv from "dotenv";
+import { env } from "./src/config/env"
 
-const localEnv = path.resolve(__dirname, "../../../.env");
-const rootEnv = path.resolve(__dirname, "./.env");
+let envPathForServices;
+const inDocker  = fs.existsSync("../../../.dockerenv")
+// For docker development
+if ( env.NODE_ENV === "development" && inDocker )  envPathForServices = path.resolve(__dirname, "../../../.env");
+// For local development
+envPathForServices = path.resolve(__dirname, "../../../.env.local");
 
-if (fs.existsSync(localEnv)) {
-  dotenv.config({ path: localEnv });
-} else {
-  dotenv.config({ path: rootEnv });
+if (fs.existsSync(envPathForServices)) {
+  dotenv.config({ path: envPathForServices });
 }
 
 export default defineConfig({

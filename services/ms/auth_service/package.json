@@ -4,6 +4,7 @@
   "description": "Microservice handling all auth logic of App",
   "main": "src/server.ts",
   "directories": {
+    "src": "src",
     "test": "tests"
   },
   "scripts": {

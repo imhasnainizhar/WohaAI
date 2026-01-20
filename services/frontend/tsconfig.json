@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "ES2022"
     ],
     "types": [
       "node"
@@ -75,8 +76,11 @@
     "../../packages/types"
   ],
   "include": [
+    "src/**/*",
+
     "next-env.d.ts",
     "../../packages/types/**/*.d.ts",
+    "../../packages/shared/**/*",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",

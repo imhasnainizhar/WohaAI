@@ -4,8 +4,18 @@
 FROM node:22-alpine AS base
 WORKDIR /app
 
-# Copy package files first for caching
-COPY package*.json ./
+# Copy packages from additional context to /packages at /app
+COPY --from=packages ./ /app/packages
+
+# Install shared package dependencies
+RUN cd /app/packages/shared && npm install
+RUN cd /app/packages/shared && npm run packages:build
+
+# Seeking in auth_service
+WORKDIR /app/services/frontend
+
+# Caching packages manifests at start of Image
+COPY package*.json .
 
 # ---------------------
 # Development Stage

@@ -7,7 +7,7 @@ import cors from "cors"
 
 // CORS configuration
 const corsOptions = {
-  origin: "http://localhost:3000", // frontend origin
+  origin: env.CLIENT_ORIGIN, // frontend origin
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // if using cookies or auth headers

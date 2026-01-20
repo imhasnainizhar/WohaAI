@@ -50,14 +50,10 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
         setSignInError("");
 
         try {
-            // Call your mock API
-            const result = await onGetStarted(values, next);
 
-            // Update next step
-            setNextStep(result);
+            // Calling API Call Function
+            await onGetStarted(values, next);
 
-            // Pass actual field values to parent
-            next(values);
         } catch (err) {
             console.error(err);
             setSignInError("Failed to proceed. Try again.");
@@ -68,6 +64,7 @@ export default function GetStarted({ next, setNextStep, data }: { next: (next: a
         setSignInError("");
 
         try {
+            console.log(reqData.usernameOrEmail);
             const result = await fetch(GET_STARTED_API_URI, {
                 method: "POST",
                 headers: {

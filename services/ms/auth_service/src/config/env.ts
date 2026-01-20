@@ -17,7 +17,7 @@ const isProduction = p.NODE_ENV === "production";
 if (!isProduction) {
   const envPath = isDocker
     ? path.resolve(__dirname, "../../../../../.env") // inside container
-    : path.resolve(__dirname, "../../../../../.env"); // local monorepo
+    : path.resolve(__dirname, "../../../../../.env.local"); // local monorepo
   const envResult = dotenv.config({ path: envPath });
   dotenvExpand.expand(envResult);
   logger.debug(`Loaded environment from: ${envPath}`);

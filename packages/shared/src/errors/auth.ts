@@ -55,6 +55,7 @@ export const throwSessionExpired = (): never => {
       success: false,
       statusCode: 400,
       message: "Invalid or expired session.",
+      errors: {"expiration_errors": ["Session expired"]},
       errorType: "validation_error",
     })
   );

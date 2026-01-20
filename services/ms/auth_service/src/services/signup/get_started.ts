@@ -83,10 +83,12 @@ export const getStartedService = async (dto: GetStartedDTO): Promise<ServiceResp
     // Create signup session ID and JWT token
     logger.debug("🔐 Creating signup session token...");
     const signupSessionID = randomUUID();
+    console.log(signupSessionID)
+    console.log(existingUser)
     const signupSessionToken = createJwtToken(
       { signupSessionID },
       env.JWT_SIGNUP_SESSION_SECRET_KEY,
-      { expiresIn: Number(EXPIRATION.JWT_SIGNUP_SESSION_TOKEN) }
+      { expiresIn: Number(EXPIRATION.SIGNUP_SESSION_COOKIE) }
     );
 
     // Store temporary signup data in Redis
@@ -130,9 +132,9 @@ export const getStartedService = async (dto: GetStartedDTO): Promise<ServiceResp
     if (error instanceof ServiceException) throw error;
     // Log fatal server error
     logger.fatal({
-      message: "💥 signupInitService failed",
-      error: error.message,
-      stack: error.stack,
+      message: "An error occured at getStartedService",
+      error: JSON.stringify(error.message),
+      stack: JSON.stringify(error.stack),
     });
 
     // Return standardized server error response

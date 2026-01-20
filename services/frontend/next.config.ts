@@ -9,7 +9,7 @@ const isProduction = process.env.NODE_ENV === "production";
 // Determine env path
 const envPath = isDocker
   ? "/app/.env"                // Docker
-  : path.resolve(__dirname, "../../.env"); // local monorepo
+  : path.resolve(__dirname, "../../.env.local"); // local monorepo
 
 if (!isProduction) {
   const result = dotenv.config({ path: envPath });
@@ -32,7 +32,8 @@ if (missing.length > 0) {
 
 const nextConfig: NextConfig = {
   devIndicators: false,
-  eslint: { ignoreDuringBuilds: true },
+  transpilePackages: ["@packages/shared"],
+  reactStrictMode: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.watchOptions = { poll: 1000, aggregateTimeout: 300 };
@@ -48,23 +49,10 @@ const nextConfig: NextConfig = {
       "@hooks": path.resolve(__dirname, "src/hooks"),
       "@pages": path.resolve(__dirname, "src/pages"),
       "@app": path.resolve(__dirname, "src/app"),
-      "@providers": path.resolve(__dirname, "src/providers"),
+      "@providers": path.resolve(__dirname, "src/providers")
     };
     return config;
   },
-  // async headers() {
-  //   return [
-  //     {
-  //       source: "/(.*)", // all routes
-  //       headers: [
-  //         {
-  //           key: "Referrer-Policy",
-  //           value: "no-referrer-when-downgrade", // OR: "origin-when-cross-origin"
-  //         },
-  //       ],
-  //     },
-  //   ];
-  // },
 };
 
 export default nextConfig;
