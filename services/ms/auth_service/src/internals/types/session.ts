@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 // Interface for user session refresh
 export interface UserSessionRefresh {

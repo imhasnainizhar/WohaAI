@@ -1,17 +1,17 @@
 import { randomInt } from 'crypto';
-import { logger } from "../../../internals/utils/logger";
-import { setCache, getCache } from "../../../internals/utils/redis";
-import { ServiceResponse, ServiceException } from "../../../internals/utils/response";
+import { logger } from "@internals/utils/logger";
+import { setCache, getCache } from "@internals/utils/redis";
+import { ServiceResponse, ServiceException } from "@internals/utils/response";
 import { env, EXPIRATION } from "@config/env";
-// import { getProducer } from "@internals/producer/producer"
-import { SendVerificationEmailDTO } from "@packages/shared/auth";
+import { getProducer } from "@internals/producer/producer"
+import { SendVerificationEmailDTO, VerifySignupEmailEvent } from "@packages/shared/auth";
 
 /**
  * Topic used for outbound email events.
  * The mailer service will subscribe to this and
  * send the actual verification email.
  */
-const EMAIL_TOPIC = "verification-emails";
+const EMAIL_TOPIC = env.KAFKA_SIGNUP_EMAIL_EVENTS;
 
 /**
  * @service generateVerificationCodeService
@@ -93,16 +93,26 @@ export const sendVerificationEmailService = async (
     // ---- Push event to Fluvio (async email sending) ----
     // const producer = await getProducer(EMAIL_TOPIC);
 
-    const event = JSON.stringify({
+    const event: VerifySignupEmailEvent = {
       type: "signup_verification_code",
-      email: pendingEmail,
+      email: pendingEmail!,
       code,
-      sessionId: signupSessionID,
-      createdAt: new Date().toISOString(),
+      signupSessionID: signupSessionID,
+      createdAt: new Date(),
+    };
+
+    const stringifiedEvent = JSON.stringify(event);
+
+    // Fix: Ensure producer is defined and available
+    const producer = await getProducer(EMAIL_TOPIC);
+
+    await producer.send({
+      topic: EMAIL_TOPIC,
+      messages: [
+        { value: JSON.stringify({ stringifiedEvent }) },
+      ],
     });
-
-    // await producer.send("", event);
-
+    
     logger.info(
       `[VERIFICATION] Fluvio event dispatched for ${pendingEmail} (Session ${signupSessionID})`
     );

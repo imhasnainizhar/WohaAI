@@ -1,19 +1,43 @@
 services:
-    auth_mailer_queue:
-      image: quay.io/fluvio/fluvio:latest
-      container_name: ${AUTH_FLUVIO_API_HOST}
-      ports:
-        - "${AUTH_FLUVIO_CONTROL_PANE_PORT}:${AUTH_FLUVIO_CONTROL_PANE_PORT}"
-        - "${AUTH_FLUVIO_API_PORT}:${AUTH_FLUVIO_API_PORT}"
-      environment:
-        FLV_LOG: ${FLV_LOG}
-      networks:
-        - microservices_net
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
 
+  kafka:
+    image: bitnami/kafka:3.6
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      # Core
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
 
-networks:
-  microservices_net:
-    external: true
-  
-  data_net:
-    external: true
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+
+      # Single-node dev safe settings
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
+
+      # Allow plaintext
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092

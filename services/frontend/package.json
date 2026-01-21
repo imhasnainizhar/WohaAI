@@ -2,6 +2,7 @@
   "name": "woahai",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "npm-run-all --parallel tailwind:dev next:dev",
     "build": "npm-run-all tailwind:build next:build",

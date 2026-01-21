@@ -23,6 +23,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["USERS_PRISMA_DB_URI"],
+    url: process.env["USERS_PRISMA_DB_URI"]!,
   },
 });

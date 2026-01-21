@@ -1,8 +1,8 @@
 import { EXPIRATION } from "@config/env";
-import { createJwtToken } from "../../../internals/utils/jwt";
-import { logger } from "../../../internals/utils/logger";
-import { getCache, deleteCache, setCache } from "../../../internals/utils/redis";
-import { ServiceResponse, ServiceException } from "../../../internals/utils/response";
+import { createJwtToken } from "@internals/utils/jwt";
+import { logger } from "@internals/utils/logger";
+import { getCache, deleteCache, setCache } from "@internals/utils/redis";
+import { ServiceResponse, ServiceException } from "@internals/utils/response";
 import { env } from "@config/env";
 import { VerifyUserEmailDTO } from "@packages/shared/auth";
 
