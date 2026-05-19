@@ -13,10 +13,14 @@ import { throwValidationError } from "@packages/shared/errors";
 export const getStartedHandler = asyncHandler(
     async (req: Request, res: Response) => {
         // Parsing request body
-        const parsed = GetStartedSchema.safeParse(req.body);
+        const usernameOrEmail = {
+            value: req.body.usernameOrEmail.value,
+            // type: username | email is ignored as it can be verified through schema again.
+        };
+        const parsed = GetStartedSchema.safeParse({usernameOrEmail: usernameOrEmail.value});
         if (!parsed.success) {
             throwValidationError(parsed.error, "usernameOrEmail");
-            // 🚨Using this return to make parsed.data undefined error silent🚨
+            // 🚨Using this return to silent parsed.data undefined error🚨
             return;
         }
 

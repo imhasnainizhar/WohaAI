@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "esnext",
     "lib": [
       "dom",
       "dom.iterable",
@@ -14,49 +14,19 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@lib/*": [
-        "./src/lib/*"
-      ],
-      "@models/*": [
-        "./src/models/*"
-      ],
-      "@utils/*": [
-        "./src/utils/*"
-      ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@styles/*": [
-        "./src/styles/*"
-      ],
-      "@internals/*": [
-        "./src/internals/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@pages/*": [
-        "./src/pages/*"
-      ],
-      "@app/*": [
-        "./src/app/*"
-      ],
-      "@providers/*": [
-        "./src/providers/*"
-      ],
-      "@config/*": [
-        "./src/config/*"
+      "@*": [
+        "./src/*"
       ],
       "@packages/shared/*": [
-        "../../packages/shared/dist/*"
+        "../../../packages/shared/dist/*"
       ]
     },
     "plugins": [
@@ -75,8 +45,10 @@
     "../../packages/types"
   ],
   "include": [
+    "src/**/*",
     "next-env.d.ts",
     "../../packages/types/**/*.d.ts",
+    "../../packages/shared/**/*",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",

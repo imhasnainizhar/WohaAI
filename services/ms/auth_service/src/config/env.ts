@@ -1,9 +1,14 @@
 import dotenvExpand from "dotenv-expand";
 import dotenv from "dotenv";
 import process from "process";
-import path from "path";
-import { logger } from "../internals/utils/logger";
+// import { logger } from "@internals/utils/logger.js";
 import { existsSync } from "fs";
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const p = process.env // Technique for convinience
 
@@ -17,10 +22,10 @@ const isProduction = p.NODE_ENV === "production";
 if (!isProduction) {
   const envPath = isDocker
     ? path.resolve(__dirname, "../../../../../.env") // inside container
-    : path.resolve(__dirname, "../../../../../.env"); // local monorepo
+    : path.resolve(__dirname, "../../../../../.env.local"); // local monorepo
   const envResult = dotenv.config({ path: envPath });
   dotenvExpand.expand(envResult);
-  logger.debug(`Loaded environment from: ${envPath}`);
+  // logger.debug(`Loaded environment from: ${envPath}`);
 }
 
 const secure = (p.NODE_ENV === "production") ? true : false
@@ -37,7 +42,6 @@ export interface EnvConfig {
 
   USERS_PRISMA_DB_URI: string;
   AUTH_REDIS_STORE_URI: string;
-  AUTH_FLUVIO_API_URI: string;
 
   JWT_ACCESS_SECRET_KEY: string;
   JWT_REFRESH_SECRET_KEY: string;
@@ -56,6 +60,10 @@ export interface EnvConfig {
 
   CLIENT_ORIGIN: string;
   COOKIE_DOMAIN: string;
+
+  KAFKA_AUTH_BROKERS: string;
+  KAFKA_AUTH_CLIENT_ID: string;
+  KAFKA_SIGNUP_EMAIL_EVENTS: string;
 }
 
 // --- Expiration constants ---
@@ -86,7 +94,6 @@ export const env: EnvConfig = {
 
   USERS_PRISMA_DB_URI: p.USERS_PRISMA_DB_URI || "",
   AUTH_REDIS_STORE_URI: p.AUTH_REDIS_STORE_URI || "",
-  AUTH_FLUVIO_API_URI: p.AUTH_FLUVIO_API_URI || "",
 
   JWT_ACCESS_SECRET_KEY: p.JWT_ACCESS_SECRET_KEY || "",
   JWT_REFRESH_SECRET_KEY: p.JWT_REFRESH_SECRET_KEY || "",
@@ -105,6 +112,10 @@ export const env: EnvConfig = {
 
   CLIENT_ORIGIN: p.CLIENT_ORIGIN || "",
   COOKIE_DOMAIN: p.COOKIE_DOMAIN || "",
+
+  KAFKA_AUTH_BROKERS: p.KAFKA_AUTH_BROKERS!,
+  KAFKA_AUTH_CLIENT_ID: p.KAFKA_AUTH_CLIENT_ID!,
+  KAFKA_SIGNUP_EMAIL_EVENTS: p.KAFKA_SIGNUP_EMAIL_EVENTS!
 };
 
 // Dynamic validation: loop through env to detect misconfiguration
@@ -122,9 +133,9 @@ for (const [key, value] of Object.entries(env)) {
 
 if (missing.length > 0) {
   const msg = `❌ Missing or misconfigured environment variables:\n${missing.join("\n")}`;
-  logger.fatal(msg);
+  // logger.fatal(msg);
   throw new Error(msg);
 }
 
-logger.debug(`Client origin config: ${env.CLIENT_ORIGIN}`)
-logger.fatal("✅ All environment variables loaded correctly");
+// logger.debug(`Client origin config: ${env.CLIENT_ORIGIN}`)
+// logger.fatal("✅ All environment variables loaded correctly");

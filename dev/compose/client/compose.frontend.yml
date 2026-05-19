@@ -2,6 +2,8 @@ services:
   frontend_app:
     build:
       context: ../../../services/frontend
+      additional_contexts:
+        packages: ../../../packages/
       dockerfile: Dockerfile
       target: ${NODE_ENV}
     container_name: ${FRONTEND_CONTAINER_NAME}

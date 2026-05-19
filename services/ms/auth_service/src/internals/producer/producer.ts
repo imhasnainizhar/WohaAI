@@ -1,29 +1,27 @@
-// import Fluvio, { RecordSet } from "@fluvio/client";
-// import { env } from "@config/env";
+import { Kafka, Producer } from "kafkajs";
+import { env } from "@config/env";
 
-// // Cache producers per topic
-// const producers = new Map<
-//   string,
-//   Awaited<ReturnType<InstanceType<typeof Fluvio>["topicProducer"]>>
-// >();
+// Singleton Kafka client
+const kafka = new Kafka({
+  clientId: env.KAFKA_AUTH_CLIENT_ID,
+  brokers: env.KAFKA_AUTH_BROKERS.split(","), // e.g. "localhost:9092"
+});
 
-// /**
-//  * Get or create a Fluvio producer for a topic
-//  */
-// export async function getProducer(topic: string) {
-//   if (producers.has(topic)) {
-//     return producers.get(topic)!;
-//   }
+// Cache producers per topic
+const producers = new Map<string, Producer>();
 
-//   // Connect the client once
-//   const fluvio = await Fluvio.connect({
-//     // Optional: host override; leave blank to use your default config
-//     host: env.AUTH_FLUVIO_API_URI,
-//   });
+/**
+ * Get or create a Kafka producer for a topic
+ */
+export async function getProducer(topic: string): Promise<Producer> {
+  if (producers.has(topic)) {
+    return producers.get(topic)!;
+  }
 
-//   // Create the producer from the instance
-//   const producer = await fluvio.topicProducer(topic);
+  const producer = kafka.producer();
 
-//   producers.set(topic, producer);
-//   return producer;
-// }
+  await producer.connect();
+
+  producers.set(topic, producer);
+  return producer;
+}
