@@ -1,42 +1,33 @@
 
 services:
-  mcp_gateway:
+  mcp-gateway:
     build:
-      context: ../../../services/mcp/gateway
-      additional_contexts:
-        packages: ../../../packages/
-      dockerfile: Dockerfile
-      target: development
+      context: ../../
+      dockerfile: ../../mcp/gateway/Dockerfile
+      target: ${NODE_ENV}
     container_name: ${MCP_GATEWAY_CONTAINER_NAME}
     ports: 
       - "${MCP_GATEWAY_PORT}:${MCP_GATEWAY_PORT}"
     volumes:
-      - ../../../services/mcp/gateway:/app/
+      - ../../:/app
     restart: always
     env_file:
-      - ../../../.env
+      - ../../.env
     networks:
-      - mcp_net
+      - woahai_dev_net
 
-  web_search_mcp:
+  mcp-web-search:
     build:
-      context: ../../../services/mcp/servers/web_search
-      additional_contexts:
-        packages: ../../../packages/
-      dockerfile: Dockerfile
-      target: development
+      context: ../../
+      dockerfile: ../../mcp/servers/web_search/Dockerfile
+      target: ${NODE_ENV}
     container_name: ${WEB_SEARCH_MCP_CONTAINER_NAME}
     ports:
       - "${WEB_SEARCH_MCP_PORT}:${WEB_SEARCH_MCP_PORT}"
     volumes:
-      - ../../../services/mcp/servers/web_search/src:/app/src
+      - ../../:/app
     restart: always
     env_file:
-      - ../../../.env
+      - ../../.env
     networks:
       - woahai_dev_net
-
-
-networks:
-  woahai_dev_net:
-    external: true

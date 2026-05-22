@@ -2,7 +2,7 @@ services:
   # ===========================
   # Users Postgres DB
   # ===========================
-  users_postgres_db:
+  users-postgres-db:
     image: postgres:16
     container_name: ${USERS_POSTGRES_DB_NAME}
     restart: always
@@ -20,7 +20,7 @@ services:
   # ===========================
   # Threads Postgres DB
   # ===========================
-  threads_postgres_db:
+  threads-postgres-db:
     image: postgres:16
     container_name: ${THREADS_POSTGRES_DB_NAME}
     restart: always
@@ -40,7 +40,7 @@ services:
     networks:
       - woahai_dev_net
 
-  pgadmin_gui:
+  pgadmin-gui:
     image: dpage/pgadmin4:latest
     container_name: pgadmin_gui
     restart: always
@@ -48,46 +48,46 @@ services:
       - users_postgres_db
       - threads_postgres_db
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@dev.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "5050:80"
     networks:
     - woahai_dev_net
 
-  auth_redis_store:
+  auth-redis-store:
     image: redis:7
     container_name: ${AUTH_SESSION_REDIS_HOST}
     ports:
-      - "${AUTH_REDIS_STORE_PORT}:${AUTH_REDIS_STORE_PORT}"
+      - "${AUTH_SESSION_STORE_PORT}:${AUTH_SESSION_STORE_PORT}"
     command: >
-      redis-server --requirepass "${AUTH_REDIS_STORE_PASSWORD}" --port ${AUTH_REDIS_STORE_PORT}
+      redis-server --requirepass "${AUTH_SESSION_STORE_PASSWORD}" --port ${AUTH_SESSION_STORE_PORT}
     restart: always
     networks:
       - woahai_dev_net
     volumes:
       - auth_redis_data:/data
 
-  memory_redis_store:
+  memory-redis-store:
     image: redis:7
-    container_name: ${MEMORY_REDIS_STORE_HOST}
+    container_name: ${AGENT_MEMORY_REDIS_HOST}
     ports:
-      - "${MEMORY_REDIS_STORE_PORT}:6379"
+      - "${AGENT_MEMORY_REDIS_PORT}:${AGENT_MEMORY_REDIS_PORT}"
     command: >
-      redis-server --requirepass "${MEMORY_REDIS_STORE_PASSWORD}" --port ${MEMORY_REDIS_STORE_PORT}
+      redis-server --requirepass "${AGENT_MEMORY_REDIS_PASSWORD}" --port ${AGENT_MEMORY_REDIS_PORT}
     restart: always
     networks:
       - woahai_dev_net
     volumes:
       - memory_redis_data:/data
 
-  threads_redis_store:
+  threads-redis-store:
     image: redis:7
-    container_name: ${THREADS_REDIS_STORE_HOST}
+    container_name: ${THREADS_HISTORY_REDIS_HOST}
     ports:
-      - "${THREADS_REDIS_STORE_PORT}:6379"
+      - "${THREADS_HISTORY_REDIS_PORT}:${THREADS_HISTORY_REDIS_PORT}"
     command: >
-      redis-server --requirepass "${THREADS_REDIS_STORE_PASSWORD}" --port ${THREADS_REDIS_STORE_PORT}
+      redis-server --requirepass "${THREADS_REDIS_STORE_PASSWORD}" --port ${THREADS_HISTORY_REDIS_PORT}
     restart: always
     networks:
       - woahai_dev_net
@@ -102,7 +102,3 @@ volumes:
   memory_redis_data:
   threads_redis_data:
   auth_redis_data:
-
-networks:
-  woahai_dev_net:
-    external: true

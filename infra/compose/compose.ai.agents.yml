@@ -1,23 +1,16 @@
 services:
-  react_agent:
+  wohaai-agent:
     build:
       context: ../../../services/agent/
-      additional_contexts:
-        packages: ../../../packages/
-      dockerfile: Dockerfile
-      target: development
-    container_name: ${REACT_AGENT_CONTAINER_NAME}
+      dockerfile: ../../agent/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AGENT_CONTAINER_NAME}
     ports: 
-      - "${REACT_AGENT_PORT}:${REACT_AGENT_PORT}"
+      - "${AI_AGENT_PORT}:${AI_AGENT_PORT}"
     volumes:
-      - ../../../services/agent/src:/app/src
+      - ../../:/app
     restart: always
     env_file:
-      - ../../../.env
+      - ../../.env
     networks:
       - woahai_dev_net
-
-
-networks:
-  woahai_dev_net:
-    external: true

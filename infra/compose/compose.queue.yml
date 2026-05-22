@@ -7,11 +7,11 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
-  kafka:
+  auth-kafka-broker:
     image: bitnami/kafka:3.6
-    container_name: kafka
+    container_name: ${AUTH_MAILER_KAFKA_BROKER_HOST}
     ports:
-      - "9092:9092"
+      - "${AUTH_MAILER_KAFKA_BROKER_PORT}:${AUTH_MAILER_KAFKA_BROKER_PORT}"
     depends_on:
       - zookeeper
     environment:
@@ -20,13 +20,17 @@ services:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
 
       # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:${AUTH_MAILER_KAFKA_BROKER_PORT}
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://${AUTH_MAILER_KAFKA_BROKER_HOST}:${AUTH_MAILER_KAFKA_BROKER_PORT}
 
       # Single-node dev safe settings
       - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
       - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
+
+      # Auth env passthrough
+      - KAFKA_CLIENT_USERS=${AUTH_MAILER_KAFKA_USERNAME}
+      - KAFKA_CLIENT_PASSWORDS=${AUTH_MAILER_KAFKA_PASSWORD}
 
       # Allow plaintext
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -39,12 +43,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - kafka
+      - auth-kafka-broker
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-
-
-networks:
-  woahai_dev_net:
-    external: true
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${AUTH_MAILER_KAFKA_BROKER_HOST}:${AUTH_MAILER_KAFKA_BROKER_PORT}

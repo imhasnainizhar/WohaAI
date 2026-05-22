@@ -1,0 +1,53 @@
+services:
+  web-app:
+    profiles:
+      - "apps"
+  auth-service:
+    profiles:
+      - "services"
+  user-service:
+    profiles: 
+      - "services"
+  wohaai-agent:
+    profiles:
+      - "agentic"
+  mcp-gateway:
+    profiles:
+      - "agentic"
+  mcp-web-search:
+    profiles:
+      - "agentic"
+  users-postgres-db:
+    profiles:
+      - "repo"
+  threads-postgres-db:
+    profiles:
+      - "repo"
+  pgadmin-gui:
+    profiles:
+      - "repo"
+  auth-redis-store:
+    profiles:
+      - "repo"
+  memory-redis-store:
+    profiles:
+      - "repo"
+  threads-redis-store:
+    profiles:
+      - "repo"
+  zookeeper:
+    profiles:
+      - "queue"
+  auth-kafka-broker:
+    profiles:
+      - "queue"
+  kafka-ui:
+    profiles:
+      - "queue"
+  
+  
+
+
+networks:
+  woahai_dev_net:
+    driver: bridge

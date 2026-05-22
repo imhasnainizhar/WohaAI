@@ -1,0 +1,16 @@
+services:
+  web-app:
+    build:
+      context: ../../
+      dockerfile: ../../apps/web/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${NEXTJS_APP_CONTAINER_NAME}
+    ports:
+      - "${NEXTJS_APP_PORT}:3000"
+    volumes:
+      - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - woahai_dev_net

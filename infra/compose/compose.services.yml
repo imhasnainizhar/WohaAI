@@ -1,76 +1,64 @@
 services:
   auth-service:
     build:
-      context: ../../../services/ms/auth_service/
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: ../../services/auth/Dockerfile
       target: ${NODE_ENV}
-      additional_contexts:
-        packages: ../../../packages/
     container_name: ${AUTH_SERVICE_CONTAINER_NAME}
     ports:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     volumes:
-      - ../../../services/ms/auth_service/src:/app/services/ms/auth_service/src
-      - ../../../packages/shared/dist:/app/packages/shared/dist
+      - - ../../:/app
     restart: always
     env_file:
-      - ../../../.env
+      - ../../.env
     networks:
       - woahai_dev_net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://auth-service:${AUTH_SERVICE_PORT}/health"] # Replace with your actual health check command
+      test: ["CMD", "curl", "-f", "http://auth-service:${AUTH_SERVICE_PORT}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
   user-service:
     build:
-      context: ../../../services/ms/user_service/
-      additional_contexts:
-        packages: ../../../packages/
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: ../../services/user/Dockerfile
       target: ${NODE_ENV}
     container_name: ${USER_SERVICE_CONTAINER_NAME}
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     volumes:
-      - ../../../services/ms/user_service/src:/app/src
+      - - ../../:/app
     restart: always
     env_file:
-      - ../../../.env
+      - ../../.env
     networks:
       - woahai_dev_net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://${user-service}:${USER_SERVICE_PORT}/health"] # Replace with your actual health check command
+      test: ["CMD", "curl", "-f", "http://user-service:${USER_SERVICE_PORT}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
 
-  auth-mailer-service:
-    build:
-      context: ../../../services/ms/auth_mailer_service/
-      additional_contexts:
-        packages: ../../../packages/
-      dockerfile: Dockerfile
-      target: ${NODE_ENV}
-    container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
-    ports:
-      - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
-    volumes:
-      - ../../../services/ms/auth_mailer_service/src:/app/src
-    restart: always
-    env_file:
-      - ../../../.env
-    networks:
-      - woahai_dev_net
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"] # Replace with your actual health check command
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-
-networks:
-  woahai_dev_net:
-    external: true
+  # auth-mailer-service:
+  #   build:
+  #     context: ../../
+  #     dockerfile: ../../services/auth-mailer/Dockerfile
+  #     target: ${NODE_ENV}
+  #   container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
+  #   ports:
+  #     - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
+  #   volumes:
+  #     - ../../:/app
+  #   restart: always
+  #   env_file:
+  #     - ../../.env
+  #   networks:
+  #     - woahai_dev_net
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3

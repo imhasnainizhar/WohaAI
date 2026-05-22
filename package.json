@@ -6,7 +6,12 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+
+    "docker:apps": "docker compose --profile apps up",
+    "docker:backend": "docker compose --profile services --profile repo --profile queue up",
+    "docker:ai": "docker compose --profile agentic up",
+    "docker:all": "docker compose --profile '*' up"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
