@@ -1,11 +1,11 @@
 "use client"
 
-import MainMenu from "@components/layout/main-menu";
-import Sidebar from "@components/layout/sidebar";
-import { Settings } from "@components/section/settings/settings";
+import MainMenu from "@components/layout/MainMenu";
+import Sidebar from "@components/layout/Sidebar";
+import { Settings } from "@components/section/settings/Settings";
 import settingsSchema from "@/lib/schemas/settings";
-import TopLoader from "../../components/ui/top-loader";
-import { useAppContext } from "@providers/app";
+import TopLoader from "../../components/ui/TopLoader";
+import { useAppContext } from "@providers/AppProvider";
 
 export default function ChatLayout({
     children,

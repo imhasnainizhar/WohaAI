@@ -7,14 +7,14 @@ import { SignupEmailSchema,
   SignupPersonalInfoSchema,
   SignupUsernameSchema 
 } from "@lib/schemas/signup";
-import SignupPersonalInfo from "../signup/personal";
-import { LeftArrowButton } from "@components/ui/buttons/left-arrow";
+import SignupPersonalInfo from "../signup/SignupPersonalInfo";
+import { LeftArrowButton } from "@components/ui/buttons/LeftArrowButton";
 import { GetStartedSchema } from "@lib/schemas/get-started";
-import GetStarted from "./get-started";
-import SignupEmail from "../signup/email";
-import SignupUsername from "../signup/user";
-import SignupPassword from "../signup/password";
-import { useAuthCache } from "@providers/auth-cache";
+import GetStarted from "./GetStarted";
+import SignupEmail from "../signup/SignupEmail";
+import SignupUsername from "../signup/SignupUsername";
+import SignupPassword from "../signup/SignupPassword";
+import { useAuthCache } from "@providers/AuthCacheProvider";
 import { AuthForm } from "@internals/types/auth";
 
 export default function SignupFlow() {

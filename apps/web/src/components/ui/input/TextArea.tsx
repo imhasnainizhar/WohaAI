@@ -1,5 +1,5 @@
 "use client";
-import { useTheme } from "@providers/theme";
+import { useTheme } from "@providers/ThemeProvider";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 

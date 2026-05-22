@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth } from "@providers/auth";
+import { useAuth } from "@providers/AuthProvider";
 import Image from "next/image";
 
 export default function Personal() {

@@ -4,4 +4,4 @@ packages:
   - "./mcp/*"
   - "./services/*"
   - "./tooling/*"
-  - "./packages/*"
+  - "./packages/**/*"

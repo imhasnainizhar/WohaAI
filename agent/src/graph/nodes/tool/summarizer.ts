@@ -1,5 +1,5 @@
 import { AnnotationState } from "@workflows/react.js";
-import { logger } from "@utils/logger.js";
+import { logger } from "../../../logger/logger.js";
 import { AIMessage, HumanMessage, SystemMessage, Tool } from "langchain";
 import { summarizerModel } from "src/llm(s)/summarizer.js";
 import summarizerPrompt from "../../../domain/prompts/summarizer.js";

@@ -1,5 +1,5 @@
 import { MultiServerMCPClient } from "@langchain/mcp-adapters";
-import { logger } from "@utils/logger.js";
+import { logger } from "../../logger/logger.js";
 import { env } from "@config/env.js";
 
 // Lazy initialization - client is created only when needed

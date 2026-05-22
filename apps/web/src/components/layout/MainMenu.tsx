@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import TransitionalLink from "@utils/transitional-link";
-import { useTheme } from "@providers/theme";
-import { useAppContext } from "@providers/app";
-import UsernamePlate from "@components/ui/cards/username-plate";
+import { useTheme } from "@providers/ThemeProvider";
+import { useAppContext } from "@providers/AppProvider";
+import UsernamePlate from "@components/ui/cards/UsernamePlate";
 import Link from "next/link";
 
 type Props = {

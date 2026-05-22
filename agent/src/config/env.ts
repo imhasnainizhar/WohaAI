@@ -2,7 +2,7 @@
 import dotenv from "dotenv";
 import process from "process";
 import path from "path";
-import { logger } from "@utils/logger.js";
+import { logger } from "../logger/logger.js";
 import { existsSync } from "fs";
 
 const p = process.env // Technique for convinience

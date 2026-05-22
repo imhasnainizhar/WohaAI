@@ -1,7 +1,7 @@
 import { AIMessage, HumanMessage, ToolMessage } from "langchain";
 import { AnnotationState } from "@workflows/react.js";
 import { plannerModel } from "src/llm(s)/planner.js";
-import { logger } from "@utils/logger.js";
+import { logger } from "../../../logger/logger.js";
 import { plannerPrompt } from "../../../domain/prompts/planner.js";
 import crypto from "crypto";
 import { PlannerDecision, PlannerToolCall } from "../../../domain/schemas/planner.js";

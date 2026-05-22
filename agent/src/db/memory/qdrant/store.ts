@@ -2,7 +2,7 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { embedderModel } from "@db/memory/qdrant/embedder.js";
 import { qdrantClient, QdrantClientType } from "@db/memory/qdrant/qdrant_client.js";
 import { MemoryCollection, MemoryRecord, MemoryPoint, MemoryQueryResponse } from "../../../domain/types/store.js";
-import { logger } from "@utils/logger.js";
+import { logger } from "../../../logger/logger.js";
 
 
 export class MemoryStore {

@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { env } from '@config/env.js';
-import { logger } from '@utils/logger.js';
+import { logger } from '../../../logger/logger.js';
 
 export const memoryRedisClient = createClient({
     url: env.MEMORY_REDIS_STORE_URI,

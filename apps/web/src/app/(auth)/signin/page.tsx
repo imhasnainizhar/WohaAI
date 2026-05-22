@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema } from "@lib/schemas/signin";
-import { useTheme } from "@providers/theme";
+import { useTheme } from "@providers/ThemeProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import z from "zod";

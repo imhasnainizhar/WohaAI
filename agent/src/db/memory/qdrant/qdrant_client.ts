@@ -1,6 +1,6 @@
 import { env } from "@config/env.js";
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { logger } from "@utils/logger.js";
+import { logger } from "../../../logger/logger.js";
 
 let cachedQdrantClient: QdrantClient | null = null;
 if (cachedQdrantClient) cachedQdrantClient;

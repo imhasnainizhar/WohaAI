@@ -2,7 +2,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { env } from "@config/env.js";
 import { PrismaClient } from "@generated/prisma/client.js";
-import { logger } from "@utils/logger.js";
+import { logger } from "../../../logger/logger.js";
 
 // Prisma 7: Use adapter for database connection
 const pool = new Pool({

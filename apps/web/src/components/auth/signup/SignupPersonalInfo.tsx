@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DatePicker } from "@components/ui/date-picker"
-import { RoundedInputField } from "@components/ui/input/fields/rounded";
-import { useTheme } from "@providers/theme";
+import { DatePicker } from "@components/ui/DatePicker"
+import { RoundedInputField } from "@components/ui/input/fields/RoundedInputField";
+import { useTheme } from "@providers/ThemeProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupPersonalInfoSchema, SignupPersonalInfoInput } from "@lib/schemas/signup";
-import ClassicButton from "@components/ui/buttons/classic-button";
+import ClassicButton from "@components/ui/buttons/ClassicButton";
 import { PersonalData } from "@internals/types/auth"
 
 export default function SignupPersonalInfo({

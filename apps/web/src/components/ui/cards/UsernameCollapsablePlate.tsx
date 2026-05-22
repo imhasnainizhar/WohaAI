@@ -1,11 +1,13 @@
 "use client";
 
-import { User } from "@providers/auth";
+import { User } from "@providers/AuthProvider";
 import { useState } from "react";
 import Image from "next/image";
 import { HiOutlineUserCircle } from "react-icons/hi2";
+import { useAppContext } from "@providers/AppProvider";
 
-export default function UsernamePlate() {
+export default function UsernameCollapsablePlate() {
+  const { sidebarExpanded } = useAppContext();
 
   const [userInfo] = useState<User | null>(null);
 
@@ -21,15 +23,14 @@ export default function UsernamePlate() {
   return (
     <div
       className={`
-        flex items-center justify-start rounded-[12px]
+        flex items-center justify-center rounded-[12px]
         cursor-pointer hover:bg-bg-btn-hover
-        active:bg-bg-btn-active
         transition-colors duration-300
-        overflow-hidden w-full
+        overflow-hidden
       `}
     >
       {/* Avatar (fixed, layout anchor) */}
-      <div className="w-auto h-auto p-1 m-1 rounded-full flex items-center justify-center overflow-hidden">
+      <div className="min-w-[40px] min-h-[40px] p-1 rounded-full flex items-center justify-center overflow-hidden">
         {userInfo?.profilePicture ? (
           <Image
             src={userInfo.profilePicture}
@@ -39,7 +40,7 @@ export default function UsernamePlate() {
             className="rounded-full"
           />
         ) : (
-          <HiOutlineUserCircle className="min-w-[30px] min-h-[30px]" />
+          <HiOutlineUserCircle className="min-w-[28px] min-h-[28px]" />
         )}
       </div>
 
@@ -48,6 +49,9 @@ export default function UsernamePlate() {
         className={`
           flex flex-col overflow-hidden whitespace-nowrap
           transition-all duration-450 ease-in-out
+          ${sidebarExpanded
+            ? "w-[160px] ml-2 opacity-100"
+            : "w-0 ml-0 opacity-0"}
         `}
       >
         <div className="text-text-primary text-[14px] font-medium truncate capitalize">

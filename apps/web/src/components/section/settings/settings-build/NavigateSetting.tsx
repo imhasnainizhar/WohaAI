@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { SettingItem } from "@internals/types/settings";
-import { SettingRow } from "@components/section/settings/settings-build/setting-row";
+import { SettingRow } from "@components/section/settings/settings-build/SettingRow";
 
 export function NavigateSetting({ item }: { item: SettingItem }) {
   const router = useRouter();

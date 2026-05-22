@@ -1,7 +1,7 @@
 "use client";
 
 import { SettingItem } from "@internals/types/settings";
-import { SettingRow } from "@components/section/settings/settings-build/setting-row";
+import { SettingRow } from "@components/section/settings/settings-build/SettingRow";
 
 export function SelectSetting({ item }: { item: SettingItem }) {
   return (

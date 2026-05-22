@@ -1,8 +1,8 @@
 import { SettingItem } from "@internals/types/settings";
-import { SelectSetting } from "@components/section/settings/settings-build/select-settings";
-import { ToggleSetting } from "@components/section/settings/settings-build/toggle-settings";
-import { NavigateSetting } from "@components/section/settings/settings-build/navigate-setting";
-import { DangerSetting } from "@components/section/settings/settings-build/danger-setting";
+import { SelectSetting } from "@components/section/settings/settings-build/SelectSetting";
+import { ToggleSetting } from "@components/section/settings/settings-build/ToggleSetting";
+import { NavigateSetting } from "@components/section/settings/settings-build/NavigateSetting";
+import { DangerSetting } from "@components/section/settings/settings-build/DangerSetting";
 
 interface Props {
   item: SettingItem;

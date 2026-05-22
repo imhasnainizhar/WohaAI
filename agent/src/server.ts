@@ -1,5 +1,5 @@
 import express, { Request, Response, Router } from "express"
-import { logger } from "@utils/logger.js"
+import { logger } from "./logger/logger.js"
 import { env } from "@config/env.js"
 import router from "@server/chat.route.js";
 

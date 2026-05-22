@@ -1,7 +1,7 @@
 // components/SettingSection.tsx
 import React from "react";
 import { SettingSectionType } from "@internals/types/settings";
-import { SettingsItem } from "@components/section/settings/settings-build/setting-item";
+import { SettingsItem } from "@components/section/settings/settings-build/SettingsItem";
 
 interface Props {
   section: SettingSectionType | undefined;

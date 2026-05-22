@@ -1,7 +1,7 @@
 import { memoryPrompt } from "../../../domain/prompts/memory.js";
 import { MemorySchema } from "../../../domain/schemas/memory.js";
 import { memoryModel } from "src/llm(s)/memory.js";
-import { logger } from "@utils/logger.js";
+import { logger } from "../../../logger/logger.js";
 import { AnnotationState } from "@workflows/react.js";
 import { memoryStore } from "@db/memory/qdrant/store.js";
 import { MemoryCollection, MemoryRecord } from "../../../domain/types/store.js";

@@ -5,7 +5,7 @@ import { Calendar } from "@lib/components/ui/calendar"
 import { Popover, PopoverTrigger, PopoverContent } from "@lib/components/ui/popover"
 import { format } from "date-fns"
 import { Controller, useFormContext } from "react-hook-form"
-import { RoundedDataSelector } from "./input/date/rounded-selector"
+import { RoundedDataSelector } from "./input/date/RoundedDataSelector"
 
 interface DatePickerProps {
     name: string

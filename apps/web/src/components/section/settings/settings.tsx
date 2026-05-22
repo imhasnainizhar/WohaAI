@@ -1,10 +1,10 @@
 "use client";
 
-import { SettingSection } from "@components/section/settings/settings-section/section"
+import { SettingSection } from "@components/section/settings/settings-section/SettingSection"
 import { SettingSectionType } from "@internals/types/settings"
-import { useAppContext } from "@providers/app";
+import { useAppContext } from "@providers/AppProvider";
 import { useState } from "react";
-import UsernamePlate from "@components/ui/cards/username-plate";
+import UsernamePlate from "@components/ui/cards/UsernamePlate";
 
 interface Props {
   schema: SettingSectionType[];

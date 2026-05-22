@@ -3,8 +3,8 @@ import "@styles/main/main.global.css";
 import "@styles/dist/main.global.css";
 import "@styles/main/theme.style.css";
 import "boxicons/css/boxicons.min.css";
-import { ThemeProvider } from "@providers/theme";
-import { AppProvider } from "@providers/app";
+import { ThemeProvider } from "@providers/ThemeProvider";
+import { AppProvider } from "@providers/AppProvider";
 import { ReactLenis } from "@utils/react-lenis";
 
 export const metadata: Metadata = {

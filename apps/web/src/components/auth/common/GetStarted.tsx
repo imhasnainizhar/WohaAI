@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTheme } from "@providers/theme";
+import { useTheme } from "@providers/ThemeProvider";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ClassicButton from "@components/ui/buttons/classic-button";
-import { RoundedInputField } from "@components/ui/input/fields/rounded";
+import ClassicButton from "@components/ui/buttons/ClassicButton";
+import { RoundedInputField } from "@components/ui/input/fields/RoundedInputField";
 import { GetStartedSchema } from "@packages/shared/auth";
 import { GetStartedType } from "@packages/shared/auth";
-import { useAppContext } from "@providers/app";
+import { useAppContext } from "@providers/AppProvider";
 import { GetStartedResponseData } from "@packages/shared/auth";
 import { ApiResponseOptions } from "@packages/shared/common";
 import { env } from "@config/env";

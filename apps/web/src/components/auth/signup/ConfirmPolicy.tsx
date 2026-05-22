@@ -1,4 +1,4 @@
-import ClassicButton from "@components/ui/buttons/classic-button";
+import ClassicButton from "@components/ui/buttons/ClassicButton";
 
 
 

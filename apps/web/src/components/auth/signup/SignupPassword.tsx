@@ -1,9 +1,9 @@
-import ClassicButton from "@components/ui/buttons/classic-button";
-import { RoundedInputField } from "@components/ui/input/fields/rounded";
+import ClassicButton from "@components/ui/buttons/ClassicButton";
+import { RoundedInputField } from "@components/ui/input/fields/RoundedInputField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { SignupPasswordInput, SignupPasswordSchema } from "@lib/schemas/signup";
-import { useTheme } from "@providers/theme";
+import { useTheme } from "@providers/ThemeProvider";
 
 export default function SignupPassword({ next }: { next: (next: any) => void }) {
     const { theme } = useTheme();

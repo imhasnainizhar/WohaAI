@@ -2,7 +2,7 @@ import { env } from "@config/env.js";
 import { Runnable } from "@langchain/core/runnables";
 import { ChatOpenAI } from "@langchain/openai";
 import { getMCPTools } from "@tools/externals/mcp.js";
-import { logger } from "@utils/logger.js";
+import { logger } from "../logger/logger.js";
 import { PlannerDecision, PlannerDecisionSchema } from "../domain/schemas/planner.js";
 
 let cachedLLM: Runnable | null = null;
