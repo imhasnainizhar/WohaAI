@@ -30,6 +30,8 @@ services:
 
       # Allow plaintext
       - ALLOW_PLAINTEXT_LISTENER=yes
+    networks:
+      - woahai_dev_net
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -41,3 +43,8 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+
+
+networks:
+  woahai_dev_net:
+    external: true

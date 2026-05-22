@@ -15,8 +15,7 @@ services:
     volumes:
       - users_postgres_data:/var/lib/postgresql/data
     networks:
-      - data_net
-      - microservices_net
+      - woahai_dev_net
 
   # ===========================
   # Threads Postgres DB
@@ -39,8 +38,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - data_net
-      - microservices_net
+      - woahai_dev_net
 
   pgadmin_gui:
     image: dpage/pgadmin4:latest
@@ -55,17 +53,56 @@ services:
     ports:
       - "5050:80"
     networks:
-    - data_net
-    - microservices_net
+    - woahai_dev_net
+
+  auth_redis_store:
+    image: redis:7
+    container_name: ${AUTH_SESSION_REDIS_HOST}
+    ports:
+      - "${AUTH_REDIS_STORE_PORT}:${AUTH_REDIS_STORE_PORT}"
+    command: >
+      redis-server --requirepass "${AUTH_REDIS_STORE_PASSWORD}" --port ${AUTH_REDIS_STORE_PORT}
+    restart: always
+    networks:
+      - woahai_dev_net
+    volumes:
+      - auth_redis_data:/data
+
+  memory_redis_store:
+    image: redis:7
+    container_name: ${MEMORY_REDIS_STORE_HOST}
+    ports:
+      - "${MEMORY_REDIS_STORE_PORT}:6379"
+    command: >
+      redis-server --requirepass "${MEMORY_REDIS_STORE_PASSWORD}" --port ${MEMORY_REDIS_STORE_PORT}
+    restart: always
+    networks:
+      - woahai_dev_net
+    volumes:
+      - memory_redis_data:/data
+
+  threads_redis_store:
+    image: redis:7
+    container_name: ${THREADS_REDIS_STORE_HOST}
+    ports:
+      - "${THREADS_REDIS_STORE_PORT}:6379"
+    command: >
+      redis-server --requirepass "${THREADS_REDIS_STORE_PASSWORD}" --port ${THREADS_REDIS_STORE_PORT}
+    restart: always
+    networks:
+      - woahai_dev_net
+    volumes:
+      - threads_redis_data:/data
 
 volumes:
   users_postgres_data:
   threads_postgres_data:
   pgdata:
 
-networks:
-  data_net:
-    external: true
+  memory_redis_data:
+  threads_redis_data:
+  auth_redis_data:
 
-  microservices_net:
+networks:
+  woahai_dev_net:
     external: true

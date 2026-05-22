@@ -15,7 +15,9 @@ services:
     env_file:
       - ../../../.env
     networks:
-      - microservices_net_01
+      - woahai_dev_net
+
+
 networks:
-  microservices_net_01:
+  woahai_dev_net:
     external: true

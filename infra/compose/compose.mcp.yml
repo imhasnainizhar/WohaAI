@@ -34,9 +34,9 @@ services:
     env_file:
       - ../../../.env
     networks:
-      - mcp_net
+      - woahai_dev_net
 
 
 networks:
-  mcp_net:
+  woahai_dev_net:
     external: true
