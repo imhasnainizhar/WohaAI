@@ -1,0 +1,57 @@
+{
+    "compilerOptions": {
+        /* =========================
+         Language & Environment
+      ========================== */
+        "target": "ES2022",
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        /* =========================
+         Strictness
+      ========================== */
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noUncheckedIndexedAccess": true,
+        /* =========================
+         React / JSX
+      ========================== */
+        "jsx": "react-jsx",
+        /* =========================
+         Interop
+      ========================== */
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        /* =========================
+         DX / Editor
+      ========================== */
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        /* =========================
+         Paths
+      ========================== */
+        "paths": {
+            "@packages/shared/*": [
+                "./packages/shared/dist/*"
+            ],
+        },
+        /* =========================
+         Emit
+      ========================== */
+        "declaration": true,
+        "sourceMap": true,
+        /* =========================
+         Module Safety
+      ========================== */
+        "forceConsistentCasingInFileNames": true,
+        /* =========================
+         Incremental Build
+      ========================== */
+        "incremental": true
+    }
+}
