@@ -16,6 +16,8 @@ services:
       - users_postgres_data:/var/lib/postgresql/data
     networks:
       - woahai_dev_net
+    profiles:
+      - "repo"
 
   # ===========================
   # Threads Postgres DB
@@ -39,21 +41,8 @@ services:
       retries: 5
     networks:
       - woahai_dev_net
-
-  pgadmin-gui:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin_gui
-    restart: always
-    depends_on:
-      - users_postgres_db
-      - threads_postgres_db
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - "5050:80"
-    networks:
-    - woahai_dev_net
+    profiles:
+      - "repo"
 
   auth-redis-store:
     image: redis:7
@@ -67,6 +56,8 @@ services:
       - woahai_dev_net
     volumes:
       - auth_redis_data:/data
+    profiles:
+      - "repo"
 
   memory-redis-store:
     image: redis:7
@@ -80,6 +71,8 @@ services:
       - woahai_dev_net
     volumes:
       - memory_redis_data:/data
+    profiles:
+      - "repo"
 
   threads-redis-store:
     image: redis:7
@@ -87,12 +80,47 @@ services:
     ports:
       - "${THREADS_HISTORY_REDIS_PORT}:${THREADS_HISTORY_REDIS_PORT}"
     command: >
-      redis-server --requirepass "${THREADS_REDIS_STORE_PASSWORD}" --port ${THREADS_HISTORY_REDIS_PORT}
+      redis-server --requirepass "${THREADS_HISTORY_REDIS_PASSWORD}" --port ${THREADS_HISTORY_REDIS_PORT}
     restart: always
     networks:
       - woahai_dev_net
     volumes:
       - threads_redis_data:/data
+    profiles:
+      - "repo"
+
+  auth-kafka-broker:
+    image: bitnami/kafka:3.6
+    container_name: ${AUTH_MAILER_KAFKA_BROKER_HOST}
+    ports:
+      - "${AUTH_MAILER_KAFKA_BROKER_PORT}:${AUTH_MAILER_KAFKA_BROKER_PORT}"
+    depends_on:
+      - zookeeper
+    environment:
+      # Core
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:${AUTH_MAILER_KAFKA_BROKER_PORT}
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://${AUTH_MAILER_KAFKA_BROKER_HOST}:${AUTH_MAILER_KAFKA_BROKER_PORT}
+
+      # Single-node dev safe settings
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
+
+      # Auth env passthrough
+      - KAFKA_CLIENT_USERS=${AUTH_MAILER_KAFKA_USERNAME}
+      - KAFKA_CLIENT_PASSWORDS=${AUTH_MAILER_KAFKA_PASSWORD}
+
+      # Allow plaintext
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    networks:
+      - woahai_dev_net
+    profiles:
+      - "repo"
+
 
 volumes:
   users_postgres_data:
@@ -102,3 +130,6 @@ volumes:
   memory_redis_data:
   threads_redis_data:
   auth_redis_data:
+  
+networks:
+  woahai_dev_net:

@@ -1,5 +1,22 @@
-
 services:
+  wohaai-agent:
+    build:
+      context: ../../../services/agent/
+      dockerfile: ../../agent/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AGENT_CONTAINER_NAME}
+    ports: 
+      - "${AI_AGENT_PORT}:${AI_AGENT_PORT}"
+    volumes:
+      - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - woahai_dev_net
+    profiles:
+      - "agentic"
+      
   mcp-gateway:
     build:
       context: ../../
@@ -15,6 +32,8 @@ services:
       - ../../.env
     networks:
       - woahai_dev_net
+    profiles:
+      - "agentic"
 
   mcp-web-search:
     build:
@@ -31,3 +50,8 @@ services:
       - ../../.env
     networks:
       - woahai_dev_net
+    profiles:
+      - "agentic"
+
+networks:
+  woahai_dev_net:

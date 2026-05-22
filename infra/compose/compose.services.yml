@@ -19,6 +19,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    profiles:
+      - "services"
 
   user-service:
     build:
@@ -40,7 +42,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
+    profiles:
+      - "services"
 
   # auth-mailer-service:
   #   build:
@@ -62,3 +65,8 @@ services:
   #     interval: 30s
   #     timeout: 10s
   #     retries: 3
+  #   profiles:
+  #     - "services"
+
+networks:
+  woahai_dev_net:

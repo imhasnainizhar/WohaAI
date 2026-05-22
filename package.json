@@ -7,11 +7,12 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-
-    "docker:apps": "docker compose --profile apps up",
-    "docker:backend": "docker compose --profile services --profile repo --profile queue up",
-    "docker:ai": "docker compose --profile agentic up",
-    "docker:all": "docker compose --profile '*' up"
+    "docker:apps": "docker compose --env-file .env -f ./infra/compose/compose.apps.yml --profile apps up",
+    "docker:repo": "docker compose --env-file .env -f ./infra/compose/compose.repo.yml --profile repo up",
+    "docker:services": "docker compose --env-file .env -f ./infra/compose/compose.services.yml --profile services up",
+    "docker:agentic": "docker compose --env-file .env -f ./infra/compose/compose.agentic.yml --profile agentic up",
+    "docker:debug": "docker compose --env-file .env -f ./infra/compose/compose.debug.yml --profile debug up",
+    "docker:all": "pnpm run docker:apps && pnpm run docker:repo && pnpm run docker:services && pnpm run docker:agentic && pnpm run docker:debug"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
