@@ -1,4 +1,4 @@
-import SignupFlow from "@components/auth/common/SignupFlow";
+import SignupFlow from "@components/auth/SignupFlow";
 import { AuthCacheProvider } from "@providers/AuthCacheProvider";
 
 export default function AuthLayout({

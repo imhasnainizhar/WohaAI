@@ -7,13 +7,13 @@ import { SignupEmailSchema,
   SignupPersonalInfoSchema,
   SignupUsernameSchema 
 } from "@lib/schemas/signup";
-import SignupPersonalInfo from "../signup/SignupPersonalInfo";
+import SignupPersonalInfo from "./signup/SignupPersonalInfo";
 import { LeftArrowButton } from "@components/ui/buttons/LeftArrowButton";
 import { GetStartedSchema } from "@lib/schemas/get-started";
-import GetStarted from "./GetStarted";
-import SignupEmail from "../signup/SignupEmail";
-import SignupUsername from "../signup/SignupUsername";
-import SignupPassword from "../signup/SignupPassword";
+import GetStarted from "./signup/GetStarted";
+import SignupEmail from "./signup/SignupEmail";
+import SignupUsername from "./signup/SignupUsername";
+import SignupPassword from "./signup/SignupPassword";
 import { useAuthCache } from "@providers/AuthCacheProvider";
 import { AuthForm } from "@internals/types/auth";
 
