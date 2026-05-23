@@ -1,6 +1,6 @@
 import { throwInternalError, throwConflictError, throwValidationError, throwSessionExpired } from "@packages/shared/errors";
 import { logger } from "@packages/shared/utils";
-import { getSignupCache, setSignupCache } from "@internals/utils/redis";
+import { getSignupCache, setSignupCache } from "@helpers/redis";
 import { ContinueWithEmailDTO } from "@packages/shared/auth";
 import { prisma } from "@clients/prisma";
 import { ServiceException, ServiceResponse } from "@packages/shared/utils";

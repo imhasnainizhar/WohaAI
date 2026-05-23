@@ -7,7 +7,7 @@ import { env, EXPIRATION } from "@config/env";
 import {
   ActiveSessionRecord,
   ActiveSessionSelect
-} from "@internals/types/session";
+} from "@types/session";
 import { throwSessionExpired } from '@packages/shared/errors';
 import { AccessTokenPayload, RefreshTokenPayload } from '@packages/shared/common';
 import { ServiceException, ServiceResponse } from '@packages/shared/utils';

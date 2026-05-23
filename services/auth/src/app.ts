@@ -1,7 +1,7 @@
 import express from "express";
 // import { json, urlencoded } from "body-parser";
 import authRoutes from "@routes/auth.js";
-import { logger } from "@internals/utils/logger";
+import { logger } from "@helpers/logger";
 import { errorHandler } from "@middlewares/error_handler";
 import { connectRedis } from "@clients/redis";
 import cors from "cors";

@@ -1,6 +1,6 @@
 import { signoutService } from "@services/signout";
 import { prisma } from "@clients/prisma";
-import { ServiceException } from "../../src/internals/utils/response";
+import { ServiceException } from "../../src/helpers/response";
 
 // Mock external dependencies to isolate service logic
 jest.mock("@clients/prisma", () => ({

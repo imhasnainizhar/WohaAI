@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { getStartedHandler } from "@handlers/signup/get_started";
+import { getStartedHandler } from "@handlers/signup/get-started";
 import { continueWithEmailHandler } from "@handlers/signup/continue/with-email";
-import { continueWithUsernameHandler } from "@handlers/signup/continue/with_username";
+import { continueWithUsernameHandler } from "@handlers/signup/continue/with-username";
 import { sendVerificationEmailHandler } from "@handlers/signup/verification/send-email";
 import { verifyUserEmailHandler } from "@handlers/signup/verification/verify-email";
 import { completeSignupHandler } from "@handlers/signup/complete";

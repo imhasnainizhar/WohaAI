@@ -2,7 +2,7 @@ import { refreshTokenService } from "@services/refresh/refresh_token";
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@clients/prisma";
-import { ServiceException } from "../../../src/internals/utils/response";
+import { ServiceException } from "../../../src/helpers/response";
 import { env } from "@config/env";
 
 // Mock crypto, database, and token utilities

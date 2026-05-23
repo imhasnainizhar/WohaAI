@@ -1,9 +1,9 @@
 import { randomInt } from 'crypto';
-import { logger } from "@internals/utils/logger";
-import { setCache, getCache } from "@internals/utils/redis";
-import { ServiceResponse, ServiceException } from "@internals/utils/response";
+import { logger } from "@helpers/logger";
+import { setCache, getCache } from "@helpers/redis";
+import { ServiceResponse, ServiceException } from "@helpers/response";
 import { env, EXPIRATION } from "@config/env";
-import { getProducer } from "@internals/producer/producer"
+import { getProducer } from "@producer/producer"
 import { SendVerificationEmailDTO, VerifySignupEmailEvent } from "@packages/shared/auth";
 
 /**

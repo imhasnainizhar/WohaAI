@@ -1,9 +1,9 @@
 import { getStartedService } from "@services/signup/get_started";
 import { prisma } from "@clients/prisma";
-import { setCache } from "@internals/utils/redis";
-import { createJwtToken } from "@internals/utils/jwt";
+import { setCache } from "@helpers/redis";
+import { createJwtToken } from "@helpers/jwt";
 import { env, EXPIRATION } from "@config/env";
-import { ServiceException } from "@internals/utils/response";
+import { ServiceException } from "@helpers/response";
 import { GetStartedDTO } from "@packages/shared/auth";
 
 // Mock external dependencies (DB, Redis, JWT, Logger)

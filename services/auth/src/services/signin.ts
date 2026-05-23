@@ -4,7 +4,7 @@ import { prisma } from "@clients/prisma";
 import { logger } from "@packages/shared/utils";
 import { ServiceResponse, ServiceException } from "@packages/shared/utils";
 import { env, EXPIRATION } from "@config/env";
-import { createUserSession } from "@internals/utils/create_user_session";
+import { createUserSession } from "@helpers/create_user_session";
 import { SigninDTO } from "@packages/shared/auth";
 
 

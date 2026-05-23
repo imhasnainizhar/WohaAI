@@ -1,7 +1,7 @@
 import continueWithEmailService from "@services/signup/continue/with_email";
-import { getSignupCache, setSignupCache } from "../../../../src/internals/utils/redis";
+import { getSignupCache, setSignupCache } from "../../../../src/helpers/redis";
 import { prisma } from "@clients/prisma";
-import { ServiceException } from "../../../../src/internals/utils/response";
+import { ServiceException } from "../../../../src/helpers/response";
 import { ContinueWithEmailDTO } from "@packages/shared/auth";
 
 // Mock Redis and Prisma dependencies

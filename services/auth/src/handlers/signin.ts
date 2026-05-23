@@ -7,7 +7,7 @@ import { env } from "@config/env";
 import jwt from "jsonwebtoken";
 import { SigninSchema } from "@packages/shared/auth/signin/schemas";
 import { throwSessionExpired, throwValidationError } from "@packages/shared/errors";
-import { getClientData } from "../internals/utils/get_client_data";
+import { getClientData } from "../helpers/get_client_data";
 
 /**
  * Handler for user sign-in.
