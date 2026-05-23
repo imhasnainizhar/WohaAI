@@ -1,21 +1,22 @@
 import { PrismaClient } from "../../prisma/generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { createClient, type RedisClientType } from "redis";
-
-import { env } from "@config/env.js";
 import { logger } from "@helpers/logger.js";
 import { throwInternalError } from "@packages/shared/errors";
+import { EnvConfig } from "@config/env.js";
 
-class Clients {
-  private static instance: Clients;
+export default class RepoClients {
+  private static instance: RepoClients;
 
   public prisma: PrismaClient;
   public redis: RedisClientType;
+  private env: EnvConfig;
 
   private redisRetries = 0;
   private readonly MAX_RETRIES = 3;
 
-  private constructor() {
+  private constructor(env: EnvConfig) {
+    this.env = env;
     // =========================
     // Prisma
     // =========================
@@ -27,7 +28,7 @@ class Clients {
     this.prisma = new PrismaClient({
       adapter,
       log:
-        process.env.NODE_ENV === "development"
+        env.NODE_ENV === "development"
           ? ["query", "error", "warn"]
           : ["error"],
     });
@@ -52,7 +53,6 @@ class Clients {
           }
 
           this.redisRetries++;
-
           return Math.min(retries * 100, 3000);
         },
       },
@@ -65,12 +65,12 @@ class Clients {
   // Singleton accessor
   // =========================
 
-  public static getInstance(): Clients {
-    if (!Clients.instance) {
-        Clients.instance = new Clients();
+  public static getInstance(env: EnvConfig): RepoClients {
+    if (!RepoClients.instance) {
+        RepoClients.instance = new RepoClients(env);
     }
 
-    return Clients.instance;
+    return RepoClients.instance;
   }
 
   // =========================
@@ -108,7 +108,7 @@ class Clients {
 
     await this.prisma.$connect();
 
-    logger.info("🚀 Infrastructure clients connected");
+    logger.info("🚀 Infrastructure RepoClients connected");
   }
 
   // =========================
@@ -120,7 +120,7 @@ class Clients {
 
     await this.prisma.$disconnect();
 
-    logger.info("🛑 Infrastructure clients disconnected");
+    logger.info("🛑 Infrastructure RepoClients disconnected");
   }
 
   // =========================
@@ -156,5 +156,3 @@ class Clients {
     }
   }
 }
-
-export const repoClients = Clients.getInstance();
