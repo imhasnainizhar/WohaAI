@@ -4,8 +4,7 @@
         "incremental": true,
         "declaration": true,
         "declarationMap": true,
-        "emitDeclarationOnly": false,
-        "tsBuildInfoFile": "./dist/.tsbuildinfo",    
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
         /* Language and Environment */
         "target": "ES2022",
         "lib": [
@@ -35,7 +34,9 @@
         /* Output + Debugging */
         "sourceMap": true
     },
-    "include": ["src"],
+    "include": [
+        "src"
+    ],
     "exclude": [
         "node_modules",
         "dist"

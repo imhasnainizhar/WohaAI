@@ -26,22 +26,17 @@
     "package:build": "tsc -b"
   },
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./dist/auth": {
+    "./auth": {
       "import": "./dist/auth/index.js",
       "require": "./dist/auth/index.js",
       "types": "./dist/auth/index.d.ts"
     },
-    ".dist/user": {
+    "./user": {
       "import": "./dist/user/index.js",
       "require": "./dist/user/index.js",
       "types": "./dist/user/index.d.ts"
     },
-    ".dist/mailer": {
+    "./mailer": {
       "import": "./dist/mailer/index.js",
       "require": "./dist/mailer/index.js",
       "types": "./dist/mailer/index.d.ts"

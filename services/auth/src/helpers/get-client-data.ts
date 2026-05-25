@@ -1,6 +1,10 @@
 import UAParser from "ua-parser-js";
-import { ClientData } from "@packages/shared/common";
+import { ClientData } from "@packages/contracts/auth";
 import { Request } from "express";
+
+import * as Auth from "@packages/contracts/auth";
+
+console.log(Auth);
 
 
 /**
@@ -23,9 +27,6 @@ export function getClientData(req: Request): ClientData {
     return {
         userDeviceName: device.model || `${os.name} ${os.version}`,
         userDeviceType: device.type || "desktop",
-        userDeviceID:
-            device.deviceId ||
-            `${device.deviceType ?? "Unknown"}-${crypto.randomUUID()}`,
         userDeviceBrowser: browser.name,
         userDeviceOS: `${os.name} ${os.version}`,
         userIPAddress: String(ip),

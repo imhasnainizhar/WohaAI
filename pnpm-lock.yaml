@@ -428,6 +428,22 @@ importers:
         specifier: ^5.4.0
         version: 5.9.3
 
+  packages/jwt:
+    dependencies:
+      jsonwebtoken:
+        specifier: ^9.0.3
+        version: 9.0.3
+    devDependencies:
+      '@types/jsonwebtoken':
+        specifier: ^9.0.10
+        version: 9.0.10
+      tsconfig-paths:
+        specifier: ^4.2.0
+        version: 4.2.0
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
   packages/observability:
     dependencies:
       express:
@@ -496,21 +512,27 @@ importers:
       '@packages/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@packages/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@packages/errors':
         specifier: workspace:*
         version: link:../../packages/errors
       '@packages/http':
         specifier: workspace:*
         version: link:../../packages/http
+      '@packages/jwt':
+        specifier: workspace:*
+        version: link:../../packages/jwt
       '@packages/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@packages/prisma':
+        specifier: workspace:*
+        version: link:../../packages/prisma
       '@packages/redis':
         specifier: workspace:*
         version: link:../../packages/redis
-      '@prisma/adapter-pg':
-        specifier: ^7.2.0
-        version: 7.8.0
       '@types/body-parser':
         specifier: ^1.19.6
         version: 1.19.6
@@ -526,18 +548,9 @@ importers:
       cors:
         specifier: ^2.8.5
         version: 2.8.6
-      dotenv:
-        specifier: ^17.2.3
-        version: 17.4.2
-      dotenv-expand:
-        specifier: ^12.0.3
-        version: 12.0.3
       express:
         specifier: ^5.1.0
         version: 5.2.1
-      ioredis:
-        specifier: ^5.8.1
-        version: 5.10.1
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.3
@@ -547,21 +560,6 @@ importers:
       module-alias:
         specifier: ^2.2.3
         version: 2.3.4
-      pg:
-        specifier: ^8.16.3
-        version: 8.21.0
-      pino:
-        specifier: ^10.1.0
-        version: 10.3.1
-      pino-pretty:
-        specifier: ^13.1.2
-        version: 13.1.3
-      process:
-        specifier: ^0.11.10
-        version: 0.11.10
-      redis:
-        specifier: ^5.8.3
-        version: 5.12.1
       ua-parser-js:
         specifier: ^2.0.6
         version: 2.0.10
@@ -593,9 +591,6 @@ importers:
       '@types/nodemon':
         specifier: ^1.19.6
         version: 1.19.6
-      '@types/redis':
-        specifier: ^4.0.10
-        version: 4.0.11
       '@types/ua-parser-js':
         specifier: ^0.7.39
         version: 0.7.39
