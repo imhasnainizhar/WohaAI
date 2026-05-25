@@ -5,7 +5,7 @@ import { logger } from "@packages/shared/utils";
 import { ServiceResponse, ServiceException } from "@packages/shared/utils";
 import { env, EXPIRATION } from "@config/env";
 import { createUserSession } from "@helpers/create-user-session";
-import { SigninDTO } from "@packages/shared/auth";
+import { SigninDTO } from "../../../../packages/api/src/auth";
 
 
 /**

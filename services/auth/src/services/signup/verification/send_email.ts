@@ -4,7 +4,7 @@ import { setCache, getCache } from "@helpers/redis";
 import { ServiceResponse, ServiceException } from "@helpers/response";
 import { env, EXPIRATION } from "@config/env";
 import { getProducer } from "@producer/producer"
-import { SendVerificationEmailDTO, VerifySignupEmailEvent } from "@packages/shared/auth";
+import { SendVerificationEmailDTO, VerifySignupEmailEvent } from "../../../../../../packages/api/src/auth";
 
 /**
  * Topic used for outbound email events.

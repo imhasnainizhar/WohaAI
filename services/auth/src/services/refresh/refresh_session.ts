@@ -1,4 +1,4 @@
-import { RefreshTokenDTO } from '@packages/shared/auth';
+import { RefreshTokenDTO } from '../../../../../packages/api/src/auth';
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@clients/prisma";

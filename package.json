@@ -6,6 +6,8 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
+    "packages:dev": "pnpm -r run package:dev",
+    "packages:build": "pnpm -r run package:build",
     "typecheck": "turbo run typecheck",
     "docker:apps": "docker compose --env-file .env -f ./infra/compose/compose.apps.yml --profile apps up",
     "docker:repo": "docker compose --env-file .env -f ./infra/compose/compose.repo.yml --profile repo up",

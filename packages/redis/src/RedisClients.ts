@@ -6,16 +6,16 @@ import { envConfigs, EnvConfig } from "@packages/config";
 class RedisClient {
     private static instance: RedisClient;
     public redis: Redis;
-    private env: EnvConfig;
+    private redisConnectionURI: string;
 
-    private constructor(env: EnvConfig) {
-        this.env = env;
+    private constructor(redisConnectionURI: string) {
+        this.redisConnectionURI = redisConnectionURI;
 
         // =========================
         // Redis client
         // =========================
 
-        this.redis = new Redis(this.env.AUTH_SESSION_STORE_URI, {
+        this.redis = new Redis(this.redisConnectionURI, {
             maxRetriesPerRequest: 3,
 
             retryStrategy: (times) => {
@@ -63,13 +63,13 @@ class RedisClient {
     // Singleton accessor
     // =========================
 
-    public static getInstance(env: EnvConfig): RedisClient {
+    public static getInstance(redisConnectionURI: string): RedisClient {
         if (!RedisClient.instance) {
-            RedisClient.instance = new RedisClient(env);
+            RedisClient.instance = new RedisClient(redisConnectionURI);
         }
 
         return RedisClient.instance;
     }
 }
 
-export const redisClient = RedisClient.getInstance(envConfigs)
+export const redisClient = RedisClient.getInstance(envConfigs.AUTH_SESSION_STORE_URI)

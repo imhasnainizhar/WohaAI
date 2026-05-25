@@ -1,10 +1,10 @@
 import { Kafka, Producer } from "kafkajs";
-import { env } from "@config/env";
+import { env } from "@packages/config";
 
 // Singleton Kafka client
 const kafka = new Kafka({
-  clientId: env.KAFKA_AUTH_CLIENT_ID,
-  brokers: env.KAFKA_AUTH_BROKERS.split(","), // e.g. "localhost:9092"
+  clientId: env.AUTH_MAILER_KAFKA_CLIENT_ID,
+  brokers: env.AUTH_MAILER_KAFKA_BROKERS
 });
 
 // Cache producers per topic

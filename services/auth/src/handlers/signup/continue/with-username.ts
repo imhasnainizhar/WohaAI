@@ -1,4 +1,4 @@
-import { UsernameSignupSchema } from "@packages/shared/auth";
+import { UsernameSignupSchema } from "../../../../../../packages/api/src/auth";
 import { throwValidationError } from "@packages/shared/errors";
 import continueWithUsernameService from "@services/signup/continue/with_username";
 import { asyncHandler } from "@middlewares/async_handler";

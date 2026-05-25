@@ -3,8 +3,8 @@ import { logger } from "@packages/shared/utils";
 import { getSignupCache, setSignupCache } from "@helpers/redis";
 import { prisma } from "@clients/prisma";
 import { ServiceException, ServiceResponse } from "@packages/shared/utils";
-import { UsernameSignupSchema } from "@packages/shared/auth";
-import { ContinueWithUsernameDTO } from "@packages/shared/auth";
+import { UsernameSignupSchema } from "../../../../../../packages/api/src/auth";
+import { ContinueWithUsernameDTO } from "../../../../../../packages/api/src/auth";
 
 
 /**

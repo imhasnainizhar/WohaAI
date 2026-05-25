@@ -13,7 +13,7 @@ const sameSite = (NODE_ENV === "production" ? "none" : "lax") as
   "none" | "lax" | "strict";
 
 
-export const env: EnvConfig = {
+const env: EnvConfig = {
   // ========================================
   // Environment
   // ========================================

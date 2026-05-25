@@ -4,7 +4,7 @@ import { logger } from "@helpers/logger";
 import { getCache, deleteCache, setCache } from "@helpers/redis";
 import { ServiceResponse, ServiceException } from "@helpers/response";
 import { env } from "@config/env";
-import { VerifyUserEmailDTO } from "@packages/shared/auth";
+import { VerifyUserEmailDTO } from "../../../../../../packages/api/src/auth";
 
 /**
  * Verify the email verification code and return a short-lived token for next signup step.

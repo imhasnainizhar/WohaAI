@@ -1,0 +1,54 @@
+{
+  "name": "@packages/http",
+  "version": "1.0.0",
+  "description": "Core http package for woha ai",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "typescript",
+    "rust",
+    "openai",
+    "models"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "WoahAI"
+  },
+  "license": "MIT",
+  "author": "Hasnain Izhar",
+  "scripts": {
+    "package:dev": "tsc -b -w",
+    "package:build": "tsc -b"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "dotenv-expand": "^12.0.3",
+    "fs": "0.0.1-security",
+    "jsonwebtoken": "^9.0.3",
+    "pino": "^10.1.0",
+    "process": "^0.11.10",
+    "winston": "^3.19.0",
+    "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.0"
+  }
+}

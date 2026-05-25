@@ -2,7 +2,7 @@ import { asyncHandler } from '@middlewares/async_handler';
 import { Request, Response } from "express";
 import { sendResponse } from "@packages/shared/utils";
 import { getStartedService } from "@services/signup/get_started";
-import { GetStartedSchema } from "@packages/shared/auth";
+import { GetStartedSchema } from "../../../../../packages/api/src/auth";
 import { throwValidationError } from "@packages/shared/errors";
 
 /**

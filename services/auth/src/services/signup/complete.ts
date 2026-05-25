@@ -1,7 +1,7 @@
 import { logger } from "@packages/shared/utils";
 import { ServiceResponse, ServiceException } from "@packages/shared/utils";
 import { setSignupCache, getSignupCache } from "@helpers/redis";
-import { CompleteSignupDTO } from "@packages/shared/auth";
+import { CompleteSignupDTO } from "../../../../../packages/api/src/auth";
 import { throwInternalError, throwSessionExpired } from "@packages/shared/errors";
 
 /**

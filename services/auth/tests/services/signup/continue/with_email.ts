@@ -2,7 +2,7 @@ import continueWithEmailService from "@services/signup/continue/with_email";
 import { getSignupCache, setSignupCache } from "../../../../src/helpers/redis";
 import { prisma } from "@clients/prisma";
 import { ServiceException } from "../../../../src/helpers/response";
-import { ContinueWithEmailDTO } from "@packages/shared/auth";
+import { ContinueWithEmailDTO } from "../../../../../../packages/api/src/auth";
 
 // Mock Redis and Prisma dependencies
 jest.mock("@utils/redis");

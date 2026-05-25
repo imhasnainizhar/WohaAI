@@ -2,7 +2,7 @@ import { asyncHandler } from "@middlewares/async_handler";
 import { throwValidationError } from "@packages/shared/errors";
 import continueWithEmailService from "@services/signup/continue/with_email";
 import { SignupSessionPayload } from "@packages/shared/common";
-import { EmailSignupSchema } from "@packages/shared/auth";
+import { EmailSignupSchema } from "../../../../../../packages/api/src/auth";
 import { env } from "@config/env";
 import jwt from "jsonwebtoken";
 import { sendResponse } from "@packages/shared/utils";

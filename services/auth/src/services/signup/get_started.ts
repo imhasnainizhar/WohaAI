@@ -5,8 +5,8 @@ import { setCache } from "@helpers/redis";
 import { prisma } from "@clients/prisma";
 import { env, EXPIRATION } from "@config/env";
 import { logger } from "@packages/shared/utils";
-import { GetStartedResponseData } from "@packages/shared/auth";
-import { GetStartedDTO } from "@packages/shared/auth";
+import { GetStartedResponseData } from "../../../../../packages/api/src/auth";
+import { GetStartedDTO } from "../../../../../packages/api/src/auth";
 
 /**
  * @description This is service to get started with signup, taking email or username.

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ServiceException } from "../helpers/response";
+import { InternalServerError, ServiceError } from "@packages/errors";
 
 export const asyncHandler =
   (
@@ -13,7 +14,7 @@ export const asyncHandler =
         // If the service already wrapped it — pass through
         // Service exceptions are thrown by services, controller are just to make calls to services
         if (
-          err instanceof ServiceException ||
+          err instanceof ServiceError ||
           (
             err.errors &&
             typeof err.response.statusCode === "number" &&
@@ -25,12 +26,7 @@ export const asyncHandler =
 
         // Otherwise, wrap unknown errors into a ServiceException
         return next(
-          new ServiceException({
-            success: false,
-            statusCode: 500,
-            message: "Internal server error",
-            errorType: "internal_server_error",
-          })
-        );
+          new InternalServerError(err)
+        )
       }
     };

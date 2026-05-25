@@ -26,7 +26,6 @@
         "@langchain/langgraph-checkpoint-postgres": "^1.0.0",
         "@langchain/mcp-adapters": "^1.0.3",
         "@langchain/openai": "^1.1.3",
-        "@packages/shared": "workspace:*",
         "@prisma/adapter-pg": "^7.2.0",
         "@qdrant/js-client-rest": "^1.18.0",
         "express": "^5.2.1",
