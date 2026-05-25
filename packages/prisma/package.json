@@ -23,7 +23,9 @@
   "author": "Hasnain Izhar",
   "scripts": {
     "package:dev": "tsc -b -w",
-    "package:build": "tsc -b"
+    "package:build": "tsc -b",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev"
   },
   "exports": {
     ".": {

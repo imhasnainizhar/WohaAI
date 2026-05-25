@@ -1,8 +1,5 @@
+// packages/db/src/client.ts
 import { PrismaClient } from "@prisma/client";
 
-export const prisma = new PrismaClient({
-    log:
-        process.env.NODE_ENV === "development"
-            ? ["query", "error", "warn"]
-            : ["error"],
-});
+export const prisma = new PrismaClient();
+export { PrismaClient } from "@prisma/client"
