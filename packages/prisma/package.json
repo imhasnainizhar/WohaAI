@@ -1,0 +1,45 @@
+{
+  "name": "@packages/prisma",
+  "version": "1.0.0",
+  "description": "Shared stuff for repo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "typescript",
+    "rust",
+    "openai",
+    "models"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "WoahAI"
+  },
+  "license": "MIT",
+  "author": "Hasnain Izhar",
+  "scripts": {
+    "package:dev": "tsc -b -w",
+    "package:build": "tsc -b"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@packages/config": "workspace:*",
+    "@packages/observability": "workspace:*",
+    "@prisma/client": "7.8.0",
+    "prisma": "7.8.0"
+  },
+  "devDependencies": {
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.0"
+  }
+}

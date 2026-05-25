@@ -22,8 +22,8 @@
     "license": "MIT",
     "author": "Hasnain Izhar",
     "scripts": {
-      "config:dev": "tsc -b -w",
-      "config:build": "tsc -b"
+      "package:dev": "tsc -b -w",
+      "package:build": "tsc -b"
     },
     "exports": {
       ".": {

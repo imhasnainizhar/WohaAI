@@ -1,4 +1,4 @@
-import { refreshTokenService } from "@services/refresh/refresh_token";
+import { refreshTokenService } from "@services/refresh/refresh_session";
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@clients/prisma";

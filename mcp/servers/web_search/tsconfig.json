@@ -8,6 +8,11 @@
         ],
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
+        "composite": true,
+        "incremental": true,
+        "declaration": true,
+        "declarationMap": true,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
         "allowSyntheticDefaultImports": true,
         /* Project Structure */
         "rootDir": "./src",
@@ -23,7 +28,7 @@
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@*": [
+            "@/*": [
                 "./src/*"
             ]
         },

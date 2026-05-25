@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${USERS_POSTGRES_DB_PASSWORD}
       POSTGRES_DB: ${USERS_POSTGRES_DB_NAME}
     ports:
-      - "${USERS_POSTGRES_DB_EXTERNAL_PORT}:${USERS_POSTGRES_DB_INTERNAL_PORT}"
+      - "${USERS_POSTGRES_DB_PORT}:5432"
     volumes:
       - users_postgres_data:/var/lib/postgresql/data
     networks:
@@ -31,9 +31,9 @@ services:
       POSTGRES_PASSWORD: ${THREADS_POSTGRES_DB_PASSWORD}
       POSTGRES_DB: ${THREADS_POSTGRES_DB_NAME}
     ports:
-      - "${THREADS_POSTGRES_DB_EXTERNAL_PORT}:${THREADS_POSTGRES_DB_INTERNAL_PORT}"
+      - "${THREADS_POSTGRES_DB_PORT}:5432"
     volumes:
-      - threads_postgres_data:/var/lib/postgresql/data
+      - threads_postgres_data:/var/lib/postgresql/datagINTER
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${THREADS_POSTGRES_DB_USER} -d ${THREADS_POSTGRES_DB_NAME}"]
       interval: 5s

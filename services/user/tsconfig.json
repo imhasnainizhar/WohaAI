@@ -6,6 +6,11 @@
         "lib": [
             "ES2022"
         ],
+        "composite": true,
+        "incremental": true,
+        "declaration": true,
+        "declarationMap": true,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",    
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         /* Project Structure */
@@ -20,12 +25,15 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
+        "references": [
+            { "path": "../user" }
+        ],
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@app": [
+            "@/app": [
                 "./src/app"
             ],
-            "@*": [
+            "@/*": [
                 "./src/*"
             ]
         },

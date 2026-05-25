@@ -1,7 +1,7 @@
 {
-    "name": "@core/http",
+    "name": "@packages/errors",
     "version": "1.0.0",
-    "description": "Core http package for woha ai",
+    "description": "Reusable errors for this monorepo",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -33,23 +33,12 @@
       }
     },
     "dependencies": {
-      "dotenv": "^17.2.3",
-      "dotenv-expand": "^12.0.3",
-      "fs": "0.0.1-security",
-      "jsonwebtoken": "^9.0.3",
-      "pino": "^10.1.0",
-      "process": "^0.11.10",
-      "winston": "^3.19.0",
-      "zod": "^3.25.76"
-    },
-    "peerDependencies": {
-      "express": "^4.18.2"
+      "@packages/observability": "workspace:*",
+      "ioredis": "^5.10.1"
     },
     "devDependencies": {
-      "@types/express": "^5.0.6",
-      "@types/jsonwebtoken": "^9.0.10",
+      "@types/redis": "^4.0.11",
       "tsconfig-paths": "^4.2.0",
       "typescript": "^5.4.0"
     }
   }
-  

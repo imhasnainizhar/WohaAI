@@ -5,6 +5,11 @@
         "lib": [
             "ES2022"
         ],
+        "composite": true,
+        "incremental": true,
+        "declaration": true,
+        "declarationMap": true,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         /* Project Structure */
@@ -21,38 +26,8 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "paths": {
-            "@config/*": [
-                "./src/config/*"
-            ],
-            "@middleware/*": [
-                "./src/middleware/*"
-            ],
-            "@utils/*": [
-                "./src/utils/*"
-            ],
-            "@domain/*": [
-                "./src/domain/*"
-            ],
-            "@tools/*": [
-                "./src/tools/*"
-            ],
-            "@llm/*": [
-                "./src/llm/*"
-            ],
-            "@db/*": [
-                "./src/db/*"
-            ],
-            "@workflows/*": [
-                "./src/workflows/*"
-            ],
-            "@graph/*": [
-                "./src/graph/*"
-            ],
-            "@server/*": [
-                "./src/server/*"
-            ],
-            "@generated/*": [
-                "./src/generated/*"
+            "@/*": [
+                "./src/*"
             ]
         },
         /* Output + Debugging */

@@ -1,7 +1,7 @@
 import { ClientData } from '@packages/shared/common';
 import { asyncHandler } from "@middlewares/async_handler";
-import { getClientData } from "@helpers/get_client_data";
-import { refreshTokenService } from "@services/refresh/refresh_token";
+import { getClientData } from "@helpers/get-client-data";
+import { refreshTokenService } from "@services/refresh/refresh_session";
 import { sendResponse, ServiceException, ServiceResponse } from "@packages/shared/utils";
 import { Request, Response } from "express";
 import { env } from '@config/env';

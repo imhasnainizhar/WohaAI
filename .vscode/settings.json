@@ -1,0 +1,14 @@
+{
+    "typescript.inlayHints.parameterNames.enabled": "all",
+    "typescript.inlayHints.variableTypes.enabled": true,
+    "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  
+    "editor.hover.enabled": true,
+    "editor.parameterHints.enabled": true,
+  
+    "typescript.tsserver.maxTsServerMemory": 8192, 
+
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always"  
+}
