@@ -2,7 +2,7 @@ import express, { Express } from "express";
 import { json, urlencoded } from "body-parser";
 import authRoutes from "@/routes/auth.js";
 import { logger } from "@packages/observability";
-import { errorHandler } from "@/middlewares/error_handler";
+import { errorHandler } from "@/middlewares/error-handler";
 import { redisClient } from "@packages/redis";
 import cors from "cors";
 import cookieParser from "cookie-parser";

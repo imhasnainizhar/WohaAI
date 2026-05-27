@@ -2,7 +2,7 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { envConfigs as env, EXPIRATION } from "@packages/config";
 import { createUserSession } from "@/helpers/create-user-session";
-import { AuthRepo } from "@/repo/AuthRepo";
+import { AuthRepo } from "@/repo/auth-repo";
 import { InternalServerError,InvalidCredentialsError } from "@packages/errors";
 import { SigninResponse } from "@packages/contracts/auth";
 import { SigninParams } from "@/types/service/params";

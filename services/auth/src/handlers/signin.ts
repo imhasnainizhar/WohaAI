@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../middlewares/async_handler";
+import { asyncHandler } from "../middlewares/async-handler";
 import { Cookie, sendResponse } from "@packages/http";
-import authService from "@/services/AuthService";
+import authService from "@/services/auth-service";
 import { SigninRequestSchema } from "@packages/contracts/auth";
 import { getClientData } from "../helpers/get-client-data";
 import { ValidationError } from "@packages/errors";

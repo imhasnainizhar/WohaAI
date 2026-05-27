@@ -1,6 +1,6 @@
 import { logger } from "@packages/observability";
 import { SignoutResponse } from "@packages/contracts/auth";
-import { AuthRepo } from "@/repo/AuthRepo";
+import { AuthRepo } from "@/repo/auth-repo";
 import { SessionExpiredError } from "@packages/errors";
 import { SignoutParams } from "@/types/service/params";
 

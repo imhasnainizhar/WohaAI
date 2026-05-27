@@ -14,7 +14,7 @@ import {
   RefreshTokenPayload,
 } from "@packages/jwt";
 import { RefreshSessionParams } from "@/types/service/params";
-import { AuthRepo } from "@/repo/AuthRepo";
+import { AuthRepo } from "@/repo/auth-repo";
 
 
 export class RefreshSessionService {

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "@/middlewares/async_handler";
+import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@packages/http";
-import authService from "@/services/AuthService";
+import authService from "@/services/auth-service";
 import { RefreshTokenPayload } from "@packages/jwt";
 import { env } from "@/config/env";
 import jwt from "jsonwebtoken";
