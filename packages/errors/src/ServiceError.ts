@@ -10,21 +10,25 @@ export class ServiceError extends Error {
         public readonly errors?: Record<string, string[]>,
     ) {
         super(message);
-        this.name = "AppError";
+
+        this.name = this.constructor.name;
+
+        Error.captureStackTrace?.(this, this.constructor);
     }
 }
 
 // Validation Error (Zod)
 export class ValidationError extends ServiceError {
     constructor(
-        message: string,
-        errors: ZodError,
+        message?: string,
+        errors?: ZodError,
     ) {
         super(
-            message,
+            message 
+            ? message : "Validation error",
             "validation_error",
             400,
-            sanitizedFieldErrors(errors)
+            errors && sanitizedFieldErrors(errors)
         );
     }
 }
@@ -62,10 +66,11 @@ export class SessionExpiredError extends ServiceError {
 
 // Internal Error
 export class InternalServerError extends ServiceError {
-    constructor(err?: any) {
+    constructor(err?: unknown) {
         super(
-            err?.message ??
-            "Something went wrong on our side",
+            err instanceof Error
+                ? err.message
+                : "Something went wrong on our side",
             "internal_server_error",
             500,
         );
@@ -80,6 +85,17 @@ export class ForbiddenError extends ServiceError {
             "You do not have permission to perform this action.",
             "forbidden_error",
             403,
+        );
+    }
+}
+
+// Invalid credentials Error
+export class InvalidCredentialsError extends ServiceError {
+    constructor() {
+        super(
+            "Invalid credentials.",
+            "invalid_credentials_error",
+            401,
         );
     }
 }

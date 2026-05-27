@@ -3,7 +3,7 @@ import { SignupSessionIDSchema } from "./session";
 import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameSchema } from "./user";
 import { authRegex } from "@/utils/auth-regex";
 
-export const GetStartedSchema = z.object({
+export const GetStartedRequestSchema = z.object({
     usernameOrEmail: z
         .string()
         .min(1, "Required")
@@ -28,7 +28,7 @@ export const GetStartedSchema = z.object({
  * Used for continueWithUsername service for username validation at second step after get started step.
  * If user initializes with email so second step require username.
  */
-export const UsernameSignupSchema = z.object({
+export const UsernameSignupRequestSchema = z.object({
     username: UsernameSchema,
 });
 
@@ -36,11 +36,11 @@ export const UsernameSignupSchema = z.object({
  * Used for continueWithEmail service for email validation at second step after get started step.
  * If user initializes with username so second step require email.
  */
-export const EmailSignupSchema = z.object({
+export const EmailSignupRequestSchema = z.object({
     email: EmailSchema,
 });
 
-export const CompleteSignupSchema = z.object({
+export const CompleteSignupRequestSchema = z.object({
     firstName: FirstNameSchema,
     lastName: LastNameSchema,
     dateOfBirth: DateOfBirthSchema,
@@ -53,7 +53,7 @@ export const CompleteSignupSchema = z.object({
 
 export const VerificationCodeSchema = z.string().min(1, "Required").length(6, "Verification code must be 6 digits").regex(/^\d+$/, "Verification code must be numeric");
 
-export const VerifyUserEmailSchema = z
+export const VerifyUserEmailRequestSchema = z
     .object({
         signupSessionID: SignupSessionIDSchema,
         email: EmailSchema,
@@ -61,7 +61,7 @@ export const VerifyUserEmailSchema = z
     })
 
 
-export const SendVerificationEmailSchema = z
+export const SendVerificationEmailRequestSchema = z
     .object({
         signupSessionID: SignupSessionIDSchema,
         email: EmailSchema,

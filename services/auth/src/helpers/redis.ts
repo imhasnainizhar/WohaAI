@@ -1,11 +1,20 @@
-import { env, EXPIRATION } from "@packages/config";
+import { envConfigs, EXPIRATION } from "@packages/config";
 import { InternalServerError, ServiceError, SessionExpiredError } from "@packages/errors";
-import { logger } from "./logger";
-import {redisHelpers} from '@packages/redis';
+import { logger } from "@packages/observability";
+import {redisClient, redisHelpers} from '@packages/redis';
 
+export async function createSignupSession(sessionData: {
+  userID: string
+  signupSessionID: string
+}) {
+  return await redisClient.redis.set(
+      `session:${sessionData.signupSessionID}`,
+      sessionData.userID
+  )
+}
 
-// Signup Session Cache
-export async function getSignupCache<T>(
+// Signup Session
+export async function getSignupSession<T>(
   signupSessionID: string,
 ): Promise<T> {
   logger.debug(
@@ -13,7 +22,7 @@ export async function getSignupCache<T>(
   );
 
   const key =
-    `${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`;
+    `${envConfigs.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`;
 
   const session =
     await redisHelpers.getCache(key);
@@ -46,8 +55,8 @@ export async function getSignupCache<T>(
 }
 
 
-// Signup Session Cache
-export async function getSigninCache<T>(
+// Signup Session
+export async function getSigninSession<T>(
   signinSessionID: string,
 ): Promise<T> {
   logger.debug(
@@ -55,7 +64,7 @@ export async function getSigninCache<T>(
   );
 
   const key =
-    `${env.ACTIVE_SIGNIN_SESSION_CACHE_KEY}:${signinSessionID}`;
+    `${envConfigs.ACTIVE_SIGNIN_SESSION_CACHE_KEY}:${signinSessionID}`;
 
   const session =
     await redisHelpers.getCache(key);

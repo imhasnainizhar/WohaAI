@@ -12,10 +12,6 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -b -w ../../../packages/shared ./ && tsc-alias -p .",
     "start": "nodemon dist/server.js",
-    "prepare": "npm run prisma:generate",
-    "postinstall": "",
-    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
-    "prisma:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
     "test": "jest"
   },
   "repository": {
@@ -30,13 +26,13 @@
   "license": "MIT",
   "dependencies": {
     "@packages/config": "workspace:*",
+    "@packages/contracts": "workspace:*",
     "@packages/errors": "workspace:*",
     "@packages/http": "workspace:*",
     "@packages/observability": "workspace:*",
-    "@packages/redis": "workspace:*",
     "@packages/prisma": "workspace:*",
+    "@packages/redis": "workspace:*",
     "@packages/jwt": "workspace:*",
-    "@packages/contracts": "workspace:*",
     "@types/body-parser": "^1.19.6",
     "argon2": "^0.44.0",
     "body-parser": "^2.2.2",

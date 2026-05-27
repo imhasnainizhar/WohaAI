@@ -1,3 +1,2 @@
-import { envConfigs as e } from "@packages/config"
-
-export default e;
+export { envConfigs as env,  } from "@packages/config"
+export { EXPIRATION as exp } from "@packages/config";

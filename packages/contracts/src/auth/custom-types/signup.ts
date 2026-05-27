@@ -1,13 +1,13 @@
 import z from "zod";
-import { GetStartedSchema, CompleteSignupSchema, UsernameSignupSchema, EmailSignupSchema, SendVerificationEmailSchema, VerificationCodeSchema, VerifyUserEmailSchema } from "../schema/signup";
+import { GetStartedRequestSchema, CompleteSignupRequestSchema, UsernameSignupRequestSchema, EmailSignupRequestSchema, VerifyUserEmailRequestSchema, VerificationCodeSchema, SendVerificationEmailRequestSchema } from "../schema";
 
-export type GetStarted = z.infer<typeof GetStartedSchema>;
-export type CompleteSignup = z.infer<typeof CompleteSignupSchema>
-export type UsernameSignup = z.infer<typeof UsernameSignupSchema>;
-export type EmailSignup = z.infer<typeof EmailSignupSchema>;
+export type GetStartedRequest = z.infer<typeof GetStartedRequestSchema>;
+export type CompleteSignupRequest = z.infer<typeof CompleteSignupRequestSchema>
+export type UsernameSignupRequest = z.infer<typeof UsernameSignupRequestSchema>;
+export type EmailSignupRequest = z.infer<typeof EmailSignupRequestSchema>;
 export type VerificationCode = z.infer<typeof VerificationCodeSchema>;
-export type VerificationEmail = z.infer<typeof SendVerificationEmailSchema>;
-export type VerifyUserEmail = z.infer<typeof VerifyUserEmailSchema>;
+export type SendVerificationEmailRequest = z.infer<typeof SendVerificationEmailRequestSchema>;
+export type VerifyUserEmailRequest = z.infer<typeof VerifyUserEmailRequestSchema>;
 
 export type GetStartedResponse = {
     identifierType: "username" | "email";

@@ -1,4 +1,8 @@
 import z from "zod";
-import { SignoutSchema } from "../schema/signout";
+import { SignoutRequestSchema } from "../schema/signout";
 
-export type SignoutType = z.infer<typeof SignoutSchema>;
+export type SignoutRequest = z.infer<typeof SignoutRequestSchema>;
+
+export interface SignoutResponse {
+    signedOut: true;
+}

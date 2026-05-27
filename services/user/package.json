@@ -11,11 +11,7 @@
     "seed:users": "ts-node scripts/seed_users.ts",
     "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "prepare": "npm run prisma:generate",
-    "postinstall": "",
-    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
-    "prisma:migrate": "prisma migrate dev --schema=./prisma/schema.prisma"
+    "start": "node dist/server.js"
   },
   "repository": {
     "type": "git",

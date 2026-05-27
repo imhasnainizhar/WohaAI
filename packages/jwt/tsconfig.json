@@ -4,6 +4,7 @@
         "incremental": true,
         "declaration": true,
         "declarationMap": true,
+        "emitDeclarationOnly": false,
         "tsBuildInfoFile": "./dist/.tsbuildinfo",
         /* Language and Environment */
         "target": "ES2022",

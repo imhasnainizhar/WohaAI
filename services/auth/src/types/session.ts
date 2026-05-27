@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@packages/prisma";
 
 // Interface for user session refresh
 export interface UserSessionRefresh {
@@ -29,4 +29,4 @@ export const ActiveSessionSelect: Prisma.UserSessionSelect = {
 
 // Type for active session record
 export type ActiveSessionRecord =
-  Prisma.UserSessionGetPayload<{ select: typeof ActiveSessionSelect }>;
+Prisma.UserSessionGetPayload<{ select: typeof ActiveSessionSelect }>;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { ServiceException } from "../helpers/response";
 import { InternalServerError, ServiceError } from "@packages/errors";
+import { sendResponse } from '@packages/http';
 
 export const asyncHandler =
   (
@@ -24,7 +24,7 @@ export const asyncHandler =
           return next(err);
         }
 
-        // Otherwise, wrap unknown errors into a ServiceException
+        // Otherwise
         return next(
           new InternalServerError(err)
         )

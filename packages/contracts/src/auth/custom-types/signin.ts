@@ -1,4 +1,14 @@
 import z from "zod";
-import { SigninSchema } from "../schema/signin";
+import { SigninRequestSchema } from "../schema/signin";
 
-export type SignInType = z.infer<typeof SigninSchema>;
+export type SignInRequest = z.infer<typeof SigninRequestSchema>;
+
+export interface SigninResponse {
+    profilePicURI: string;
+    userID: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    refreshToken: string;
+    accessToken: string;
+}

@@ -9,12 +9,12 @@
         "lib": [
             "ES2022"
         ],
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "allowSyntheticDefaultImports": true,
         /* Project Structure */
         "outDir": "dist",
-        "rootDir": "src",
+        "rootDir": "./",
         /* Type Checking */
         "strict": true,
         "noImplicitAny": true,
@@ -33,7 +33,7 @@
         /* Output + Debugging */
         "sourceMap": true
     },
-    "include": ["src"],
+    "include": ["src", "generated"],
     "exclude": [
         "node_modules",
         "dist"

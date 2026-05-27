@@ -2,16 +2,16 @@
   "name": "@packages/prisma",
   "version": "1.0.0",
   "description": "Shared stuff for repo",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
     "dist"
   ],
+  "type": "module",
   "keywords": [
     "ai",
     "agents",
     "typescript",
-    "rust",
     "openai",
     "models"
   ],
@@ -29,18 +29,21 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
     }
   },
   "dependencies": {
     "@packages/config": "workspace:*",
     "@packages/observability": "workspace:*",
-    "@prisma/client": "7.8.0",
-    "prisma": "7.8.0"
+    "@prisma/adapter-pg": "latest",
+    "dotenv": "latest",
+    "pg": "latest"
   },
   "devDependencies": {
+    "@types/pg": "latest",
+    "prisma": "7.8.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.0"
   }
