@@ -3,9 +3,9 @@ import { Cookie } from "@packages/http";
 
 export interface SigninParams {
     usernameOrEmail: {
-        type: "email"; value: string;
-    } | {
         type: "username"; value: string;
+    } | {
+        type: "email"; value: string;
     };
     password: string;
     clientData: ClientData;
@@ -17,6 +17,14 @@ export interface SignoutParams {
 }
 
 export interface RefreshSessionParams {
-    cookies: Cookie[];
+    refreshToken: string;
     userIPAddress: string;
+}
+
+export interface SignupInitParams {
+    usernameOrEmail: {
+        type: "username"; value: string;
+    } | {
+        type: "email"; value: string;
+    };
 }

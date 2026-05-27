@@ -1,37 +1,66 @@
-import { asyncHandler } from '@middlewares/async_handler';
+import { asyncHandler } from '@/middlewares/async-handler';
 import { Request, Response } from "express";
-import { sendResponse } from "@packages/shared/utils";
-import { getStartedService } from "@services/signup/get_started";
-import { GetStartedSchema } from "../../../../../packages/api/src/auth";
-import { throwValidationError } from "@packages/shared/errors";
+import { buildCookie, sendResponse } from "@packages/http";
+import authService from '@/services/auth-service';
+import { SignupInitRequestSchema, SignupInitRequest } from "@packages/contracts/auth";
+import { ValidationError } from '@packages/errors';
+import { env } from '@/config/env';
+import { exp } from '@/config/exp';
 
 /**
  * Handler for user signup get started.
  * Validates input and calls for get started service.
  * Then service create signup session if user is new.
  */
-export const getStartedHandler = asyncHandler(
+export const signupInitHandler = asyncHandler(
     async (req: Request, res: Response) => {
         // Parsing request body
+        // type: username | email is ignored as it can be verified through schema again.
         const usernameOrEmail = {
             value: req.body.usernameOrEmail.value,
-            // type: username | email is ignored as it can be verified through schema again.
         };
-        const parsed = GetStartedSchema.safeParse({usernameOrEmail: usernameOrEmail.value});
+
+        const parsed = SignupInitRequestSchema.safeParse({usernameOrEmail: usernameOrEmail.value});
         if (!parsed.success) {
-            throwValidationError(parsed.error, "usernameOrEmail");
-            // 🚨Using this return to silent parsed.data undefined error🚨
-            return;
+            throw new ValidationError(
+                "Given credentials could not be validated, please use allowed characters.",
+                parsed.error
+            );
         }
 
         // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await getStartedService(parsed.data);
+        const {
+            identifierType,
+            identifier,
+            already_exists,
+            signupSessionToken        
+        } = await authService.signupInit(parsed.data);
+
+        const signupSessionCookie = buildCookie({
+            name: env.SIGNUP_SESSION_TOKEN_NAME,
+            value: signupSessionToken,
+            options: {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: exp.SIGNUP_SESSION_COOKIE
+            }
+        })
 
         // Controller only forwards response
         return sendResponse({
             res,
-            ...result,
+            success: true,
+            statusCode: 200,
+            data: {
+                identifierType,
+                identifier,
+                already_exists,    
+            },
+            message: "signup init successful",
             path: req.originalUrl,
+            cookies: [ signupSessionCookie ]
         });
     }
 );

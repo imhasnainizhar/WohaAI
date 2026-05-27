@@ -3,10 +3,8 @@ import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@packages/prisma";
 import { logger } from "@packages/observability";
-import { envConfigs as env, EXPIRATION } from "@packages/config";
 import {
   ActiveSessionRecord,
-  ActiveSessionSelect,
 } from "@/types/session";
 import { InternalServerError, SessionExpiredError } from "@packages/errors";
 import {
@@ -15,12 +13,16 @@ import {
 } from "@packages/jwt";
 import { RefreshSessionParams } from "@/types/service/params";
 import { AuthRepo } from "@/repo/auth-repo";
+import { randomUUID } from "node:crypto";
+import { TokenJti } from "@/types/payload";
+import { exp } from "@/config/exp";
+import { env } from "@/config/env";
 
 
 export class RefreshSessionService {
   constructor(private authRepo: AuthRepo) { }
   public async execute({
-    cookies,
+    refreshToken,
     userIPAddress,
   }: RefreshSessionParams): Promise<RefreshSessionResponse> {
     const {
@@ -31,9 +33,6 @@ export class RefreshSessionService {
     if (!JWT_REFRESH_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
       throw new InternalServerError({ message: "refresh and access jwt keys not configured" });
     }
-
-    const refreshToken =
-      this.extractRefreshToken(cookies);
 
     const payload = this.verifyToken(
       refreshToken,
@@ -50,14 +49,50 @@ export class RefreshSessionService {
 
     const user = session.user;
 
-    const { newAccessToken, newRefreshToken } =
-      await this.issueTokens(
-        user,
-        payload.userSessionID,
-        JWT_ACCESS_SECRET_KEY,
-        JWT_REFRESH_SECRET_KEY
-      );
+    const tokenJti = {
+      refreshTokenJti: randomUUID(),
+      accessTokenJti: randomUUID()
+    }
 
+      const refreshTokenPayload: RefreshTokenPayload = {
+        sub: user.userID,
+        jti: tokenJti.refreshTokenJti,
+        userID: user.userID,
+        userSessionID: session.userSessionID,
+        emailVerified: true,
+        email: user.email,
+        username: user.username,
+      };
+  
+      const newRefreshToken = jwt.sign(
+        refreshTokenPayload,
+        JWT_REFRESH_SECRET_KEY,
+        {
+          expiresIn:
+            exp.JWT_REFRESH_SESSION_TOKEN,
+        } as SignOptions
+      );
+  
+      const accessPayload: AccessTokenPayload = {
+        sub: user.userID,
+        jti: tokenJti.accessTokenJti,
+        userID: user.userID,
+        userSessionID: session.userSessionID,
+        emailVerified: true,
+        email: user.email,
+        username: user.username,
+        role: "user",
+      };
+  
+      const newAccessToken = jwt.sign(
+        accessPayload,
+        JWT_ACCESS_SECRET_KEY,
+        {
+          expiresIn:
+            exp.JWT_ACCESS_SESSION_TOKEN,
+        } as SignOptions
+      );
+  
     await this.rotateSession(
       payload.userSessionID,
       newRefreshToken,
@@ -77,20 +112,6 @@ export class RefreshSessionService {
   // ----------------------------
   // Helper Methods
   // ----------------------------
-
-  private extractRefreshToken(
-    cookies: RefreshSessionParams["cookies"]
-  ): string {
-    const cookieName = env.REFRESH_TOKEN_NAME;
-
-    const cookie = cookies.find(
-      (c) => c.name === cookieName
-    );
-
-    if (!cookie?.value) throw new SessionExpiredError();
-
-    return cookie.value;
-  }
 
   private verifyToken(
     token: string,
@@ -159,55 +180,6 @@ export class RefreshSessionService {
 
       throw new InternalServerError({ message: "Internal server faliure due to argon" })
     }
-  }
-
-  private async issueTokens(
-    user: any,
-    userSessionID: string,
-    accessSecret: string,
-    refreshSecret: string
-  ) {
-    const refreshTokenPayload: RefreshTokenPayload =
-    {
-      sub: user.userID,
-      jti: crypto.randomUUID(),
-      userID: user.userID,
-      userSessionID,
-      emailVerified: true,
-      email: user.email,
-      username: user.username,
-    };
-
-    const newRefreshToken = jwt.sign(
-      refreshTokenPayload,
-      refreshSecret,
-      {
-        expiresIn:
-          EXPIRATION.JWT_REFRESH_SESSION_TOKEN,
-      } as SignOptions
-    );
-
-    const accessPayload: AccessTokenPayload = {
-      sub: user.userID,
-      jti: crypto.randomUUID(),
-      userID: user.userID,
-      userSessionID,
-      emailVerified: true,
-      email: user.email,
-      username: user.username,
-      role: "user",
-    };
-
-    const newAccessToken = jwt.sign(
-      accessPayload,
-      accessSecret,
-      {
-        expiresIn:
-          EXPIRATION.JWT_ACCESS_SESSION_TOKEN,
-      } as SignOptions
-    );
-
-    return { newAccessToken, newRefreshToken };
   }
 
   private async rotateSession(

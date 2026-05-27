@@ -3,7 +3,7 @@ import { SignupSessionIDSchema } from "./session";
 import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameSchema } from "./user";
 import { authRegex } from "@/utils/auth-regex";
 
-export const GetStartedRequestSchema = z.object({
+export const SignupInitRequestSchema = z.object({
     usernameOrEmail: z
         .string()
         .min(1, "Required")

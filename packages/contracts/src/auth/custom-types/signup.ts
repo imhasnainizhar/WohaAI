@@ -1,7 +1,7 @@
 import z from "zod";
-import { GetStartedRequestSchema, CompleteSignupRequestSchema, UsernameSignupRequestSchema, EmailSignupRequestSchema, VerifyUserEmailRequestSchema, VerificationCodeSchema, SendVerificationEmailRequestSchema } from "../schema";
+import { SignupInitRequestSchema, CompleteSignupRequestSchema, UsernameSignupRequestSchema, EmailSignupRequestSchema, VerifyUserEmailRequestSchema, VerificationCodeSchema, SendVerificationEmailRequestSchema } from "../schema";
 
-export type GetStartedRequest = z.infer<typeof GetStartedRequestSchema>;
+export type SignupInitRequest = z.infer<typeof SignupInitRequestSchema>;
 export type CompleteSignupRequest = z.infer<typeof CompleteSignupRequestSchema>
 export type UsernameSignupRequest = z.infer<typeof UsernameSignupRequestSchema>;
 export type EmailSignupRequest = z.infer<typeof EmailSignupRequestSchema>;
@@ -29,4 +29,11 @@ export type VerifySigninEmailEvent = {
     code: string,
     signinSessionID: string,
     createdAt: Date
+}
+
+export interface SignupInitResponse {
+    identifierType: "username" | "email";
+    identifier: string;
+    already_exists: boolean,
+    signupSessionToken: string;
 }

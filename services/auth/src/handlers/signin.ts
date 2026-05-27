@@ -5,8 +5,9 @@ import authService from "@/services/auth-service";
 import { SigninRequestSchema } from "@packages/contracts/auth";
 import { getClientData } from "../helpers/get-client-data";
 import { ValidationError } from "@packages/errors";
+import { buildCookie } from "@packages/http";
 import { env } from "@/config/env";
-import { exp } from "@/config/env";
+import { exp } from "@/config/exp";
 
 
 /**
@@ -23,7 +24,15 @@ export const signinHandler = asyncHandler(
         const clientData = getClientData(req);
 
         // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await authService.signin({
+        const {
+            profilePicURI,
+            userID,
+            firstName,
+            lastName,
+            email,
+            refreshToken,
+            accessToken
+        } = await authService.signin({
             usernameOrEmail: parsed.data.usernameOrEmail,
             password: parsed.data.password,
             clientData,
@@ -32,40 +41,29 @@ export const signinHandler = asyncHandler(
         /**
         * Build authentication cookies
         */
-        function buildCookies(
-            accessToken: string,
-            refreshToken: string
-        ) {
-            const sameSite = env.SAME_SITE_COOKIE_OPTION;
-            const secureSite = env.SECURE_COOKIE_OPTION;
+        const refreshTokenCookie: Cookie = buildCookie({
+            name: env.REFRESH_TOKEN_NAME,
+            value: refreshToken,
+            options: {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: exp.ACCESS_SESSION_COOKIE
+            }        
+        });
 
-            return [
-                {
-                    name: env.ACCESS_TOKEN_NAME,
-                    value: accessToken,
-                    options: {
-                        httpOnly: true,
-                        secure: secureSite,
-                        sameSite,
-                        path: "/",
-                        maxAge: exp.ACCESS_SESSION_COOKIE,
-                    },
-                },
-                {
-                    name: env.REFRESH_TOKEN_NAME,
-                    value: refreshToken,
-                    options: {
-                        httpOnly: true,
-                        secure: secureSite,
-                        sameSite,
-                        path: "/",
-                        maxAge: exp.REFRESH_SESSION_COOKIE,
-                    },
-                },
-            ];
-        }
-
-        const cookies: Cookie[] = buildCookies(result.accessToken, result.accessToken);
+        const accessTokenCookie: Cookie = buildCookie({
+            name: env.ACCESS_TOKEN_NAME,
+            value: accessToken,
+            options: {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: exp.ACCESS_SESSION_COOKIE
+            }        
+        });
 
         // responding to client
         return sendResponse({
@@ -73,8 +71,14 @@ export const signinHandler = asyncHandler(
             success: true,
             statusCode: 200,
             message: "Signin successful",
-            ...result,
-            cookies,
+            data: {
+                profilePicURI,
+                userID,
+                firstName,
+                lastName,
+                email, 
+            },
+            cookies: [ refreshTokenCookie, accessTokenCookie ],
             path: req.originalUrl,
         });
     }

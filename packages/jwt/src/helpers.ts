@@ -7,11 +7,8 @@ export function createJwtToken<T extends BaseJwtPayload>(
     secret: string,
     options?: SignOptions
   ): string {
-    const finalPayload = {
-      jti: randomUUID(),
-    };
   
-    return jwt.sign(finalPayload, secret, options);
+    return jwt.sign(payload, secret, options);
   }
   
   /**

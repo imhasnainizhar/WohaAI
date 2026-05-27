@@ -3,8 +3,8 @@ import { Cookie } from "./cookie";
 
 export interface ApiResponseOptions<T = unknown> {
   res: Response;
-  success?: boolean; // defaults handled inside sendResponse
-  statusCode?: number;
+  success: boolean; // defaults handled inside sendResponse
+  statusCode: number;
   message: string;
   data?: T;
   cookies?: Cookie[];
@@ -18,8 +18,8 @@ export interface ApiResponseOptions<T = unknown> {
  */
 export const sendResponse = <T>({
   res,
-  success = true,
-  statusCode = success ? 200 : 500,
+  success,
+  statusCode,
   message,
   data,
   cookies,

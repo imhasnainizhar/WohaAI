@@ -23,12 +23,17 @@ export class AuthRepo {
         })
     }
 
-    async getUserWithUsernameOrEmail(usernameOrEmail: string) {
+    async getUserWithUsernameOrEmail(
+        usernameOrEmail: {
+            type: "username", value: string
+        } | {
+            type: "email", value: string
+        }) {
         return await this.prisma.user.findFirst({
             where: {
                 OR: [
-                    { username: usernameOrEmail },
-                    { email: usernameOrEmail },
+                    { username: usernameOrEmail.value },
+                    { email: usernameOrEmail.value },
                 ],
             },
             select: {
@@ -41,6 +46,53 @@ export class AuthRepo {
                 hashedPassword: true,
             },
         });
+    }
+
+    async findUserWithUsername(username: string): Promise<boolean> {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                username
+            },
+            select: {
+                userID: true
+            }
+        });
+
+        return !!user;
+    }
+
+    async findUserWithEmail(email: string): Promise<boolean> {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email
+            },
+            select: {
+                userID: true
+            }
+        });
+
+        return !!user;
+    }
+
+    async findUserWithUsernameOrEmail(
+        usernameOrEmail: {
+            type: "username", value: string
+        } | {
+            type: "email", value: string
+        }) {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                OR: [
+                    { username: usernameOrEmail.value },
+                    { email: usernameOrEmail.value },
+                ],
+            },
+            select: {
+                userID: true,
+            },
+        });
+
+        return !!user;
     }
 
     /**
@@ -96,5 +148,8 @@ export class AuthRepo {
 export type GetUserWithUsernameOrEmailResult = Awaited<ReturnType<AuthRepo["getUserWithUsernameOrEmail"]>>
 export type GetUserWithUsernameResult = Awaited<ReturnType<AuthRepo["getUserWithUsername"]>>
 export type GetUserWithEmailResult = Awaited<ReturnType<AuthRepo["getUserWithEmail"]>>
+export type FindWithUsername = Awaited<ReturnType<AuthRepo["findUserWithUsername"]>>
+export type FindWithEmail = Awaited<ReturnType<AuthRepo["findUserWithEmail"]>>
+export type FindWithUsernameOrEmail = Awaited<ReturnType<AuthRepo["findUserWithUsernameOrEmail"]>>
 export type FindActiveSessionResult = Awaited<ReturnType<AuthRepo["findActiveSession"]>>
 export type RevokeSessionResult = Awaited<ReturnType<AuthRepo["revokeSession"]>>

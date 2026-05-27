@@ -4,7 +4,9 @@ import { SigninService } from "./signin";
 import { SignoutService } from "./signout";
 import { RefreshSessionService } from "./refresh-session";
 
-import { SigninParams, SignoutParams } from "@/types/service/params";
+import { RefreshSessionParams, SigninParams, SignoutParams, SignupInitParams } from "@/types/service/params";
+import { SignupInitService } from "./signup/init";
+import { redisHelpers } from "@packages/redis";
 
 class AuthService {
     private static instance: AuthService;
@@ -12,9 +14,10 @@ class AuthService {
     private constructor(
         private readonly signinService: SigninService,
         private readonly refreshSessionService: RefreshSessionService,
+        private readonly signupInitService: SignupInitService,
         private readonly signoutService: SignoutService,
         private readonly authRepo: AuthRepo
-    ) {}
+    ) { }
 
     /**
      * Singleton accessor
@@ -33,9 +36,13 @@ class AuthService {
             const signoutService =
                 new SignoutService(authRepo);
 
+            const signupInitService =
+                new SignupInitService(authRepo, redisHelpers);
+
             AuthService.instance = new AuthService(
                 signinService,
                 refreshSessionService,
+                signupInitService,
                 signoutService,
                 authRepo
             );
@@ -61,6 +68,19 @@ class AuthService {
         userSessionID
     }: SignoutParams) {
         return this.signoutService.execute({userID, userSessionID})
+    }
+
+    public async refreshSession({
+        refreshToken,
+        userIPAddress    
+    }: RefreshSessionParams) {
+        return this.refreshSessionService.execute({refreshToken, userIPAddress})
+    }
+
+    public async signupInit({
+        usernameOrEmail
+    }: SignupInitParams) {
+        return this.signupInitService.execute({usernameOrEmail})
     }
 }
 

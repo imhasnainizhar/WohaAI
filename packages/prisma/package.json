@@ -37,14 +37,14 @@
   "dependencies": {
     "@packages/config": "workspace:*",
     "@packages/observability": "workspace:*",
-    "@prisma/adapter-pg": "latest",
-    "dotenv": "latest",
-    "pg": "latest"
+    "@prisma/adapter-pg": "^7.8.0",
+    "dotenv": "^17.4.2",
+    "pg": "^8.21.0"
   },
   "devDependencies": {
-    "@types/pg": "latest",
+    "@types/pg": "^8.20.0",
     "prisma": "7.8.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.4.0"
+    "typescript": "^6.0.3"
   }
 }

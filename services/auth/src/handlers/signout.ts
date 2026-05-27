@@ -39,7 +39,9 @@ export const signoutHandler = asyncHandler(
             success: true,
             statusCode: 200,
             message: "user signed out",
-            ...result,
+            data: {
+                signedout: result.signedOut
+            },
             path: req.originalUrl,
         });
     }

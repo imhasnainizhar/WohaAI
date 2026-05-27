@@ -1,13 +1,14 @@
-import { ClientData } from '@packages/shared/common';
-import { asyncHandler } from "@middlewares/async_handler";
-import { getClientData } from "@helpers/get-client-data";
-import { refreshTokenService } from "@services/refresh/refresh_session";
-import { sendResponse, ServiceException, ServiceResponse } from "@packages/shared/utils";
-import { Request, Response } from "express";
-import { env } from '@config/env';
+import { ClientData } from '@packages/contracts/auth';
+import { asyncHandler } from "@/middlewares/async-handler";
+import { getClientData } from "@/helpers/get-client-data";
+import { buildCookie, Cookie, sendResponse } from "@packages/http";
+import { CookieOptions, Request, Response } from "express";
+import { env } from '@/config/env';
+import { exp } from '@/config/exp';
 import jwt from 'jsonwebtoken';
-import { RefreshTokenPayload } from '@packages/shared/common';
-import { throwSessionExpired } from '@packages/shared/errors';
+import { RefreshTokenPayload } from '@packages/jwt';
+import { SessionExpiredError, ValidationError } from '@packages/errors';
+import authService from '@/services/auth-service';
 
 
 /**
@@ -17,38 +18,63 @@ import { throwSessionExpired } from '@packages/shared/errors';
  */
 export const refreshTokenHandler = asyncHandler(
     async (req: Request, res: Response) => {
-        const token = req.cookies[env.REFRESH_TOKEN_NAME];
-        const payload = jwt.verify(token, env.JWT_REFRESH_SECRET_KEY) as RefreshTokenPayload;
+        const refreshToken = req.cookies[env.REFRESH_TOKEN_NAME];
+        const payload = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET_KEY) as RefreshTokenPayload;
 
         // If payload is not valid, throw session expired error
-        if (!payload) throwSessionExpired();
+        if (!payload) throw new SessionExpiredError();
 
         // Getting client data
         const clientData = getClientData(req);
 
         // If client data is not valid, throw client error
+        // Under review
         if (!clientData) {
-            throw new ServiceException(
-                ServiceResponse.error({
-                    success: false,
-                    statusCode: 400,
-                    message: "Failed to get client information.",
-                    errorType: "client_error",
-                })
-            );
+            throw new ValidationError()
         }
 
         // Getting user IP address from client data
         const { userIPAddress }: ClientData = clientData;
 
         // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await refreshTokenService({ cookies: req.cookies, userIPAddress });
+        const { newRefreshToken, newAccessToken } = await authService.refreshSession({
+            refreshToken,
+            userIPAddress
+        });
+
+        const refreshTokenCookie = buildCookie({
+            name: env.REFRESH_TOKEN_NAME,
+            value: newRefreshToken,
+            options: {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: exp.REFRESH_SESSION_COOKIE
+            }        
+        })
+
+        const accessTokenCookie = buildCookie({
+            name: env.ACCESS_TOKEN_NAME,
+            value: newAccessToken,
+            options: {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: exp.ACCESS_SESSION_COOKIE
+            }        
+        })
 
         // Handler only returns response
+        // Cookies are under the hood set as Express Cookies with name having token as value in this refresh token context. Cookie options are used to configure security and exp options.
         return sendResponse({
             res,
-            ...result,
+            success: true,
+            statusCode: 200,
+            message: "user session refreshed",
             path: req.originalUrl,
+            cookies: [refreshTokenCookie, accessTokenCookie]
         });
     }
 );

@@ -11,7 +11,6 @@
         "ai",
         "agents",
         "typescript",
-         
         "openai",
         "models"
     ],
@@ -38,6 +37,6 @@
     "devDependencies": {
         "@types/jsonwebtoken": "^9.0.10",
         "tsconfig-paths": "^4.2.0",
-        "typescript": "^5.4.0"
+        "typescript": "^6.0.3"
     }
 }

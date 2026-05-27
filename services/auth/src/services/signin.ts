@@ -20,7 +20,8 @@ export class SigninService {
     password,
     clientData,
   }: SigninParams): Promise<SigninResponse> {
-    const user = await this.repo.getUserWithUsernameOrEmail(usernameOrEmail.value);
+    const user = 
+      await this.repo.getUserWithUsernameOrEmail(usernameOrEmail);
 
     if(user === null) throw new InvalidCredentialsError()
 
