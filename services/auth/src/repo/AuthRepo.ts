@@ -46,16 +46,22 @@ export class AuthRepo {
     /**
     * Find active user session
     */
-    async findActiveSession(
+    async findActiveSession({
+        userID,
+        userSessionID
+    }: {
         userID: string,
         userSessionID: string
-    ) {
+    }) {
         return await this.prisma.userSession.findFirst({
             where: {
                 userID,
                 userSessionID,
                 revoked: false,
             },
+            include: {
+                user: true
+            }
         });
     }
 

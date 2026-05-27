@@ -1,4 +1,5 @@
 import { ClientData } from "@packages/contracts/auth";
+import { Cookie } from "@packages/http";
 
 export interface SigninParams {
     usernameOrEmail: {
@@ -13,4 +14,9 @@ export interface SigninParams {
 export interface SignoutParams {
     userID: string;
     userSessionID: string;
+}
+
+export interface RefreshSessionParams {
+    cookies: Cookie[];
+    userIPAddress: string;
 }

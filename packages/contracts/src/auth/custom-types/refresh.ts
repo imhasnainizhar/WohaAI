@@ -4,3 +4,8 @@ export interface RefreshTokenRequest {
     cookies: Cookie[];
     userIPAddress: string;
 }
+
+export interface RefreshSessionResponse {
+    newRefreshToken: string;
+    newAccessToken: string;
+}

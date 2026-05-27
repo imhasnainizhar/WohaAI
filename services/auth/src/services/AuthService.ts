@@ -2,7 +2,7 @@ import { AuthRepo } from "@/repo/AuthRepo";
 import { prisma } from "@packages/prisma";
 import { SigninService } from "./signin";
 import { SignoutService } from "./signout";
-import { RefreshTokenService } from "./refresh-token";
+import { RefreshSessionService } from "./refresh-session";
 
 import { SigninParams, SignoutParams } from "@/types/service/params";
 
@@ -11,7 +11,7 @@ class AuthService {
 
     private constructor(
         private readonly signinService: SigninService,
-        private readonly refreshTokenService: RefreshTokenService,
+        private readonly refreshSessionService: RefreshSessionService,
         private readonly signoutService: SignoutService,
         private readonly authRepo: AuthRepo
     ) {}
@@ -27,15 +27,15 @@ class AuthService {
                 authRepo
             );
 
-            const refreshTokenService =
-                new RefreshTokenService(authRepo);
+            const refreshSessionService =
+                new RefreshSessionService(authRepo);
 
             const signoutService =
                 new SignoutService(authRepo);
 
             AuthService.instance = new AuthService(
                 signinService,
-                refreshTokenService,
+                refreshSessionService,
                 signoutService,
                 authRepo
             );

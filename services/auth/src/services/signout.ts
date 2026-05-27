@@ -14,10 +14,10 @@ export class SignoutService {
     userID,
     userSessionID
   }: SignoutParams): Promise<SignoutResponse> {
-    const session = await this.authRepo.findActiveSession(
+    const session = await this.authRepo.findActiveSession({
       userID,
       userSessionID
-    );
+    });
 
     if(session === null) throw new SessionExpiredError
 
