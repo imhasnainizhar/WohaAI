@@ -13,7 +13,6 @@ export interface UserSessionRefresh {
 export const ActiveSessionSelect: Prisma.UserSessionSelect = {
   refreshTokenHash: true,
   userSessionID: true,
-  userDeviceID: true,
   userIPAddress: true,
   revoked: true,
   createdAt: true,

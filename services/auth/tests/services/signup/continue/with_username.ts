@@ -1,7 +1,7 @@
 import continueWithUsernameService from "@services/signup/continue/with_username";
-import { getSignupCache, setSignupCache } from "../../../../src/helpers/redis";
+import { getSignupCache, setSignupCache } from "../../../../src/redis/redis";
 import { prisma } from "@clients/prisma";
-import { ServiceException } from "../../../../src/helpers/response";
+import { ServiceException } from "../../../../src/ua/response";
 
 // Mock infrastructure dependencies
 jest.mock("@utils/redis");

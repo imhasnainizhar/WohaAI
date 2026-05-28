@@ -35,17 +35,17 @@ export class RedisHelper {
     key: string,
     value: string,
     ttlSeconds?: number,
-  ): Promise<void> {
+  ): Promise<"OK"> {
     try {
       if (ttlSeconds) {
-        await redisClient.redis.set(
+        return await redisClient.redis.set(
           key,
           value,
           "EX",
           ttlSeconds,
         );
       } else {
-        await redisClient.redis.set(
+        return await redisClient.redis.set(
           key,
           value,
         );
@@ -77,7 +77,8 @@ export class RedisHelper {
     key: string,
   ): Promise<string | null> {
     try {
-      const result =
+      // Returning value as it is in string format, service helpers will do JSON.parse() if needed.
+      const result = 
         await redisClient.redis.get(
           key,
         );

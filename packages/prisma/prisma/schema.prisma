@@ -13,8 +13,8 @@ datasource db {
 model User {
   userID         String   @id @default(uuid())
   profilePicURI  String?
-  userFirstName  String
-  userLastName   String
+  firstName  String
+  lastName   String
   email          String   @unique
   username       String   @unique
   hashedPassword String
@@ -42,7 +42,6 @@ model UserSession {
   revokedAt         DateTime?
   rememberMe        Boolean   @default(false)
   userIPAddress     String
-  userDeviceID      String
   userDeviceName    String
   userDeviceType    String
   userDeviceBrowser String

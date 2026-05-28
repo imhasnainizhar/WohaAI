@@ -38,7 +38,6 @@ export interface EnvConfig {
     SIGNUP_SESSION_TOKEN_NAME: string;
 
     // Auth Redis Keys
-    ACTIVE_SIGNIN_SESSION_CACHE_KEY: string;
     ACTIVE_SIGNUP_SESSION_CACHE_KEY: string;
 
     // API keys

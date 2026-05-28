@@ -3,8 +3,8 @@ import { env } from "@config/env";
 import { Fluvio } from "@fluvio/client";
 import { SendVerificationEmailDTO } from "../../../../../../packages/api/src/auth";
 import { sendVerificationEmailService } from "@services/signup/verification/send_email";
-import { setCache, getCache } from "../../../../src/helpers/redis";
-import { ServiceException } from "../../../../src/helpers/response";
+import { setCache, getCache } from "../../../../src/redis/redis";
+import { ServiceException } from "../../../../src/ua/response";
 
 // Mocks
 jest.mock("@utils/redis");

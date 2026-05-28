@@ -15,7 +15,7 @@ import { exp } from '@/config/exp';
 export const signupInitHandler = asyncHandler(
     async (req: Request, res: Response) => {
         // Parsing request body
-        // type: username | email is ignored as it can be verified through schema again.
+        // type: username | email is ignored as ican be verified through schema again.
         const usernameOrEmail = {
             value: req.body.usernameOrEmail.value,
         };

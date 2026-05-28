@@ -32,7 +32,6 @@ export type UserSessionMinAggregateOutputType = {
   revokedAt: Date | null
   rememberMe: boolean | null
   userIPAddress: string | null
-  userDeviceID: string | null
   userDeviceName: string | null
   userDeviceType: string | null
   userDeviceBrowser: string | null
@@ -48,7 +47,6 @@ export type UserSessionMaxAggregateOutputType = {
   revokedAt: Date | null
   rememberMe: boolean | null
   userIPAddress: string | null
-  userDeviceID: string | null
   userDeviceName: string | null
   userDeviceType: string | null
   userDeviceBrowser: string | null
@@ -64,7 +62,6 @@ export type UserSessionCountAggregateOutputType = {
   revokedAt: number
   rememberMe: number
   userIPAddress: number
-  userDeviceID: number
   userDeviceName: number
   userDeviceType: number
   userDeviceBrowser: number
@@ -82,7 +79,6 @@ export type UserSessionMinAggregateInputType = {
   revokedAt?: true
   rememberMe?: true
   userIPAddress?: true
-  userDeviceID?: true
   userDeviceName?: true
   userDeviceType?: true
   userDeviceBrowser?: true
@@ -98,7 +94,6 @@ export type UserSessionMaxAggregateInputType = {
   revokedAt?: true
   rememberMe?: true
   userIPAddress?: true
-  userDeviceID?: true
   userDeviceName?: true
   userDeviceType?: true
   userDeviceBrowser?: true
@@ -114,7 +109,6 @@ export type UserSessionCountAggregateInputType = {
   revokedAt?: true
   rememberMe?: true
   userIPAddress?: true
-  userDeviceID?: true
   userDeviceName?: true
   userDeviceType?: true
   userDeviceBrowser?: true
@@ -203,7 +197,6 @@ export type UserSessionGroupByOutputType = {
   revokedAt: Date | null
   rememberMe: boolean
   userIPAddress: string
-  userDeviceID: string
   userDeviceName: string
   userDeviceType: string
   userDeviceBrowser: string
@@ -240,7 +233,6 @@ export type UserSessionWhereInput = {
   revokedAt?: Prisma.DateTimeNullableFilter<"UserSession"> | Date | string | null
   rememberMe?: Prisma.BoolFilter<"UserSession"> | boolean
   userIPAddress?: Prisma.StringFilter<"UserSession"> | string
-  userDeviceID?: Prisma.StringFilter<"UserSession"> | string
   userDeviceName?: Prisma.StringFilter<"UserSession"> | string
   userDeviceType?: Prisma.StringFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringFilter<"UserSession"> | string
@@ -257,7 +249,6 @@ export type UserSessionOrderByWithRelationInput = {
   revokedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   rememberMe?: Prisma.SortOrder
   userIPAddress?: Prisma.SortOrder
-  userDeviceID?: Prisma.SortOrder
   userDeviceName?: Prisma.SortOrder
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
@@ -277,7 +268,6 @@ export type UserSessionWhereUniqueInput = Prisma.AtLeast<{
   revokedAt?: Prisma.DateTimeNullableFilter<"UserSession"> | Date | string | null
   rememberMe?: Prisma.BoolFilter<"UserSession"> | boolean
   userIPAddress?: Prisma.StringFilter<"UserSession"> | string
-  userDeviceID?: Prisma.StringFilter<"UserSession"> | string
   userDeviceName?: Prisma.StringFilter<"UserSession"> | string
   userDeviceType?: Prisma.StringFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringFilter<"UserSession"> | string
@@ -294,7 +284,6 @@ export type UserSessionOrderByWithAggregationInput = {
   revokedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   rememberMe?: Prisma.SortOrder
   userIPAddress?: Prisma.SortOrder
-  userDeviceID?: Prisma.SortOrder
   userDeviceName?: Prisma.SortOrder
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
@@ -316,7 +305,6 @@ export type UserSessionScalarWhereWithAggregatesInput = {
   revokedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"UserSession"> | Date | string | null
   rememberMe?: Prisma.BoolWithAggregatesFilter<"UserSession"> | boolean
   userIPAddress?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
-  userDeviceID?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
   userDeviceName?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
   userDeviceType?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
@@ -332,7 +320,6 @@ export type UserSessionCreateInput = {
   revokedAt?: Date | string | null
   rememberMe?: boolean
   userIPAddress: string
-  userDeviceID: string
   userDeviceName: string
   userDeviceType: string
   userDeviceBrowser: string
@@ -348,7 +335,6 @@ export type UserSessionUncheckedCreateInput = {
   revokedAt?: Date | string | null
   rememberMe?: boolean
   userIPAddress: string
-  userDeviceID: string
   userDeviceName: string
   userDeviceType: string
   userDeviceBrowser: string
@@ -364,7 +350,6 @@ export type UserSessionUpdateInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rememberMe?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userIPAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  userDeviceID?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceName?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
@@ -380,7 +365,6 @@ export type UserSessionUncheckedUpdateInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rememberMe?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userIPAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  userDeviceID?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceName?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
@@ -396,7 +380,6 @@ export type UserSessionCreateManyInput = {
   revokedAt?: Date | string | null
   rememberMe?: boolean
   userIPAddress: string
-  userDeviceID: string
   userDeviceName: string
   userDeviceType: string
   userDeviceBrowser: string
@@ -412,7 +395,6 @@ export type UserSessionUpdateManyMutationInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rememberMe?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userIPAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  userDeviceID?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceName?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
@@ -427,7 +409,6 @@ export type UserSessionUncheckedUpdateManyInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rememberMe?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userIPAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  userDeviceID?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceName?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
@@ -453,7 +434,6 @@ export type UserSessionCountOrderByAggregateInput = {
   revokedAt?: Prisma.SortOrder
   rememberMe?: Prisma.SortOrder
   userIPAddress?: Prisma.SortOrder
-  userDeviceID?: Prisma.SortOrder
   userDeviceName?: Prisma.SortOrder
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
@@ -469,7 +449,6 @@ export type UserSessionMaxOrderByAggregateInput = {
   revokedAt?: Prisma.SortOrder
   rememberMe?: Prisma.SortOrder
   userIPAddress?: Prisma.SortOrder
-  userDeviceID?: Prisma.SortOrder
   userDeviceName?: Prisma.SortOrder
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
@@ -485,7 +464,6 @@ export type UserSessionMinOrderByAggregateInput = {
   revokedAt?: Prisma.SortOrder
   rememberMe?: Prisma.SortOrder
   userIPAddress?: Prisma.SortOrder
-  userDeviceID?: Prisma.SortOrder
   userDeviceName?: Prisma.SortOrder
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
@@ -551,7 +529,6 @@ export type UserSessionCreateWithoutUserInput = {
   revokedAt?: Date | string | null
   rememberMe?: boolean
   userIPAddress: string
-  userDeviceID: string
   userDeviceName: string
   userDeviceType: string
   userDeviceBrowser: string
@@ -566,7 +543,6 @@ export type UserSessionUncheckedCreateWithoutUserInput = {
   revokedAt?: Date | string | null
   rememberMe?: boolean
   userIPAddress: string
-  userDeviceID: string
   userDeviceName: string
   userDeviceType: string
   userDeviceBrowser: string
@@ -610,7 +586,6 @@ export type UserSessionScalarWhereInput = {
   revokedAt?: Prisma.DateTimeNullableFilter<"UserSession"> | Date | string | null
   rememberMe?: Prisma.BoolFilter<"UserSession"> | boolean
   userIPAddress?: Prisma.StringFilter<"UserSession"> | string
-  userDeviceID?: Prisma.StringFilter<"UserSession"> | string
   userDeviceName?: Prisma.StringFilter<"UserSession"> | string
   userDeviceType?: Prisma.StringFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringFilter<"UserSession"> | string
@@ -626,7 +601,6 @@ export type UserSessionCreateManyUserInput = {
   revokedAt?: Date | string | null
   rememberMe?: boolean
   userIPAddress: string
-  userDeviceID: string
   userDeviceName: string
   userDeviceType: string
   userDeviceBrowser: string
@@ -641,7 +615,6 @@ export type UserSessionUpdateWithoutUserInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rememberMe?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userIPAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  userDeviceID?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceName?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
@@ -656,7 +629,6 @@ export type UserSessionUncheckedUpdateWithoutUserInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rememberMe?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userIPAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  userDeviceID?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceName?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
@@ -671,7 +643,6 @@ export type UserSessionUncheckedUpdateManyWithoutUserInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rememberMe?: Prisma.BoolFieldUpdateOperationsInput | boolean
   userIPAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  userDeviceID?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceName?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
@@ -688,7 +659,6 @@ export type UserSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   revokedAt?: boolean
   rememberMe?: boolean
   userIPAddress?: boolean
-  userDeviceID?: boolean
   userDeviceName?: boolean
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
@@ -705,7 +675,6 @@ export type UserSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   revokedAt?: boolean
   rememberMe?: boolean
   userIPAddress?: boolean
-  userDeviceID?: boolean
   userDeviceName?: boolean
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
@@ -722,7 +691,6 @@ export type UserSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   revokedAt?: boolean
   rememberMe?: boolean
   userIPAddress?: boolean
-  userDeviceID?: boolean
   userDeviceName?: boolean
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
@@ -739,7 +707,6 @@ export type UserSessionSelectScalar = {
   revokedAt?: boolean
   rememberMe?: boolean
   userIPAddress?: boolean
-  userDeviceID?: boolean
   userDeviceName?: boolean
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
@@ -747,7 +714,7 @@ export type UserSessionSelectScalar = {
   userID?: boolean
 }
 
-export type UserSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userSessionID" | "refreshTokenHash" | "createdAt" | "revoked" | "revokedAt" | "rememberMe" | "userIPAddress" | "userDeviceID" | "userDeviceName" | "userDeviceType" | "userDeviceBrowser" | "userDeviceOS" | "userID", ExtArgs["result"]["userSession"]>
+export type UserSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userSessionID" | "refreshTokenHash" | "createdAt" | "revoked" | "revokedAt" | "rememberMe" | "userIPAddress" | "userDeviceName" | "userDeviceType" | "userDeviceBrowser" | "userDeviceOS" | "userID", ExtArgs["result"]["userSession"]>
 export type UserSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -771,7 +738,6 @@ export type $UserSessionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     revokedAt: Date | null
     rememberMe: boolean
     userIPAddress: string
-    userDeviceID: string
     userDeviceName: string
     userDeviceType: string
     userDeviceBrowser: string
@@ -1208,7 +1174,6 @@ export interface UserSessionFieldRefs {
   readonly revokedAt: Prisma.FieldRef<"UserSession", 'DateTime'>
   readonly rememberMe: Prisma.FieldRef<"UserSession", 'Boolean'>
   readonly userIPAddress: Prisma.FieldRef<"UserSession", 'String'>
-  readonly userDeviceID: Prisma.FieldRef<"UserSession", 'String'>
   readonly userDeviceName: Prisma.FieldRef<"UserSession", 'String'>
   readonly userDeviceType: Prisma.FieldRef<"UserSession", 'String'>
   readonly userDeviceBrowser: Prisma.FieldRef<"UserSession", 'String'>

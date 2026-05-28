@@ -105,9 +105,6 @@ const env: EnvConfig = {
   // Redis Cache Keys
   // ========================================
 
-  ACTIVE_SIGNIN_SESSION_CACHE_KEY:
-    p.ACTIVE_SIGNIN_SESSION_CACHE_KEY!,
-
   ACTIVE_SIGNUP_SESSION_CACHE_KEY:
     p.ACTIVE_SIGNUP_SESSION_CACHE_KEY!,
 

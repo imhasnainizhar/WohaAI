@@ -5,10 +5,17 @@ import { logger } from "@packages/observability";
 import { createJwtToken } from "@packages/jwt";
 import { RedisHelper } from "@packages/redis";
 import { AuthRepo } from '@/repo/auth-repo';
-import { SignupInitParams } from "@/types/service/params";
 import { ConflictError } from "@packages/errors";
 import { SignupInitResponse, SignupSessionID } from "@packages/contracts/auth";
 
+
+export interface SignupInitParams {
+  usernameOrEmail: {
+      type: "username"; value: string;
+  } | {
+      type: "email"; value: string;
+  };
+}
 
 /**
  * Service responsible for initializing signup/signin flow
@@ -51,7 +58,7 @@ export class SignupInitService {
     const signupSessionToken = createJwtToken(
       {
         jti,
-        signupSessionID,
+        sub: signupSessionID,
       },
       env.JWT_SIGNUP_SESSION_SECRET_KEY,
       {

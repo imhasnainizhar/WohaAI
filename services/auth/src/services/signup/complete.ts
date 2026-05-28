@@ -1,70 +1,119 @@
-import { logger } from "@packages/shared/utils";
-import { ServiceResponse, ServiceException } from "@packages/shared/utils";
-import { setSignupCache, getSignupCache } from "@helpers/redis";
-import { CompleteSignupDTO } from "../../../../../packages/api/src/auth";
-import { throwInternalError, throwSessionExpired } from "@packages/shared/errors";
+import argon2 from "argon2";
+import { logger } from "@packages/observability";
+import {
+  getSignupSession,
+  deleteSignupSession,
 
-/**
- * Validates and records the user's display name in an active signup session.
- * 
- * Control flow logic:
- * 1. The function retrieves the current session state from Redis (this acts like a memory of all prior verified data).
- * 2. It confirms that the session belongs to the same username to prevent step-hopping or impersonation.
- * 3. If inputs differ from previous valid values, they are updated in Redis.
- * 4. If Redis session is missing, expired, or mismatched, it blocks the request — ensuring only valid sessions can proceed.
- */
+  getConfirmedEmailCache,
+  deleteConfirmedEmailCache,
 
-export const completeSignupService = async (dto: CompleteSignupDTO) => {
-    try {
-        // Retrieve session data from Redis for the current signup session
-        // this redis util is auth native and built over shared redis utils
-        const session = await getSignupCache(dto.signupSessionID);
-        if (!session) throwSessionExpired();
+  deleteVerificationCodeCache,
+} from "@/redis/redis";
+import { UserProvisioningClient } from "@/clients/user-provision";
+import { EmailVerificationRequiredError, MaliciousActivityError, SessionExpiredError } from "@packages/errors";
 
-        // If existing names in Redis differ from the newly validated ones, update Redis
-        let isUpdated = false;
 
-        if (session.firstName !== dto.firstName) {
-            session.firstName = dto.firstName;
-            isUpdated = true;
-        }
+export interface SignupCompleteResponse {
+    username: string;
+    email: string;
+    userID: string;
+    profilePicURI?: string;
+    firstName: string;
+    lastName: string;
+}
 
-        if (session.lastName !== dto.lastName) {
-            session.lastName = dto.lastName;
-            isUpdated = true;
-        }
+export class SignupCompleteService {
+  constructor(
+    private readonly userProvisioningClient:
+      UserProvisioningClient
+  ) {}
 
-        if (session.password !== dto.password) {
-            session.password = dto.password; // ideally hashed before this step
-            isUpdated = true;
-        }
+  /**
+   * Final signup completion flow
+   */
+  async execute({
+    signupSessionID
+  }: {
+    signupSessionID: string
+  }): Promise<SignupCompleteResponse> {
 
-        // This way we update all changes in one go instead of redis updates 
-        // in each if/else statements.
-        if (isUpdated) {
-            // Store updated state back in Redis with the defined TTL
-            // TTL is defined at config file specified for auth
-            await setSignupCache(
-                dto.signupSessionID,
-                { ...session, firstName: dto.firstName, lastName: dto.lastName, password: dto.password },
-            );
-        }
+      // fetch signup session
+      const session = await getSignupSession(signupSessionID)
 
-        logger.info("User info checked and updated to be signed up.");
-        return ServiceResponse.success({
-            success: true,
-            statusCode: 200,
-            message: "User info checked to be signed up.",
-        });
-    } catch (error: any) {
-        logger.fatal({
-            message: "completeSignupService failed",
-            error: error.message,
-            stack: error.stack,
-        });
+      if (!session) throw new SessionExpiredError()
 
-        if (error instanceof ServiceException) throw error; // already standardized
+      // verify confirmed email state
+      const confirmedEmail =
+        await getConfirmedEmailCache(signupSessionID);
 
-        throw throwInternalError(error);
-    }
-};
+      if (!confirmedEmail) throw new MaliciousActivityError();
+
+      // verify session integrity
+      if (
+        session.email !== confirmedEmail
+      ) throw new EmailVerificationRequiredError()
+
+      // prepare user payload
+      const userPayload = {
+        username: session.username!,
+        email: session.email!,
+
+        firstName:
+          session.firstName!,
+
+        lastName:
+          session.lastName!,
+
+        hashedPassword: session.hashedPassword!,
+      };
+
+      logger.info({
+        message:
+          "Creating user through provisioning service",
+
+        username:
+          userPayload.username,
+
+        email:
+          userPayload.email,
+      });
+
+      /**
+       * Future:
+       * REST / gRPC / Kafka / NATS
+       */
+      const createdUser =
+        await this.userProvisioningClient
+          .createUser(userPayload);
+
+      // cleanup temporary state
+      await Promise.all([
+        deleteSignupSession(
+          signupSessionID
+        ),
+
+        deleteConfirmedEmailCache(
+          signupSessionID
+        ),
+
+        deleteVerificationCodeCache(
+            signupSessionID
+        ),
+      ]);
+
+      logger.info({
+        message:
+          "Signup completed successfully",
+
+        userID:
+          createdUser.userID,
+
+        username:
+          createdUser.username,
+      });
+
+      return {
+        ...createdUser
+      }
+  }
+}

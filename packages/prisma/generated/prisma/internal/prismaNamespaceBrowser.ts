@@ -75,8 +75,8 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const UserScalarFieldEnum = {
   userID: 'userID',
   profilePicURI: 'profilePicURI',
-  userFirstName: 'userFirstName',
-  userLastName: 'userLastName',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
   username: 'username',
   hashedPassword: 'hashedPassword',
@@ -103,7 +103,6 @@ export const UserSessionScalarFieldEnum = {
   revokedAt: 'revokedAt',
   rememberMe: 'rememberMe',
   userIPAddress: 'userIPAddress',
-  userDeviceID: 'userDeviceID',
   userDeviceName: 'userDeviceName',
   userDeviceType: 'userDeviceType',
   userDeviceBrowser: 'userDeviceBrowser',

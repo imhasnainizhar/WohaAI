@@ -11,13 +11,21 @@ import {
   AccessTokenPayload,
   RefreshTokenPayload,
 } from "@packages/jwt";
-import { RefreshSessionParams } from "@/types/service/params";
 import { AuthRepo } from "@/repo/auth-repo";
 import { randomUUID } from "node:crypto";
-import { TokenJti } from "@/types/payload";
 import { exp } from "@/config/exp";
 import { env } from "@/config/env";
 
+
+export interface RefreshSessionParams {
+  refreshToken: string;
+  userIPAddress: string;
+}
+
+interface TokenJti {
+  refreshTokenJti: string;
+  accessTokenJti: string;
+}
 
 export class RefreshSessionService {
   constructor(private authRepo: AuthRepo) { }
@@ -54,45 +62,45 @@ export class RefreshSessionService {
       accessTokenJti: randomUUID()
     }
 
-      const refreshTokenPayload: RefreshTokenPayload = {
-        sub: user.userID,
-        jti: tokenJti.refreshTokenJti,
-        userID: user.userID,
-        userSessionID: session.userSessionID,
-        emailVerified: true,
-        email: user.email,
-        username: user.username,
-      };
-  
-      const newRefreshToken = jwt.sign(
-        refreshTokenPayload,
-        JWT_REFRESH_SECRET_KEY,
-        {
-          expiresIn:
-            exp.JWT_REFRESH_SESSION_TOKEN,
-        } as SignOptions
-      );
-  
-      const accessPayload: AccessTokenPayload = {
-        sub: user.userID,
-        jti: tokenJti.accessTokenJti,
-        userID: user.userID,
-        userSessionID: session.userSessionID,
-        emailVerified: true,
-        email: user.email,
-        username: user.username,
-        role: "user",
-      };
-  
-      const newAccessToken = jwt.sign(
-        accessPayload,
-        JWT_ACCESS_SECRET_KEY,
-        {
-          expiresIn:
-            exp.JWT_ACCESS_SESSION_TOKEN,
-        } as SignOptions
-      );
-  
+    const refreshTokenPayload: RefreshTokenPayload = {
+      sub: user.userID,
+      jti: tokenJti.refreshTokenJti,
+      userID: user.userID,
+      userSessionID: session.userSessionID,
+      emailVerified: true,
+      email: user.email,
+      username: user.username,
+    };
+
+    const newRefreshToken = jwt.sign(
+      refreshTokenPayload,
+      JWT_REFRESH_SECRET_KEY,
+      {
+        expiresIn:
+          exp.JWT_REFRESH_SESSION_TOKEN,
+      } as SignOptions
+    );
+
+    const accessPayload: AccessTokenPayload = {
+      sub: user.userID,
+      jti: tokenJti.accessTokenJti,
+      userID: user.userID,
+      userSessionID: session.userSessionID,
+      emailVerified: true,
+      email: user.email,
+      username: user.username,
+      role: "user",
+    };
+
+    const newAccessToken = jwt.sign(
+      accessPayload,
+      JWT_ACCESS_SECRET_KEY,
+      {
+        expiresIn:
+          exp.JWT_ACCESS_SESSION_TOKEN,
+      } as SignOptions
+    );
+
     await this.rotateSession(
       payload.userSessionID,
       newRefreshToken,
@@ -190,14 +198,11 @@ export class RefreshSessionService {
     const hash = await argon2.hash(refreshToken);
 
     try {
-      await prisma.userSession.update({
-        where: { userSessionID },
-        data: {
-          refreshTokenHash: hash,
-          revokedAt: null,
-          userIPAddress: ip,
-        },
-      });
+      await this.authRepo.refreshSession({
+        userSessionID,
+        refreshToken,
+        ip
+      })
     } catch (err: unknown) {
       throw new InternalServerError(err)
     }

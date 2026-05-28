@@ -1,7 +1,7 @@
 import { completeSignupService } from "@services/signup/complete";
-import { getSignupCache, setSignupCache } from "../../../src/helpers/redis";
+import { getSignupCache, setSignupCache } from "../../../src/redis/redis";
 import { internalError } from "@internals/errors/auth";
-import { ServiceException } from "../../../src/helpers/response";
+import { ServiceException } from "../../../src/ua/response";
 
 // Mock Redis utilities for session persistence
 jest.mock("@utils/redis", () => ({

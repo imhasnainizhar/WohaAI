@@ -1,0 +1,80 @@
+import axios, { AxiosInstance } from "axios";
+import { randomUUID } from "crypto";
+
+import { logger } from "@packages/observability";
+import { InternalServerError } from "@packages/errors";
+import { CreatedUserResponseSchema } from "@packages/contracts/auth";
+
+export interface CreateUserParams {
+    username: string;
+    email: string;
+    profilePicURI?: string;
+    firstName: string;
+    lastName: string;
+    hashedPassword: string;
+}
+
+export interface CreatedUserResponse {
+    userID: string;
+    username: string;
+    email: string;
+    profilePicURI?: string;
+    firstName: string;
+    lastName: string;
+}
+
+export class UserProvisioningClient {
+    private readonly http: AxiosInstance;
+
+    constructor(baseURL: string) {
+        this.http = axios.create({
+            baseURL,
+            timeout: 5000,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+    }
+
+    /**
+     * Creates user in User Service
+     * (HTTP implementation — replaceable with gRPC later)
+     */
+    async createUser(
+        params: CreateUserParams
+    ): Promise<CreatedUserResponse> {
+        const requestId = randomUUID();
+
+        try {
+            logger.debug({
+                message:
+                    "[USER-PROVISIONING] Creating user",
+                requestId,
+                username: params.username,
+                email: params.email,
+            });
+
+            const response = await this.http.post(
+                "/users",
+                params,
+                {
+                    headers: {
+                        "x-request-id": requestId,
+                    },
+                }
+            );
+
+            const data = CreatedUserResponseSchema.parse(response.data);
+            return data;
+        } catch (err: any) {
+            logger.error({
+                message:
+                    "[USER-PROVISIONING] Failed to create user",
+                error:
+                    err?.message || err,
+            });
+
+            throw new InternalServerError(err)
+        }
+    }
+}

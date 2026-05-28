@@ -1,7 +1,7 @@
 import { verifyUserEmailService } from "@services/signup/verification/confirm_email";
-import { getCache, deleteCache, setCache } from "../../../../src/helpers/redis";
-import { createJwtToken } from "../../../../src/helpers/jwt";
-import { ServiceException } from "../../../../src/helpers/response";
+import { getCache, deleteCache, setCache } from "../../../../src/redis/redis";
+import { createJwtToken } from "../../../../src/ua/jwt";
+import { ServiceException } from "../../../../src/ua/response";
 import { EXPIRATION, env } from "@config/env";
 
 // Mocks

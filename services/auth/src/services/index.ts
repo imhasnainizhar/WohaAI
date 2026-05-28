@@ -1,4 +1,2 @@
 
-export default class AuthService {
-    
-}
+export * from "./auth-service"

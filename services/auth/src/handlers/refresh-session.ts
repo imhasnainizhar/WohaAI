@@ -1,6 +1,6 @@
 import { ClientData } from '@packages/contracts/auth';
 import { asyncHandler } from "@/middlewares/async-handler";
-import { getClientData } from "@/helpers/get-client-data";
+import { getClientData } from "@/ua/client-data";
 import { buildCookie, Cookie, sendResponse } from "@packages/http";
 import { CookieOptions, Request, Response } from "express";
 import { env } from '@/config/env';

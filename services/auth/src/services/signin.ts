@@ -1,12 +1,22 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { envConfigs as env, EXPIRATION } from "@packages/config";
-import { createUserSession } from "@/helpers/create-user-session";
-import { AuthRepo } from "@/repo/auth-repo";
+import { AuthRepo } from '@/repo/auth-repo';
 import { InternalServerError,InvalidCredentialsError } from "@packages/errors";
-import { SigninResponse } from "@packages/contracts/auth";
-import { SigninParams } from "@/types/service/params";
+import { ClientData, SigninResponse } from "@packages/contracts/auth";
 import { UserSessionID } from "@packages/contracts/auth";
+import { logger } from "@packages/observability";
+
+
+export interface SigninParams {
+  usernameOrEmail: {
+      type: "username"; value: string;
+  } | {
+      type: "email"; value: string;
+  };
+  password: string;
+  clientData: ClientData;
+}
 
 export class SigninService {
 
@@ -56,12 +66,19 @@ export class SigninService {
     /**
      * Persist session
      */
-    const session = await createUserSession({
+    const session = await this.repo.createUserSession({
       userID: user.userID,
       clientData,
       refreshToken,
       userSessionID,
     });
+
+    logger.debug({
+      message: "✅ [SESSION] Created new user session",
+      userID: session.userID,
+      ip: clientData.userIPAddress,
+      device: clientData.userDeviceName,
+  });
 
     /**
      * Access token

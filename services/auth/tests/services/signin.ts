@@ -2,8 +2,8 @@ import { signinService } from "@services/signin";
 import { prisma } from "@clients/prisma";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-import { ServiceException } from "../../src/helpers/response";
-import { createUserSession } from "../../src/helpers/create-user-session";
+import { ServiceException } from "../../src/ua/response";
+import { createUserSession } from "../../src/ua/create-user-session";
 import { env, EXPIRATION } from "@config/env";
 
 // Mock external dependencies (DB, crypto, tokens, logging)
