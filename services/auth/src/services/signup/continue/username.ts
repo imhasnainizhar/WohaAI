@@ -1,9 +1,5 @@
-import { logger } from "@packages/observability";
-
-import { prisma } from "@packages/prisma";
-
+import { authLogger } from "@packages/observability";
 import { AuthRepo } from "@/repo/auth-repo";
-
 import {
   ConflictError,
   SessionExpiredError,
@@ -15,9 +11,13 @@ import {
   SignupSession,
 } from "@/redis/redis";
 
-interface ContinueWithUsernameParams {
+export interface ContinueWithUsernameServiceParams {
   signupSessionID: string;
   username: string;
+}
+
+export interface ContinueWithUsernameServiceResponse {
+  usernameValidated: boolean
 }
 
 /**
@@ -31,8 +31,8 @@ export class ContinueWithUsernameService {
   public async execute({
     signupSessionID,
     username,
-  }: ContinueWithUsernameParams) {
-    logger.debug(
+  }: ContinueWithUsernameServiceParams): Promise<ContinueWithUsernameServiceResponse> {
+    authLogger.debug(
       "Continuing signup with username..."
     );
 
@@ -72,12 +72,12 @@ export class ContinueWithUsernameService {
       username: username,
     });
 
-    logger.info(
+    authLogger.info(
       "Username validated and cached successfully."
     );
 
     return {
-      success: true,
+      usernameValidated: true,
     };
   }
 }

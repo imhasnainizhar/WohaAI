@@ -13,6 +13,8 @@ export class ServiceError extends Error {
 
         this.name = this.constructor.name;
 
+        Object.setPrototypeOf(this, new.target.prototype);
+
         Error.captureStackTrace?.(this, this.constructor);
     }
 }
@@ -56,7 +58,7 @@ export class SessionExpiredError extends ServiceError {
         super(
             "Invalid or expired session.",
             "session_expired",
-            400,
+            401,
             {
                 session: ["Session expired"],
             },

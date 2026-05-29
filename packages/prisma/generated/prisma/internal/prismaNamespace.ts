@@ -702,6 +702,7 @@ export const UserSessionScalarFieldEnum = {
   userDeviceType: 'userDeviceType',
   userDeviceBrowser: 'userDeviceBrowser',
   userDeviceOS: 'userDeviceOS',
+  sessionDuration: 'sessionDuration',
   userID: 'userID'
 } as const
 
@@ -770,6 +771,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionDuration'
+ */
+export type EnumSessionDurationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionDuration'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionDuration[]'
+ */
+export type ListEnumSessionDurationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionDuration[]'>
     
 
 

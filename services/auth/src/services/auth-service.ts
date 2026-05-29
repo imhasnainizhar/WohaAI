@@ -1,31 +1,39 @@
 import { AuthRepo } from "@/repo/auth-repo";
 import { prisma } from "@packages/prisma";
-import { SigninParams, SigninService } from "./signin";
-import { SignoutParams, SignoutService } from "./signout";
-import { RefreshSessionParams, RefreshSessionService } from "./refresh-session";
+import { SigninServiceParams, SigninService } from "./signin";
+import { SignoutServiceParams, SignoutService } from "./signout";
+import { RefreshSessionServiceParams, RefreshSessionService } from "./refresh-session";
 
-import { SignupInitParams, SignupInitService } from "./signup/init";
+import { SignupInitServiceParams, SignupInitService } from "./signup/init";
 import { redisHelpers } from "@packages/redis";
-import { ContinueWithEmailService } from "./signup/continue/email";
-import { ContinueWithUsernameService } from './signup/continue/username';
-import { NameValidationService } from "./signup/validations/name";
-import { PasswordValidationService } from "./signup/validations/password";
-import { SignupCompleteService } from "./signup/complete";
+import { ContinueWithEmailService, ContinueWithEmailServiceParams } from "./signup/continue/email";
+import { ContinueWithUsernameService, ContinueWithUsernameServiceParams } from './signup/continue/username';
+import { NameValidationService, NameValidationServiceParams } from "./signup/validations/name";
+import { PasswordValidationService, PasswordValidationServiceParams } from "./signup/validations/password";
+import { SignupCompleteService, SignupCompleteServiceParams } from "./signup/complete";
 import { UserProvisioningClient } from "@/clients/user-provision";
 import { env } from "@/config/env";
+import { SendVerificationEmailService, SendVerificationServiceParams } from "./signup/verification/send-verification-email";
+import { VerifyUserEmailService, VerifyUserEmailServiceParams } from "./signup/verification/verify-user-email";
 
 class AuthService {
     private static instance: AuthService;
 
     private constructor(
         private readonly signinService: SigninService,
-        private readonly refreshSessionService: RefreshSessionService,
-        private readonly signupInitService: SignupInitService,
         private readonly signoutService: SignoutService,
+        private readonly refreshSessionService: RefreshSessionService,
+
+        private readonly signupInitService: SignupInitService,
         private readonly continueWithUsernameService: ContinueWithUsernameService,
         private readonly continueWithEmailService: ContinueWithEmailService,
+
+        private readonly sendVerificationEmailService: SendVerificationEmailService,
+        private readonly verifyUserEmailService: VerifyUserEmailService,
+
         private readonly nameValidationService: NameValidationService,
         private readonly passwordValidationService: PasswordValidationService,
+
         private readonly signupCompleteService: SignupCompleteService,
     ) { }
 
@@ -39,43 +47,37 @@ class AuthService {
             // Currently using nextjs var, but URI is same for the service
             const userProvisioningClient = new UserProvisioningClient(env.NEXT_PUBLIC_USER_API_URI);
 
-            const signinService = new SigninService(
-                authRepo
-            );
+            const signinService = new SigninService(authRepo);
+            const signoutService = new SignoutService(authRepo);
+            const refreshSessionService = new RefreshSessionService(authRepo);
 
-            const refreshSessionService =
-                new RefreshSessionService(authRepo);
+            const signupInitService = new SignupInitService(authRepo, redisHelpers);
+            const continueWithUsernameService = new ContinueWithUsernameService(authRepo);
+            const continueWithEmailService = new ContinueWithEmailService(authRepo);
 
-            const continueWithUsernameService =
-                new ContinueWithUsernameService(authRepo);
+            const sendVerificationEmailService = new SendVerificationEmailService();
+            const verifyUserEmailService = new VerifyUserEmailService();
 
-            const continueWithEmailService =
-                new ContinueWithEmailService(authRepo);
+            const nameValidationService = new NameValidationService();
+            const passwordValidationService = new PasswordValidationService();
 
-            const signoutService =
-                new SignoutService(authRepo);
-
-            const signupInitService =
-                new SignupInitService(authRepo, redisHelpers);
-
-            const nameValidationService =
-                new NameValidationService();
-            
-            const passwordValidationService =
-                new PasswordValidationService();
-
-            const signupCompleteService =
-                new SignupCompleteService(userProvisioningClient)
+            const signupCompleteService = new SignupCompleteService(authRepo, userProvisioningClient);
 
             AuthService.instance = new AuthService(
                 signinService,
+                signoutService ,
                 refreshSessionService,
+
                 signupInitService,
-                signoutService,
                 continueWithUsernameService,
                 continueWithEmailService,
+
+                sendVerificationEmailService,
+                verifyUserEmailService,
+
                 nameValidationService,
                 passwordValidationService,
+
                 signupCompleteService,
             );
         }
@@ -87,83 +89,84 @@ class AuthService {
         usernameOrEmail,
         password,
         clientData,
-    }: SigninParams) {
+        rememberMe
+    }: SigninServiceParams) {
         return this.signinService.execute({
             usernameOrEmail,
             password,
             clientData,
+            rememberMe
         });
     }
 
     public async signout({
         userID,
         userSessionID
-    }: SignoutParams) {
+    }: SignoutServiceParams) {
         return this.signoutService.execute({userID, userSessionID})
     }
 
     public async refreshSession({
         refreshToken,
         userIPAddress    
-    }: RefreshSessionParams) {
+    }: RefreshSessionServiceParams) {
         return this.refreshSessionService.execute({refreshToken, userIPAddress})
     }
 
     public async signupInit({
         usernameOrEmail
-    }: SignupInitParams) {
+    }: SignupInitServiceParams) {
         return this.signupInitService.execute({usernameOrEmail})
     }
 
     public async continueWithUsername({
         signupSessionID,
         username
-    }: { 
-        signupSessionID: string
-        username: string 
-    }) {
+    }: ContinueWithUsernameServiceParams) {
         return this.continueWithUsernameService.execute({signupSessionID, username})
     }
 
     public async continueWithEmail({
         signupSessionID,
         email
-    }: { 
-        signupSessionID: string
-        email: string 
-    }) {
+    }: ContinueWithEmailServiceParams) {
         return this.continueWithEmailService.execute({signupSessionID, email})
+    }
+
+    public async sendVerificationEmail({
+        signupSessionID
+    }: SendVerificationServiceParams) {
+        return this.sendVerificationEmailService.execute({signupSessionID})
+    }
+
+    public async verifyUserEmail({
+        signupSessionID,
+        verificationCode
+    }: VerifyUserEmailServiceParams) {
+        return this.verifyUserEmailService.execute({signupSessionID, verificationCode})
     }
 
     public async validateName({
         signupSessionID,
         firstName,
         lastName
-    }: { 
-        signupSessionID: string
-        firstName: string 
-        lastName: string
-    }) {
+    }: NameValidationServiceParams) {
         return this.nameValidationService.execute({signupSessionID, firstName, lastName})
     }
 
     public async validatePassword({
         signupSessionID,
         zodValidatedPassword
-    }: { 
-        signupSessionID: string
-        zodValidatedPassword: string 
-    }) {
-        return this.passwordValidationService.execute({ signupSessionID, password: zodValidatedPassword })
+    }: PasswordValidationServiceParams) {
+        return this.passwordValidationService.execute({ signupSessionID, zodValidatedPassword })
     }
 
     public async completeSignup({
         signupSessionID,
-    }: { 
-        signupSessionID: string
-        zodValidatedPassword: string 
-    }) {
-        return this.signupCompleteService.execute({ signupSessionID })
+        rememberMe,
+        clientData
+    }: SignupCompleteServiceParams) {
+        return this.signupCompleteService.execute({ signupSessionID, rememberMe, clientData })
     }
 }
 

@@ -1,7 +1,6 @@
 import z from "zod";
-import { SignupSessionIDSchema } from "./session";
 import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameSchema } from "./user";
-import { authRegex } from "@/utils/auth-regex";
+import { authRegex } from "../../utils/auth-regex";
 
 export const SignupInitRequestSchema = z.object({
     usernameOrEmail: z
@@ -28,7 +27,7 @@ export const SignupInitRequestSchema = z.object({
  * Used for continueWithUsername service for username validation at second step after get started step.
  * If user initializes with email so second step require username.
  */
-export const UsernameSignupRequestSchema = z.object({
+export const ContinueWithUsernameRequestSchema = z.object({
     username: UsernameSchema,
 });
 
@@ -36,36 +35,50 @@ export const UsernameSignupRequestSchema = z.object({
  * Used for continueWithEmail service for email validation at second step after get started step.
  * If user initializes with username so second step require email.
  */
-export const EmailSignupRequestSchema = z.object({
+export const ContinueWithEmailRequestSchema = z.object({
     email: EmailSchema,
 });
 
-export const CompleteSignupRequestSchema = z.object({
-    firstName: FirstNameSchema,
-    lastName: LastNameSchema,
-    dateOfBirth: DateOfBirthSchema,
-    password: PasswordSchema,
-    confirmPassword: ConfirmPasswordSchema,
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
+// VERIFICATION CODE
+export const VerificationCodeSchema = z
+    .string()
+    .trim()
+    .length(6, {
+        message: "Verification code must be 6 digits",
+    })
+    .regex(/^\d+$/, {
+        message: "Verification code must contain only numbers",
+    });
+
+// VERIFY USER EMAIL REQUEST
+export const VerifyUserEmailRequestSchema = z.object({
+    verificationCode: VerificationCodeSchema,
+});
+
+export const NameValidationSchema = z.object({
+    firsrName: FirstNameSchema,
+    lastName: LastNameSchema
 })
 
-export const VerificationCodeSchema = z.string().min(1, "Required").length(6, "Verification code must be 6 digits").regex(/^\d+$/, "Verification code must be numeric");
 
-export const VerifyUserEmailRequestSchema = z
+/**
+ * Object validation schema
+ */
+export const PasswordValidationSchema = z
     .object({
-        signupSessionID: SignupSessionIDSchema,
-        email: EmailSchema,
-        verificationCode: VerificationCodeSchema,
+        password: PasswordSchema,
+        confirmPassword: ConfirmPasswordSchema,
     })
+    .refine(
+        ({ password, confirmPassword }) =>
+            password === confirmPassword,
+        {
+            message: "Passwords do not match",
+            path: ["confirmPassword"],
+        }
+    );
 
-
-export const SendVerificationEmailRequestSchema = z
-    .object({
-        signupSessionID: SignupSessionIDSchema,
-        email: EmailSchema,
-        firstName: FirstNameSchema,
-        lastName: LastNameSchema,
-        verificationCode: VerificationCodeSchema,
-    })
+export const SignupCompleteRequestSchema = z.object({
+    rememberMe: z
+        .boolean()
+})

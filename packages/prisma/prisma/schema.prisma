@@ -10,6 +10,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum SessionDuration {
+  temporary
+  persistent
+}
+
 model User {
   userID         String   @id @default(uuid())
   profilePicURI  String?
@@ -46,6 +51,7 @@ model UserSession {
   userDeviceType    String
   userDeviceBrowser String
   userDeviceOS      String
+  sessionDuration   SessionDuration
 
   userID String
   user   User   @relation(fields: [userID], references: [userID])

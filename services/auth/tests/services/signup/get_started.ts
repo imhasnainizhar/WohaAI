@@ -6,7 +6,7 @@ import { env, EXPIRATION } from "@config/env";
 import { ServiceException } from "@helpers/response";
 import { GetStartedDTO } from "../../../../../packages/api/src/auth";
 
-// Mock external dependencies (DB, Redis, JWT, Logger)
+// Mock external dependencies (DB, Redis, JWT, authLogger)
 jest.mock("@clients/prisma", () => ({
   prisma: {
     user: {
@@ -23,8 +23,8 @@ jest.mock("@utils/jwt", () => ({
   createJwtToken: jest.fn(),
 }));
 
-jest.mock("@utils/logger", () => ({
-  logger: {
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

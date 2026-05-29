@@ -1,20 +1,26 @@
 import { randomUUID } from "crypto";
 import { env } from "@/config/env";
 import { exp } from "@/config/exp";
-import { logger } from "@packages/observability";
-import { createJwtToken } from "@packages/jwt";
+import { authLogger } from "@packages/observability";
+import { createJwtToken, SignupSessionPayload } from "@packages/jwt";
 import { RedisHelper } from "@packages/redis";
 import { AuthRepo } from '@/repo/auth-repo';
 import { ConflictError } from "@packages/errors";
-import { SignupInitResponse, SignupSessionID } from "@packages/contracts/auth";
+import { SignOptions } from "jsonwebtoken";
 
 
-export interface SignupInitParams {
+export interface SignupInitServiceParams {
   usernameOrEmail: {
-      type: "username"; value: string;
+    type: "username"; value: string;
   } | {
-      type: "email"; value: string;
+    type: "email"; value: string;
   };
+}
+
+export interface SignupInitServiceResponse {
+  signupSessionInit: boolean;
+  alreadyExists: boolean;
+  signupSessionToken: string;
 }
 
 /**
@@ -29,15 +35,15 @@ export class SignupInitService {
 
 
   public async execute(
-    { usernameOrEmail }: SignupInitParams
-  ): Promise<SignupInitResponse> {
+    { usernameOrEmail }: SignupInitServiceParams
+  ): Promise<SignupInitServiceResponse> {
     const { type, value } = usernameOrEmail;
 
     const identifierType = type;
     const identifier: string = value;
 
     // Check existing user
-    logger.debug(
+    authLogger.debug(
       `🔎 Checking ${identifierType} availability: ${identifier}`
     );
 
@@ -49,26 +55,26 @@ export class SignupInitService {
     )
 
     // New user -> signup flow
-    logger.debug(
+    authLogger.debug(
       "🔐 Creating signup session token..."
     );
 
-    const signupSessionID: SignupSessionID = randomUUID();
+    const signupSessionID = randomUUID();
     const jti: string = randomUUID();
-    const signupSessionToken = createJwtToken(
-      {
-        jti,
-        sub: signupSessionID,
-      },
-      env.JWT_SIGNUP_SESSION_SECRET_KEY,
-      {
-        expiresIn: Number(
-          exp.SIGNUP_SESSION_COOKIE
-        ),
-      }
-    );
 
-    logger.debug(
+    const signupSessionToken = createJwtToken<SignupSessionPayload>({
+      payload: {
+        jti,
+        sid: signupSessionID
+      },
+      secret: env.JWT_SIGNUP_SESSION_SECRET_KEY,
+      options: {
+        expiresIn: exp.JWT_SIGNUP_SESSION_TOKEN
+      } as SignOptions
+    });
+    
+
+    authLogger.debug(
       "💾 Caching pending signup session in Redis..."
     );
 
@@ -82,15 +88,18 @@ export class SignupInitService {
       exp.REDIS_SIGNUP_SESSION_TTL
     );
 
-    logger.debug(
+    authLogger.debug(
+      await this.redisHelpers.getCache(`${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`)
+    )
+
+    authLogger.debug(
       `✅ ${identifierType} available and session initialized: ${identifier}`
     );
 
     return {
-        identifierType,
-        identifier,
-        already_exists: false,
-        signupSessionToken
+      signupSessionInit: true,
+      alreadyExists: false,
+      signupSessionToken
     };
   }
 }

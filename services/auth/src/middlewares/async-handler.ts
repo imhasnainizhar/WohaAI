@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { InternalServerError, ServiceError } from "@packages/errors";
-import { sendResponse } from '@packages/http';
 
 export const asyncHandler =
   (
@@ -12,12 +11,11 @@ export const asyncHandler =
       } catch (err: any) {
 
         // If the service already wrapped it — pass through
-        // Service exceptions are thrown by services, controller are just to make calls to services
+        // Service errors are thrown by services
         if (
           err instanceof ServiceError ||
           (
             err.errors &&
-            typeof err.response.statusCode === "number" &&
             err.statusCode !== 500
           )
         ) {

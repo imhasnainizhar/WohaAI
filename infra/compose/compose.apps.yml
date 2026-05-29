@@ -13,9 +13,9 @@ services:
     env_file:
       - ../../.env
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     profiles:
       - "apps"
 
 networks:
-  woahai_dev_net:
+  WohaAI_dev_net:

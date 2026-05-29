@@ -46,7 +46,7 @@ interface EnvConfig {
 
     // Other environment configs...
     NODE_ENV: string;
-    WOAHAI_LLM_AGENT_PORT: string;
+    WohaAI_LLM_AGENT_PORT: string;
     LOG_LEVEL: string;
     OPENAI_API_KEY: string;
     MCP_GATEWAY_PORT: number;
@@ -74,7 +74,7 @@ export const env: EnvConfig = {
 
     // Other environment configs...
     NODE_ENV: p.NODE_ENV || "development",
-    WOAHAI_LLM_AGENT_PORT: p.WOAHAI_LLM_AGENT_PORT!,
+    WohaAI_LLM_AGENT_PORT: p.WohaAI_LLM_AGENT_PORT!,
     LOG_LEVEL: p.LOG_LEVEL || "debug",
     OPENAI_API_KEY: p.OPENAI_API_KEY!,
     MCP_GATEWAY_PORT: parseInt(p.MCP_GATEWAY_PORT!, 10),

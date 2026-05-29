@@ -1,7 +1,7 @@
 import { env } from "@/config/env";
 import { exp } from "@/config/exp";
-import { createJwtToken } from "@packages/jwt";
-import { logger } from "@packages/observability";
+import { createJwtToken, SignupSessionPayload } from "@packages/jwt";
+import { authLogger } from "@packages/observability";
 import {
   deleteVerificationCodeCache,
   getSignupSession,
@@ -11,14 +11,16 @@ import {
 import { InvalidVerificationCodeError, SessionExpiredError } from "@packages/errors";
 import { VerificationCodeExpiredError } from '@packages/errors';
 import { randomUUID } from "crypto";
+import { SignOptions } from "jsonwebtoken";
 
 
-export interface VerifyUserEmailParams {
+export interface VerifyUserEmailServiceParams {
   signupSessionID: string;
   verificationCode: string;
 }
-export interface VerifyUserEmailResponse {
 
+export interface VerifyUserEmailServiceResponse {
+  extendedSignupToken: string
 }
 
 export class VerifyUserEmailService {
@@ -29,8 +31,8 @@ export class VerifyUserEmailService {
     {
       verificationCode,
       signupSessionID
-    }: VerifyUserEmailParams
-  ): Promise<VerifyUserEmailResponse> {
+    }: VerifyUserEmailServiceParams
+  ): Promise<VerifyUserEmailServiceResponse> {
 
       // fetch pending signup session
       const signupSession =
@@ -58,30 +60,27 @@ export class VerifyUserEmailService {
 
       // generate extended signup token
       const extendedSignupToken =
-        createJwtToken(
-          {
+        createJwtToken<SignupSessionPayload>({
+          payload: {
             jti: randomUUID(),
-            sub: signupSessionID,
+            sid: signupSessionID,
           },
-          env.JWT_SIGNUP_SESSION_SECRET_KEY,
-          {
-            expiresIn: Number(
-              exp.JWT_SIGNUP_SESSION_TOKEN_EXTENDED
-            ),
-          }
-        );
+          secret: env.JWT_SIGNUP_SESSION_SECRET_KEY,
+          options: {
+            expiresIn: exp.JWT_SIGNUP_SESSION_TOKEN_EXTENDED,
+          } as SignOptions
+  });
 
       await setConfirmedEmailCache({
         signupSessionID,
         email: pendingEmail
       });
 
-      logger.info(
+      authLogger.info(
         `✅ Email verified successfully for session ${signupSessionID}`
       );
 
       return {
-        success: true,
         extendedSignupToken,
       }
   }

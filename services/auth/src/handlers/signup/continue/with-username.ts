@@ -1,12 +1,10 @@
-import { UsernameSignupSchema } from "../../../../../../packages/api/src/auth";
-import { throwValidationError } from "@packages/shared/errors";
-import continueWithUsernameService from "@services/signup/continue/with_username";
-import { asyncHandler } from "@middlewares/async_handler";
-import { env } from "@config/env";
-import jwt from "jsonwebtoken";
-import { SignupSessionPayload } from "@packages/shared/common";
-import { sendResponse } from "@packages/shared/utils";
-import { throwSessionExpired } from "@packages/shared/errors";
+import authService from "@/services/auth-service";
+import { asyncHandler } from "@/middlewares/async-handler";
+import { env } from "@/config/env";
+import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
+import { sendResponse } from "@packages/http";
+import { ContinueWithUsernameRequestSchema, ContinueWithUsernameResponse } from "@packages/contracts/auth";
+import { ValidationError } from "@packages/errors";
 
 /**
  * Handler for user signup continue with username.
@@ -17,25 +15,33 @@ import { throwSessionExpired } from "@packages/shared/errors";
 export const continueWithUsernameHandler = asyncHandler(async (req, res) => {
     // Verify signup session token
     const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
-    const payload = jwt.verify(token, env.JWT_SIGNUP_SESSION_SECRET_KEY) as SignupSessionPayload;
 
-    // If payload is not valid, throw session expired error
-    if (!payload) throwSessionExpired();
-
-    // Getting signupSessionID from payload
-    const signupSessionID = payload.signupSessionID;
+    const payload: SignupSessionPayload = verifyJwtToken({
+        token,
+        secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
+    });
 
     // Validate input using Zod schema
-    const parsed = UsernameSignupSchema.safeParse(req.body);
-    if (!parsed.success) return throwValidationError(parsed.error, "username");
+    const parsed = 
+        ContinueWithUsernameRequestSchema.safeParse(req.body);
+
+    if (!parsed.success) throw new ValidationError("Username is invalid", parsed.error);
 
     // Call service → either returns ServiceResponse OR throws ServiceException
-    const result = await continueWithUsernameService({ signupSessionID, username: parsed.data.username });
+    const { usernameValidated } = await authService.continueWithUsername({
+        signupSessionID: payload.signupSessionID,
+        username: parsed.data.username
+    });
 
     // Handler only returns response
-    return sendResponse({
+    return sendResponse<ContinueWithUsernameResponse>({
         res,
-        ...result,
+        success: true,
+        statusCode: 200,
+        message: "Username successfully validated",
+        data: {
+            usernameValidated
+        },
         path: req.originalUrl,
     });
 });

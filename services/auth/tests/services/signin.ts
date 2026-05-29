@@ -27,8 +27,8 @@ jest.mock("jsonwebtoken", () => ({
     sign: jest.fn(),
 }));
 
-jest.mock("@utils/logger", () => ({
-    logger: {
+jest.mock("@utils/authLogger", () => ({
+    authLogger: {
         debug: jest.fn(),
         fatal: jest.fn(),
         info: jest.fn(),

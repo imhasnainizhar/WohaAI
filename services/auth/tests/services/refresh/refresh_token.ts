@@ -16,8 +16,8 @@ jest.mock("@clients/prisma", () => ({
   },
 }));
 
-jest.mock("@utils/logger", () => ({
-  logger: {
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

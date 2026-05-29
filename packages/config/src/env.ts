@@ -1,4 +1,4 @@
-import { EnvConfig } from "./EnvConfig";
+import { EnvConfig } from "./env-config";
 import { loadEnv } from "./env/load";
 import { validateEnv } from "./env/validate-env";
 
@@ -6,8 +6,9 @@ loadEnv();
 
 const p = process.env;
 
-const secure = p.NODE_ENV === "production";
 const NODE_ENV = p.NODE_ENV || "development"
+
+const secure = NODE_ENV === "production";
 
 const sameSite = (NODE_ENV === "production" ? "none" : "lax") as
   "none" | "lax" | "strict";
@@ -183,6 +184,9 @@ const env: EnvConfig = {
   AUTH_SESSION_REDIS_USERNAME:
     p.AUTH_SESSION_REDIS_USERNAME!,
 
+  AUTH_SESSION_REDIS_HOST:
+    p.AUTH_SESSION_REDIS_HOST!,
+
   AUTH_SESSION_STORE_PASSWORD:
     p.AUTH_SESSION_STORE_PASSWORD!,
 
@@ -195,6 +199,9 @@ const env: EnvConfig = {
 
   AGENT_MEMORY_REDIS_USERNAME:
     p.AGENT_MEMORY_REDIS_USERNAME!,
+
+  AGENT_MEMORY_REDIS_HOST:
+    p.AGENT_MEMORY_REDIS_HOST!,
 
   AGENT_MEMORY_REDIS_PASSWORD:
     p.AGENT_MEMORY_REDIS_PASSWORD!,
@@ -209,6 +216,9 @@ const env: EnvConfig = {
   THREADS_HISTORY_REDIS_USERNAME:
     p.THREADS_HISTORY_REDIS_USERNAME!,
 
+  THREADS_HISTORY_REDIS_HOST:
+    p.THREADS_HISTORY_REDIS_HOST!,
+
   THREADS_HISTORY_REDIS_PASSWORD:
     p.THREADS_HISTORY_REDIS_PASSWORD!,
 
@@ -219,26 +229,25 @@ const env: EnvConfig = {
   AGENT_MEMORY_QDRANT_URI:
     p.AGENT_MEMORY_QDRANT_URI!,
 
-  AGENT_MEMORY_QDRANT_API_KEY:
-    Number(p.AGENT_MEMORY_QDRANT_API_KEY),
+  AGENT_MEMORY_QDRANT_API_KEY: p.AGENT_MEMORY_QDRANT_API_KEY!,
 
   // ========================================
   // Kafka Broker Connection
   // ========================================
 
-  AUTH_MAILER_KAFKA_BROKER_HOST:
-    p.AUTH_MAILER_KAFKA_BROKER_HOST!,
+  AUTH_KAFKA_BROKER_HOST:
+    p.AUTH_KAFKA_BROKER_HOST!,
 
-  AUTH_MAILER_KAFKA_BROKER_PORT:
+  AUTH_KAFKA_BROKER_PORT:
     Number(
-      p.AUTH_MAILER_KAFKA_BROKER_PORT,
+      p.AUTH_KAFKA_BROKER_PORT,
     ),
 
-  AUTH_MAILER_KAFKA_BROKER_URI:
-    p.AUTH_MAILER_KAFKA_BROKER_URI!,
+  AUTH_KAFKA_BROKER_URI:
+    p.AUTH_KAFKA_BROKER_URI!,
 
-  AUTH_MAILER_KAFKA_BROKERS:
-    p.AUTH_MAILER_KAFKA_BROKERS!.split(
+  AUTH_KAFKA_BROKERS:
+    p.AUTH_KAFKA_BROKERS!.split(
       ",",
     ),
 
@@ -256,31 +265,36 @@ const env: EnvConfig = {
   // Kafka Client Identity
   // ========================================
 
-  AUTH_MAILER_KAFKA_CLIENT_ID:
-    p.AUTH_MAILER_KAFKA_CLIENT_ID!,
+  AUTH_KAFKA_CLIENT_ID:
+    p.AUTH_KAFKA_CLIENT_ID!,
 
   // ========================================
   // Kafka Security
   // ========================================
 
-  AUTH_MAILER_KAFKA_USERNAME:
-    p.AUTH_MAILER_KAFKA_USERNAME!,
+  AUTH_KAFKA_USERNAME:
+    p.AUTH_KAFKA_USERNAME!,
 
-  AUTH_MAILER_KAFKA_PASSWORD:
-    p.AUTH_MAILER_KAFKA_PASSWORD!,
+  AUTH_KAFKA_PASSWORD:
+    p.AUTH_KAFKA_PASSWORD!,
 
   // ========================================
   // Kafka Topics
   // ========================================
 
-  AUTH_MAILER_KAFKA_TOPIC_PREFIX:
-    p.AUTH_MAILER_KAFKA_TOPIC_PREFIX!,
+  AUTH_KAFKA_TOPIC_PREFIX: p.AUTH_KAFKA_TOPIC_PREFIX!,
 
-  AUTH_MAILER_KAFKA_USER_EVENTS_TOPIC:
-    p.AUTH_MAILER_KAFKA_USER_EVENTS_TOPIC!,
+  AUTH_KAFKA_FORGOT_PASSWORD_EVENTS_TOPIC:
+    p.AUTH_KAFKA_FORGOT_PASSWORD_EVENTS_TOPIC!,
 
-  AUTH_MAILER_KAFKA_SIGNUP_EVENTS_TOPIC:
-    p.AUTH_MAILER_KAFKA_SIGNUP_EVENTS_TOPIC!,
+  AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC:
+    p.AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC!,
+
+  AUTH_KAFKA_PASSWORD_EVENTS_CONSUMER_GROUP_ID:
+    p.AUTH_KAFKA_PASSWORD_EVENTS_CONSUMER_GROUP_ID!,
+
+  AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_CONSUMER_GROUP_ID:
+    p.AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_CONSUMER_GROUP_ID!
 };
 
 export const envConfigs = validateEnv(env);

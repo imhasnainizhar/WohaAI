@@ -9,9 +9,9 @@ import { ServiceException } from "../../../../src/ua/response";
 // Mocks
 jest.mock("@utils/redis");
 
-// Mock logger to suppress console output during tests
-jest.mock("@utils/logger", () => ({
-  logger: {
+// Mock authLogger to suppress console output during tests
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

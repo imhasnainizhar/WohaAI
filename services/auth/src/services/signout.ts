@@ -1,12 +1,15 @@
-import { logger } from "@packages/observability";
-import { SignoutResponse } from "@packages/contracts/auth";
+import { authLogger } from "@packages/observability";
 import { AuthRepo } from "@/repo/auth-repo";
 import { SessionExpiredError } from "@packages/errors";
 
 
-export interface SignoutParams {
+export interface SignoutServiceParams {
   userID: string;
   userSessionID: string;
+}
+
+export interface SignoutServiceResponse {
+  signedOut: boolean
 }
 
 export class SignoutService {
@@ -18,7 +21,7 @@ export class SignoutService {
   public async execute({
     userID,
     userSessionID
-  }: SignoutParams): Promise<SignoutResponse> {
+  }: SignoutServiceParams): Promise<SignoutServiceResponse> {
     const session = await this.authRepo.findActiveSession({
       userID,
       userSessionID
@@ -28,7 +31,7 @@ export class SignoutService {
 
     await this.authRepo.revokeSession(userSessionID);
 
-    logger.debug({
+    authLogger.debug({
       message:
         "[SIGNOUT] Session revoked successfully",
       userID,

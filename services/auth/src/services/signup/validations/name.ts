@@ -1,4 +1,4 @@
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 import { AuthRepo } from "@/repo/auth-repo";
 import {
   SessionExpiredError,
@@ -9,10 +9,14 @@ import {
   SignupSession,
 } from "@/redis/redis";
 
-interface NameValidationParams {
+export interface NameValidationServiceParams {
   signupSessionID: string;
   firstName: string;
   lastName: string;
+}
+
+export interface NameValidationServiceResponse {
+  nameValidated: boolean;
 }
 
 export class NameValidationService {
@@ -21,8 +25,8 @@ export class NameValidationService {
     signupSessionID,
     firstName,
     lastName,
-  }: NameValidationParams) {
-    logger.debug("Continuing signup with name...");
+  }: NameValidationServiceParams): Promise<NameValidationServiceResponse> {
+    authLogger.debug("Continuing signup with name...");
 
     const signupSession: SignupSession =
       await getSignupSession(signupSessionID);
@@ -49,10 +53,10 @@ export class NameValidationService {
       });
     }
 
-    logger.info("Name cached successfully.");
+    authLogger.info("Name validated successfully.");
 
     return {
-      success: true,
+      nameValidated: true,
     };
   }
 }

@@ -1,7 +1,6 @@
 import express, { Express } from "express";
-import { json, urlencoded } from "body-parser";
 import authRoutes from "@/routes/auth.js";
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 import { errorHandler } from "@/middlewares/error-handler";
 import { redisClient } from "@packages/redis";
 import cors from "cors";
@@ -14,10 +13,10 @@ const app: Express = express();
 app.use(cookieParser());
 
 // Parse JSON payloads from incoming requests
-app.use(json());
+app.use(express.json());
 
 // Parse URL-encoded payloads (e.g., form submissions)
-app.use(urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 // Global error handler
 app.use(errorHandler);
@@ -34,7 +33,7 @@ app.use(errorHandler);
     ]);
   } catch (err) {
     // Log error but don't crash - Redis might not be available yet
-    logger.error("⚠️ Redis connection failed or timed out, continuing without Redis:" + (err as Error).message);
+    authLogger.error("⚠️ Redis connection failed or timed out, continuing without Redis:" + (err as Error).message);
   }
 })();
 
@@ -44,6 +43,8 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // if using cookies or auth headers
 };
+
+app.use(httpauthLogger);
 
 // Mount auth-related routes
 app.use("/", cors(corsOptions), authRoutes);

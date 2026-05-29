@@ -1,7 +1,7 @@
 import { env } from "@/config/env";
 import { exp } from "@/config/exp";
 import { InternalServerError, ServiceError, SessionExpiredError } from "@packages/errors";
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 import { redisClient, redisHelpers } from '@packages/redis';
 
 
@@ -91,7 +91,7 @@ export async function setExtendedSignupSession(
 export async function getSignupSession(
   signupSessionID: string,
 ): Promise<SignupSession> {
-  logger.debug(
+  authLogger.debug(
     "Retrieving signup session from Redis...",
   );
 
@@ -102,7 +102,7 @@ export async function getSignupSession(
     await redisHelpers.getCache(key);
 
   if (!rawSession) {
-    logger.debug({
+    authLogger.debug({
       message:
         "Signup session expired",
       signupSessionID,
@@ -114,7 +114,7 @@ export async function getSignupSession(
   try {
     return JSON.parse(rawSession) as SignupSession;
   } catch (err) {
-    logger.error({
+    authLogger.error({
       message:
         "Invalid session JSON in Redis",
       signupSessionID,
@@ -132,7 +132,7 @@ export async function getSignupSession(
 export async function deleteSignupSession(
   signupSessionID: string,
 ): Promise<void> {
-  logger.debug(
+  authLogger.debug(
     "Deleting signup session from Redis...",
   );
 
@@ -144,7 +144,7 @@ export async function deleteSignupSession(
       key,
     );
   } catch (err) {
-    logger.error({
+    authLogger.error({
       message:
         "Failed to delete signup session from Redis",
       signupSessionID,

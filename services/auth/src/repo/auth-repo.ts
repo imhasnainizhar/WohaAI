@@ -1,8 +1,14 @@
-import { ClientData, UserSession } from "@packages/contracts/auth";
-import { InternalServerError } from "@packages/errors";
-import { logger } from "@packages/observability";
+import { ClientData, Password, UserSession } from "@packages/contracts/auth";
+import { InternalServerError, NormalizedError, PrismaError } from "@packages/errors";
+import { authLogger } from "@packages/observability";
 import { PrismaClient } from "@packages/prisma";
 import argon2 from "argon2";
+
+/**
+ * Taking SessionDuration from @packages/prisma UserSession Model export
+ */
+import { SessionDuration } from "@packages/prisma";
+
 
 export class AuthRepo {
     constructor(
@@ -25,12 +31,46 @@ export class AuthRepo {
         })
     }
 
+    async getUserWithUserID(userID: string) {
+        return await this.prisma.user.findUnique({
+            where: {
+                userID
+            }
+        })
+    }
+
+    async changeUserPassword({
+        userID, 
+        hashedPassword
+    }: {
+        userID: string;
+        hashedPassword: string;
+    }) {
+        try {
+            const updatedUser = await this.prisma.user.update({
+                where: { userID },
+                data: {
+                    hashedPassword,
+                },
+                select: {
+                    userID: true,
+                    username: true,
+                },
+            });
+        
+            return updatedUser;                
+        } catch (error: unknown) {
+            throw new PrismaError(error)
+        }
+    }
+
     async getUserWithUsernameOrEmail(
         usernameOrEmail: {
             type: "username", value: string
         } | {
             type: "email", value: string
         }) {
+            try{
         return await this.prisma.user.findFirst({
             where: {
                 OR: [
@@ -41,13 +81,17 @@ export class AuthRepo {
             select: {
                 userID: true,
                 profilePicURI: true,
-                userFirstName: true,
-                userLastName: true,
+                firstName: true,
+                lastName: true,
                 email: true,
                 username: true,
                 hashedPassword: true,
             },
-        });
+        })
+    } catch (err: any) {
+        console.error(err);
+        throw new PrismaError(err)
+    };
     }
 
     async findUserWithUsername(username: string): Promise<boolean> {
@@ -104,14 +148,13 @@ export class AuthRepo {
         userID,
         clientData,
         refreshToken,
+        sessionDuration,
         userSessionID,
     }: {
         userID: string;
-
         clientData: ClientData;
-
         refreshToken: string;
-
+        sessionDuration: SessionDuration,
         userSessionID?: string;
     }): Promise<UserSession> {
         try {
@@ -123,7 +166,7 @@ export class AuthRepo {
             if (
                 !clientData.userIPAddress
             ) {
-                logger.warn(
+                authLogger.warn(
                     "⚠️ [SESSION] Missing client IP — defaulting to 'unknown'"
                 );
             }
@@ -135,29 +178,22 @@ export class AuthRepo {
                             userSessionID:
                                 userSessionID ??
                                 "Unknown",
-
                             refreshTokenHash,
-
                             userID,
-
                             revoked: false,
-
+                            sessionDuration,
                             userIPAddress:
                                 clientData.userIPAddress ??
                                 "Unknown",
-
                             userDeviceName:
                                 clientData.userDeviceName ??
                                 "Unknown Device",
-
                             userDeviceType:
                                 clientData.userDeviceType ??
                                 "Unknown",
-
                             userDeviceBrowser:
                                 clientData.userDeviceBrowser ??
                                 "Unknown",
-
                             userDeviceOS:
                                 clientData.userDeviceOS ??
                                 "Unknown",
@@ -168,8 +204,8 @@ export class AuthRepo {
                                 select: {
                                     userID: true,
                                     email: true,
-                                    userFirstName: true,
-                                    userLastName: true,
+                                    firstName: true,
+                                    lastName: true,
                                 },
                             },
                         },
@@ -177,7 +213,7 @@ export class AuthRepo {
                 );
             return session;
         } catch (err: any) {
-            logger.error({
+            authLogger.error({
                 message:
                     "❌ [SESSION] Failed to create user session",
 
@@ -185,7 +221,7 @@ export class AuthRepo {
                     err?.message || err,
             });
 
-            throw new InternalServerError(
+            throw new NormalizedError(
                 err
             );
         }
@@ -253,7 +289,7 @@ export class AuthRepo {
                 },
             });
         } catch (err) {
-            logger.error({
+            authLogger.error({
                 message:
                     "[SIGNOUT] Prisma error updating session",
                 userSessionID,
@@ -278,3 +314,5 @@ export type FindWithUsernameOrEmail = Awaited<ReturnType<AuthRepo["findUserWithU
 export type CreateUserSessionResult = Awaited<ReturnType<AuthRepo["createUserSession"]>>;
 export type FindActiveSessionResult = Awaited<ReturnType<AuthRepo["findActiveSession"]>>
 export type RevokeSessionResult = Awaited<ReturnType<AuthRepo["revokeSession"]>>
+
+export type ChangeUserPasswordResult = Awaited<ReturnType<AuthRepo["changeUserPassword"]>>

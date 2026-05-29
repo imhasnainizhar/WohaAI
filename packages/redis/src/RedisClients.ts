@@ -72,4 +72,5 @@ class RedisClient {
     }
 }
 
-export const redisClient = RedisClient.getInstance(envConfigs.AUTH_SESSION_STORE_URI)
+const redisURI = `redis://:${envConfigs.AUTH_SESSION_STORE_PASSWORD}@${envConfigs.AUTH_SESSION_REDIS_HOST}:6379`
+export const redisClient = RedisClient.getInstance(redisURI)

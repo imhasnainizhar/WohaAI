@@ -2,20 +2,38 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { envConfigs as env, EXPIRATION } from "@packages/config";
 import { AuthRepo } from '@/repo/auth-repo';
-import { InternalServerError,InvalidCredentialsError } from "@packages/errors";
-import { ClientData, SigninResponse } from "@packages/contracts/auth";
-import { UserSessionID } from "@packages/contracts/auth";
-import { logger } from "@packages/observability";
+import { InternalServerError, InvalidCredentialsError } from "@packages/errors";
+import { ClientData } from "@packages/contracts/auth";
+import { authLogger } from "@packages/observability";
+import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
+import { exp } from "@/config/exp";
+
+/**
+ * Taking SessionDuration from @packages/prisma UserSession Model export
+ */
+import { SessionDuration } from "@packages/prisma";
 
 
-export interface SigninParams {
+export interface SigninServiceParams {
   usernameOrEmail: {
-      type: "username"; value: string;
+    type: "username"; value: string;
   } | {
-      type: "email"; value: string;
+    type: "email"; value: string;
   };
   password: string;
+  rememberMe: boolean;
   clientData: ClientData;
+}
+
+export interface SigninServiceResponse {
+  profilePicURI: string;
+  userID: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  refreshToken: string;
+  accessToken: string;
 }
 
 export class SigninService {
@@ -28,12 +46,13 @@ export class SigninService {
   public async execute({
     usernameOrEmail,
     password,
-    clientData,
-  }: SigninParams): Promise<SigninResponse> {
-    const user = 
+    rememberMe,
+    clientData
+  }: SigninServiceParams): Promise<SigninServiceResponse> {
+    const user =
       await this.repo.getUserWithUsernameOrEmail(usernameOrEmail);
 
-    if(user === null) throw new InvalidCredentialsError()
+    if (user === null) throw new InvalidCredentialsError()
 
     const isPasswordCorrect = await argon2.verify(
       user.hashedPassword,
@@ -47,21 +66,23 @@ export class SigninService {
       JWT_REFRESH_SECRET_KEY,
     } = this.getJWTSecrets();
 
-    const userSessionID: UserSessionID = crypto.randomUUID();
+    const userSessionID = crypto.randomUUID();
+    const refreshTokenJti = crypto.randomUUID();
 
-    /**
-     * Initial refresh token
-     */
-    const refreshToken = jwt.sign(
-      {
+    // Maybe we in future make a feature to save and use jti for further security.
+    const refreshToken = createJwtToken<RefreshTokenPayload>({
+      payload: {
+        jti: refreshTokenJti,
         sub: user.userID,
-        userSessionID,
+        sid: userSessionID,
       },
-      JWT_REFRESH_SECRET_KEY,
-      {
-        expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN,
+      secret: JWT_REFRESH_SECRET_KEY,
+      options: {
+        expiresIn: rememberMe? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
       } as SignOptions
-    );
+    });
+
+    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
 
     /**
      * Persist session
@@ -70,37 +91,40 @@ export class SigninService {
       userID: user.userID,
       clientData,
       refreshToken,
+      sessionDuration,
       userSessionID,
     });
 
-    logger.debug({
+    authLogger.debug({
       message: "✅ [SESSION] Created new user session",
       userID: session.userID,
       ip: clientData.userIPAddress,
       device: clientData.userDeviceName,
-  });
+    });
 
+    const accessTokenJti = crypto.randomUUID();
     /**
      * Access token
      */
-    const accessToken = jwt.sign(
-      {
+    const accessToken = createJwtToken<AccessTokenPayload>({
+      payload: {
+        jti: accessTokenJti,
         sub: user.userID,
-        email: user.email,
-        name: `${user.userFirstName} ${user.userLastName}`,
-        userSessionID: session.userSessionID,
+        sid: session.userSessionID,
+        role: "user"
       },
-      JWT_ACCESS_SECRET_KEY,
-      {
-        expiresIn: EXPIRATION.JWT_ACCESS_SESSION_TOKEN,
+      secret: JWT_ACCESS_SECRET_KEY,
+      options: {
+        expiresIn: exp.JWT_ACCESS_TOKEN,
       } as SignOptions
-    );
+    });
 
     return {
       profilePicURI: user.profilePicURI || "",
       userID: user.userID,
-      firstName: user.userFirstName,
-      lastName: user.userLastName,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       refreshToken,
       accessToken

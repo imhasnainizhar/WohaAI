@@ -1,4 +1,4 @@
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 
 import { AuthRepo } from "@/repo/auth-repo";
 
@@ -12,11 +12,14 @@ import {
     setSignupSession,
     SignupSession,
 } from "@/redis/redis";
-import { prisma } from "@packages/prisma";
 
-interface ContinueWithEmailParams {
+export interface ContinueWithEmailServiceParams {
     signupSessionID: string;
     email: string;
+}
+
+export interface ContinueWithEmailServiceResponse {
+    emailValidated: boolean;
 }
 
 /**
@@ -29,8 +32,8 @@ export class ContinueWithEmailService {
     public async execute({
         signupSessionID,
         email,
-    }: ContinueWithEmailParams) {
-        logger.debug("Continuing signup with email...");
+    }: ContinueWithEmailServiceParams): Promise<ContinueWithEmailServiceResponse> {
+        authLogger.debug("Continuing signup with email...");
 
         // Fetch pending signup session
         const signupSession: SignupSession =
@@ -70,12 +73,12 @@ export class ContinueWithEmailService {
             }
         )
 
-        logger.info(
+        authLogger.info(
             "Email validated and cached successfully."
         );
 
         return {
-            success: true,
+            emailValidated: true,
         };
     }
 }

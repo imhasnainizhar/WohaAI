@@ -126,6 +126,13 @@ export type DateTimeNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
+export type EnumSessionDurationFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionDuration | Prisma.EnumSessionDurationFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionDurationFilter<$PrismaModel> | $Enums.SessionDuration
+}
+
 export type BoolWithAggregatesFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
   not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -146,6 +153,16 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type EnumSessionDurationWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionDuration | Prisma.EnumSessionDurationFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionDurationWithAggregatesFilter<$PrismaModel> | $Enums.SessionDuration
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSessionDurationFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSessionDurationFilter<$PrismaModel>
 }
 
 export type NestedStringFilter<$PrismaModel = never> = {
@@ -273,6 +290,13 @@ export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
+export type NestedEnumSessionDurationFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionDuration | Prisma.EnumSessionDurationFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionDurationFilter<$PrismaModel> | $Enums.SessionDuration
+}
+
 export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
   not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -293,6 +317,16 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumSessionDurationWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionDuration | Prisma.EnumSessionDurationFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionDuration[] | Prisma.ListEnumSessionDurationFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionDurationWithAggregatesFilter<$PrismaModel> | $Enums.SessionDuration
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSessionDurationFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSessionDurationFilter<$PrismaModel>
 }
 
 

@@ -1,60 +1,82 @@
-import { SignupSessionPayload } from '@packages/shared/common';
+import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
 import { Request, Response } from "express";
-import { asyncHandler } from "@middlewares/async_handler";
-import { sendResponse } from "@packages/shared/utils";
-import { completeSignupService } from "@services/signup/complete";
-import { CompleteSignupSchema } from "../../../../../packages/api/src/auth";
-import { CompleteSignupDTO } from "../../../../../packages/api/src/auth";
-import { throwValidationError } from "@packages/shared/errors";
-import { env } from "@config/env";
-import jwt from "jsonwebtoken";
-import { throwSessionExpired } from '@packages/shared/errors';
+import { asyncHandler } from "@/middlewares/async-handler";
+import { buildCookie, Cookie, sendResponse } from "@packages/http";
+import { env } from "@/config/env";
+import authService from "@/services/auth-service";
+import { SessionExpiredError, ValidationError } from "@packages/errors";
+import { ClientData, SignupCompleteRequestSchema } from "@packages/contracts/auth";
+import { exp } from "@/config/exp";
+import { getClientData } from "@/ua/client-data";
 
 /**
  * Handler for user signup complete.
- * Validates input, verifies session token & calls for complete signup service.
- * This validates user more info & caches it so User Creation API creates user successfully.
  */
 export const completeSignupHandler = asyncHandler(
-    async (req: Request, res: Response) => {
-        // Getting signupSessionID through JWT Verification
-        const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
-        const payload = jwt.verify(token, env.JWT_SIGNUP_SESSION_SECRET_KEY) as SignupSessionPayload;
+  async (req: Request, res: Response) => {
 
-        // If payload is not valid, throw session expired error
-        if (!payload) throwSessionExpired();
+    const token = req.cookies?.[env.SIGNUP_SESSION_TOKEN_NAME];
 
-        // Getting signupSessionID from payload
-        const signupSessionID = payload.signupSessionID;
+    if (!token) throw new SessionExpiredError()
 
-        // Validate input using Zod schema
-        const parsed = CompleteSignupSchema.safeParse(req.body);
+    const payload: SignupSessionPayload = verifyJwtToken({
+      token,
+      secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
+    });
 
-        if (!parsed.success) {
-            throw throwValidationError(parsed.error, "displayName");
-        }
+    if (!payload) throw new SessionExpiredError()
 
-        // At this point TS knows parsed is successful
-        const data = parsed.data; // type is now CompleteSignupType
-        const { firstName, lastName, password, dateOfBirth } = data;
+    const parsed =
+      SignupCompleteRequestSchema.safeParse(req.body.rememberMe)
 
-        // Construct DTO
-        const dto: CompleteSignupDTO = {
-            signupSessionID,
-            firstName,
-            lastName,
-            password,
-            dateOfBirth,
-        };
+    if (!parsed.success) throw new ValidationError("Invalid remember me option", parsed.error)
+    const { rememberMe } = parsed.data
 
-        // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await completeSignupService(dto);
+    const signupSessionID = payload.signupSessionID;
 
-        // Controller only forwards response
-        return sendResponse({
-            res,
-            ...result,
-            path: req.originalUrl,
-        });
-    }
+    // Get client data for creating device signin record in DB
+    const clientData: ClientData = getClientData(req);
+
+    const result = await authService.completeSignup({
+      signupSessionID,
+      rememberMe,
+      clientData
+    });
+
+    // Build authentication cookies
+    const refreshTokenCookie: Cookie = buildCookie({
+      name: env.REFRESH_TOKEN_NAME,
+      value: result.refreshToken,
+      options: {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: parsed.data.rememberMe ? exp.REFRESH_TOKEN_COOKIE : undefined
+      }
+    });
+
+    const accessTokenCookie: Cookie = buildCookie({
+      name: env.ACCESS_TOKEN_NAME,
+      value: result.accessToken,
+      options: {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: parsed.data.rememberMe ? exp.ACCESS_TOKEN_COOKIE : undefined
+      }
+    });
+
+    // send response
+    return sendResponse({
+      res,
+      success: true,
+      statusCode: 200,
+      message: "Signup completed successfully",
+      data: result,
+      path: req.originalUrl,
+      cookies: [refreshTokenCookie, accessTokenCookie],
+    });
+  }
 );

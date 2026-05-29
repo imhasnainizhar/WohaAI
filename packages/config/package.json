@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "WoahAI"
+    "url": "WohaAI"
   },
   "license": "MIT",
   "author": "Hasnain Izhar",
@@ -47,7 +47,10 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "esbuild": "^0.28.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^6.0.3"
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

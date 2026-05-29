@@ -2,6 +2,7 @@ packages:
   - "./agent"
   - "./apps/*"
   - "./mcp/*"
+  - "./mcp/servers/*"
   - "./services/*"
   - "./tooling/*"
   - "./packages/*"

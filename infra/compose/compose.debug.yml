@@ -8,17 +8,7 @@ services:
       - auth-kafka-broker
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${AUTH_MAILER_KAFKA_BROKER_HOST}:${AUTH_MAILER_KAFKA_BROKER_PORT}
-    profiles:
-      - "debug"
-
-  zookeeper:
-    image: bitnami/zookeeper:3.9
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT}
     profiles:
       - "debug"
 
@@ -35,9 +25,9 @@ services:
     ports:
       - "5050:80"
     networks:
-    - woahai_dev_net
+    - WohaAI_dev_net
     profiles:
       - "debug"
 
 networks:
-  woahai_dev_net:
+  WohaAI_dev_net:

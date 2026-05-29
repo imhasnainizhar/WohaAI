@@ -1,14 +1,15 @@
-import { ClientData } from '@packages/contracts/auth';
+import { ClientData, RefreshSessionResponse } from '@packages/contracts/auth';
 import { asyncHandler } from "@/middlewares/async-handler";
 import { getClientData } from "@/ua/client-data";
-import { buildCookie, Cookie, sendResponse } from "@packages/http";
-import { CookieOptions, Request, Response } from "express";
+import { buildCookie, sendResponse } from "@packages/http";
+import { Request, Response } from "express";
 import { env } from '@/config/env';
 import { exp } from '@/config/exp';
 import jwt from 'jsonwebtoken';
 import { RefreshTokenPayload } from '@packages/jwt';
-import { SessionExpiredError, ValidationError } from '@packages/errors';
+import { ValidationError } from '@packages/errors';
 import authService from '@/services/auth-service';
+import { NormalizedError } from '@packages/errors';
 
 
 /**
@@ -16,13 +17,20 @@ import authService from '@/services/auth-service';
  * Verifies session token & calls for refresh token service.
  * For rotating refresh token hash and allocating new access token.
  */
-export const refreshTokenHandler = asyncHandler(
+export const refreshSessionHandler = asyncHandler(
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies[env.REFRESH_TOKEN_NAME];
-        const payload = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET_KEY) as RefreshTokenPayload;
 
-        // If payload is not valid, throw session expired error
-        if (!payload) throw new SessionExpiredError();
+        let payload: RefreshTokenPayload;
+
+        try {
+          payload = jwt.verify(
+            refreshToken,
+            env.JWT_REFRESH_SECRET_KEY
+          ) as RefreshTokenPayload;
+        } catch (err: unknown) {
+          throw new NormalizedError(err);
+        }
 
         // Getting client data
         const clientData = getClientData(req);
@@ -50,7 +58,7 @@ export const refreshTokenHandler = asyncHandler(
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: exp.REFRESH_SESSION_COOKIE
+                maxAge: exp.REFRESH_TOKEN_COOKIE
             }        
         })
 
@@ -62,16 +70,19 @@ export const refreshTokenHandler = asyncHandler(
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: exp.ACCESS_SESSION_COOKIE
+                maxAge: exp.ACCESS_TOKEN_COOKIE
             }        
         })
 
         // Handler only returns response
         // Cookies are under the hood set as Express Cookies with name having token as value in this refresh token context. Cookie options are used to configure security and exp options.
-        return sendResponse({
+        return sendResponse<RefreshSessionResponse>({
             res,
             success: true,
             statusCode: 200,
+            data: {
+                sessionRefreshed: true
+            },
             message: "user session refreshed",
             path: req.originalUrl,
             cookies: [refreshTokenCookie, accessTokenCookie]

@@ -1,14 +1,13 @@
-import { RefreshSessionResponse } from "@packages/contracts/auth";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
-import { prisma } from "@packages/prisma";
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 import {
   ActiveSessionRecord,
 } from "@/types/session";
 import { InternalServerError, SessionExpiredError } from "@packages/errors";
 import {
   AccessTokenPayload,
+  createJwtToken,
   RefreshTokenPayload,
 } from "@packages/jwt";
 import { AuthRepo } from "@/repo/auth-repo";
@@ -17,9 +16,14 @@ import { exp } from "@/config/exp";
 import { env } from "@/config/env";
 
 
-export interface RefreshSessionParams {
+export interface RefreshSessionServiceParams {
   refreshToken: string;
   userIPAddress: string;
+}
+
+export interface RefreshSessionServiceResponse {
+  newRefreshToken: string;
+  newAccessToken: string;
 }
 
 interface TokenJti {
@@ -32,15 +36,11 @@ export class RefreshSessionService {
   public async execute({
     refreshToken,
     userIPAddress,
-  }: RefreshSessionParams): Promise<RefreshSessionResponse> {
+  }: RefreshSessionServiceParams): Promise<RefreshSessionServiceResponse> {
     const {
       JWT_REFRESH_SECRET_KEY,
       JWT_ACCESS_SECRET_KEY,
     } = env;
-
-    if (!JWT_REFRESH_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
-      throw new InternalServerError({ message: "refresh and access jwt keys not configured" });
-    }
 
     const payload = this.verifyToken(
       refreshToken,
@@ -57,7 +57,7 @@ export class RefreshSessionService {
 
     const user = session.user;
 
-    const tokenJti = {
+    const tokenJti: TokenJti = {
       refreshTokenJti: randomUUID(),
       accessTokenJti: randomUUID()
     }
@@ -65,41 +65,33 @@ export class RefreshSessionService {
     const refreshTokenPayload: RefreshTokenPayload = {
       sub: user.userID,
       jti: tokenJti.refreshTokenJti,
-      userID: user.userID,
-      userSessionID: session.userSessionID,
-      emailVerified: true,
-      email: user.email,
-      username: user.username,
+      sid: session.userSessionID
     };
 
-    const newRefreshToken = jwt.sign(
-      refreshTokenPayload,
-      JWT_REFRESH_SECRET_KEY,
-      {
+    const newRefreshToken = createJwtToken<RefreshTokenPayload>({
+      payload: refreshTokenPayload,
+      secret: JWT_REFRESH_SECRET_KEY,
+      options: {
         expiresIn:
-          exp.JWT_REFRESH_SESSION_TOKEN,
+          exp.JWT_REFRESH_TOKEN,
       } as SignOptions
-    );
+    });
 
     const accessPayload: AccessTokenPayload = {
       sub: user.userID,
       jti: tokenJti.accessTokenJti,
-      userID: user.userID,
-      userSessionID: session.userSessionID,
-      emailVerified: true,
-      email: user.email,
-      username: user.username,
+      sid: session.userSessionID,
       role: "user",
     };
 
-    const newAccessToken = jwt.sign(
-      accessPayload,
-      JWT_ACCESS_SECRET_KEY,
-      {
+    const newAccessToken = createJwtToken<AccessTokenPayload>({
+      payload: accessPayload,
+      secret: JWT_ACCESS_SECRET_KEY,
+      options: {
         expiresIn:
-          exp.JWT_ACCESS_SESSION_TOKEN,
+          exp.JWT_ACCESS_TOKEN,
       } as SignOptions
-    );
+    });
 
     await this.rotateSession(
       payload.userSessionID,
@@ -107,7 +99,7 @@ export class RefreshSessionService {
       userIPAddress
     );
 
-    logger.debug(
+    authLogger.debug(
       `Tokens rotated successfully for userID: ${user.userID}`
     );
 
@@ -161,7 +153,7 @@ export class RefreshSessionService {
 
       return session;
     } catch (e: any) {
-      logger.error(
+      authLogger.error(
         "DB query failed during refresh",
         e
       );
@@ -181,7 +173,7 @@ export class RefreshSessionService {
         throw new SessionExpiredError();
       }
     } catch (e: any) {
-      logger.error(
+      authLogger.error(
         "Argon2 verification failed",
         e
       );
@@ -206,6 +198,5 @@ export class RefreshSessionService {
     } catch (err: unknown) {
       throw new InternalServerError(err)
     }
-
   }
 }

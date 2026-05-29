@@ -17,15 +17,16 @@
   ],
   "repository": {
     "type": "git",
-    "url": "WoahAI"
+    "url": "WohaAI"
   },
   "license": "MIT",
   "author": "Hasnain Izhar",
   "scripts": {
     "package:dev": "tsc -b -w",
     "package:build": "tsc -b",
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev"
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy"
   },
   "exports": {
     ".": {
@@ -43,8 +44,11 @@
   },
   "devDependencies": {
     "@types/pg": "^8.20.0",
+    "esbuild": "^0.28.0",
     "prisma": "7.8.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^6.0.3"
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

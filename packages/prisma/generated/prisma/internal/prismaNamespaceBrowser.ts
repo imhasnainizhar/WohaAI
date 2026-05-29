@@ -107,6 +107,7 @@ export const UserSessionScalarFieldEnum = {
   userDeviceType: 'userDeviceType',
   userDeviceBrowser: 'userDeviceBrowser',
   userDeviceOS: 'userDeviceOS',
+  sessionDuration: 'sessionDuration',
   userID: 'userID'
 } as const
 

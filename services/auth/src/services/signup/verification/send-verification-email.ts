@@ -1,13 +1,11 @@
 import { randomInt } from "crypto";
 import { AuthRepo } from "@/repo/auth-repo";
-import { logger } from "@packages/observability";
-import { redisHelpers } from "@packages/redis";
+import { authLogger } from "@packages/observability";
 import { getProducer } from "@/producer";
 import { env } from "@/config/env";
-import { exp } from "@/config/exp";
 import { SessionExpiredError } from "@packages/errors";
 import { VerifySignupEmailEvent } from "@packages/contracts/auth";
-import { getSignupSession, setSignupSession, setVerificationCodeCache } from "@/redis/redis";
+import { getSignupSession, setVerificationCodeCache } from "@/redis/redis";
 
 
 /**
@@ -16,19 +14,18 @@ import { getSignupSession, setSignupSession, setVerificationCodeCache } from "@/
  * send the actual verification email.
  */
 const EMAIL_TOPIC =
-  env.AUTH_MAILER_KAFKA_SIGNUP_EVENTS_TOPIC;
+  env.AUTH_KAFKA_SIGNUP_EVENTS_TOPIC;
 
+export interface SendVerificationServiceResponse {
+  verificationEmailSent: boolean
+}
 
-export interface SendVerificationParams {
+export interface SendVerificationServiceParams {
   signupSessionID: string
 }
 
-export interface SendVerificationResponse {
-  success: boolean
-}
-
 /**
-* @service SendVerificationEmailService
+* @AuthService SendVerificationEmailService
 *
 * Responsibilities:
 *  - Validate signup session exists
@@ -36,22 +33,20 @@ export interface SendVerificationResponse {
 *  - Generate 6-digit verification code
 *  - Cache code with TTL and strong key namespace
 *  - Publish Kafka event so mailer service sends email
-*  - Return response to controller that wraps it for http response.
+*  - Return ServiceResponse to controller that wraps it for http ServiceResponse.
 */
 export class SendVerificationEmailService {
-  constructor(private readonly authRepo: AuthRepo) { }
 
   /**
    * Send verification email (signup OTP flow)
    */
   async execute({
     signupSessionID
-  }: SendVerificationParams): Promise<SendVerificationResponse> {
+  }: SendVerificationServiceParams): Promise<SendVerificationServiceResponse> {
     let pendingEmail: string | undefined;
 
     // fetch signup session
-    const cacheKey = `${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY
-      }:${signupSessionID}`;
+    const cacheKey = `${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`;
 
     const session =
       await getSignupSession(cacheKey);
@@ -64,7 +59,7 @@ export class SendVerificationEmailService {
       999999
     ).toString();
 
-    logger.debug(
+    authLogger.debug(
       `[VERIFICATION] Code generated for ${pendingEmail}`
     );
 
@@ -101,8 +96,8 @@ export class SendVerificationEmailService {
       ],
     });
 
-    logger.info(`[VERIFICATION] Event sent for ${pendingEmail}`);
+    authLogger.info(`[VERIFICATION] Event sent for ${pendingEmail}`);
 
-    return { success: true }
+    return { verificationEmailSent: true }
   }
 }

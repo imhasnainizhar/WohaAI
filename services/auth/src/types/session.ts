@@ -19,9 +19,10 @@ export const ActiveSessionSelect: Prisma.UserSessionSelect = {
   user: {
     select: {
       userID: true,
+      username: true,
       email: true,
-      userFirstName: true,
-      userLastName: true,
+      firstName: true,
+      lastName: true,
     },
   },
 };

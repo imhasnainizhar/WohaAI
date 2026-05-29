@@ -32,12 +32,7 @@ export const UsernameSchema = z
  * Email field definition for zod schema
  */
 export const EmailSchema = z
-  .string()
-  .min(1, "Required")
-  .email("Invalid Email")
-  .refine((val) => !/[<>`'"\\]/.test(val), {
-    message: "Invalid Characters",
-  });
+  .email({ message: "Invalid Email" });
 
 /**
  * Date of birth field definition for zod schema
@@ -68,8 +63,4 @@ export const PasswordSchema = z
 /**
  * Confirm password field definition for zod schema
  */
-export const ConfirmPasswordSchema = z
-  .string()
-  .min(6, "Minimum 6 Characters Long")
-  .max(25, "Maximum 25 Characters Long")
-  .regex(/^[a-zA-Z0-9 _-]+$/, "Invalid Symbols");
+export const ConfirmPasswordSchema = PasswordSchema

@@ -8,9 +8,9 @@ import { EXPIRATION, env } from "@config/env";
 jest.mock("@utils/redis");
 jest.mock("@utils/jwt");
 
-// Mock logger to suppress console output during tests
-jest.mock("@utils/logger", () => ({
-  logger: {
+// Mock authLogger to suppress console output during tests
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

@@ -36,6 +36,7 @@ export type UserSessionMinAggregateOutputType = {
   userDeviceType: string | null
   userDeviceBrowser: string | null
   userDeviceOS: string | null
+  sessionDuration: $Enums.SessionDuration | null
   userID: string | null
 }
 
@@ -51,6 +52,7 @@ export type UserSessionMaxAggregateOutputType = {
   userDeviceType: string | null
   userDeviceBrowser: string | null
   userDeviceOS: string | null
+  sessionDuration: $Enums.SessionDuration | null
   userID: string | null
 }
 
@@ -66,6 +68,7 @@ export type UserSessionCountAggregateOutputType = {
   userDeviceType: number
   userDeviceBrowser: number
   userDeviceOS: number
+  sessionDuration: number
   userID: number
   _all: number
 }
@@ -83,6 +86,7 @@ export type UserSessionMinAggregateInputType = {
   userDeviceType?: true
   userDeviceBrowser?: true
   userDeviceOS?: true
+  sessionDuration?: true
   userID?: true
 }
 
@@ -98,6 +102,7 @@ export type UserSessionMaxAggregateInputType = {
   userDeviceType?: true
   userDeviceBrowser?: true
   userDeviceOS?: true
+  sessionDuration?: true
   userID?: true
 }
 
@@ -113,6 +118,7 @@ export type UserSessionCountAggregateInputType = {
   userDeviceType?: true
   userDeviceBrowser?: true
   userDeviceOS?: true
+  sessionDuration?: true
   userID?: true
   _all?: true
 }
@@ -201,6 +207,7 @@ export type UserSessionGroupByOutputType = {
   userDeviceType: string
   userDeviceBrowser: string
   userDeviceOS: string
+  sessionDuration: $Enums.SessionDuration
   userID: string
   _count: UserSessionCountAggregateOutputType | null
   _min: UserSessionMinAggregateOutputType | null
@@ -237,6 +244,7 @@ export type UserSessionWhereInput = {
   userDeviceType?: Prisma.StringFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringFilter<"UserSession"> | string
   userDeviceOS?: Prisma.StringFilter<"UserSession"> | string
+  sessionDuration?: Prisma.EnumSessionDurationFilter<"UserSession"> | $Enums.SessionDuration
   userID?: Prisma.StringFilter<"UserSession"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -253,6 +261,7 @@ export type UserSessionOrderByWithRelationInput = {
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
   userDeviceOS?: Prisma.SortOrder
+  sessionDuration?: Prisma.SortOrder
   userID?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -272,6 +281,7 @@ export type UserSessionWhereUniqueInput = Prisma.AtLeast<{
   userDeviceType?: Prisma.StringFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringFilter<"UserSession"> | string
   userDeviceOS?: Prisma.StringFilter<"UserSession"> | string
+  sessionDuration?: Prisma.EnumSessionDurationFilter<"UserSession"> | $Enums.SessionDuration
   userID?: Prisma.StringFilter<"UserSession"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "userSessionID">
@@ -288,6 +298,7 @@ export type UserSessionOrderByWithAggregationInput = {
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
   userDeviceOS?: Prisma.SortOrder
+  sessionDuration?: Prisma.SortOrder
   userID?: Prisma.SortOrder
   _count?: Prisma.UserSessionCountOrderByAggregateInput
   _max?: Prisma.UserSessionMaxOrderByAggregateInput
@@ -309,6 +320,7 @@ export type UserSessionScalarWhereWithAggregatesInput = {
   userDeviceType?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
   userDeviceOS?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
+  sessionDuration?: Prisma.EnumSessionDurationWithAggregatesFilter<"UserSession"> | $Enums.SessionDuration
   userID?: Prisma.StringWithAggregatesFilter<"UserSession"> | string
 }
 
@@ -324,6 +336,7 @@ export type UserSessionCreateInput = {
   userDeviceType: string
   userDeviceBrowser: string
   userDeviceOS: string
+  sessionDuration: $Enums.SessionDuration
   user: Prisma.UserCreateNestedOneWithoutUserSessionInput
 }
 
@@ -339,6 +352,7 @@ export type UserSessionUncheckedCreateInput = {
   userDeviceType: string
   userDeviceBrowser: string
   userDeviceOS: string
+  sessionDuration: $Enums.SessionDuration
   userID: string
 }
 
@@ -354,6 +368,7 @@ export type UserSessionUpdateInput = {
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceOS?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionDuration?: Prisma.EnumSessionDurationFieldUpdateOperationsInput | $Enums.SessionDuration
   user?: Prisma.UserUpdateOneRequiredWithoutUserSessionNestedInput
 }
 
@@ -369,6 +384,7 @@ export type UserSessionUncheckedUpdateInput = {
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceOS?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionDuration?: Prisma.EnumSessionDurationFieldUpdateOperationsInput | $Enums.SessionDuration
   userID?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -384,6 +400,7 @@ export type UserSessionCreateManyInput = {
   userDeviceType: string
   userDeviceBrowser: string
   userDeviceOS: string
+  sessionDuration: $Enums.SessionDuration
   userID: string
 }
 
@@ -399,6 +416,7 @@ export type UserSessionUpdateManyMutationInput = {
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceOS?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionDuration?: Prisma.EnumSessionDurationFieldUpdateOperationsInput | $Enums.SessionDuration
 }
 
 export type UserSessionUncheckedUpdateManyInput = {
@@ -413,6 +431,7 @@ export type UserSessionUncheckedUpdateManyInput = {
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceOS?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionDuration?: Prisma.EnumSessionDurationFieldUpdateOperationsInput | $Enums.SessionDuration
   userID?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -438,6 +457,7 @@ export type UserSessionCountOrderByAggregateInput = {
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
   userDeviceOS?: Prisma.SortOrder
+  sessionDuration?: Prisma.SortOrder
   userID?: Prisma.SortOrder
 }
 
@@ -453,6 +473,7 @@ export type UserSessionMaxOrderByAggregateInput = {
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
   userDeviceOS?: Prisma.SortOrder
+  sessionDuration?: Prisma.SortOrder
   userID?: Prisma.SortOrder
 }
 
@@ -468,6 +489,7 @@ export type UserSessionMinOrderByAggregateInput = {
   userDeviceType?: Prisma.SortOrder
   userDeviceBrowser?: Prisma.SortOrder
   userDeviceOS?: Prisma.SortOrder
+  sessionDuration?: Prisma.SortOrder
   userID?: Prisma.SortOrder
 }
 
@@ -521,6 +543,10 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type EnumSessionDurationFieldUpdateOperationsInput = {
+  set?: $Enums.SessionDuration
+}
+
 export type UserSessionCreateWithoutUserInput = {
   userSessionID?: string
   refreshTokenHash: string
@@ -533,6 +559,7 @@ export type UserSessionCreateWithoutUserInput = {
   userDeviceType: string
   userDeviceBrowser: string
   userDeviceOS: string
+  sessionDuration: $Enums.SessionDuration
 }
 
 export type UserSessionUncheckedCreateWithoutUserInput = {
@@ -547,6 +574,7 @@ export type UserSessionUncheckedCreateWithoutUserInput = {
   userDeviceType: string
   userDeviceBrowser: string
   userDeviceOS: string
+  sessionDuration: $Enums.SessionDuration
 }
 
 export type UserSessionCreateOrConnectWithoutUserInput = {
@@ -590,6 +618,7 @@ export type UserSessionScalarWhereInput = {
   userDeviceType?: Prisma.StringFilter<"UserSession"> | string
   userDeviceBrowser?: Prisma.StringFilter<"UserSession"> | string
   userDeviceOS?: Prisma.StringFilter<"UserSession"> | string
+  sessionDuration?: Prisma.EnumSessionDurationFilter<"UserSession"> | $Enums.SessionDuration
   userID?: Prisma.StringFilter<"UserSession"> | string
 }
 
@@ -605,6 +634,7 @@ export type UserSessionCreateManyUserInput = {
   userDeviceType: string
   userDeviceBrowser: string
   userDeviceOS: string
+  sessionDuration: $Enums.SessionDuration
 }
 
 export type UserSessionUpdateWithoutUserInput = {
@@ -619,6 +649,7 @@ export type UserSessionUpdateWithoutUserInput = {
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceOS?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionDuration?: Prisma.EnumSessionDurationFieldUpdateOperationsInput | $Enums.SessionDuration
 }
 
 export type UserSessionUncheckedUpdateWithoutUserInput = {
@@ -633,6 +664,7 @@ export type UserSessionUncheckedUpdateWithoutUserInput = {
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceOS?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionDuration?: Prisma.EnumSessionDurationFieldUpdateOperationsInput | $Enums.SessionDuration
 }
 
 export type UserSessionUncheckedUpdateManyWithoutUserInput = {
@@ -647,6 +679,7 @@ export type UserSessionUncheckedUpdateManyWithoutUserInput = {
   userDeviceType?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceBrowser?: Prisma.StringFieldUpdateOperationsInput | string
   userDeviceOS?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionDuration?: Prisma.EnumSessionDurationFieldUpdateOperationsInput | $Enums.SessionDuration
 }
 
 
@@ -663,6 +696,7 @@ export type UserSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
   userDeviceOS?: boolean
+  sessionDuration?: boolean
   userID?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userSession"]>
@@ -679,6 +713,7 @@ export type UserSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
   userDeviceOS?: boolean
+  sessionDuration?: boolean
   userID?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userSession"]>
@@ -695,6 +730,7 @@ export type UserSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
   userDeviceOS?: boolean
+  sessionDuration?: boolean
   userID?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userSession"]>
@@ -711,10 +747,11 @@ export type UserSessionSelectScalar = {
   userDeviceType?: boolean
   userDeviceBrowser?: boolean
   userDeviceOS?: boolean
+  sessionDuration?: boolean
   userID?: boolean
 }
 
-export type UserSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userSessionID" | "refreshTokenHash" | "createdAt" | "revoked" | "revokedAt" | "rememberMe" | "userIPAddress" | "userDeviceName" | "userDeviceType" | "userDeviceBrowser" | "userDeviceOS" | "userID", ExtArgs["result"]["userSession"]>
+export type UserSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userSessionID" | "refreshTokenHash" | "createdAt" | "revoked" | "revokedAt" | "rememberMe" | "userIPAddress" | "userDeviceName" | "userDeviceType" | "userDeviceBrowser" | "userDeviceOS" | "sessionDuration" | "userID", ExtArgs["result"]["userSession"]>
 export type UserSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -742,6 +779,7 @@ export type $UserSessionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     userDeviceType: string
     userDeviceBrowser: string
     userDeviceOS: string
+    sessionDuration: $Enums.SessionDuration
     userID: string
   }, ExtArgs["result"]["userSession"]>
   composites: {}
@@ -1178,6 +1216,7 @@ export interface UserSessionFieldRefs {
   readonly userDeviceType: Prisma.FieldRef<"UserSession", 'String'>
   readonly userDeviceBrowser: Prisma.FieldRef<"UserSession", 'String'>
   readonly userDeviceOS: Prisma.FieldRef<"UserSession", 'String'>
+  readonly sessionDuration: Prisma.FieldRef<"UserSession", 'SessionDuration'>
   readonly userID: Prisma.FieldRef<"UserSession", 'String'>
 }
     

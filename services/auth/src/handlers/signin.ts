@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/async-handler";
 import { Cookie, sendResponse } from "@packages/http";
 import authService from "@/services/auth-service";
-import { SigninRequestSchema } from "@packages/contracts/auth";
+import { SigninRequestSchema, SigninResponse } from "@packages/contracts/auth";
 import { getClientData } from "../ua/client-data";
 import { ValidationError } from "@packages/errors";
 import { buildCookie } from "@packages/http";
@@ -27,6 +27,7 @@ export const signinHandler = asyncHandler(
         const {
             profilePicURI,
             userID,
+            username,
             firstName,
             lastName,
             email,
@@ -35,6 +36,7 @@ export const signinHandler = asyncHandler(
         } = await authService.signin({
             usernameOrEmail: parsed.data.usernameOrEmail,
             password: parsed.data.password,
+            rememberMe: parsed.data.rememberMe,
             clientData,
         });
 
@@ -49,7 +51,7 @@ export const signinHandler = asyncHandler(
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: exp.ACCESS_SESSION_COOKIE
+                maxAge: parsed.data.rememberMe ? exp.REFRESH_TOKEN_COOKIE : undefined
             }        
         });
 
@@ -61,12 +63,12 @@ export const signinHandler = asyncHandler(
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: exp.ACCESS_SESSION_COOKIE
+                maxAge: parsed.data.rememberMe ? exp.ACCESS_TOKEN_COOKIE : undefined
             }        
         });
 
         // responding to client
-        return sendResponse({
+        return sendResponse<SigninResponse>({
             res,
             success: true,
             statusCode: 200,
@@ -74,6 +76,7 @@ export const signinHandler = asyncHandler(
             data: {
                 profilePicURI,
                 userID,
+                username,
                 firstName,
                 lastName,
                 email, 

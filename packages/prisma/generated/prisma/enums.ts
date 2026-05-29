@@ -9,7 +9,9 @@
 * 🟢 You can import this file directly.
 */
 
+export const SessionDuration = {
+  temporary: 'temporary',
+  persistent: 'persistent'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type SessionDuration = (typeof SessionDuration)[keyof typeof SessionDuration]

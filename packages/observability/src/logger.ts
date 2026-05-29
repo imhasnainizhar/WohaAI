@@ -1,4 +1,3 @@
-// src/utils/logger.ts
 import pino from "pino";
 
 // Detect environment

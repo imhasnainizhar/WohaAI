@@ -4,7 +4,7 @@ import {
     NextFunction,
 } from "express";
 
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 import { ServiceError } from "@packages/errors";
 import { sendResponse } from "@packages/http";
 
@@ -16,7 +16,7 @@ export const errorHandler = (
 ) => {
     // Known domain/application errors
     if (err instanceof ServiceError) {
-        logger.debug({
+        authLogger.debug({
             message: "[SIGNOUT_ERROR]",
             errorType: err.errorType,
             errorMessage: err.message,
@@ -39,7 +39,7 @@ export const errorHandler = (
     }
 
     // Unexpected/unhandled errors
-    logger.error({
+    authLogger.error({
         message:
             "Unhandled application error",
         path: req.originalUrl,

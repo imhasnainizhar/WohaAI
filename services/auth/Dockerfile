@@ -1,78 +1,78 @@
 # syntax=docker/dockerfile:1.4
-# ---------------------
-# Base
-# ---------------------
-FROM node:22-alpine AS base
 
-# Coming to app root
+# ======================================================
+# BASE IMAGE
+# ======================================================
+FROM node:22-slim AS base
+
 WORKDIR /app
 
-# Copy packages from additional context to /packages at /app
-COPY --from=packages ./ /app/packages
+# COPY MONOREPO ROOT MANIFESTS FIRST (CACHE LAYER)
+COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY tsconfig.json ./
 
-# Install shared package dependencies
-RUN cd /app/packages/shared && npm install
-RUN cd /app/packages/shared && npm run packages:build
+# Copy workspace packages and service
+COPY packages ./packages
+COPY services/auth ./services/auth
 
-# Seeking in auth_service
-WORKDIR /app/services/ms/auth_service
+# INSTALL DEPENDENCIES (WORKSPACE WIDE)
+RUN pnpm install --frozen-lockfile
 
-# Caching packages manifests at start of Image
-COPY package*.json .
-
-# ---------------------
-# Development
-# ---------------------
+# ======================================================
+# DEVELOPMENT STAGE
+# ======================================================
 FROM base AS development
+
 ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 
-# Install service dependencies
-RUN npm install --ignore-scripts
-
-# Copy Prisma schema and TS config
-COPY prisma .
-COPY tsconfig.json .  
+# Put packages on dev mode
+RUN pnpm packages:dev
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN pnpm run prisma:generate
+RUN pnpm run prisma:migrate:dev
 
-# Copy all service source code
-COPY . .
+WORKDIR /app/services/auth
 
-# Start dev server
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "run", "dev"]
 
-# ---------------------
-# Build
-# ---------------------
+# ======================================================
+# BUILD STAGE
+# ======================================================
 FROM base AS build
-COPY --from=packages / /packages
 
-# Install shared package dependencies
-RUN cd /packages/shared && npm install
+WORKDIR /app
 
-# Copy service code for build
-COPY . .
+# Build shared packages first
+RUN pnpm run packages:build
 
-# Install service dependencies and build
-RUN npm install
-RUN npm run build
+WORKDIR /app/services/auth
 
-# ---------------------
-# Production
-# ---------------------
-FROM node:22-alpine AS production
+# Build only auth service
+RUN pnpm run build
 
-COPY --from=build /packages /packages
-RUN cd /packages/shared && npm install --omit=dev
+# Keep production deps tree only
+RUN pnpm prune --prod
 
-WORKDIR /app/services/ms/auth_service
-COPY --from=build /app/services/ms/auth_service/dist ./dist
-COPY package*.json .
-RUN npm install --omit=dev
+# ======================================================
+# PRODUCTION STAGE
+# ======================================================
+FROM build AS production
 
-# Security: run app as non-root user
-RUN useradd -m appuser
+WORKDIR /app
+
+# Copy only production dependencies + built output
+COPY --from=build /app/package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/services/auth/dist ./services/auth/dist
+
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Switch user
 USER appuser
 
-CMD ["npm", "start"]
+WORKDIR /app/services/auth
+
+CMD ["pnpm", "run", "start"]

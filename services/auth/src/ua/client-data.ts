@@ -1,4 +1,4 @@
-import UAParser from "ua-parser-js";
+import { UAParser } from "ua-parser-js";
 import { ClientData } from "@packages/contracts/auth";
 import { Request } from "express";
 

@@ -1,4 +1,4 @@
-import { authRegex } from "@/utils/auth-regex";
+import { authRegex } from "../../utils/auth-regex";
 import z from "zod";
 import { PasswordSchema } from "./user";
 
@@ -22,5 +22,8 @@ export const SigninRequestSchema = z.object({
             return z.NEVER;
         }),
 
+    rememberMe: z
+        .boolean(),
+    
     password: PasswordSchema,
 });

@@ -1,5 +1,4 @@
-import argon2 from "argon2";
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 import {
   getSignupSession,
   deleteSignupSession,
@@ -11,109 +10,171 @@ import {
 } from "@/redis/redis";
 import { UserProvisioningClient } from "@/clients/user-provision";
 import { EmailVerificationRequiredError, MaliciousActivityError, SessionExpiredError } from "@packages/errors";
+import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
+import { randomUUID } from "crypto";
+import { env } from "@/config/env";
+import { exp } from "@/config/exp";
+import { SignOptions } from "jsonwebtoken";
+import { ClientData } from "@packages/contracts/auth";
 
+/**
+ * Taking SessionDuration from @packages/prisma UserSession Model export
+ */
+import { SessionDuration } from "@packages/prisma";
+import { AuthRepo } from "@/repo/auth-repo";
 
-export interface SignupCompleteResponse {
-    username: string;
-    email: string;
-    userID: string;
-    profilePicURI?: string;
-    firstName: string;
-    lastName: string;
+export interface SignupCompleteServiceParams {
+  signupSessionID: string;
+  rememberMe: boolean;
+  clientData: ClientData
+}
+
+export interface SignupCompleteServiceResponse {
+  username: string;
+  email: string;
+  userID: string;
+  profilePicURI?: string;
+  firstName: string;
+  lastName: string;
+  refreshToken: string;
+  accessToken: string;
 }
 
 export class SignupCompleteService {
   constructor(
+    private readonly authRepo: AuthRepo,
     private readonly userProvisioningClient:
       UserProvisioningClient
-  ) {}
+  ) { }
 
   /**
    * Final signup completion flow
    */
   async execute({
-    signupSessionID
-  }: {
-    signupSessionID: string
-  }): Promise<SignupCompleteResponse> {
+    signupSessionID,
+    rememberMe,
+    clientData
+  }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
 
-      // fetch signup session
-      const session = await getSignupSession(signupSessionID)
+    // fetch signup session
+    const session = await getSignupSession(signupSessionID)
 
-      if (!session) throw new SessionExpiredError()
+    if (!session) throw new SessionExpiredError()
 
-      // verify confirmed email state
-      const confirmedEmail =
-        await getConfirmedEmailCache(signupSessionID);
+    // verify confirmed email state
+    const confirmedEmail =
+      await getConfirmedEmailCache(signupSessionID);
 
-      if (!confirmedEmail) throw new MaliciousActivityError();
+    if (!confirmedEmail) throw new MaliciousActivityError();
 
-      // verify session integrity
-      if (
-        session.email !== confirmedEmail
-      ) throw new EmailVerificationRequiredError()
+    // verify session integrity
+    if (
+      session.email !== confirmedEmail
+    ) throw new EmailVerificationRequiredError()
 
-      // prepare user payload
-      const userPayload = {
-        username: session.username!,
-        email: session.email!,
+    // prepare user payload
+    const userPayload = {
+      username: session.username!,
+      email: session.email!,
 
-        firstName:
-          session.firstName!,
+      firstName:
+        session.firstName!,
 
-        lastName:
-          session.lastName!,
+      lastName:
+        session.lastName!,
 
-        hashedPassword: session.hashedPassword!,
-      };
+      hashedPassword: session.hashedPassword!,
+    };
 
-      logger.info({
-        message:
-          "Creating user through provisioning service",
+    authLogger.info({
+      message:
+        "Creating user through provisioning service",
 
-        username:
-          userPayload.username,
+      username:
+        userPayload.username,
 
-        email:
-          userPayload.email,
-      });
+      email:
+        userPayload.email,
+    });
 
-      /**
-       * Future:
-       * REST / gRPC / Kafka / NATS
-       */
-      const createdUser =
-        await this.userProvisioningClient
-          .createUser(userPayload);
+    /**
+     * Future:
+     * REST / gRPC / Kafka / NATS
+     */
+    const createdUser =
+      await this.userProvisioningClient
+        .createUser(userPayload);
 
-      // cleanup temporary state
-      await Promise.all([
-        deleteSignupSession(
-          signupSessionID
-        ),
+    const userSessionID = randomUUID();
 
-        deleteConfirmedEmailCache(
-          signupSessionID
-        ),
+    const refreshToken = createJwtToken<RefreshTokenPayload>({
+      payload: {
+        jti: randomUUID(),
+        sid: userSessionID,
+        sub: createdUser.userID
+      },
+      secret: env.JWT_REFRESH_SECRET_KEY,
+      options: {
+        expiresIn: rememberMe ? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
+      } as SignOptions
+    })
 
-        deleteVerificationCodeCache(
-            signupSessionID
-        ),
-      ]);
+    const accessToken = createJwtToken<AccessTokenPayload>({
+      payload: {
+        jti: randomUUID(),
+        sid: userSessionID,
+        sub: createdUser.userID,
+        role: "user"
+      },
+      secret: env.JWT_ACCESS_SECRET_KEY,
+      options: {
+        expiresIn: exp.JWT_ACCESS_TOKEN
+      } as SignOptions
+    })
 
-      logger.info({
-        message:
-          "Signup completed successfully",
+    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
 
-        userID:
-          createdUser.userID,
+    /**
+     * Persist session
+     */
+    await this.authRepo.createUserSession({
+      userID: createdUser.userID,
+      clientData,
+      refreshToken,
+      sessionDuration,
+      userSessionID,
+    });
 
-        username:
-          createdUser.username,
-      });
+    // cleanup temporary state
+    await Promise.all([
+      deleteSignupSession(
+        signupSessionID
+      ),
 
-      return {
-        ...createdUser
-      }
+      deleteConfirmedEmailCache(
+        signupSessionID
+      ),
+
+      deleteVerificationCodeCache(
+        signupSessionID
+      ),
+    ]);
+
+    authLogger.info({
+      message:
+        "Signup completed successfully",
+
+      userID:
+        createdUser.userID,
+
+      username:
+        createdUser.username,
+    });
+
+    return {
+      ...createdUser,
+      refreshToken,
+      accessToken
+    }
   }
 }

@@ -12,16 +12,9 @@ export interface BaseJwtPayload extends JwtPayload {
 /**
  * Authenticated user/session claims.
  */
-export interface AuthenticatedUserPayload extends BaseJwtPayload {
-    sub: string; // canonical user identifier
-
-    userID: string;
-    userSessionID: string;
-
-    email: string;
-    username: string;
-
-    emailVerified: boolean;
+interface AuthenticatedUserPayload extends BaseJwtPayload {
+    sub: string;
+    sid: string;
 }
 
 
@@ -61,13 +54,5 @@ export interface PrivilegedAccessTokenPayload
  */
 export interface SignupSessionPayload
     extends BaseJwtPayload {
-    signupSessionID: string;
-}
-
-/**
- * Temporary signin session token.
- */
-export interface SigninSessionPayload
-    extends BaseJwtPayload {
-    signinSessionID: string;
+    sid: string;
 }

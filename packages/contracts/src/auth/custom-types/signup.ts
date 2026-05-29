@@ -1,21 +1,14 @@
 import z from "zod";
-import { SignupInitRequestSchema, CompleteSignupRequestSchema, UsernameSignupRequestSchema, EmailSignupRequestSchema, VerifyUserEmailRequestSchema, VerificationCodeSchema, SendVerificationEmailRequestSchema } from "../schema";
+import { SignupInitRequestSchema, ContinueWithUsernameRequestSchema, ContinueWithEmailRequestSchema, VerifyUserEmailRequestSchema, VerificationCodeSchema, SignupCompleteRequestSchema } from "../schema";
 
 export type SignupInitRequest = z.infer<typeof SignupInitRequestSchema>;
-export type CompleteSignupRequest = z.infer<typeof CompleteSignupRequestSchema>
-export type UsernameSignupRequest = z.infer<typeof UsernameSignupRequestSchema>;
-export type EmailSignupRequest = z.infer<typeof EmailSignupRequestSchema>;
+export type UsernameSignupRequest = z.infer<typeof ContinueWithUsernameRequestSchema>;
+export type EmailSignupRequest = z.infer<typeof ContinueWithEmailRequestSchema>;
 export type VerificationCode = z.infer<typeof VerificationCodeSchema>;
-export type SendVerificationEmailRequest = z.infer<typeof SendVerificationEmailRequestSchema>;
 export type VerifyUserEmailRequest = z.infer<typeof VerifyUserEmailRequestSchema>;
+export type SignupCompleteRequest = z.infer<typeof SignupCompleteRequestSchema>
 
-export type GetStartedResponse = {
-    identifierType: "username" | "email";
-    identifier: string;
-    already_exists: boolean;
-};
-
-export type VerifySignupEmailEvent = {
+export interface VerifySignupEmailEvent {
     type: string,
     email: string,
     code: string,
@@ -23,17 +16,31 @@ export type VerifySignupEmailEvent = {
     createdAt: Date
 }
 
-export type VerifySigninEmailEvent = {
-    type: string,
-    email: string,
-    code: string,
-    signinSessionID: string,
-    createdAt: Date
+export interface SignupInitResponse {
+    signupSessionInit: boolean
+    alreadyExists: boolean;
 }
 
-export interface SignupInitResponse {
-    identifierType: "username" | "email";
-    identifier: string;
-    already_exists: boolean,
-    signupSessionToken: string;
+export interface ContinueWithUsernameResponse {
+    usernameValidated: boolean
+}
+
+export interface ContinueWithEmailResponse {
+    emailValidated: boolean
+}
+
+export interface SendVerificationEmailResponse {
+    verificationEmailSent: boolean
+}
+
+export interface VerifyUserEmailResponse {
+    emailVerified: boolean
+}
+
+export interface NameValidationResponse {
+    nameValidated: boolean
+}
+
+export interface PasswordValidationResponse {
+    passwordValidated: boolean
 }

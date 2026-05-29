@@ -47,9 +47,6 @@
       ========================== */
     "incremental": true
   },
-  /* =========================
-         References
-      ========================== */
   "references": [
     {
       "path": "./packages/shared"
@@ -78,5 +75,5 @@
     {
       "path": "./mcp/servers/web_search"
     }
-  ],
+  ]
 }

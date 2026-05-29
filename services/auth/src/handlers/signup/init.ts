@@ -2,7 +2,7 @@ import { asyncHandler } from '@/middlewares/async-handler';
 import { Request, Response } from "express";
 import { buildCookie, sendResponse } from "@packages/http";
 import authService from '@/services/auth-service';
-import { SignupInitRequestSchema, SignupInitRequest } from "@packages/contracts/auth";
+import { SignupInitRequestSchema, SignupInitResponse } from "@packages/contracts/auth";
 import { ValidationError } from '@packages/errors';
 import { env } from '@/config/env';
 import { exp } from '@/config/exp';
@@ -14,13 +14,13 @@ import { exp } from '@/config/exp';
  */
 export const signupInitHandler = asyncHandler(
     async (req: Request, res: Response) => {
+
         // Parsing request body
         // type: username | email is ignored as ican be verified through schema again.
-        const usernameOrEmail = {
-            value: req.body.usernameOrEmail.value,
-        };
+        const body = req.body
 
-        const parsed = SignupInitRequestSchema.safeParse({usernameOrEmail: usernameOrEmail.value});
+        const parsed = 
+            SignupInitRequestSchema.safeParse(body);
         if (!parsed.success) {
             throw new ValidationError(
                 "Given credentials could not be validated, please use allowed characters.",
@@ -30,9 +30,8 @@ export const signupInitHandler = asyncHandler(
 
         // Call service → either returns ServiceResponse OR throws ServiceException
         const {
-            identifierType,
-            identifier,
-            already_exists,
+            signupSessionInit,
+            alreadyExists,
             signupSessionToken        
         } = await authService.signupInit(parsed.data);
 
@@ -49,14 +48,13 @@ export const signupInitHandler = asyncHandler(
         })
 
         // Controller only forwards response
-        return sendResponse({
+        return sendResponse<SignupInitResponse>({
             res,
             success: true,
             statusCode: 200,
             data: {
-                identifierType,
-                identifier,
-                already_exists,    
+                signupSessionInit,
+                alreadyExists
             },
             message: "signup init successful",
             path: req.originalUrl,

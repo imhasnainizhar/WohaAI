@@ -68,41 +68,47 @@ export interface EnvConfig {
     // Redis store for caching memories in live chat session.
     AUTH_SESSION_STORE_URI: string;
     AUTH_SESSION_REDIS_USERNAME: string;
+    AUTH_SESSION_REDIS_HOST: string;
     AUTH_SESSION_STORE_PASSWORD: string;
 
     // Redis store for caching memories in live chat session.
     AGENT_MEMORY_REDIS_URI: string;
     AGENT_MEMORY_REDIS_USERNAME: string;
+    AGENT_MEMORY_REDIS_HOST: string;
     AGENT_MEMORY_REDIS_PASSWORD: string;
 
     // Redis store for caching threads in live chat session.
     THREADS_HISTORY_REDIS_URI: string;
     THREADS_HISTORY_REDIS_USERNAME: string;
+    THREADS_HISTORY_REDIS_HOST: string;
     THREADS_HISTORY_REDIS_PASSWORD: string;
 
     // Qdrant store for memories for old chat sessions.
     AGENT_MEMORY_QDRANT_URI: string;
-    AGENT_MEMORY_QDRANT_API_KEY: number;
+    AGENT_MEMORY_QDRANT_API_KEY: string;
 
     // Kafka Broker connection configs
-    AUTH_MAILER_KAFKA_BROKER_HOST: string;
-    AUTH_MAILER_KAFKA_BROKER_PORT: number;
-    AUTH_MAILER_KAFKA_BROKER_URI: string;
-    AUTH_MAILER_KAFKA_BROKERS: string[];
+    AUTH_KAFKA_BROKER_HOST: string;
+    AUTH_KAFKA_BROKER_PORT: number;
+    AUTH_KAFKA_BROKER_URI: string;
+    AUTH_KAFKA_BROKERS: string[];
 
     // Kafka listeners configs
     KAFKA_CFG_LISTENERS: string;
     KAFKA_CFG_ADVERTISED_LISTENERS: string;
 
     // Fafka Client identity
-    AUTH_MAILER_KAFKA_CLIENT_ID: string;
+    AUTH_KAFKA_CLIENT_ID: string;
 
     // Kafka Security
-    AUTH_MAILER_KAFKA_USERNAME: string;
-    AUTH_MAILER_KAFKA_PASSWORD: string;
+    AUTH_KAFKA_USERNAME: string;
+    AUTH_KAFKA_PASSWORD: string;
 
     // Kafka Topic naming
-    AUTH_MAILER_KAFKA_TOPIC_PREFIX: string;
-    AUTH_MAILER_KAFKA_USER_EVENTS_TOPIC: string;
-    AUTH_MAILER_KAFKA_SIGNUP_EVENTS_TOPIC: string;
+    AUTH_KAFKA_TOPIC_PREFIX: string;
+    AUTH_KAFKA_FORGOT_PASSWORD_EVENTS_TOPIC: string;
+    AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC: string;
+    
+    AUTH_KAFKA_PASSWORD_EVENTS_CONSUMER_GROUP_ID: string;
+    AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_CONSUMER_GROUP_ID: string;
 }

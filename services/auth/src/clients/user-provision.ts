@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { randomUUID } from "crypto";
 
-import { logger } from "@packages/observability";
+import { authLogger } from "@packages/observability";
 import { InternalServerError } from "@packages/errors";
 import { CreatedUserResponseSchema } from "@packages/contracts/auth";
 
@@ -46,7 +46,7 @@ export class UserProvisioningClient {
         const requestId = randomUUID();
 
         try {
-            logger.debug({
+            authLogger.debug({
                 message:
                     "[USER-PROVISIONING] Creating user",
                 requestId,
@@ -67,7 +67,7 @@ export class UserProvisioningClient {
             const data = CreatedUserResponseSchema.parse(response.data);
             return data;
         } catch (err: any) {
-            logger.error({
+            authLogger.error({
                 message:
                     "[USER-PROVISIONING] Failed to create user",
                 error:

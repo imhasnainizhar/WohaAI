@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "WoahAI"
+    "url": "WohaAI"
   },
   "license": "MIT",
   "author": "Hasnain Izhar",
@@ -33,11 +33,17 @@
   },
   "dependencies": {
     "@packages/observability": "workspace:*",
-    "ioredis": "^5.11.0"
+    "@packages/prisma": "workspace:*",
+    "ioredis": "^5.11.0",
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/redis": "^4.0.11",
+    "esbuild": "^0.28.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^6.0.3"
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

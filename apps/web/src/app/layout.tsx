@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "./logos/white_triangle.png",
   },
-  description: "By WoahAI Corporation.",
+  description: "By WohaAI Corporation.",
 };
 
 export default function RootLayout({

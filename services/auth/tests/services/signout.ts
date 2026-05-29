@@ -12,9 +12,9 @@ jest.mock("@clients/prisma", () => ({
     },
 }));
 
-// Mock logger to suppress console output during tests
-jest.mock("@utils/logger", () => ({
-    logger: {
+// Mock authLogger to suppress console output during tests
+jest.mock("@utils/authLogger", () => ({
+    authLogger: {
         debug: jest.fn(),
         warn: jest.fn(),
         error: jest.fn(),
