@@ -10,17 +10,14 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -b -w ../../../packages/shared ./ && tsc-alias -p .",
-    "start": "nodemon dist/server.js",
-    "prepare": "npm run prisma:generate",
-    "postinstall": "",
-    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
-    "prisma:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
-    "test": "jest"
+    "build": "esbuild src/server.ts --bundle --platform=node --outdir=dist --format=cjs --sourcemap",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "clean": "rm dist"
   },
   "repository": {
     "type": "git",
-    "url": "WoahAI"
+    "url": "WohaAI"
   },
   "keywords": [
     "AI",
@@ -29,43 +26,37 @@
   "author": "Hasnain Izhar",
   "license": "MIT",
   "dependencies": {
-    "@packages/shared": "workspace:*",
-    "@prisma/adapter-pg": "^7.2.0",
+    "@packages/config": "workspace:*",
+    "@packages/contracts": "workspace:*",
+    "@packages/errors": "workspace:*",
+    "@packages/http": "workspace:*",
+    "@packages/jwt": "workspace:*",
+    "@packages/observability": "workspace:*",
+    "@packages/prisma-users": "workspace:*",
+    "@packages/kafka": "workspace:*",
+    "@packages/redis": "workspace:*",
     "argon2": "^0.44.0",
+    "axios": "^1.16.1",
     "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "dotenv-expand": "^12.0.3",
-    "express": "^5.1.0",
-    "ioredis": "^5.8.1",
-    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "kafkajs": "^2.2.4",
-    "module-alias": "^2.2.3",
-    "pg": "^8.16.3",
-    "pino": "^10.1.0",
-    "pino-pretty": "^13.1.2",
-    "process": "^0.11.10",
-    "redis": "^5.8.3",
-    "ua-parser-js": "^2.0.6",
-    "zod": "^4.1.12"
+    "ua-parser-js": "^2.0.10",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/argon2": "^0.14.1",
-    "@types/cookie-parser": "^1.4.9",
+    "@types/argon2": "^0.15.4",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jest": "^30.0.0",
+    "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.9.1",
-    "@types/nodemon": "^1.19.6",
-    "@types/redis": "^4.0.10",
     "@types/ua-parser-js": "^0.7.39",
-    "jest": "^30.2.0",
-    "nodemon": "^3.1.10",
-    "ts-jest": "^29.4.6",
-    "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.16",
+    "esbuild": "^0.28.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.9.3"
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

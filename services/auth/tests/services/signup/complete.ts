@@ -1,7 +1,7 @@
 import { completeSignupService } from "@services/signup/complete";
-import { getSignupCache, setSignupCache } from "../../../src/internals/utils/redis";
+import { getSignupCache, setSignupCache } from "../../../src/redis/redis";
 import { internalError } from "@internals/errors/auth";
-import { ServiceException } from "../../../src/internals/utils/response";
+import { ServiceException } from "../../../src/ua/response";
 
 // Mock Redis utilities for session persistence
 jest.mock("@utils/redis", () => ({
@@ -9,8 +9,8 @@ jest.mock("@utils/redis", () => ({
     setSignupCache: jest.fn(),
 }));
 
-jest.mock("@utils/logger", () => ({
-  logger: {
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

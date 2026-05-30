@@ -1,17 +1,17 @@
 // __tests__/generateVerificationCodeService.test.ts
 import { env } from "@config/env";
 import { Fluvio } from "@fluvio/client";
-import { SendVerificationEmailDTO } from "@packages/shared/auth";
+import { SendVerificationEmailDTO } from "../../../../../../packages/api/src/auth";
 import { sendVerificationEmailService } from "@services/signup/verification/send_email";
-import { setCache, getCache } from "../../../../src/internals/utils/redis";
-import { ServiceException } from "../../../../src/internals/utils/response";
+import { setCache, getCache } from "../../../../src/redis/redis";
+import { ServiceException } from "../../../../src/ua/response";
 
 // Mocks
 jest.mock("@utils/redis");
 
-// Mock logger to suppress console output during tests
-jest.mock("@utils/logger", () => ({
-  logger: {
+// Mock authLogger to suppress console output during tests
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

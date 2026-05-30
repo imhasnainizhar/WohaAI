@@ -1,70 +1,180 @@
-import { logger } from "@packages/shared/utils";
-import { ServiceResponse, ServiceException } from "@packages/shared/utils";
-import { setSignupCache, getSignupCache } from "@internals/utils/redis";
-import { CompleteSignupDTO } from "@packages/shared/auth";
-import { throwInternalError, throwSessionExpired } from "@packages/shared/errors";
+import { authLogger } from "@packages/observability";
+import {
+  getSignupSession,
+  deleteSignupSession,
+
+  getConfirmedEmailCache,
+  deleteConfirmedEmailCache,
+
+  deleteVerificationCodeCache,
+} from "@/redis/redis";
+import { UserProvisioningClient } from "@/clients/user-provision";
+import { EmailVerificationRequiredError, MaliciousActivityError, SessionExpiredError } from "@packages/errors";
+import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
+import { randomUUID } from "crypto";
+import { env } from "@/config/env";
+import { exp } from "@/config/exp";
+import { SignOptions } from "jsonwebtoken";
+import { ClientData } from "@packages/contracts/auth";
 
 /**
- * Validates and records the user's display name in an active signup session.
- * 
- * Control flow logic:
- * 1. The function retrieves the current session state from Redis (this acts like a memory of all prior verified data).
- * 2. It confirms that the session belongs to the same username to prevent step-hopping or impersonation.
- * 3. If inputs differ from previous valid values, they are updated in Redis.
- * 4. If Redis session is missing, expired, or mismatched, it blocks the request — ensuring only valid sessions can proceed.
+ * Taking SessionDuration from @packages/prisma-users UserSession Model export
  */
+import { SessionDuration } from "@packages/prisma-users";
+import { AuthRepo } from "@/repo/auth-repo";
 
-export const completeSignupService = async (dto: CompleteSignupDTO) => {
-    try {
-        // Retrieve session data from Redis for the current signup session
-        // this redis util is auth native and built over shared redis utils
-        const session = await getSignupCache(dto.signupSessionID);
-        if (!session) throwSessionExpired();
+export interface SignupCompleteServiceParams {
+  signupSessionID: string;
+  rememberMe: boolean;
+  clientData: ClientData
+}
 
-        // If existing names in Redis differ from the newly validated ones, update Redis
-        let isUpdated = false;
+export interface SignupCompleteServiceResponse {
+  username: string;
+  email: string;
+  userID: string;
+  profilePicURI?: string;
+  firstName: string;
+  lastName: string;
+  refreshToken: string;
+  accessToken: string;
+}
 
-        if (session.firstName !== dto.firstName) {
-            session.firstName = dto.firstName;
-            isUpdated = true;
-        }
+export class SignupCompleteService {
+  constructor(
+    private readonly authRepo: AuthRepo,
+    private readonly userProvisioningClient:
+      UserProvisioningClient
+  ) { }
 
-        if (session.lastName !== dto.lastName) {
-            session.lastName = dto.lastName;
-            isUpdated = true;
-        }
+  /**
+   * Final signup completion flow
+   */
+  async execute({
+    signupSessionID,
+    rememberMe,
+    clientData
+  }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
 
-        if (session.password !== dto.password) {
-            session.password = dto.password; // ideally hashed before this step
-            isUpdated = true;
-        }
+    // fetch signup session
+    const session = await getSignupSession(signupSessionID)
 
-        // This way we update all changes in one go instead of redis updates 
-        // in each if/else statements.
-        if (isUpdated) {
-            // Store updated state back in Redis with the defined TTL
-            // TTL is defined at config file specified for auth
-            await setSignupCache(
-                dto.signupSessionID,
-                { ...session, firstName: dto.firstName, lastName: dto.lastName, password: dto.password },
-            );
-        }
+    if (!session) throw new SessionExpiredError()
 
-        logger.info("User info checked and updated to be signed up.");
-        return ServiceResponse.success({
-            success: true,
-            statusCode: 200,
-            message: "User info checked to be signed up.",
-        });
-    } catch (error: any) {
-        logger.fatal({
-            message: "completeSignupService failed",
-            error: error.message,
-            stack: error.stack,
-        });
+    // verify confirmed email state
+    const confirmedEmail =
+      await getConfirmedEmailCache(signupSessionID);
 
-        if (error instanceof ServiceException) throw error; // already standardized
+    if (!confirmedEmail) throw new MaliciousActivityError();
 
-        throw throwInternalError(error);
+    // verify session integrity
+    if (
+      session.email !== confirmedEmail
+    ) throw new EmailVerificationRequiredError()
+
+    // prepare user payload
+    const userPayload = {
+      username: session.username!,
+      email: session.email!,
+
+      firstName:
+        session.firstName!,
+
+      lastName:
+        session.lastName!,
+
+      hashedPassword: session.hashedPassword!,
+    };
+
+    authLogger.info({
+      message:
+        "Creating user through provisioning service",
+
+      username:
+        userPayload.username,
+
+      email:
+        userPayload.email,
+    });
+
+    /**
+     * Future:
+     * REST / gRPC / Kafka / NATS
+     */
+    const createdUser =
+      await this.userProvisioningClient
+        .createUser(userPayload);
+
+    const userSessionID = randomUUID();
+
+    const refreshToken = createJwtToken<RefreshTokenPayload>({
+      payload: {
+        jti: randomUUID(),
+        sid: userSessionID,
+        sub: createdUser.userID
+      },
+      secret: env.JWT_REFRESH_SECRET_KEY,
+      options: {
+        expiresIn: rememberMe ? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
+      } as SignOptions
+    })
+
+    const accessToken = createJwtToken<AccessTokenPayload>({
+      payload: {
+        jti: randomUUID(),
+        sid: userSessionID,
+        sub: createdUser.userID,
+        role: "user"
+      },
+      secret: env.JWT_ACCESS_SECRET_KEY,
+      options: {
+        expiresIn: exp.JWT_ACCESS_TOKEN
+      } as SignOptions
+    })
+
+    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
+
+    /**
+     * Persist session
+     */
+    await this.authRepo.createUserSession({
+      userID: createdUser.userID,
+      clientData,
+      refreshToken,
+      sessionDuration,
+      userSessionID,
+    });
+
+    // cleanup temporary state
+    await Promise.all([
+      deleteSignupSession(
+        signupSessionID
+      ),
+
+      deleteConfirmedEmailCache(
+        signupSessionID
+      ),
+
+      deleteVerificationCodeCache(
+        signupSessionID
+      ),
+    ]);
+
+    authLogger.info({
+      message:
+        "Signup completed successfully",
+
+      userID:
+        createdUser.userID,
+
+      username:
+        createdUser.username,
+    });
+
+    return {
+      ...createdUser,
+      refreshToken,
+      accessToken
     }
-};
+  }
+}

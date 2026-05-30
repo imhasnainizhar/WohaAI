@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
-import { env } from "@config/env.js";
+import { env } from "@/config/env.js";
 import { Runnable } from "@langchain/core/runnables";
-import { getMCPTools } from "@tools/externals/mcp.js";
+import { getMCPTools } from "@/tools/externals/mcp.js";
 
 let cachedToolCallModel: Runnable | null = null;
 const MCPTools = await getMCPTools();

@@ -1,7 +1,7 @@
 import continueWithUsernameService from "@services/signup/continue/with_username";
-import { getSignupCache, setSignupCache } from "../../../../src/internals/utils/redis";
+import { getSignupCache, setSignupCache } from "../../../../src/redis/redis";
 import { prisma } from "@clients/prisma";
-import { ServiceException } from "../../../../src/internals/utils/response";
+import { ServiceException } from "../../../../src/ua/response";
 
 // Mock infrastructure dependencies
 jest.mock("@utils/redis");
@@ -13,8 +13,8 @@ jest.mock("@clients/prisma", () => ({
     },
 }));
 
-jest.mock("@utils/logger", () => ({
-    logger: {
+jest.mock("@utils/authLogger", () => ({
+    authLogger: {
         error: jest.fn(),
         warn: jest.fn(),
         debug: jest.fn(),

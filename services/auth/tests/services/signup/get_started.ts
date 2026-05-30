@@ -1,12 +1,12 @@
 import { getStartedService } from "@services/signup/get_started";
 import { prisma } from "@clients/prisma";
-import { setCache } from "@internals/utils/redis";
-import { createJwtToken } from "@internals/utils/jwt";
+import { setCache } from "@helpers/redis";
+import { createJwtToken } from "@helpers/jwt";
 import { env, EXPIRATION } from "@config/env";
-import { ServiceException } from "@internals/utils/response";
-import { GetStartedDTO } from "@packages/shared/auth";
+import { ServiceException } from "@helpers/response";
+import { GetStartedDTO } from "../../../../../packages/api/src/auth";
 
-// Mock external dependencies (DB, Redis, JWT, Logger)
+// Mock external dependencies (DB, Redis, JWT, authLogger)
 jest.mock("@clients/prisma", () => ({
   prisma: {
     user: {
@@ -23,8 +23,8 @@ jest.mock("@utils/jwt", () => ({
   createJwtToken: jest.fn(),
 }));
 
-jest.mock("@utils/logger", () => ({
-  logger: {
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

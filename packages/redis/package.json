@@ -1,0 +1,48 @@
+{
+  "name": "@packages/redis",
+  "version": "1.0.0",
+  "description": "Redis reusable package for this monorepo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "typescript",
+    "openai",
+    "models"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "WohaAI"
+  },
+  "license": "MIT",
+  "author": "Hasnain Izhar",
+  "scripts": {
+    "package:dev": "tsc -b -w",
+    "package:build": "tsc -b"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@packages/config": "workspace:*",
+    "@packages/errors": "workspace:*",
+    "@packages/observability": "workspace:*",
+    "ioredis": "^5.11.0"
+  },
+  "devDependencies": {
+    "@types/redis": "^4.0.11",
+    "esbuild": "^0.28.0",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

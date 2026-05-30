@@ -13,7 +13,7 @@ services:
     env_file:
       - ../../.env
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://auth-service:${AUTH_SERVICE_PORT}/health"]
       interval: 30s
@@ -21,6 +21,8 @@ services:
       retries: 3
     profiles:
       - "services"
+    depends_on:
+      - users-postgres-db
 
   user-service:
     build:
@@ -36,7 +38,7 @@ services:
     env_file:
       - ../../.env
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://user-service:${USER_SERVICE_PORT}/health"]
       interval: 30s
@@ -44,29 +46,31 @@ services:
       retries: 3
     profiles:
       - "services"
+    depends_on:
+      - users-postgres-db
 
-  # auth-mailer-service:
-  #   build:
-  #     context: ../../
-  #     dockerfile: ../../services/auth-mailer/Dockerfile
-  #     target: ${NODE_ENV}
-  #   container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
-  #   ports:
-  #     - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
-  #   volumes:
-  #     - ../../:/app
-  #   restart: always
-  #   env_file:
-  #     - ../../.env
-  #   networks:
-  #     - woahai_dev_net
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #   profiles:
-  #     - "services"
+  auth-mailer-service:
+    build:
+      context: ../../
+      dockerfile: ../../services/auth-mailer/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
+    ports:
+      - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
+    volumes:
+      - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
 
 networks:
-  woahai_dev_net:
+  WohaAI_dev_net:

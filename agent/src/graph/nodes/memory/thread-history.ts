@@ -1,9 +1,9 @@
 // nodes/threadHistory.node.ts
 import { v7 as uuidv7 } from "uuid";
-import { prismaClient } from "@db/threads/prisma/prisma_client.js";
-import { AnnotationState } from "@workflows/react.js";
-import { logger } from "../../../logger/logger.js";
-import { HumanMessage, AIMessage, ToolMessage } from "langchain";
+import { AnnotationState } from "@/workflows/react.js";
+import { agentLogger as logger } from '@packages/observability';
+import { AIMessage } from "langchain";
+import { threadsPrismaClient } from '@packages/prisma-threads';
 
 export async function threadHistoryNode(
   state: typeof AnnotationState.State
@@ -31,7 +31,7 @@ export async function threadHistoryNode(
 
   try {
     // 1️⃣ Save user message first
-    await prismaClient.threadMessage.create({
+    await threadsPrismaClient.threadMessage.create({
       data: {
         id: uuidv7(),
         conversationId: state.threadID,
@@ -41,7 +41,7 @@ export async function threadHistoryNode(
     });
 
     // 2️⃣ Save AI message second
-    await prismaClient.threadMessage.create({
+    await threadsPrismaClient.threadMessage.create({
       data: {
         id: uuidv7(),
         conversationId: state.threadID,

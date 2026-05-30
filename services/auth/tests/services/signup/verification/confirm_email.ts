@@ -1,16 +1,16 @@
 import { verifyUserEmailService } from "@services/signup/verification/confirm_email";
-import { getCache, deleteCache, setCache } from "../../../../src/internals/utils/redis";
-import { createJwtToken } from "../../../../src/internals/utils/jwt";
-import { ServiceException } from "../../../../src/internals/utils/response";
+import { getCache, deleteCache, setCache } from "../../../../src/redis/redis";
+import { createJwtToken } from "../../../../src/ua/jwt";
+import { ServiceException } from "../../../../src/ua/response";
 import { EXPIRATION, env } from "@config/env";
 
 // Mocks
 jest.mock("@utils/redis");
 jest.mock("@utils/jwt");
 
-// Mock logger to suppress console output during tests
-jest.mock("@utils/logger", () => ({
-  logger: {
+// Mock authLogger to suppress console output during tests
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

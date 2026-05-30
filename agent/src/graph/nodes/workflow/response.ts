@@ -1,8 +1,8 @@
-import { logger } from "../../../logger/logger.js";
-import { AnnotationState } from "@workflows/react.js";
+import { agentLogger as logger } from '@packages/observability';
+import { AnnotationState } from "@/workflows/react.js";
 import { SystemMessage, BaseMessage, HumanMessage, AIMessage } from "langchain";
-import responsePrompt from "../../../domain/prompts/response.js";
-import { chatModel } from "src/llm(s)/chat.js";
+import responsePrompt from "../../../internals/prompts/response.js";
+import { chatModel } from "../../../llm/chat.js";
 
 export const responseNode = async (state: typeof AnnotationState.State) => {
     try {

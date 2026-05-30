@@ -1,8 +1,8 @@
 import continueWithEmailService from "@services/signup/continue/with_email";
-import { getSignupCache, setSignupCache } from "../../../../src/internals/utils/redis";
+import { getSignupCache, setSignupCache } from "../../../../src/redis/redis";
 import { prisma } from "@clients/prisma";
-import { ServiceException } from "../../../../src/internals/utils/response";
-import { ContinueWithEmailDTO } from "@packages/shared/auth";
+import { ServiceException } from "../../../../src/ua/response";
+import { ContinueWithEmailDTO } from "../../../../../../packages/api/src/auth";
 
 // Mock Redis and Prisma dependencies
 jest.mock("@utils/redis");
@@ -14,8 +14,8 @@ jest.mock("@clients/prisma", () => ({
     },
 }));
 
-jest.mock("@utils/logger", () => ({
-    logger: {
+jest.mock("@utils/authLogger", () => ({
+    authLogger: {
         error: jest.fn(),
         warn: jest.fn(),
         debug: jest.fn(),

@@ -13,7 +13,7 @@ services:
     env_file:
       - ../../.env
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     profiles:
       - "agentic"
       
@@ -31,7 +31,7 @@ services:
     env_file:
       - ../../.env
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     profiles:
       - "agentic"
 
@@ -49,9 +49,9 @@ services:
     env_file:
       - ../../.env
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     profiles:
       - "agentic"
 
 networks:
-  woahai_dev_net:
+  WohaAI_dev_net:

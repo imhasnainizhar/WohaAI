@@ -2,8 +2,8 @@ import { signinService } from "@services/signin";
 import { prisma } from "@clients/prisma";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-import { ServiceException } from "../../src/internals/utils/response";
-import { createUserSession } from "../../src/internals/utils/create_user_session";
+import { ServiceException } from "../../src/ua/response";
+import { createUserSession } from "../../src/ua/create-user-session";
 import { env, EXPIRATION } from "@config/env";
 
 // Mock external dependencies (DB, crypto, tokens, logging)
@@ -27,8 +27,8 @@ jest.mock("jsonwebtoken", () => ({
     sign: jest.fn(),
 }));
 
-jest.mock("@utils/logger", () => ({
-    logger: {
+jest.mock("@utils/authLogger", () => ({
+    authLogger: {
         debug: jest.fn(),
         fatal: jest.fn(),
         info: jest.fn(),

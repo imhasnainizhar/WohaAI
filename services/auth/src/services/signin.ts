@@ -1,187 +1,155 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
-import { prisma } from "@clients/prisma";
-import { logger } from "@packages/shared/utils";
-import { ServiceResponse, ServiceException } from "@packages/shared/utils";
-import { env, EXPIRATION } from "@config/env";
-import { createUserSession } from "@internals/utils/create_user_session";
-import { SigninDTO } from "@packages/shared/auth";
-
+import { envConfigs as env, EXPIRATION } from "@packages/config";
+import { AuthRepo } from '@/repo/auth-repo';
+import { InternalServerError, InvalidCredentialsError } from "@packages/errors";
+import { ClientData } from "@packages/contracts/auth";
+import { authLogger } from "@packages/observability";
+import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
+import { exp } from "@/config/exp";
 
 /**
- * Core business logic for user sign-in.
- * Validates input, verifies credentials, generates JWT tokens, and returns cookies.
+ * Taking SessionDuration from @packages/prisma-users UserSession Model export
  */
-export const signinService = async <T>(
-  { usernameOrEmail,
+import { SessionDuration } from "@packages/prisma-users";
+
+
+export interface SigninServiceParams {
+  usernameOrEmail: {
+    type: "username"; value: string;
+  } | {
+    type: "email"; value: string;
+  };
+  password: string;
+  rememberMe: boolean;
+  clientData: ClientData;
+}
+
+export interface SigninServiceResponse {
+  profilePicURI: string;
+  userID: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  refreshToken: string;
+  accessToken: string;
+}
+
+export class SigninService {
+
+  constructor(private repo: AuthRepo) { }
+
+  /**
+   * Main signin business logic
+   */
+  public async execute({
+    usernameOrEmail,
     password,
+    rememberMe,
     clientData
-  }: SigninDTO): Promise<ServiceResponse<T>> => {
-  try {
-    if (!usernameOrEmail.value) {
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 400,
-          message: "Either email or username is required.",
-          errorType: "missing_credentials",
-          errors: { credentials: ["Email or username must be provided"] },
-        })
-      );
-    }
+  }: SigninServiceParams): Promise<SigninServiceResponse> {
+    const user =
+      await this.repo.getUserWithUsernameOrEmail(usernameOrEmail);
 
-    // Fetch full user record for authentication
-    const user = await prisma.user.findFirst({
-      where: { OR: [{ username: usernameOrEmail.value }, { email: usernameOrEmail.value }] },
-      select: {
-        userID: true,
-        userFirstName: true,
-        userLastName: true,
-        email: true,
-        username: true,
-        hashedPassword: true,
-      },
-    });
+    if (user === null) throw new InvalidCredentialsError()
 
-    if (!user) {
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 401,
-          message: "No account found with provided credentials.",
-          errorType: "user_not_found",
-        })
-      );
-    }
-
-    // Verify password
-    const isPasswordCorrect = await argon2.verify(user.hashedPassword, password);
-    if (!isPasswordCorrect) {
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 401,
-          message: "Incorrect password.",
-          errorType: "wrong_password",
-        })
-      );
-    }
-
-    // Ensure JWT keys are available
-    const { JWT_ACCESS_SECRET_KEY, JWT_REFRESH_SECRET_KEY } = env;
-    if (!JWT_ACCESS_SECRET_KEY || !JWT_REFRESH_SECRET_KEY) {
-      throw new ServiceException(
-        ServiceResponse.error({
-          success: false,
-          statusCode: 500,
-          message: "Server misconfiguration: JWT keys missing.",
-          errorType: "token_error",
-        })
-      );
-    }
-
-    // Generate session ID
-    const userSessionID = crypto.randomUUID();
-
-    // Generate refresh token with session ID
-    const refreshToken = jwt.sign(
-      { sub: user.userID, userSessionID },
-      JWT_REFRESH_SECRET_KEY,
-      { expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions
+    const isPasswordCorrect = await argon2.verify(
+      user.hashedPassword,
+      password
     );
 
-    // Create a session record in DB (hash refresh token, store device/IP info)
-    const session = await createUserSession({
+    if (!isPasswordCorrect) throw new InvalidCredentialsError
+
+    const {
+      JWT_ACCESS_SECRET_KEY,
+      JWT_REFRESH_SECRET_KEY,
+    } = this.getJWTSecrets();
+
+    const userSessionID = crypto.randomUUID();
+    const refreshTokenJti = crypto.randomUUID();
+
+    // Maybe we in future make a feature to save and use jti for further security.
+    const refreshToken = createJwtToken<RefreshTokenPayload>({
+      payload: {
+        jti: refreshTokenJti,
+        sub: user.userID,
+        sid: userSessionID,
+      },
+      secret: JWT_REFRESH_SECRET_KEY,
+      options: {
+        expiresIn: rememberMe? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
+      } as SignOptions
+    });
+
+    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
+
+    /**
+     * Persist session
+     */
+    const session = await this.repo.createUserSession({
       userID: user.userID,
       clientData,
       refreshToken,
+      sessionDuration,
       userSessionID,
     });
 
-    const finalRefreshToken = jwt.sign(
-      { sub: user.userID, userSessionID: session.userSessionID },
-      JWT_REFRESH_SECRET_KEY,
-      { expiresIn: EXPIRATION.JWT_REFRESH_SESSION_TOKEN } as SignOptions
-    );
+    authLogger.debug({
+      message: "✅ [SESSION] Created new user session",
+      userID: session.userID,
+      ip: clientData.userIPAddress,
+      device: clientData.userDeviceName,
+    });
 
-    // Generate access token tied to this session
-    const accessToken = jwt.sign(
-      {
+    const accessTokenJti = crypto.randomUUID();
+    /**
+     * Access token
+     */
+    const accessToken = createJwtToken<AccessTokenPayload>({
+      payload: {
+        jti: accessTokenJti,
         sub: user.userID,
-        email: user.email,
-        name: `${user.userFirstName} ${user.userLastName}`,
-        userSessionID: session.userSessionID,
+        sid: session.userSessionID,
+        role: "user"
       },
-      JWT_ACCESS_SECRET_KEY,
-      { expiresIn: EXPIRATION.JWT_ACCESS_SESSION_TOKEN } as SignOptions
-    );
+      secret: JWT_ACCESS_SECRET_KEY,
+      options: {
+        expiresIn: exp.JWT_ACCESS_TOKEN,
+      } as SignOptions
+    });
 
-    // Prepare cookies
-    const sameSite = env.SAME_SITE_COOKIE_OPTION;
-    const secureSite = env.SECURE_COOKIE_OPTION;
-
-    const cookies = [
-      {
-        name: env.ACCESS_TOKEN_NAME,
-        value: accessToken,
-        options: {
-          httpOnly: true,
-          secure: secureSite,
-          sameSite,
-          path: "/",
-          maxAge: EXPIRATION.ACCESS_SESSION_COOKIE,
-        },
-      },
-      {
-        name: env.REFRESH_TOKEN_NAME,
-        value: finalRefreshToken,
-        options:
-        {
-          httpOnly: true,
-          secure: secureSite,
-          sameSite,
-          path: "/",
-          maxAge: EXPIRATION.REFRESH_SESSION_COOKIE
-        }
-      },
-    ];
-
-    logger.info({
-      message: "🟢 [SIGNIN] User authenticated successfully",
+    return {
+      profilePicURI: user.profilePicURI || "",
       userID: user.userID,
       username: user.username,
-      ip: session.userIPAddress,
-      device: session.userDeviceName,
-    });
-
-    // Return unified service response
-    return ServiceResponse.success({
-      success: true,
-      statusCode: 200,
-      message: "Login successful.",
-      data: {
-        user: {
-          userID: user.userID,
-          firstName: user.userFirstName,
-          lastName: user.userLastName,
-          email: user.email,
-        },
-      } as T,
-      cookies,
-    });
-  } catch (err: any) {
-    logger.error("❌ [SIGNIN] Unexpected error", err);
-
-    if (err instanceof ServiceException) throw err;
-
-    throw new ServiceException(
-      ServiceResponse.error({
-        success: false,
-        statusCode: 500,
-        message: err?.message || "Internal server error",
-        errorType: "internal_server_error",
-        errors: err?.errors,
-      })
-    );
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      refreshToken,
+      accessToken
+    }
   }
-};
+
+  /**
+   * Validate JWT secrets existence
+   */
+  private getJWTSecrets() {
+    const {
+      JWT_ACCESS_SECRET_KEY,
+      JWT_REFRESH_SECRET_KEY,
+    } = env;
+
+    if (
+      !JWT_ACCESS_SECRET_KEY ||
+      !JWT_REFRESH_SECRET_KEY
+    ) {
+      throw new InternalServerError({ message: "JWT keys misconfiguration" })
+    }
+
+    return {
+      JWT_ACCESS_SECRET_KEY,
+      JWT_REFRESH_SECRET_KEY,
+    };
+  }
+}

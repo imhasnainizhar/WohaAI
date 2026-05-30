@@ -1,11 +1,13 @@
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
-import { REGISTRY } from './registry';
-import { logger } from '@utils/logger';
+import { REGISTRY } from './registry.js';
+import { mcpGatewayLogger as logger } from '@packages/observability';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { asyncHandler } from './middlewares/async-handler.js';
 
 
-export const listToolsHandler = async () => {
+export const listToolsHandler = 
+    asyncHandler( async () => {
     logger.debug({ action: "list_tools_requested" }, "List tools request received");
     
     const allTools: Tool[] = [];
@@ -42,9 +44,10 @@ export const listToolsHandler = async () => {
     
     logger.debug({ action: "list_tools_completed", totalTools: allTools.length }, `List tools completed: ${allTools.length} total tools`);
     return { tools: allTools }
-}
+})
 
-export const callToolHandler = async (request: any) => {
+export const callToolHandler = 
+    asyncHandler( async (request: any) => {
     logger.debug({ 
         action: "call_tool_request_received", 
         fullRequest: JSON.stringify(request, null, 2)
@@ -90,4 +93,4 @@ export const callToolHandler = async (request: any) => {
 
     logger.warn({ action: "tool_not_found_anywhere", toolName: toolName, registryId: "undefined" }, `Tool ${toolName} not found in any registry`);
     return {};
-};
+})

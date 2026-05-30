@@ -127,7 +127,7 @@ export default function Sidebar() {
       <div className="p-4 flex items-center justify-between">
         <Image
           src={`/logos/${darkTheme ? "white_triangle" : "black_triangle"}.png`}
-          alt="Woah AI"
+          alt="WohaAI"
           width={30}
           height={30}
         />

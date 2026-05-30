@@ -1,4 +1,4 @@
-import { getMCPTools } from "@tools/externals/mcp.js";
+import { getMCPTools } from "@/tools/externals/mcp.js";
 
 type ToolDefinition<I, O> = {
     name: string,

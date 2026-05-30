@@ -1,8 +1,8 @@
-import { refreshTokenService } from "@services/refresh/refresh_token";
+import { refreshTokenService } from "@services/refresh/refresh_session";
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import { prisma } from "@clients/prisma";
-import { ServiceException } from "../../../src/internals/utils/response";
+import { ServiceException } from "../../../src/ua/response";
 import { env } from "@config/env";
 
 // Mock crypto, database, and token utilities
@@ -16,8 +16,8 @@ jest.mock("@clients/prisma", () => ({
   },
 }));
 
-jest.mock("@utils/logger", () => ({
-  logger: {
+jest.mock("@utils/authLogger", () => ({
+  authLogger: {
     error: jest.fn(),
     warn: jest.fn(),
     debug: jest.fn(),

@@ -11,11 +11,11 @@ services:
       POSTGRES_PASSWORD: ${USERS_POSTGRES_DB_PASSWORD}
       POSTGRES_DB: ${USERS_POSTGRES_DB_NAME}
     ports:
-      - "${USERS_POSTGRES_DB_EXTERNAL_PORT}:${USERS_POSTGRES_DB_INTERNAL_PORT}"
+      - "${USERS_POSTGRES_DB_PORT}:5432"
     volumes:
       - users_postgres_data:/var/lib/postgresql/data
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     profiles:
       - "repo"
 
@@ -31,16 +31,16 @@ services:
       POSTGRES_PASSWORD: ${THREADS_POSTGRES_DB_PASSWORD}
       POSTGRES_DB: ${THREADS_POSTGRES_DB_NAME}
     ports:
-      - "${THREADS_POSTGRES_DB_EXTERNAL_PORT}:${THREADS_POSTGRES_DB_INTERNAL_PORT}"
+      - "${THREADS_POSTGRES_DB_PORT}:5432"
     volumes:
-      - threads_postgres_data:/var/lib/postgresql/data
+      - threads_postgres_data:/var/lib/postgresql/datagINTER
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${THREADS_POSTGRES_DB_USER} -d ${THREADS_POSTGRES_DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     profiles:
       - "repo"
 
@@ -48,12 +48,12 @@ services:
     image: redis:7
     container_name: ${AUTH_SESSION_REDIS_HOST}
     ports:
-      - "${AUTH_SESSION_STORE_PORT}:${AUTH_SESSION_STORE_PORT}"
+      - "${AUTH_SESSION_STORE_PORT}:6379"
     command: >
-      redis-server --requirepass "${AUTH_SESSION_STORE_PASSWORD}" --port ${AUTH_SESSION_STORE_PORT}
+      redis-server --requirepass "${AUTH_SESSION_STORE_PASSWORD}"
     restart: always
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     volumes:
       - auth_redis_data:/data
     profiles:
@@ -63,12 +63,12 @@ services:
     image: redis:7
     container_name: ${AGENT_MEMORY_REDIS_HOST}
     ports:
-      - "${AGENT_MEMORY_REDIS_PORT}:${AGENT_MEMORY_REDIS_PORT}"
+      - "${AGENT_MEMORY_REDIS_PORT}:6379"
     command: >
-      redis-server --requirepass "${AGENT_MEMORY_REDIS_PASSWORD}" --port ${AGENT_MEMORY_REDIS_PORT}
+      redis-server --requirepass "${AGENT_MEMORY_REDIS_PASSWORD}"
     restart: always
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     volumes:
       - memory_redis_data:/data
     profiles:
@@ -78,46 +78,14 @@ services:
     image: redis:7
     container_name: ${THREADS_HISTORY_REDIS_HOST}
     ports:
-      - "${THREADS_HISTORY_REDIS_PORT}:${THREADS_HISTORY_REDIS_PORT}"
+      - "${THREADS_HISTORY_REDIS_PORT}:6379"
     command: >
-      redis-server --requirepass "${THREADS_HISTORY_REDIS_PASSWORD}" --port ${THREADS_HISTORY_REDIS_PORT}
+      redis-server --requirepass "${THREADS_HISTORY_REDIS_PASSWORD}"
     restart: always
     networks:
-      - woahai_dev_net
+      - WohaAI_dev_net
     volumes:
       - threads_redis_data:/data
-    profiles:
-      - "repo"
-
-  auth-kafka-broker:
-    image: bitnami/kafka:3.6
-    container_name: ${AUTH_MAILER_KAFKA_BROKER_HOST}
-    ports:
-      - "${AUTH_MAILER_KAFKA_BROKER_PORT}:${AUTH_MAILER_KAFKA_BROKER_PORT}"
-    depends_on:
-      - zookeeper
-    environment:
-      # Core
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-
-      # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:${AUTH_MAILER_KAFKA_BROKER_PORT}
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://${AUTH_MAILER_KAFKA_BROKER_HOST}:${AUTH_MAILER_KAFKA_BROKER_PORT}
-
-      # Single-node dev safe settings
-      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
-      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
-
-      # Auth env passthrough
-      - KAFKA_CLIENT_USERS=${AUTH_MAILER_KAFKA_USERNAME}
-      - KAFKA_CLIENT_PASSWORDS=${AUTH_MAILER_KAFKA_PASSWORD}
-
-      # Allow plaintext
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    networks:
-      - woahai_dev_net
     profiles:
       - "repo"
 
@@ -132,4 +100,4 @@ volumes:
   auth_redis_data:
   
 networks:
-  woahai_dev_net:
+  WohaAI_dev_net:

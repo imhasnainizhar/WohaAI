@@ -2,12 +2,12 @@ import { prisma } from '@utils/prisma';
 import { ServiceResponse } from '@utils/response';
 import { sanitizeUser } from '@domain/types/user';
 
-interface GetUserParams {
+interface GetUserServiceParams {
   userID?: string;
   username?: string;
 }
 
-export const getUserService = async ({ userID, username }: GetUserParams) => {
+export const getUserService = async ({ userID, username }: GetUserServiceParams) => {
   // Validate input
   if (!userID && !username) {
     return ServiceResponse.error({
