@@ -28,6 +28,7 @@
         "@packages/http": "workspace:*",
         "@packages/contracts": "workspace:*",
         "@packages/prisma-threads": "workspace:*",
+        "@packages/redis": "workspace:*",
         "@browserbasehq/stagehand": "^3.4.0",
         "@langchain/community": "^1.1.28",
         "@langchain/core": "^1.1.48",

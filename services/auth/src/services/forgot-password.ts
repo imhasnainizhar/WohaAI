@@ -108,7 +108,7 @@ export class ForgotPasswordService {
   }: VerifyForgotPasswordServiceParams): Promise<VerifyForgotPasswordServiceResponse> {
     const key = `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`;
 
-    // error handling is already done in redisHelpers methods.
+    // error handling is already done in redisClient methods.
     const cache = await getForgotPasswordSessionCache(key);
     if(!cache) throw new SessionExpiredError()
       
@@ -142,7 +142,7 @@ export class ForgotPasswordService {
   }: ChangeForgottenPasswordServiceParams): Promise<ChangeForgottenPasswordServiceResponse> {
     const key = `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`;
 
-    // error handling is already done in redisHelpers methods.
+    // error handling is already done in redisClient methods.
     const cache = 
       await getForgotPasswordSessionCache(key);
       

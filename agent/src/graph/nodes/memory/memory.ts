@@ -6,8 +6,7 @@ import { AnnotationState } from "@/workflows/react.js";
 import { memoryStore } from "@/memory/qdrant/store.js";
 import { MemoryCollection, MemoryRecord } from "../../../internals/types/store.js";
 import { HumanMessage } from "langchain";
-import { connectMemoryRedis } from "@/redis/redis-client.js";
-import { memoryRedisClient } from "@/redis/redis-client.js";
+import { redisClient } from "@/redis/redis-client.js";
 import crypto from "crypto";
 
 export const memoryNode = async (state: typeof AnnotationState.State) => {
@@ -21,19 +20,18 @@ export const memoryNode = async (state: typeof AnnotationState.State) => {
     }
   }
 
-  try {
-    await connectMemoryRedis();
-  } catch (err: any) {
-    logger.warn(`Failed to connect to Memory Redis, continuing without memory cache: ${err.message}`);
-    // Continue without Redis - memory operations will still work with Qdrant
-  }
+  // try {
+  //   await connectMemoryRedis();
+  // } catch (err: any) {
+  //   logger.warn(`Failed to connect to Memory Redis, continuing without memory cache: ${err.message}`);
+  //   // Continue without Redis - memory operations will still work with Qdrant
+  // }
 
-  const redis = memoryRedisClient;
 
   // Only use Redis if connected
-  if (redis && redis.isOpen) {
+  if (redisClient && redisClient.redis) {
     try {
-      const value = await redis.get(`memory:${state.userID}`);
+      const value = await redisClient.getCache(`memory:${state.userID}`);
       logger.debug(`MemoryNode: retrieved memory ${value}`);
     } catch (err: any) {
       logger.warn(`Failed to retrieve memory from Redis for user ${state.userID}: ${err.message}`);
@@ -99,15 +97,14 @@ export const memoryNode = async (state: typeof AnnotationState.State) => {
   };
 
   // Only set Redis if userID exists and Redis is connected
-  if (state.userID && redis && redis.isOpen) {
+  if (state.userID && redisClient.redis) {
     try {
-      await redis.set(`memory:${state.userID}`, JSON.stringify(newSTM));
+      await redisClient.setCache(`memory:${state.userID}`, JSON.stringify(newSTM));
     } catch (err: any) {
       logger.warn(`Failed to save memory to Redis for user ${state.userID}: ${err.message}`);
       // Continue without Redis cache - memory is still stored in Qdrant
     }
   }
-
   return {
     memory: newLTM,
   };
