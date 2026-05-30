@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import authRoutes from "@/routes/auth.js";
 import { authLogger } from "@packages/observability";
+import { httpLogger } from "@packages/observability";
 import { errorHandler } from "@/middlewares/error-handler";
 import { redisClient } from "@packages/redis";
 import cors from "cors";
@@ -44,7 +45,7 @@ const corsOptions = {
   credentials: true, // if using cookies or auth headers
 };
 
-app.use(httpauthLogger);
+app.use(httpLogger);
 
 // Mount auth-related routes
 app.use("/", cors(corsOptions), authRoutes);

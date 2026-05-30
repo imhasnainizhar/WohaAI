@@ -32,7 +32,7 @@
     "@packages/http": "workspace:*",
     "@packages/jwt": "workspace:*",
     "@packages/observability": "workspace:*",
-    "@packages/prisma": "workspace:*",
+    "@packages/prisma-users": "workspace:*",
     "@packages/kafka": "workspace:*",
     "@packages/redis": "workspace:*",
     "argon2": "^0.44.0",

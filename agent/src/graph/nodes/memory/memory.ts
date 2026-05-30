@@ -1,13 +1,13 @@
-import { memoryPrompt } from "../../../domain/prompts/memory.js";
-import { MemorySchema } from "../../../domain/schemas/memory.js";
-import { memoryModel } from "src/llm(s)/memory.js";
-import { logger } from "../../../logger/logger.js";
-import { AnnotationState } from "@workflows/react.js";
-import { memoryStore } from "@db/memory/qdrant/store.js";
-import { MemoryCollection, MemoryRecord } from "../../../domain/types/store.js";
+import { memoryPrompt } from "../../../internals/prompts/memory.js";
+import { MemorySchema } from "../../../internals/schemas/memory.js";
+import { memoryModel } from "../../../llm/memory.js";
+import { agentLogger as logger } from '@packages/observability';
+import { AnnotationState } from "@/workflows/react.js";
+import { memoryStore } from "@/memory/qdrant/store.js";
+import { MemoryCollection, MemoryRecord } from "../../../internals/types/store.js";
 import { HumanMessage } from "langchain";
-import { connectMemoryRedis } from "@db/memory/redis/redis_client.js";
-import { memoryRedisClient } from "@db/memory/redis/redis_client.js";
+import { connectMemoryRedis } from "@/redis/redis-client.js";
+import { memoryRedisClient } from "@/redis/redis-client.js";
 import crypto from "crypto";
 
 export const memoryNode = async (state: typeof AnnotationState.State) => {

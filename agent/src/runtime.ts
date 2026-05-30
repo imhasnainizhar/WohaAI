@@ -1,4 +1,4 @@
-import reactAgentWorkflow from "@workflows/react.js";
+import reactAgentWorkflow from "@/workflows/react.js";
 
 export async function llmRuntime(input: string) {
   const agent = await reactAgentWorkflow();

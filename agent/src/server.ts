@@ -1,9 +1,9 @@
 import express, { Request, Response, Router } from "express"
-import { logger } from "./logger/logger.js"
-import { env } from "@config/env.js"
-import router from "@server/chat.route.js";
+import { agentLogger as logger } from '@packages/observability';
+import { env } from "@/config/env.js"
+import router from "@/server/route.js";
 
-const PORT = parseInt(env.WohaAI_LLM_AGENT_PORT);
+const PORT = parseInt(env.AI_AGENT_PORT);
 
 const app = express();
 

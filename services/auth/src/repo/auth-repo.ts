@@ -1,13 +1,13 @@
 import { ClientData, Password, UserSession } from "@packages/contracts/auth";
 import { InternalServerError, NormalizedError, PrismaError } from "@packages/errors";
 import { authLogger } from "@packages/observability";
-import { PrismaClient } from "@packages/prisma";
+import { PrismaClient } from "@packages/prisma-users";
 import argon2 from "argon2";
 
 /**
- * Taking SessionDuration from @packages/prisma UserSession Model export
+ * Taking SessionDuration from @packages/prisma-users UserSession Model export
  */
-import { SessionDuration } from "@packages/prisma";
+import { SessionDuration } from "@packages/prisma-users";
 
 
 export class AuthRepo {

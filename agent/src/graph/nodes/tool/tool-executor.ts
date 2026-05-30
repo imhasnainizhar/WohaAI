@@ -1,8 +1,8 @@
-import { AnnotationState } from "@workflows/react.js";
-import { ToolRegistry, ToolName, ToolInput, ToolOutput } from "@tools/registry.js";
+import { AnnotationState } from "@/workflows/react.js";
+import { ToolRegistry, ToolName, ToolInput, ToolOutput } from "@/tools/registry.js";
 import { ToolMessage } from "langchain";
-import { logger } from "../../../logger/logger.js";
-import { NormalizedToolOutput } from "../../../domain/types/agent.js";
+import { agentLogger as logger } from '@packages/observability';
+import { NormalizedToolOutput } from "../../../internals/types/agent.js";
 
 export async function toolsNode(state: typeof AnnotationState.State) {
   logger.debug("🔧 Tool Node start");

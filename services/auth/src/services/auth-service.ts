@@ -1,5 +1,5 @@
 import { AuthRepo } from "@/repo/auth-repo";
-import { prisma } from "@packages/prisma";
+import { prisma } from "@packages/prisma-users";
 import { SigninServiceParams, SigninService } from "./signin";
 import { SignoutServiceParams, SignoutService } from "./signout";
 import { RefreshSessionServiceParams, RefreshSessionService } from "./refresh-session";

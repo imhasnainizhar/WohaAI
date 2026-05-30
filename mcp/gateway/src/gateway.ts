@@ -1,8 +1,8 @@
 import { Server } from "@modelcontextprotocol/sdk/server";
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { logger } from "@utils/logger";
-import { ServiceException } from "@utils/response";
+import { mcpGatewayLogger as logger } from "@packages/observability";
+import { InternalServerError } from "@packages/errors";
 
 class MCPGatewayServer {
     private mcp: Server;
@@ -16,7 +16,7 @@ class MCPGatewayServer {
         );
         this.tools = [];
         this.transport = new StreamableHTTPServerTransport({
-            sessionIDGenerator: undefined,
+            sessionIdGenerator: undefined,
             enableJsonResponse: false
         });
     }
@@ -37,15 +37,10 @@ class MCPGatewayServer {
         return this.transport.handleRequest(request, response, request.body);
     };
 
-    errorHandler(error: any) {
+    errorHandler(error: unknown) {
         logger.error({ error }, "MCP request failed");
         this.transport.close();
-        throw new ServiceException({
-            success: false,
-            statusCode: 500,
-            message: "Internal server error",
-            errorType: "internal_server_error",
-        });
+        throw new InternalServerError(error)
     };
 }
 
