@@ -1,8 +1,8 @@
-# 🤝 WoahAI Chatbot — Contributing Guide
+# 🤝 WohaAI Chatbot — Contributing Guide
 
 ## 1. Welcome
 
-Thank you for your interest in contributing to **WoahAI Chatbot**!  
+Thank you for your interest in contributing to **WohaAI Chatbot**!  
 This project is designed as an open learning resource for responsible AI experimentation using **OpenAI APIs**.
 
 ---

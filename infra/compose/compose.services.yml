@@ -1,0 +1,76 @@
+services:
+  auth-service:
+    build:
+      context: ../../
+      dockerfile: ../../services/auth/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AUTH_SERVICE_CONTAINER_NAME}
+    ports:
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
+    volumes:
+      - - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://auth-service:${AUTH_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
+    depends_on:
+      - users-postgres-db
+
+  user-service:
+    build:
+      context: ../../
+      dockerfile: ../../services/user/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${USER_SERVICE_CONTAINER_NAME}
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    volumes:
+      - - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://user-service:${USER_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
+    depends_on:
+      - users-postgres-db
+
+  auth-mailer-service:
+    build:
+      context: ../../
+      dockerfile: ../../services/auth-mailer/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
+    ports:
+      - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
+    volumes:
+      - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
+
+networks:
+  WohaAI_dev_net:

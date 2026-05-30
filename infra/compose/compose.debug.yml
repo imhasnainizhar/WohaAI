@@ -1,0 +1,33 @@
+services:
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-kafka-broker
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT}
+    profiles:
+      - "debug"
+
+  pgadmin-gui:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_gui
+    restart: always
+    depends_on:
+      - users_postgres_db
+      - threads_postgres_db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    networks:
+    - WohaAI_dev_net
+    profiles:
+      - "debug"
+
+networks:
+  WohaAI_dev_net:

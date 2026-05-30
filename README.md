@@ -1,8 +1,8 @@
-# 🤖 WoahAI Chatbot
+# 🤖 WohaAI Chatbot
 
-![WoahAI Logo](https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/raw/65c3f25e2aeee5471f7e089621b5e0ea8a258840/gitlab_favicon.png "WoahAI Chatbot Logo")
+![WohaAI Logo](https://gitlab.com/TheHasnainIzhar/Woah_GenAI_ChatBot/-/raw/65c3f25e2aeee5471f7e089621b5e0ea8a258840/gitlab_favicon.png "WohaAI Chatbot Logo")
 
-**⚡ WoahAI is evolving at high speed!**
+**⚡ WohaAI is evolving at high speed!**
 Building ChatGPT-like business logic, custom generative APIs, and a dynamic UI layer — progressing rapidly toward production-grade architecture.
 
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-brightgray.svg) ![License MIT](https://img.shields.io/badge/License-MIT-blue.svg) ![Powered By OpenAI](https://img.shields.io/badge/Powered%20By-OpenAI-black.svg)
@@ -11,7 +11,7 @@ Building ChatGPT-like business logic, custom generative APIs, and a dynamic UI l
 
 ## 🌟 Purpose
 
-WoahAI Chatbot is a **portfolio and educational project** designed to:
+WohaAI Chatbot is a **portfolio and educational project** designed to:
 
 * Develop and showcase **ChatGPT-like generative logic**, prompt pipelines, and message orchestration.
 * Implement custom **Generative APIs** for conversational AI, modular and scalable for future extensions.
@@ -37,13 +37,13 @@ This project is in **active development**, blending **LLM-driven backends**, **r
 
 ## ⚙️ Getting Started
 
-Follow these steps to set up WoahAI locally for development or testing.
+Follow these steps to set up WohaAI locally for development or testing.
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://gitlab.com/yourusername/WoahAI_Chatbot.git
-cd WoahAI_Chatbot
+git clone https://gitlab.com/yourusername/WohaAI_Chatbot.git
+cd WohaAI_Chatbot
 ```
 
 ### 2. Install Dependencies
@@ -162,7 +162,7 @@ project-root/
 
 ## 🌍 Vision & Roadmap
 
-WoahAI aims to evolve into a **modular, production-ready conversational AI ecosystem**, combining scalable backend logic, ethical AI engineering practices, and cutting-edge UI.
+WohaAI aims to evolve into a **modular, production-ready conversational AI ecosystem**, combining scalable backend logic, ethical AI engineering practices, and cutting-edge UI.
 
 ### Upcoming Milestones
 

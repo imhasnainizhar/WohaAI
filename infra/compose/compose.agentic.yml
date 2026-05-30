@@ -1,0 +1,57 @@
+services:
+  wohaai-agent:
+    build:
+      context: ../../../services/agent/
+      dockerfile: ../../agent/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AGENT_CONTAINER_NAME}
+    ports: 
+      - "${AI_AGENT_PORT}:${AI_AGENT_PORT}"
+    volumes:
+      - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - WohaAI_dev_net
+    profiles:
+      - "agentic"
+      
+  mcp-gateway:
+    build:
+      context: ../../
+      dockerfile: ../../mcp/gateway/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${MCP_GATEWAY_CONTAINER_NAME}
+    ports: 
+      - "${MCP_GATEWAY_PORT}:${MCP_GATEWAY_PORT}"
+    volumes:
+      - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - WohaAI_dev_net
+    profiles:
+      - "agentic"
+
+  mcp-web-search:
+    build:
+      context: ../../
+      dockerfile: ../../mcp/servers/web_search/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${WEB_SEARCH_MCP_CONTAINER_NAME}
+    ports:
+      - "${WEB_SEARCH_MCP_PORT}:${WEB_SEARCH_MCP_PORT}"
+    volumes:
+      - ../../:/app
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - WohaAI_dev_net
+    profiles:
+      - "agentic"
+
+networks:
+  WohaAI_dev_net:

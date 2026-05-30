@@ -1,0 +1,79 @@
+{
+  "compilerOptions": {
+    /* =========================
+         Language & Environment
+      ========================== */
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    /* =========================
+         Strictness
+      ========================== */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    /* =========================
+         React / JSX
+      ========================== */
+    "jsx": "react-jsx",
+    /* =========================
+         Interop
+      ========================== */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    /* =========================
+         DX / Editor
+      ========================== */
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    /* =========================
+         Emit
+      ========================== */
+    "composite": true,
+    "declaration": true,
+    "sourceMap": true,
+    /* =========================
+         Module Safety
+      ========================== */
+    "forceConsistentCasingInFileNames": true,
+    /* =========================
+         Incremental Build
+      ========================== */
+    "incremental": true
+  },
+  "references": [
+    {
+      "path": "./packages/shared"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/config"
+    },
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./services/auth"
+    },
+    {
+      "path": "./services/user"
+    },
+    {
+      "path": "./agent"
+    },
+    {
+      "path": "./mcp/gateway"
+    },
+    {
+      "path": "./mcp/servers/web_search"
+    }
+  ]
+}

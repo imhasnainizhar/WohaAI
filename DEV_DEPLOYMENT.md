@@ -1,4 +1,4 @@
-# 🐳 Woah AI Docker Development Guide
+# 🐳 WohaAI Docker Development Guide
 
 This guide explains how to **develop, test, and deploy** this MicroService Architecture application consisting of:
 

@@ -1,0 +1,62 @@
+{
+  "name": "auth_service",
+  "version": "1.0.0",
+  "description": "Microservice handling all auth logic of App",
+  "main": "src/server.ts",
+  "directories": {
+    "src": "src",
+    "test": "tests"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "esbuild src/server.ts --bundle --platform=node --outdir=dist --format=cjs --sourcemap",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "clean": "rm dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "WohaAI"
+  },
+  "keywords": [
+    "AI",
+    "Auth"
+  ],
+  "author": "Hasnain Izhar",
+  "license": "MIT",
+  "dependencies": {
+    "@packages/config": "workspace:*",
+    "@packages/contracts": "workspace:*",
+    "@packages/errors": "workspace:*",
+    "@packages/http": "workspace:*",
+    "@packages/jwt": "workspace:*",
+    "@packages/observability": "workspace:*",
+    "@packages/prisma-users": "workspace:*",
+    "@packages/kafka": "workspace:*",
+    "@packages/redis": "workspace:*",
+    "argon2": "^0.44.0",
+    "axios": "^1.16.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "kafkajs": "^2.2.4",
+    "ua-parser-js": "^2.0.10",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/argon2": "^0.15.4",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.1",
+    "@types/ua-parser-js": "^0.7.39",
+    "esbuild": "^0.28.0",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

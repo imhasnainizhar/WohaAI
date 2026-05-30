@@ -1,4 +1,0 @@
-[workspace]
-members = [
-    "services/ms/auth_mailer_service"
-]
