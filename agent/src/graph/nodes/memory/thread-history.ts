@@ -1,7 +1,7 @@
 // nodes/threadHistory.node.ts
 import { v7 as uuidv7 } from "uuid";
 import { prismaClient } from "@db/threads/prisma/prisma_client.js";
-import { AnnotationState } from "@workflows/react.js";
+import { AnnotationState } from "@/workflows/react.js";
 import { logger } from "../../../logger/logger.js";
 import { HumanMessage, AIMessage, ToolMessage } from "langchain";
 
