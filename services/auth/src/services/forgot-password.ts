@@ -1,154 +1,164 @@
-import jwt, { SignOptions } from "jsonwebtoken";
-import argon2 from "argon2";
-import { envConfigs as env, EXPIRATION } from "@packages/config";
-import { AuthRepo } from '@/repo/auth-repo';
-import { InternalServerError, InvalidCredentialsError } from "@packages/errors";
-import { authLogger } from "@packages/observability";
-import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
+import {
+  deleteForgotPasswordSessionCache,
+  getForgotPasswordSessionCache,
+  setForgotPasswordSessionCache
+} from "@/redis/redis";
+
+import { randomUUID } from "crypto";
+import { env } from "@/config/env";
+import { createJwtToken, ForgotPasswordSessionPayload } from "@packages/jwt";
 import { exp } from "@/config/exp";
+import { SignOptions } from "jsonwebtoken";
+import { getForgotPasswordProducer } from "@/producer/forgot-password";
+import { ForgotPasswordEmailEvent } from "@packages/contracts/mailer";
+import argon2 from "argon2"
+import {
+  InvalidCredentialsError,
+  MaliciousActivityError,
+  SessionExpiredError
+} from "@packages/errors";
 
-/**
- * Taking SessionDuration from @packages/prisma UserSession Model export
- */
-import { SessionDuration } from "@packages/prisma";
+import { AuthRepo } from "@/repo/auth-repo";
+import { Password } from "@packages/contracts/auth";
+import { authLogger } from "@packages/observability";
+import { ForgotPasswordInitRequest } from '@packages/contracts/auth';
 
 
-export interface SigninServiceParams {
-  usernameOrEmail: {
-    type: "username"; value: string;
-  } | {
-    type: "email"; value: string;
-  };
-  password: string;
-  rememberMe: boolean;
-  clientData: ClientData;
+// init()
+export interface ForgotPasswordInitServiceParams {
+  parsed: ForgotPasswordInitRequest;
+}
+export interface ForgotPasswordInitServiceResponse {
+  forgotPasswordEmailSent: boolean;
 }
 
-export interface SigninServiceResponse {
-  profilePicURI: string;
-  userID: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  refreshToken: string;
-  accessToken: string;
+// verify()
+export interface VerifyForgotPasswordServiceParams {
+  sessionID: string;
+}
+export interface VerifyForgotPasswordServiceResponse {
+  forgotPasswordSessionToken: string;
+  redirectTo: string;
 }
 
-export class SigninService {
+//changePassword()
+export interface ChangeForgottenPasswordServiceParams {
+  sessionID: string;
+  password: Password;
+}
+export interface ChangeForgottenPasswordServiceResponse {
+  forgottenPasswordChanged: boolean;
+}
 
-  constructor(private repo: AuthRepo) { }
+export class ForgotPasswordService {
+  constructor(private authRepo: AuthRepo) { }
 
-  /**
-   * Main signin business logic
-   */
-  public async execute({
-    usernameOrEmail,
-    password,
-    rememberMe,
-    clientData
-  }: SigninServiceParams): Promise<SigninServiceResponse> {
-    const user =
-      await this.repo.getUserWithUsernameOrEmail(usernameOrEmail);
+  public async init({
+    parsed
+  }: ForgotPasswordInitServiceParams): Promise<ForgotPasswordInitServiceResponse> {
 
-    if (user === null) throw new InvalidCredentialsError()
+    // user session validaiton happens at handler
 
-    const isPasswordCorrect = await argon2.verify(
-      user.hashedPassword,
-      password
-    );
+    // prisma check
+    const foundUser = 
+      await this.authRepo.getUserWithUsernameOrEmail(parsed.forgotPasswordUsernameOrEmail)
 
-    if (!isPasswordCorrect) throw new InvalidCredentialsError
+    if (!foundUser) throw new InvalidCredentialsError();
 
-    const {
-      JWT_ACCESS_SECRET_KEY,
-      JWT_REFRESH_SECRET_KEY,
-    } = this.getJWTSecrets();
+    const sessionID = randomUUID();
 
-    const userSessionID = crypto.randomUUID();
-    const refreshTokenJti = crypto.randomUUID();
+    await setForgotPasswordSessionCache({
+      sessionID,
+      userID: foundUser.userID,
+      email: foundUser.email,
+      username: foundUser.username,
+      createdOn: new Date()
+    })
 
-    // Maybe we in future make a feature to save and use jti for further security.
-    const refreshToken = createJwtToken<RefreshTokenPayload>({
-      payload: {
-        jti: refreshTokenJti,
-        sub: user.userID,
-        sid: userSessionID,
-      },
-      secret: JWT_REFRESH_SECRET_KEY,
-      options: {
-        expiresIn: rememberMe? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
-      } as SignOptions
-    });
+    // create producer to push events on kafka
+    const producer = await getForgotPasswordProducer();
 
-    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
+    const event: ForgotPasswordEmailEvent = {
+      sessionID,
+      userID: foundUser.userID,
+      username: foundUser.username,
+      email: foundUser.email,
+      uriSessionToken: `http://localhost:8001/verify-forgot-password-session?sessionId=${sessionID}`,
+      createdOn: new Date()
+    }
 
-    /**
-     * Persist session
-     */
-    const session = await this.repo.createUserSession({
-      userID: user.userID,
-      clientData,
-      refreshToken,
-      sessionDuration,
-      userSessionID,
-    });
-
-    authLogger.debug({
-      message: "✅ [SESSION] Created new user session",
-      userID: session.userID,
-      ip: clientData.userIPAddress,
-      device: clientData.userDeviceName,
-    });
-
-    const accessTokenJti = crypto.randomUUID();
-    /**
-     * Access token
-     */
-    const accessToken = createJwtToken<AccessTokenPayload>({
-      payload: {
-        jti: accessTokenJti,
-        sub: user.userID,
-        sid: session.userSessionID,
-        role: "user"
-      },
-      secret: JWT_ACCESS_SECRET_KEY,
-      options: {
-        expiresIn: exp.JWT_ACCESS_TOKEN,
-      } as SignOptions
+    // Push event on kafka
+    // produce email event on kafka
+    await producer.send({
+      topic: env.AUTH_KAFKA_FORGOT_PASSWORD_EVENTS_TOPIC,
+      messages: [
+        {
+          value: JSON.stringify(event),
+        },
+      ],
     });
 
     return {
-      profilePicURI: user.profilePicURI || "",
-      userID: user.userID,
-      username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      refreshToken,
-      accessToken
+      forgotPasswordEmailSent: true
     }
   }
 
-  /**
-   * Validate JWT secrets existence
-   */
-  private getJWTSecrets() {
-    const {
-      JWT_ACCESS_SECRET_KEY,
-      JWT_REFRESH_SECRET_KEY,
-    } = env;
+  public async verify({
+    sessionID
+  }: VerifyForgotPasswordServiceParams): Promise<VerifyForgotPasswordServiceResponse> {
+    const key = `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`;
 
-    if (
-      !JWT_ACCESS_SECRET_KEY ||
-      !JWT_REFRESH_SECRET_KEY
-    ) {
-      throw new InternalServerError({ message: "JWT keys misconfiguration" })
-    }
+    // error handling is already done in redisHelpers methods.
+    const cache = await getForgotPasswordSessionCache(key);
+    if(!cache) throw new SessionExpiredError()
+      
+    // one-time use
+    await deleteForgotPasswordSessionCache(key);
+
+    const jti = randomUUID()
+
+    const token = createJwtToken<ForgotPasswordSessionPayload>({
+      payload: {
+        jti,
+        sub: sessionID
+      },
+      secret: env.JWT_FORGOT_PASSWORD_SESSION_SECRET_KEY,
+      options: {
+        expiresIn: exp.JWT_FORGOT_PASSWORD_SESSION_SECRET_KEY
+      } as SignOptions
+    })
 
     return {
-      JWT_ACCESS_SECRET_KEY,
-      JWT_REFRESH_SECRET_KEY,
+      forgotPasswordSessionToken: token,
+      redirectTo: "/change-forgotten-password",
     };
+  }
+
+  // This is our new method of typing things related to user using types of zod schemas from @packages/contracts/auth
+  // ForgotPasswordSessionToken will be validated at handler after being extracted from session cookie. 
+  public async changePassword({
+    sessionID,
+    password
+  }: ChangeForgottenPasswordServiceParams): Promise<ChangeForgottenPasswordServiceResponse> {
+    const key = `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`;
+
+    // error handling is already done in redisHelpers methods.
+    const cache = 
+      await getForgotPasswordSessionCache(key);
+      
+    if(!cache) throw new SessionExpiredError()
+
+    const userID = cache.userID;
+
+    const hashedPassword = await argon2.hash(password);
+
+    const result = 
+      await this.authRepo.changeUserPassword({ userID, hashedPassword })
+
+    authLogger.debug(`Forgotten password changed for userID: ${result.userID}, username: ${result.username}`)
+
+    return {
+      forgottenPasswordChanged: true
+    }
   }
 }

@@ -8,7 +8,7 @@ import {
 import {
   setSignupSession,
   getSignupSession,
-  SignupSession,
+  SignupSessionData,
 } from "@/redis/redis";
 
 export interface ContinueWithUsernameServiceParams {
@@ -37,7 +37,7 @@ export class ContinueWithUsernameService {
     );
 
     // Fetch signup session
-    const signupSession: SignupSession =
+    const signupSession: SignupSessionData =
       await getSignupSession(
         signupSessionID
       );
@@ -67,10 +67,12 @@ export class ContinueWithUsernameService {
     }
 
     // Update redis session
-    await setSignupSession({
-      ...signupSession,
-      username: username,
-    });
+    await setSignupSession(
+      signupSessionID,
+      {
+        ...signupSession,
+        username: username,
+      });
 
     authLogger.info(
       "Username validated and cached successfully."

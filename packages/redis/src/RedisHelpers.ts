@@ -1,9 +1,8 @@
-import { envConfigs, type EnvConfig } from "@packages/config";
-
-import { logger } from "@packages/observability";
+import { authLogger as logger } from "@packages/observability";
 
 import {
   InternalServerError,
+  ServiceError,
   SessionExpiredError,
 } from "@packages/errors";
 
@@ -12,7 +11,7 @@ import { redisClient } from "./RedisClients";
 export class RedisHelper {
   private static instance: RedisHelper;
 
-  private constructor() {}
+  private constructor() { }
 
   // ========================================
   // Singleton
@@ -75,34 +74,42 @@ export class RedisHelper {
 
   public async getCache(
     key: string,
-  ): Promise<string | null> {
+  ): Promise<string> {
     try {
-      // Returning value as it is in string format, service helpers will do JSON.parse() if needed.
-      const result = 
-        await redisClient.redis.get(
-          key,
-        );
+      const result = await redisClient.redis.get(key);
 
       logger.debug(
-        `🧩 Redis GET: ${key} → ${result
-          ? "HIT"
-          : "MISS"
-        }`,
+        `🧩 Redis GET: ${key} → ${result ? "HIT" : "MISS"}`
       );
+
+      if (result === null) {
+        throw new SessionExpiredError();
+      }
 
       return result;
     } catch (err) {
+      // IMPORTANT: do not wrap domain errors again
+      if (err instanceof SessionExpiredError) {
+        throw err;
+      }
+
+      if (err instanceof ServiceError) {
+        logger.error({
+          message: "Redis getCache failed",
+          key,
+          error: err.message,
+        });
+
+        throw err;
+      }
+
       logger.error({
-        message:
-          "Redis getCache failed",
+        message: "Redis unexpected failure",
         key,
-        error:
-          (err as Error).message,
+        error: (err as Error).message,
       });
 
-      throw new InternalServerError(
-        err,
-      );
+      throw new InternalServerError(err);
     }
   }
 
@@ -113,27 +120,14 @@ export class RedisHelper {
   public async deleteCache(
     key: string,
   ): Promise<void> {
-    try {
-      await redisClient.redis.del(
-        key,
-      );
+      const result = await redisClient.redis.del(key);
+
+      if(!result) throw new InternalServerError()
+      if ( result === 0 ) throw new SessionExpiredError()
 
       logger.debug(
-        `🧩 Redis DEL: ${key}`,
+        `🧩 Redis DEL: ${key} → ${result === 1 ? "DELETED" : "NOT_FOUND"}`
       );
-    } catch (err) {
-      logger.error({
-        message:
-          "Redis deleteCache failed",
-        key,
-        error:
-          (err as Error).message,
-      });
-
-      throw new InternalServerError(
-        err,
-      );
-    }
   }
 }
 

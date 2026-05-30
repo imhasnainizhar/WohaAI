@@ -7,6 +7,7 @@ import {
   getSignupSession,
   getVerificationCodeCache,
   setConfirmedEmailCache,
+  setSignupSession,
 } from "@/redis/redis";
 import { InvalidVerificationCodeError, SessionExpiredError } from "@packages/errors";
 import { VerificationCodeExpiredError } from '@packages/errors';
@@ -63,7 +64,7 @@ export class VerifyUserEmailService {
         createJwtToken<SignupSessionPayload>({
           payload: {
             jti: randomUUID(),
-            sid: signupSessionID,
+            sub: signupSessionID,
           },
           secret: env.JWT_SIGNUP_SESSION_SECRET_KEY,
           options: {
@@ -75,6 +76,14 @@ export class VerifyUserEmailService {
         signupSessionID,
         email: pendingEmail
       });
+
+      // to refresh expiry (ttl)
+      await setSignupSession(
+        signupSessionID,
+        {
+          ...signupSession
+        }
+      )
 
       authLogger.info(
         `✅ Email verified successfully for session ${signupSessionID}`

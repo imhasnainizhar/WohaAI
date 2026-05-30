@@ -1,7 +1,5 @@
 import { authLogger } from "@packages/observability";
-
 import { AuthRepo } from "@/repo/auth-repo";
-
 import {
     ConflictError,
     SessionExpiredError,
@@ -10,7 +8,7 @@ import {
 import {
     getSignupSession,
     setSignupSession,
-    SignupSession,
+    SignupSessionData,
 } from "@/redis/redis";
 
 export interface ContinueWithEmailServiceParams {
@@ -36,10 +34,10 @@ export class ContinueWithEmailService {
         authLogger.debug("Continuing signup with email...");
 
         // Fetch pending signup session
-        const signupSession: SignupSession =
+        const signupSession: SignupSessionData =
             await getSignupSession(signupSessionID);
 
-        if (!pending) {
+        if (!signupSession) {
             throw new SessionExpiredError();
         }
 
@@ -67,6 +65,7 @@ export class ContinueWithEmailService {
 
         // Update signup session
         await setSignupSession(
+            signupSessionID,
             {
                 ...signupSession,
                 email

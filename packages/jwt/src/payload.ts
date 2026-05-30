@@ -54,5 +54,9 @@ export interface PrivilegedAccessTokenPayload
  */
 export interface SignupSessionPayload
     extends BaseJwtPayload {
-    sid: string;
+    sub: string;
+}
+
+export interface ForgotPasswordSessionPayload extends BaseJwtPayload {
+    sub: string
 }

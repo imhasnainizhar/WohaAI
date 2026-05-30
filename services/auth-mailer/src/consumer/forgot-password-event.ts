@@ -13,7 +13,7 @@ interface ForgotPasswordEmailMessage {
 // CONSUMER
 const consumer = getConsumer({
   kafkaClientID: "auth-mailer-service",
-
+  brokers: env.AUTH_KAFKA_BROKERS,
   consumerGroupID:
     env.AUTH_KAFKA_PASSWORD_EVENTS_CONSUMER_GROUP_ID,
 });

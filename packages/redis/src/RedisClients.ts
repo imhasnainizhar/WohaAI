@@ -1,4 +1,4 @@
-import { logger } from "@packages/observability";
+import { authLogger as logger } from "@packages/observability";
 import { InternalServerError } from "@packages/errors";
 import Redis from "ioredis";
 import { envConfigs, EnvConfig } from "@packages/config";

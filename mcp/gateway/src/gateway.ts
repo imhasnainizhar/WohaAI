@@ -16,7 +16,7 @@ class MCPGatewayServer {
         );
         this.tools = [];
         this.transport = new StreamableHTTPServerTransport({
-            sessionIdGenerator: undefined,
+            sessionIDGenerator: undefined,
             enableJsonResponse: false
         });
     }

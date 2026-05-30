@@ -6,7 +6,7 @@ import {
 import {
   getSignupSession,
   setSignupSession,
-  SignupSession,
+  SignupSessionData,
 } from "@/redis/redis";
 
 export interface PasswordValidationServiceParams {
@@ -25,7 +25,7 @@ export class PasswordValidationService {
   }: PasswordValidationServiceParams): Promise<PasswordValidationServiceResponse> {
     authLogger.debug("Continuing signup with password...");
 
-    const signupSession: SignupSession =
+    const signupSession: SignupSessionData =
       await getSignupSession(signupSessionID);
 
     if (!signupSession) throw new SessionExpiredError();
@@ -36,10 +36,12 @@ export class PasswordValidationService {
       signupSession.hashedPassword !== hashedPassword;
 
     if (needsUpdate) {
-      await setSignupSession({
-        ...signupSession,
-        hashedPassword: hashedPassword,
-      });
+      await setSignupSession(
+        signupSessionID,
+        {
+          ...signupSession,
+          hashedPassword: hashedPassword,
+        });
     }
 
     authLogger.info("Password validated successfully.");

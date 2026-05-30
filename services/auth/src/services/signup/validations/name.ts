@@ -6,7 +6,7 @@ import {
 import {
   getSignupSession,
   setSignupSession,
-  SignupSession,
+  SignupSessionData,
 } from "@/redis/redis";
 
 export interface NameValidationServiceParams {
@@ -28,7 +28,7 @@ export class NameValidationService {
   }: NameValidationServiceParams): Promise<NameValidationServiceResponse> {
     authLogger.debug("Continuing signup with name...");
 
-    const signupSession: SignupSession =
+    const signupSession: SignupSessionData =
       await getSignupSession(signupSessionID);
 
     if (!signupSession) throw new SessionExpiredError();
@@ -46,11 +46,13 @@ export class NameValidationService {
     }
 
     if (updated) {
-      await setSignupSession({
-        ...signupSession,
-        firstName,
-        lastName,
-      });
+      await setSignupSession(
+        signupSessionID,
+        {
+          ...signupSession,
+          firstName,
+          lastName,
+        });
     }
 
     authLogger.info("Name validated successfully.");

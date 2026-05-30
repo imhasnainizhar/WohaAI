@@ -86,6 +86,9 @@ const env: EnvConfig = {
   JWT_SIGNUP_SESSION_SECRET_KEY:
     p.JWT_SIGNUP_SESSION_SECRET_KEY!,
 
+  JWT_FORGOT_PASSWORD_SESSION_SECRET_KEY:
+    p.JWT_FORGOT_PASSWORD_SESSION_SECRET_KEY!,
+
   // ========================================
   // Token Names
   // ========================================
@@ -102,12 +105,24 @@ const env: EnvConfig = {
   SIGNUP_SESSION_TOKEN_NAME:
     p.SIGNUP_SESSION_TOKEN_NAME!,
 
+  FORGOT_PASSWORD_SESSION_TOKEN_NAME:
+    p.FORGOT_PASSWORD_SESSION_TOKEN_NAME!,
+
   // ========================================
   // Redis Cache Keys
   // ========================================
 
-  ACTIVE_SIGNUP_SESSION_CACHE_KEY:
-    p.ACTIVE_SIGNUP_SESSION_CACHE_KEY!,
+  SIGNUP_SESSION_REDIS_KEY_PREFIX:
+    p.SIGNUP_SESSION_REDIS_KEY_PREFIX!,
+
+  FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX:
+    p.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX!,
+
+  VERIFICATION_CODE_REDIS_KEY_PREFIX:
+    p.VERIFICATION_CODE_REDIS_KEY_PREFIX!,
+
+  CONFIRMED_EMAIL_REDIS_KEY_PREFIX:
+    p.CONFIRMED_EMAIL_REDIS_KEY_PREFIX!,
 
   // ========================================
   // API Keys

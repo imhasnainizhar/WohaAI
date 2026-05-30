@@ -1,2 +1,2 @@
 
-// Exports of contracts related to mailer domain
+export * from "./custom-types/events"

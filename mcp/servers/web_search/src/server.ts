@@ -14,7 +14,7 @@ logger.info("🧩 Booting Web MCP server...");
 
 // ✅ Create transport ONCE
 const transport = new StreamableHTTPServerTransport({
-  sessionIdGenerator: undefined,
+  sessionIDGenerator: undefined,
   enableJsonResponse: true
 });
 

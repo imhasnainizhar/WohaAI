@@ -8,14 +8,6 @@ export type VerificationCode = z.infer<typeof VerificationCodeSchema>;
 export type VerifyUserEmailRequest = z.infer<typeof VerifyUserEmailRequestSchema>;
 export type SignupCompleteRequest = z.infer<typeof SignupCompleteRequestSchema>
 
-export interface VerifySignupEmailEvent {
-    type: string,
-    email: string,
-    code: string,
-    signupSessionID: string,
-    createdAt: Date
-}
-
 export interface SignupInitResponse {
     signupSessionInit: boolean
     alreadyExists: boolean;

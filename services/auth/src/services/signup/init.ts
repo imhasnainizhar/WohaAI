@@ -7,6 +7,7 @@ import { RedisHelper } from "@packages/redis";
 import { AuthRepo } from '@/repo/auth-repo';
 import { ConflictError } from "@packages/errors";
 import { SignOptions } from "jsonwebtoken";
+import { getSignupSession, setSignupSession } from "@/redis/redis";
 
 
 export interface SignupInitServiceParams {
@@ -30,7 +31,6 @@ export interface SignupInitServiceResponse {
 export class SignupInitService {
   constructor(
     private authRepo: AuthRepo,
-    private redisHelpers: RedisHelper
   ) { }
 
 
@@ -65,31 +65,28 @@ export class SignupInitService {
     const signupSessionToken = createJwtToken<SignupSessionPayload>({
       payload: {
         jti,
-        sid: signupSessionID
+        sub: signupSessionID
       },
       secret: env.JWT_SIGNUP_SESSION_SECRET_KEY,
       options: {
         expiresIn: exp.JWT_SIGNUP_SESSION_TOKEN
       } as SignOptions
     });
-    
+
 
     authLogger.debug(
       "💾 Caching pending signup session in Redis..."
     );
 
-    const tempUser = {
-      [identifierType]: identifier,
-    };
-
-    await this.redisHelpers.setCache(
-      `${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`,
-      JSON.stringify(tempUser),
-      exp.REDIS_SIGNUP_SESSION_TTL
-    );
+    await setSignupSession(
+      signupSessionID,
+      {
+        username: identifierType === "username" ? identifier : undefined,
+        email: identifierType === "email" ? identifier : undefined
+      });
 
     authLogger.debug(
-      await this.redisHelpers.getCache(`${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`)
+      await getSignupSession(signupSessionID)
     )
 
     authLogger.debug(

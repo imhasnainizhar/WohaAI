@@ -718,6 +718,9 @@ importers:
       '@packages/jwt':
         specifier: workspace:*
         version: link:../../packages/jwt
+      '@packages/kafka':
+        specifier: workspace:*
+        version: link:../../packages/kafka
       '@packages/observability':
         specifier: workspace:*
         version: link:../../packages/observability
@@ -8365,7 +8368,7 @@ snapshots:
       jsonwebtoken: 9.0.3
       load-esm: 1.0.3
       mime-types: 2.1.35
-      retry-axios: 2.6.0(axios@1.16.1(debug@4.3.4))
+      retry-axios: 2.6.0(axios@1.16.1)
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - supports-color
@@ -9469,7 +9472,7 @@ snapshots:
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
 
-  retry-axios@2.6.0(axios@1.16.1(debug@4.3.4)):
+  retry-axios@2.6.0(axios@1.16.1):
     dependencies:
       axios: 1.16.1(debug@4.3.4)
 

@@ -12,6 +12,7 @@ interface VerificationEmailMessage {
 // CONSUMER
 const consumer = getConsumer({
   kafkaClientID: "auth-mailer-service",
+  brokers: env.AUTH_KAFKA_BROKERS,
   consumerGroupID:
     env.AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_CONSUMER_GROUP_ID,
 });

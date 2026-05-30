@@ -1,20 +1,12 @@
 import { randomInt } from "crypto";
 import { AuthRepo } from "@/repo/auth-repo";
 import { authLogger } from "@packages/observability";
-import { getProducer } from "@/producer";
+import { getEmailVerificationProducer } from "@/producer/verify-email";
 import { env } from "@/config/env";
 import { SessionExpiredError } from "@packages/errors";
-import { VerifySignupEmailEvent } from "@packages/contracts/auth";
+import { VerifySignupEmailEvent } from "@packages/contracts/mailer";
 import { getSignupSession, setVerificationCodeCache } from "@/redis/redis";
 
-
-/**
- * Topic used for outbound email events.
- * The mailer service will subscribe to this and
- * send the actual verification email.
- */
-const EMAIL_TOPIC =
-  env.AUTH_KAFKA_SIGNUP_EVENTS_TOPIC;
 
 export interface SendVerificationServiceResponse {
   verificationEmailSent: boolean
@@ -46,7 +38,7 @@ export class SendVerificationEmailService {
     let pendingEmail: string | undefined;
 
     // fetch signup session
-    const cacheKey = `${env.ACTIVE_SIGNUP_SESSION_CACHE_KEY}:${signupSessionID}`;
+    const cacheKey = `${env.SIGNUP_SESSION_REDIS_KEY_PREFIX}:${signupSessionID}`;
 
     const session =
       await getSignupSession(cacheKey);
@@ -82,13 +74,11 @@ export class SendVerificationEmailService {
     };
 
     // create producer to produce event on kafka
-    const producer = await getProducer(
-      EMAIL_TOPIC
-    );
+    const producer = await getEmailVerificationProducer();
 
     // produce email event on kafka
     await producer.send({
-      topic: EMAIL_TOPIC,
+      topic: env.AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC,
       messages: [
         {
           value: JSON.stringify(event),

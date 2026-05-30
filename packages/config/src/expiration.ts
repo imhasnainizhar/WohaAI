@@ -17,4 +17,8 @@ export const EXPIRATION = {
     JWT_SIGNUP_SESSION_TOKEN_EXTENDED: "20m", // 20 minutes in seconds (for post email-verification signup flow)
     SIGNUP_SESSION_COOKIE_EXTENDED: 20 * 60 * 1000, // 20 minutes for cookie, in ms
     REDIS_SIGNUP_SESSION_TTL_EXTENDED: 20 * 60, // Match signup session (20 min)
+
+    JWT_FORGOT_PASSWORD_SESSION_SECRET_KEY: "10m",
+    FORGOT_PASSWORD_SESSION_COOKIE: 10 * 60 * 1000,
+    REDIS_FORGOT_PASSWORD_SESSION_TTL: 10 * 60, // Match signup session (20 min)
 };

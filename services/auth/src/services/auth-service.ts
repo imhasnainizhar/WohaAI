@@ -3,9 +3,7 @@ import { prisma } from "@packages/prisma";
 import { SigninServiceParams, SigninService } from "./signin";
 import { SignoutServiceParams, SignoutService } from "./signout";
 import { RefreshSessionServiceParams, RefreshSessionService } from "./refresh-session";
-
 import { SignupInitServiceParams, SignupInitService } from "./signup/init";
-import { redisHelpers } from "@packages/redis";
 import { ContinueWithEmailService, ContinueWithEmailServiceParams } from "./signup/continue/email";
 import { ContinueWithUsernameService, ContinueWithUsernameServiceParams } from './signup/continue/username';
 import { NameValidationService, NameValidationServiceParams } from "./signup/validations/name";
@@ -13,8 +11,18 @@ import { PasswordValidationService, PasswordValidationServiceParams } from "./si
 import { SignupCompleteService, SignupCompleteServiceParams } from "./signup/complete";
 import { UserProvisioningClient } from "@/clients/user-provision";
 import { env } from "@/config/env";
-import { SendVerificationEmailService, SendVerificationServiceParams } from "./signup/verification/send-verification-email";
+import { 
+    SendVerificationEmailService, 
+    SendVerificationServiceParams 
+
+} from "./signup/verification/send-verification-email";
 import { VerifyUserEmailService, VerifyUserEmailServiceParams } from "./signup/verification/verify-user-email";
+import { 
+    ChangeForgottenPasswordServiceParams, 
+    ForgotPasswordInitServiceParams, 
+    ForgotPasswordService, 
+    VerifyForgotPasswordServiceParams
+} from "./forgot-password";
 
 class AuthService {
     private static instance: AuthService;
@@ -35,6 +43,8 @@ class AuthService {
         private readonly passwordValidationService: PasswordValidationService,
 
         private readonly signupCompleteService: SignupCompleteService,
+
+        private readonly forgotPasswordService: ForgotPasswordService
     ) { }
 
     /**
@@ -51,7 +61,7 @@ class AuthService {
             const signoutService = new SignoutService(authRepo);
             const refreshSessionService = new RefreshSessionService(authRepo);
 
-            const signupInitService = new SignupInitService(authRepo, redisHelpers);
+            const signupInitService = new SignupInitService(authRepo);
             const continueWithUsernameService = new ContinueWithUsernameService(authRepo);
             const continueWithEmailService = new ContinueWithEmailService(authRepo);
 
@@ -62,6 +72,8 @@ class AuthService {
             const passwordValidationService = new PasswordValidationService();
 
             const signupCompleteService = new SignupCompleteService(authRepo, userProvisioningClient);
+
+            const forgotPasswordService = new ForgotPasswordService(authRepo);
 
             AuthService.instance = new AuthService(
                 signinService,
@@ -79,6 +91,8 @@ class AuthService {
                 passwordValidationService,
 
                 signupCompleteService,
+
+                forgotPasswordService
             );
         }
 
@@ -167,6 +181,25 @@ class AuthService {
         clientData
     }: SignupCompleteServiceParams) {
         return this.signupCompleteService.execute({ signupSessionID, rememberMe, clientData })
+    }
+
+    public async forgotPasswordInit({
+        parsed
+    }: ForgotPasswordInitServiceParams) {
+        return this.forgotPasswordService.init({parsed})
+    }
+
+    public async verifyForgetPasswordRequest({
+        sessionID
+    }: VerifyForgotPasswordServiceParams) {
+        return this.forgotPasswordService.verify({sessionID})
+    }
+
+    public async changeForgottenPassword({
+        sessionID,
+        password
+    }: ChangeForgottenPasswordServiceParams) {
+        return this.forgotPasswordService.changePassword({sessionID, password})
     }
 }
 
