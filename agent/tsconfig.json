@@ -34,8 +34,7 @@
         "sourceMap": true
     },
     "include": [
-        "src/**/*.js",
-        "src/**/*.ts",
+        "src",
     ],
     "exclude": [
         "node_modules",

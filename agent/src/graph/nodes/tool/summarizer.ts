@@ -1,9 +1,9 @@
-import { AnnotationState } from "@workflows/react.js";
-import { logger } from "../../../logger/logger.js";
+import { AnnotationState } from "@/workflows/react.js";
+import { agentLogger as logger } from '@packages/observability';
 import { AIMessage, HumanMessage, SystemMessage, Tool } from "langchain";
-import { summarizerModel } from "src/llm(s)/summarizer.js";
-import summarizerPrompt from "../../../domain/prompts/summarizer.js";
-import { summarizingTextTemplate } from "../../../domain/templates/summarizer.js";
+import { summarizerModel } from "../../../llm/summarizer.js";
+import summarizerPrompt from "../../../internals/prompts/summarizer.js";
+import { summarizingTextTemplate } from "../../../internals/templates/summarizer.js";
 
 // Summarizer node compresses tool outputs into a single summarized message
 export default async function summarizerNode(state: typeof AnnotationState.State) {

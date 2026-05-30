@@ -1,6 +1,6 @@
 import { MultiServerMCPClient } from "@langchain/mcp-adapters";
-import { logger } from "../../logger/logger.js";
-import { env } from "@config/env.js";
+import { env } from "@/config/env.js";
+import { agentLogger as logger } from '@packages/observability';
 
 // Lazy initialization - client is created only when needed
 let MCPClient: MultiServerMCPClient | null = null;

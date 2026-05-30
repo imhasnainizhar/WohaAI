@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@packages/observability": "workspace:*",
-    "@packages/prisma": "workspace:*",
+    "@packages/prisma-users": "workspace:*",
     "ioredis": "^5.11.0",
     "jsonwebtoken": "^9.0.3"
   },

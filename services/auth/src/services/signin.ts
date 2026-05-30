@@ -9,9 +9,9 @@ import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packag
 import { exp } from "@/config/exp";
 
 /**
- * Taking SessionDuration from @packages/prisma UserSession Model export
+ * Taking SessionDuration from @packages/prisma-users UserSession Model export
  */
-import { SessionDuration } from "@packages/prisma";
+import { SessionDuration } from "@packages/prisma-users";
 
 
 export interface SigninServiceParams {

@@ -30,7 +30,7 @@
     "@packages/errors": "workspace:*",
     "@packages/jwt": "workspace:*",
     "@packages/observability": "workspace:*",
-    "@packages/prisma": "workspace:*",
+    "@packages/prisma-users": "workspace:*",
     "@packages/redis": "workspace:*",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",

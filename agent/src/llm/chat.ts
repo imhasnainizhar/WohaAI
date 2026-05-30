@@ -1,4 +1,4 @@
-import { env } from "@config/env.js";
+import { env } from "@/config/env.js";
 import { ChatOpenAI } from "@langchain/openai";
 
 export async function chatModel() {
