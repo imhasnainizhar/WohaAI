@@ -19,6 +19,20 @@ export class ServiceError extends Error {
     }
 }
 
+export class MisconfigError extends ServiceError {
+    constructor(
+        message: string,
+        errors?: Record<string, string[]>
+    ) {
+        super(
+            message,
+            "MISCONFIG_ERROR",
+            500,
+            errors
+        );
+    }
+}
+
 // Validation Error (Zod)
 export class ValidationError extends ServiceError {
     constructor(
@@ -62,6 +76,20 @@ export class SessionExpiredError extends ServiceError {
             {
                 session: ["Session expired"],
             },
+        );
+    }
+}
+
+export class FetchError extends ServiceError {
+    constructor(
+        message: string,
+        errors?: Record<string, string[]>
+    ) {
+        super(
+            message,
+            "FETCH_ERROR",
+            500,
+            errors
         );
     }
 }

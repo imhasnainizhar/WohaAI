@@ -4,10 +4,10 @@ export type WebSearchParams = {
 }
 
 export type WebScraperOptions = {
-    timeoutMS: number,
+    timeoutMS?: number,
     maxRetries: number,
     renderJS: boolean
-    partialSelector: string
+    partialSelector?: string
 }
 
 export type WebScraperParams = {

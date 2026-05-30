@@ -16,11 +16,11 @@
  *  - This file intentionally keeps network calls minimal and parser simple (cheerio).
  */
 
-import { env } from "@config/env";
+import { env } from "@/config/env.js";
 import axios from "axios";
-import { logger } from "@utils/logger";
-import { ServiceResponse, ServiceException } from "@utils/response";
-import { WebSearchParams } from "@domain/types/input";
+import { mcpServerLogger as logger } from "@packages/observability";
+import { WebSearchParams } from "@/types/input.js";
+import { InternalServerError, MisconfigError, NormalizedError } from "@packages/errors";
 
 interface SerperSearchResult {
     title: string;
@@ -47,17 +47,7 @@ export const webSearchTool = async ({ prompt, requiredResults = 10 }: WebSearchP
                 error: "SERPER_API_KEY is not set"
             }, "SERPER_API_KEY missing");
 
-            throw new ServiceException(
-                ServiceResponse.error({
-                    success: false,
-                    statusCode: 500,
-                    message: "SERPER_API_KEY is not set",
-                    errorType: "internal_server_error",
-                    errors: {
-                        "SERPER_API_KEY": ["SERPER_API_KEY is not set"],
-                    },
-                })
-            )
+            throw new MisconfigError("SERPER_API_KEY missing")
         }
 
         const url = "https://google.serper.dev/search";
@@ -102,6 +92,6 @@ export const webSearchTool = async ({ prompt, requiredResults = 10 }: WebSearchP
             error: error instanceof Error ? error.message : String(error),
             prompt
         }, "Failed to search the web");
-        throw new Error("Failed to search the web");
+        throw new NormalizedError("Failed to search the web");
     }
 };

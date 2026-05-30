@@ -20,8 +20,9 @@
  */
 
 
-import { WebScraperParams } from "@domain/types/input";
-import { logger } from "@utils/logger";
+import { WebScraperParams } from "@/types/input.js";
+import { FetchError, NormalizedError } from "@packages/errors";
+import { mcpServerLogger as logger } from "@packages/observability";
 
 export interface PageResult {
   status: number;
@@ -91,12 +92,14 @@ export async function webScraper({
         continue;
       }
 
-      throw err;
+      throw new NormalizedError(err);
     }
   }
 
   logger.error({ action: "web_scraper_failed", url, lastError: lastError?.message ?? "Unknown error" });
-  throw new Error(`Failed to fetch ${url} after ${maxRetries + 1} attempts: ${lastError?.message ?? "Unknown error"}`);
+  throw new FetchError(
+    `Failed to fetch ${url} after ${maxRetries + 1} attempts: ${lastError?.message ?? "Unknown error"}`
+  );
 }
 
 async function fetchStaticPage(url: string, timeoutMS: number, partialSelector?: string): Promise<PageResult> {
@@ -111,7 +114,9 @@ async function fetchStaticPage(url: string, timeoutMS: number, partialSelector?:
     if (partialSelector) {
       // naive partial extraction for static pages
       const match = body.match(new RegExp(`<${partialSelector}[^>]*>([\\s\\S]*?)<\\/${partialSelector}>`, "i"));
-      if (match) body = match[1];
+
+      //⚠️ Forcing match[1] to be defined, not undefined, using ! mard
+      if (match) body = match[1]!;
     }
 
     return { status: resp.status, contentType: resp.headers.get("content-type") ?? "text/html", body: sanitizeHTML(body) };
@@ -148,7 +153,7 @@ function wait(ms: number) { return new Promise(res => setTimeout(res, ms)); }
 
 
 // import { WebScraperParams } from "@custom_types/input";
-// import { logger } from "@utils/logger";
+// import { mcpGatewayLogger s logger } from "@packages/observability";
 
 // export interface PageResult {
 //   status: number;

@@ -1,10 +1,11 @@
 import express, { Request, Response } from "express";
-import { env } from '@config/env';
-import { logger } from '@utils/logger';
+import { env } from '@/config/env.js';
+import { mcpGatewayLogger as logger } from '@packages/observability';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import MCPGatewayServer from './gateway';
-import { listToolsHandler,callToolHandler } from './handlers';
-import { ServiceResponse } from "@utils/response";
+import MCPGatewayServer from './gateway.js';
+import { listToolsHandler,callToolHandler } from './handlers.js';
+import { InternalServerError } from "@packages/errors";
+import { errorHandler } from "./middlewares/error-handler.js";
 
 const PORT = parseInt(env.MCP_GATEWAY_PORT, 10)
 
@@ -43,14 +44,12 @@ app.use("/mcp", async (req: Request, res: Response) => {
             error: err.message,
             stack: err.stack
         }, `Error handling MCP request: ${err.message}`);
-        ServiceResponse.error<any>({
-            success: false,
-            statusCode: 500,
-            message: err.message,
-            errorType: err.message,
-        });
+        throw new InternalServerError(err)
+        }
     }
-});
+);
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
     logger.info(`MCP Gateway running on PORT ${PORT}`);

@@ -1,8 +1,8 @@
-import { logger } from "@utils/logger";
+import { mcpServerLogger as logger } from "@packages/observability";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod"
-import { webScraper } from '@tools/web_scraper';
-import { webSearchTool } from '@tools/web_search';
+import { webScraper } from '@/tools/web-scraper.js';
+import { webSearchTool } from '@/tools/web-search.js';
 
 
 export const server = new McpServer({
