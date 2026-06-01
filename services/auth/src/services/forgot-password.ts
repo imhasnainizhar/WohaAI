@@ -13,7 +13,6 @@ import { getForgotPasswordProducer } from "@/producer/forgot-password";
 import { ForgotPasswordEmailEvent } from "@packages/contracts/mailer";
 import argon2 from "argon2"
 import {
-  InvalidCredentialsError,
   MaliciousActivityError,
   SessionExpiredError
 } from "@packages/errors";
@@ -22,6 +21,7 @@ import { AuthRepo } from "@/repo/auth-repo";
 import { Password } from "@packages/contracts/auth";
 import { authLogger } from "@packages/observability";
 import { ForgotPasswordInitRequest } from '@packages/contracts/auth';
+import { InvalidCredentialsError } from "@/errors/service-error";
 
 
 // init()

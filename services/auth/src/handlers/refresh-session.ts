@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import { env } from '@/config/env';
 import { exp } from '@/config/exp';
 import jwt from 'jsonwebtoken';
-import { RefreshTokenPayload } from '@packages/jwt';
+import { RefreshTokenPayload, verifyJwtToken } from '@packages/jwt';
 import { ValidationError } from '@packages/errors';
 import authService from '@/services/auth-service';
 import { NormalizedError } from '@packages/errors';
@@ -21,16 +21,10 @@ export const refreshSessionHandler = asyncHandler(
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies[env.REFRESH_TOKEN_NAME];
 
-        let payload: RefreshTokenPayload;
-
-        try {
-          payload = jwt.verify(
-            refreshToken,
-            env.JWT_REFRESH_SECRET_KEY
-          ) as RefreshTokenPayload;
-        } catch (err: unknown) {
-          throw new NormalizedError(err);
-        }
+        const _ = verifyJwtToken({
+            token: refreshToken, 
+            secret: env.JWT_REFRESH_SECRET_KEY
+        }) as RefreshTokenPayload;
 
         // Getting client data
         const clientData = getClientData(req);

@@ -1,5 +1,5 @@
 {
-  "name": "user-service",
+  "name": "auth-mailer-service",
   "version": "1.0.0",
   "description": "Service for user related tasks such as updating user data or fetching it",
   "main": "src/server.ts",
@@ -12,7 +12,7 @@
     "build": "esbuild src/server.ts --bundle --platform=node --outdir=dist --format=cjs --sourcemap",
     "start": "node dist/server.js",
     "test": "jest",
-    "clean": "rm dist"
+    "clean:dist": "rimraf dist"
   },
   "repository": {
     "type": "git",
@@ -29,9 +29,9 @@
     "@packages/contracts": "workspace:*",
     "@packages/errors": "workspace:*",
     "@packages/jwt": "workspace:*",
+    "@packages/kafka": "workspace:*",
     "@packages/observability": "workspace:*",
     "@packages/redis": "workspace:*",
-    "@packages/kafka": "workspace:*",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
@@ -47,7 +47,9 @@
     "@types/express": "^5.0.6",
     "@types/nodemailer": "^8.0.0",
     "esbuild": "^0.28.0",
+    "rimraf": "^6.1.3",
     "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.7"

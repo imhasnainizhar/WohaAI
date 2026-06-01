@@ -1,7 +1,7 @@
 import express from "express";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { server as mcpServer } from "./mcp.js";
-import { env } from "@/config/env.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp";
+import { server as mcpServer } from "./mcp";
+import { env } from "@/config/env";
 import { mcpGatewayLogger as logger } from "@packages/observability";
 import { sendResponse } from "@packages/http";
 import { ServiceError } from "@packages/errors";

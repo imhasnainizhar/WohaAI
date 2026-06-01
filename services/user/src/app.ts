@@ -1,10 +1,10 @@
+import { Express } from "express";
 import express from "express";
 import cors from "cors";
-import userRoutes from "@routes/user";
-import { env } from "@config/env";
-import { connectRedis } from "@config/redis";
+import userRoutes from "@/routes/user";
+import { env } from "@/config/env";
 
-const app = express();
+const app: Express = express();
 
 // Middleware
 app.use(
@@ -16,16 +16,11 @@ app.use(
 
 app.use(express.json());
 
-// Connecting Redis
-(async () => {
-    await connectRedis();
-})();
-
 // Routes
-app.use("/api/user", userRoutes);
+app.use("/", userRoutes);
 
 // Health check route
-app.get("/", (_, res) => {
+app.get("/health", (_, res) => {
     if (env.NODE_ENV === "development") {
         res.status(200).send("👤 User Service is running.");
         return;

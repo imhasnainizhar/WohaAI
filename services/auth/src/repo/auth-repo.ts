@@ -1,7 +1,7 @@
 import { ClientData, Password, UserSession } from "@packages/contracts/auth";
 import { InternalServerError, NormalizedError, PrismaError } from "@packages/errors";
 import { authLogger } from "@packages/observability";
-import { PrismaClient } from "@packages/prisma-users";
+import { userPrisma, UserPrismaClient } from "@packages/prisma-users";
 import argon2 from "argon2";
 
 /**
@@ -12,7 +12,7 @@ import { SessionDuration } from "@packages/prisma-users";
 
 export class AuthRepo {
     constructor(
-        protected readonly prisma: PrismaClient
+        protected readonly prisma: UserPrismaClient
     ) { }
 
     async getUserWithUsername(username: string) {
@@ -300,6 +300,193 @@ export class AuthRepo {
         }
     }
 
+    // ======================== //
+    // Two FA
+    // ======================== //
+
+    async saveTwoFactorSecret({
+        userID,
+        secret
+    }: {
+        userID: string;
+        secret: string;
+    }) {
+        try {
+            const user =
+                await this.prisma.user.update({
+                    where: {
+                        userID,
+                    },
+                    data: {
+                        twoFactorSecret: secret
+                    },
+                });
+    
+            return user;
+        } catch (err: any) {
+            authLogger.error({
+                message:
+                    "❌ [2FA] Failed to set 2fa secret in prisma",
+    
+                error:
+                    err?.message || err,
+            });
+    
+            throw new NormalizedError(err);
+        }
+    }
+
+    async getUserTwoFactorSettings(
+        userID: string
+    ) {
+        try {
+            const user =
+                await this.prisma.user.findUnique({
+                    where: {
+                        userID,
+                    },
+    
+                    select: {
+                        userID: true,
+                        email: true,
+    
+                        twoFactorEnabled: true,
+                        twoFactorSecret: true,
+                        twoFactorEnabledAt: true,
+                    },
+                });
+    
+            return user;
+        } catch (err: any) {
+            authLogger.error({
+                message:
+                    "❌ [2FA] Failed to get user 2FA settings",
+    
+                error:
+                    err?.message || err,
+            });
+    
+            throw new NormalizedError(err);
+        }
+    }
+
+    async enableTwoFactor({
+        userID,
+        secret
+    }: {
+        userID: string;
+        secret: string;
+    }) {
+        try {
+            const user =
+                await this.prisma.user.update({
+                    where: {
+                        userID,
+                    },
+    
+                    data: {
+                        twoFactorEnabled: true,
+                        twoFactorSecret: secret,
+                        twoFactorEnabledAt:
+                            new Date(),
+                    },
+    
+                    select: {
+                        userID: true,
+                        email: true,
+                        twoFactorEnabled: true,
+                    },
+                });
+    
+            return user;
+        } catch (err: any) {
+            authLogger.error({
+                message:
+                    "❌ [2FA] Failed to enable 2FA",
+    
+                error:
+                    err?.message || err,
+            });
+    
+            throw new NormalizedError(err);
+        }
+    }
+
+    async disableTwoFactor(
+        userID: string
+    ) {
+        try {
+            const user =
+                await this.prisma.user.update({
+                    where: {
+                        userID,
+                    },
+    
+                    data: {
+                        twoFactorEnabled:
+                            false,
+    
+                        twoFactorSecret:
+                            null,
+    
+                        twoFactorEnabledAt:
+                            null,
+                    },
+    
+                    select: {
+                        userID: true,
+                        email: true,
+                        twoFactorEnabled: true,
+                    },
+                });
+    
+            return user;
+        } catch (err: any) {
+            authLogger.error({
+                message:
+                    "❌ [2FA] Failed to disable 2FA",
+    
+                error:
+                    err?.message || err,
+            });
+    
+            throw new NormalizedError(err);
+        }
+    }
+
+    async createBackupCodes({
+        userID,
+        codeHashes
+    }: {
+        userID: string;
+        codeHashes: string[]
+    }) {
+        try {
+            await this.prisma.twoFactorBackupCode.createMany(
+                {
+                    data:
+                        codeHashes.map(
+                            (
+                                codeHash
+                            ) => ({
+                                userID,
+                                codeHash,
+                            })
+                        ),
+                }
+            );
+        } catch (err: any) {
+            authLogger.error({
+                message:
+                    "❌ [2FA] Failed to create backup codes",
+    
+                error:
+                    err?.message || err,
+            });
+    
+            throw new NormalizedError(err);
+        }
+    }
 }
 
 
@@ -316,3 +503,7 @@ export type FindActiveSessionResult = Awaited<ReturnType<AuthRepo["findActiveSes
 export type RevokeSessionResult = Awaited<ReturnType<AuthRepo["revokeSession"]>>
 
 export type ChangeUserPasswordResult = Awaited<ReturnType<AuthRepo["changeUserPassword"]>>
+export type EnableTwoFactorResutl = Awaited<ReturnType<AuthRepo["enableTwoFactor"]>>
+export type DisableTwoFactorResult = Awaited<ReturnType<AuthRepo["disableTwoFactor"]>>
+export type CreateBackupCodesResult = Awaited<ReturnType<AuthRepo["createBackupCodes"]>>
+export type SaveTwoFactorSecretResult = Awaited<ReturnType<AuthRepo["saveTwoFactorSecret"]>>

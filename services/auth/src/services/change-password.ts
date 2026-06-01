@@ -1,15 +1,6 @@
 import argon2 from "argon2";
-import { envConfigs as env } from "@packages/config";
 import { AuthRepo } from '@/repo/auth-repo';
-import { InternalServerError, InvalidCredentialsError } from "@packages/errors";
-import { authLogger } from "@packages/observability";
-import { exp } from "@/config/exp";
-
-/**
- * Taking SessionDuration from @packages/prisma-users UserSession Model export
- */
-import { SessionDuration } from "@packages/prisma-users";
-
+import { InvalidCredentialsError } from "@/errors/service-error";
 
 export interface ChangePasswordServiceParams {
     userID: string;
@@ -44,7 +35,7 @@ export class SigninService {
             oldPassword
         );
 
-        if (!isPasswordCorrect) throw new InvalidCredentialsError
+        if (!isPasswordCorrect) throw new InvalidCredentialsError()
 
         const hashedPassword = await argon2.hash(newPassword)
 

@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model TwoFactorBackupCode
+ * 
+ */
+export type TwoFactorBackupCode = Prisma.TwoFactorBackupCodeModel
+/**
  * Model Card
  * 
  */

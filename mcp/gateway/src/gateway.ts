@@ -1,6 +1,6 @@
 import { Server } from "@modelcontextprotocol/sdk/server";
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp';
 import { mcpGatewayLogger as logger } from "@packages/observability";
 import { InternalServerError } from "@packages/errors";
 

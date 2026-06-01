@@ -1,19 +1,12 @@
-import { emailUpdateController } from '@controllers/setuser';
-import { usernameUpdateController } from '@controllers/setuser';
-import { nameUpdateController } from '@controllers/setuser';
-import { passwordUpdateController } from '@controllers/setuser';
-import { getUserController } from '@controllers/getuser';
+import { createUserHandler } from "@/handlers/create-user";
+import { getMeHandler } from "@/handlers/get-user";
+import { updateUserHandler } from "@/handlers/update-user";
 import { Router } from "express";
-import { createUserController } from '@controllers/createuser';
 
-const router = Router();
+const router: Router = Router();
 
-router.patch("/update-user-password", passwordUpdateController);
-router.patch("/update-username", usernameUpdateController);
-router.patch("/update-user-display-name", nameUpdateController);
-router.patch("/update-user-email", emailUpdateController);
-router.get("/update-user/:param", getUserController);
-
-router.post("/create", createUserController)
+router.patch("/update-user", updateUserHandler);
+router.patch("/create-user", createUserHandler);
+router.patch("/get-me", getMeHandler);
 
 export default router;

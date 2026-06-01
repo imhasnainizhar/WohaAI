@@ -22,13 +22,33 @@ model User {
   lastName   String
   email          String   @unique
   username       String   @unique
+  dateOfBirth    DateTime?
+
   hashedPassword String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt()
 
+  twoFactorEnabled     Boolean  @default(false)
+  twoFactorSecret      String?
+  twoFactorEnabledAt   DateTime?
+
+  backupCodes          TwoFactorBackupCode[]
+
   // Foreign Relations
   userSession UserSession[]
   cards       Card[]
+}
+
+model TwoFactorBackupCode {
+  backupCodeID String @id @default(uuid())
+  userID       String
+
+  codeHash     String
+  used         Boolean @default(false)
+
+  user User @relation(fields: [userID], references: [userID])
+
+  @@index([userID])
 }
 
 model Card {

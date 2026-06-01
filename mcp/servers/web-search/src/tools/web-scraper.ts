@@ -20,7 +20,7 @@
  */
 
 
-import { WebScraperParams } from "@/types/input.js";
+import { WebScraperParams } from "@/types/input";
 import { FetchError, NormalizedError } from "@packages/errors";
 import { mcpServerLogger as logger } from "@packages/observability";
 

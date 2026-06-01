@@ -2,7 +2,7 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { envConfigs as env, EXPIRATION } from "@packages/config";
 import { AuthRepo } from '@/repo/auth-repo';
-import { InternalServerError, InvalidCredentialsError } from "@packages/errors";
+import { InternalServerError } from "@packages/errors";
 import { ClientData } from "@packages/contracts/auth";
 import { authLogger } from "@packages/observability";
 import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
@@ -12,6 +12,7 @@ import { exp } from "@/config/exp";
  * Taking SessionDuration from @packages/prisma-users UserSession Model export
  */
 import { SessionDuration } from "@packages/prisma-users";
+import { InvalidCredentialsError } from "@/errors/service-error";
 
 
 export interface SigninServiceParams {
@@ -59,7 +60,7 @@ export class SigninService {
       password
     );
 
-    if (!isPasswordCorrect) throw new InvalidCredentialsError
+    if (!isPasswordCorrect) throw new InvalidCredentialsError()
 
     const {
       JWT_ACCESS_SECRET_KEY,

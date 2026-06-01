@@ -1,5 +1,5 @@
 import { AuthRepo } from "@/repo/auth-repo";
-import { prisma } from "@packages/prisma-users";
+import { userPrisma } from "@packages/prisma-users";
 import { SigninServiceParams, SigninService } from "./signin";
 import { SignoutServiceParams, SignoutService } from "./signout";
 import { RefreshSessionServiceParams, RefreshSessionService } from "./refresh-session";
@@ -52,7 +52,7 @@ class AuthService {
      */
     public static getInstance(): AuthService {
         if (!AuthService.instance) {
-            const authRepo = new AuthRepo(prisma);
+            const authRepo = new AuthRepo(userPrisma);
 
             // Currently using nextjs var, but URI is same for the service
             const userProvisioningClient = new UserProvisioningClient(env.NEXT_PUBLIC_USER_API_URI);

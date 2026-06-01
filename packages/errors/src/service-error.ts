@@ -19,6 +19,7 @@ export class ServiceError extends Error {
     }
 }
 
+
 export class MisconfigError extends ServiceError {
     constructor(
         message: string,
@@ -80,6 +81,26 @@ export class SessionExpiredError extends ServiceError {
     }
 }
 
+export class AccessSessionExpiredError extends ServiceError {
+    constructor() {
+        super(
+            "Access session has expired",
+            "ACCESS_SESSION_EXPIRED",
+            401
+        );
+    }
+}
+
+export class PrivateAccessSessionExpiredError extends ServiceError {
+    constructor() {
+        super(
+            "Private access session has expired",
+            "PRIVATE_ACCESS_SESSION_EXPIRED",
+            401
+        );
+    }
+}
+
 export class FetchError extends ServiceError {
     constructor(
         message: string,
@@ -94,35 +115,7 @@ export class FetchError extends ServiceError {
     }
 }
 
-// Verification code expired errpr
-export class VerificationCodeExpiredError extends ServiceError {
-    constructor() {
-        super(
-            "Invalid or expired verification code.",
-            "verification_code_expired",
-            400,
-            {
-                verificationCode: ["Verification code expired"],
-            },
-        );
-    }
-}
 
-// Invalid verificaiton code error
-export class InvalidVerificationCodeError extends ServiceError {
-    constructor() {
-        super(
-            "Invalid verification code.",
-            "invalid_verification_code",
-            401,
-            {
-                verification_code: [
-                    "The provided verification code is incorrect.",
-                ],
-            }
-        );
-    }
-}
 
 // Bad gateway error
 export class BadGatewayError extends ServiceError {
@@ -139,20 +132,6 @@ export class BadGatewayError extends ServiceError {
         );
 
         this.name = "BadGatewayError";
-    }
-}
-
-export class EmailVerificationRequiredError extends ServiceError {
-    constructor(
-        message: string = "Email verification required."
-    ) {
-        super(
-            message,
-            "email_verification_required",
-            401
-        );
-
-        this.name = "EmailVerificationRequiredError";
     }
 }
 
@@ -196,17 +175,6 @@ export class ForbiddenError extends ServiceError {
             "You do not have permission to perform this action.",
             "forbidden_error",
             403,
-        );
-    }
-}
-
-// Invalid credentials Error
-export class InvalidCredentialsError extends ServiceError {
-    constructor() {
-        super(
-            "Invalid credentials.",
-            "invalid_credentials_error",
-            401,
         );
     }
 }

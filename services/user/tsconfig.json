@@ -11,9 +11,9 @@
         "declaration": true,
         "declarationMap": true,
         "tsBuildInfoFile": "./dist/.tsbuildinfo",    
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        /* Project Structure */
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+              /* Project Structure */
         "rootDir": ".",
         "outDir": "./dist",
         /* Type Checking */
@@ -27,9 +27,6 @@
         "isolatedModules": true,
         /* Path Aliases (modern way, no baseUrl needed) */
         "paths": {
-            "@/app": [
-                "./src/app"
-            ],
             "@/*": [
                 "./src/*"
             ]
@@ -38,8 +35,8 @@
         "sourceMap": true
     },
     "include": [
-        "src/**/*.ts",
-        "tests/**/*.ts"
+        "src",
+        "tests"
     ],
     "exclude": [
         "node_modules",

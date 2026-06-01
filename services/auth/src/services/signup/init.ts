@@ -3,7 +3,6 @@ import { env } from "@/config/env";
 import { exp } from "@/config/exp";
 import { authLogger } from "@packages/observability";
 import { createJwtToken, SignupSessionPayload } from "@packages/jwt";
-import { RedisHelper } from "@packages/redis";
 import { AuthRepo } from '@/repo/auth-repo';
 import { ConflictError } from "@packages/errors";
 import { SignOptions } from "jsonwebtoken";
