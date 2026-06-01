@@ -4,12 +4,12 @@ import authService from "@/services/auth-service";
 import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
 import { PrivilegedAccessTokenPayload, verifyJwtToken } from "@packages/jwt";
+import { Verify2FAServiceResponse } from "@/services/two-fa/verify";
 import { TotpCodeSchema } from "@packages/contracts/auth";
 import { ValidationError } from "@packages/errors";
-import { Enable2FAServiceResponse } from "@/services/two-fa/enable";
 
 
-export const enable2FAHandler = asyncHandler(
+export const verify2FAHandler = asyncHandler(
     async (req: Request, res: Response) => {
         const accessToken = req.cookies[env.PRIVATE_ACCESS_TOKEN_NAME]
 
@@ -20,20 +20,20 @@ export const enable2FAHandler = asyncHandler(
         }) as PrivilegedAccessTokenPayload
 
         const userID = payload.sub
-        
+
         const totp = TotpCodeSchema.safeParse(req.body.totp)
         if(!totp.success) throw new ValidationError("Invalid Totp, use allowed characters");
 
-        const { enabled } =
-            await authService.enable2FA({ userID, token: totp.data })
+        const { verified } =
+            await authService.verify2FA({ userID, token: totp.data })
 
-        return sendResponse<Enable2FAServiceResponse>({
+        return sendResponse<Verify2FAServiceResponse>({
             res,
             success: true,
             statusCode: 200,
-            message: "2FA Secret Generated",
+            message: "2FA Verified",
             data: {
-                enabled
+                verified
             },
             path: req.originalUrl
         })

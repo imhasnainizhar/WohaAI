@@ -1,39 +1,35 @@
 import { env } from "@/config/env";
 import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
+import { Generate2FASecretServiceResponse } from "@/services/two-fa/generate";
 import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
 import { PrivilegedAccessTokenPayload, verifyJwtToken } from "@packages/jwt";
-import { TotpCodeSchema } from "@packages/contracts/auth";
-import { ValidationError } from "@packages/errors";
-import { Enable2FAServiceResponse } from "@/services/two-fa/enable";
 
 
-export const enable2FAHandler = asyncHandler(
+export const generate2FASecretHandler = asyncHandler(
     async (req: Request, res: Response) => {
-        const accessToken = req.cookies[env.PRIVATE_ACCESS_TOKEN_NAME]
+        const token = req.cookies[env.PRIVATE_ACCESS_TOKEN_NAME]
 
         // Well, we are already managing errors inside out verifyJwtToken() helper.
         const payload = verifyJwtToken({
-            token: accessToken,
+            token,
             secret: env.JWT_PRIVATE_ACCESS_SECRET_KEY
         }) as PrivilegedAccessTokenPayload
 
         const userID = payload.sub
-        
-        const totp = TotpCodeSchema.safeParse(req.body.totp)
-        if(!totp.success) throw new ValidationError("Invalid Totp, use allowed characters");
 
-        const { enabled } =
-            await authService.enable2FA({ userID, token: totp.data })
+        const { secret, otpauthURL } =
+            await authService.generate2FASecret({ userID })
 
-        return sendResponse<Enable2FAServiceResponse>({
+        return sendResponse<Generate2FASecretServiceResponse>({
             res,
             success: true,
             statusCode: 200,
             message: "2FA Secret Generated",
             data: {
-                enabled
+                secret,
+                otpauthURL
             },
             path: req.originalUrl
         })

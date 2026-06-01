@@ -77,3 +77,14 @@ export class InvalidVerificationCodeError extends ServiceError {
         );
     }
 }
+
+export class TwoFANotInitError extends ServiceError {
+    constructor() {
+        super(
+            "Two factor not initialized or secret is not set.",
+            "2fa_not-initialized",
+            400,
+
+        );
+    }
+}
