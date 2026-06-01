@@ -1,6 +1,6 @@
-import { authRegex } from "../../utils/auth-regex";
+import { authRegex } from "../../auth-regex";
 import z from "zod";
-import { PasswordSchema } from "./user";
+import { PasswordSchema } from "./fields";
 
 export const ForgotPasswordInitRequestSchema = z.object({
     forgotPasswordUsernameOrEmail: z

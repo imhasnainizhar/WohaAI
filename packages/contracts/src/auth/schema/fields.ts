@@ -64,3 +64,18 @@ export const PasswordSchema = z
  * Confirm password field definition for zod schema
  */
 export const ConfirmPasswordSchema = PasswordSchema
+
+
+// VERIFICATION CODE
+export const VerificationCodeSchema = z
+  .string()
+  .trim()
+  .length(6, {
+    message: "Verification code must be 6 digits",
+  })
+  .regex(/^\d+$/, {
+    message: "Verification code must contain only numbers",
+  });
+
+export const SessionIDSchema =
+  z.uuid();

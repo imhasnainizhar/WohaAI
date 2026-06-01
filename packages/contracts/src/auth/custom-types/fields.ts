@@ -6,8 +6,10 @@ import {
     EmailSchema,
     DateOfBirthSchema,
     PasswordSchema,
-    ConfirmPasswordSchema
-} from "../schema/user";
+    ConfirmPasswordSchema,
+    VerificationCodeSchema,
+    SessionIDSchema
+} from "../schema/fields";
 
 export type FirstName = z.infer<typeof FirstNameSchema>;
 export type LastName = z.infer<typeof LastNameSchema>;
@@ -16,6 +18,9 @@ export type Email = z.infer<typeof EmailSchema>;
 export type DateOfBirth = z.infer<typeof DateOfBirthSchema>;
 export type Password = z.infer<typeof PasswordSchema>;
 export type ConfirmPassword = z.infer<typeof ConfirmPasswordSchema>;
+
+export type VerificationCode = z.infer<typeof VerificationCodeSchema>;
+export type SessionID = z.infer<typeof SessionIDSchema>
 
 export interface ClientData {
     userDeviceName: string;

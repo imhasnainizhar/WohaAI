@@ -1,6 +1,6 @@
 import z from "zod";
-import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameSchema } from "./user";
-import { authRegex } from "../../utils/auth-regex";
+import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameSchema, VerificationCodeSchema } from "./fields";
+import { authRegex } from "../../auth-regex";
 
 export const SignupInitRequestSchema = z.object({
     usernameOrEmail: z
@@ -39,17 +39,6 @@ export const ContinueWithEmailRequestSchema = z.object({
     email: EmailSchema,
 });
 
-// VERIFICATION CODE
-export const VerificationCodeSchema = z
-    .string()
-    .trim()
-    .length(6, {
-        message: "Verification code must be 6 digits",
-    })
-    .regex(/^\d+$/, {
-        message: "Verification code must contain only numbers",
-    });
-
 // VERIFY USER EMAIL REQUEST
 export const VerifyUserEmailRequestSchema = z.object({
     verificationCode: VerificationCodeSchema,
@@ -59,7 +48,6 @@ export const NameValidationSchema = z.object({
     firsrName: FirstNameSchema,
     lastName: LastNameSchema
 })
-
 
 /**
  * Object validation schema

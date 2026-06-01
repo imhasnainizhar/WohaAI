@@ -1,10 +1,9 @@
 import z from "zod";
-import { SignupInitRequestSchema, ContinueWithUsernameRequestSchema, ContinueWithEmailRequestSchema, VerifyUserEmailRequestSchema, VerificationCodeSchema, SignupCompleteRequestSchema } from "../schema";
+import { SignupInitRequestSchema, ContinueWithUsernameRequestSchema, ContinueWithEmailRequestSchema, VerifyUserEmailRequestSchema, SignupCompleteRequestSchema } from "../schema";
 
 export type SignupInitRequest = z.infer<typeof SignupInitRequestSchema>;
 export type UsernameSignupRequest = z.infer<typeof ContinueWithUsernameRequestSchema>;
 export type EmailSignupRequest = z.infer<typeof ContinueWithEmailRequestSchema>;
-export type VerificationCode = z.infer<typeof VerificationCodeSchema>;
 export type VerifyUserEmailRequest = z.infer<typeof VerifyUserEmailRequestSchema>;
 export type SignupCompleteRequest = z.infer<typeof SignupCompleteRequestSchema>
 
