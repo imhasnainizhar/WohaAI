@@ -24,5 +24,13 @@ export const ForgotPasswordInitRequestSchema = z.object({
 });
 
 export const ChangeForgottenPasswordRequestSchema = z.object({
-    password: PasswordSchema
-})
+    newPassword: PasswordSchema,
+    newConfirmPassword: PasswordSchema
+})    .refine(
+    ({ newPassword, newConfirmPassword }) =>
+        newPassword === newConfirmPassword,
+    {
+        message: "Passwords do not match",
+        path: ["newConfirmPassword"],
+    }
+);

@@ -23,6 +23,7 @@ import {
     ForgotPasswordService, 
     VerifyForgotPasswordServiceParams
 } from "./forgot-password";
+import { ChangePasswordService, ChangePasswordServiceParams, ChangePasswordServiceResponse } from "./change-password";
 
 class AuthService {
     private static instance: AuthService;
@@ -44,7 +45,9 @@ class AuthService {
 
         private readonly signupCompleteService: SignupCompleteService,
 
-        private readonly forgotPasswordService: ForgotPasswordService
+        private readonly forgotPasswordService: ForgotPasswordService,
+
+        private readonly changePasswordService: ChangePasswordService
     ) { }
 
     /**
@@ -75,6 +78,8 @@ class AuthService {
 
             const forgotPasswordService = new ForgotPasswordService(authRepo);
 
+            const changePasswordService = new ChangePasswordService(authRepo);
+
             AuthService.instance = new AuthService(
                 signinService,
                 signoutService ,
@@ -92,7 +97,9 @@ class AuthService {
 
                 signupCompleteService,
 
-                forgotPasswordService
+                forgotPasswordService,
+
+                changePasswordService
             );
         }
 
@@ -200,6 +207,14 @@ class AuthService {
         password
     }: ChangeForgottenPasswordServiceParams) {
         return this.forgotPasswordService.changePassword({sessionID, password})
+    }
+
+    public async changePassword({
+        userID,
+        oldPassword,
+        newPassword
+    }: ChangePasswordServiceParams): Promise<ChangePasswordServiceResponse> {
+        return this.changePasswordService.execute({userID, oldPassword, newPassword})
     }
 }
 

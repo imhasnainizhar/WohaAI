@@ -6,14 +6,13 @@ export interface ChangePasswordServiceParams {
     userID: string;
     oldPassword: string;
     newPassword: string;
-    confirmNewPassword: string;
 }
 
 export interface ChangePasswordServiceResponse {
     passwordChanged: boolean;
 }
 
-export class SigninService {
+export class ChangePasswordService {
 
     constructor(private repo: AuthRepo) { }
 
