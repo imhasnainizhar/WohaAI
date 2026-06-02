@@ -11,7 +11,7 @@ import {
 import authService from "@/services/auth-service";
 import { AccessTokenPayload, verifyJwtToken } from "@packages/jwt";
 import { ChangePasswordServiceResponse } from '../services/change-password';
-import { ChangePasswordRequestSchema } from "@packages/contracts/auth";
+import { ChangePasswordRequest, ChangePasswordRequestSchema } from "@packages/contracts/auth";
 
 export const changePasswordHandler = asyncHandler(
   async (req: Request, res: Response) => {
@@ -25,7 +25,7 @@ export const changePasswordHandler = asyncHandler(
 
     if (!payload) throw new AccessSessionExpiredError();
 
-    const body = req.body;
+    const body: ChangePasswordRequest = req.body;
 
     const parsed =
       ChangePasswordRequestSchema.safeParse(body);

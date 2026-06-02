@@ -141,6 +141,29 @@ export class AuthRepo {
         return !!user;
     }
 
+    async changeEmail({
+        userID,
+        newEmail
+    }: {
+        userID: string;
+        newEmail: string;
+    }) {
+        try {
+            const changed = await this.prisma.user.update({
+                where: {
+                    userID
+                },
+                data: {
+                    email: newEmail
+                }
+            })
+
+            return !!changed;
+        } catch (error: any) {
+            throw new NormalizedError(error);
+        }
+    }
+
     /**
     * Create user session
     */

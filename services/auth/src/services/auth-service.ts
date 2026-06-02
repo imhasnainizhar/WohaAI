@@ -110,6 +110,8 @@ import {
 } from "./two-fa/verify";
 
 import { SendVerificationEmailResponse } from "@packages/contracts/auth";
+import { RequestEmailChangeService, RequestEmailChangeServiceParams, RequestEmailChangeServiceResponse } from "./change-email/request";
+import { VerifyEmailChangeService, VerifyEmailChangeServiceParams, VerifyEmailChangeServiceResponse } from "./change-email/verify";
 
 class AuthService {
     private static instance: AuthService;
@@ -138,7 +140,10 @@ class AuthService {
         private readonly generate2FASecretService: Generate2FASecretService,
         private readonly verify2FAService: Verify2FAService,
         private readonly enable2FAService: Enable2FAService,
-        private readonly disable2FAService: Disable2FAService
+        private readonly disable2FAService: Disable2FAService,
+
+        private readonly requestEmailChangeService: RequestEmailChangeService,
+        private readonly verifyEmailChangeService: VerifyEmailChangeService
     ) { }
 
     /**
@@ -176,6 +181,9 @@ class AuthService {
             const enable2FAService = new Enable2FAService(authRepo);
             const disable2FAService = new Disable2FAService(authRepo);
 
+            const requestEmailChangeService = new RequestEmailChangeService(authRepo);
+            const verifyEmailChangeService = new VerifyEmailChangeService(authRepo);
+
             AuthService.instance = new AuthService(
                 signinService,
                 signoutService,
@@ -200,7 +208,10 @@ class AuthService {
                 generate2FASecretService,
                 verify2FAService,
                 enable2FAService,
-                disable2FAService
+                disable2FAService,
+
+                requestEmailChangeService,
+                verifyEmailChangeService
             );
         }
 
@@ -351,6 +362,24 @@ class AuthService {
         return this.disable2FAService.execute({
             userID,
             token
+        })
+    }
+
+    public async requestEmailChange({
+        userID,
+        newEmail
+    }: RequestEmailChangeServiceParams): Promise<RequestEmailChangeServiceResponse> {
+        return this.requestEmailChangeService.execute({
+            userID,
+            newEmail
+        })
+    }
+
+    public async verifyEmailChange({
+        sessionID
+    }: VerifyEmailChangeServiceParams): Promise<VerifyEmailChangeServiceResponse> {
+        return this.verifyEmailChangeService.execute({
+            sessionID
         })
     }
 }

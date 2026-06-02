@@ -30,33 +30,33 @@ export async function setSignupSession(
 }
 
 export interface VerificationCodeCacheParams {
-  signupSessionID: string
+  id: string
   verificationCode: string
 }
 
 export async function setVerificationCodeCache({
-  signupSessionID,
+  id,
   verificationCode
 }: VerificationCodeCacheParams): Promise<"OK"> {
   return await redisClient.setCache(
-    `${env.VERIFICATION_CODE_REDIS_KEY_PREFIX}:${signupSessionID}`,
+    `${env.VERIFICATION_CODE_REDIS_KEY_PREFIX}:${id}`,
     verificationCode
   )
 }
 
 export async function getVerificationCodeCache(
-  signupSessionID: string
+  id: string
 ): Promise<VerificationCode> {
   return JSON.parse(await redisClient.getCache(
-    `${env.VERIFICATION_CODE_REDIS_KEY_PREFIX}:${signupSessionID}`
+    `${env.VERIFICATION_CODE_REDIS_KEY_PREFIX}:${id}`
   ))
 }
 
 export async function deleteVerificationCodeCache(
-  signupSessionID: string
+  id: string
 ): Promise<void> {
     return await redisClient.deleteCache(
-      `${env.VERIFICATION_CODE_REDIS_KEY_PREFIX}:${signupSessionID}`
+      `${env.VERIFICATION_CODE_REDIS_KEY_PREFIX}:${id}`
     );
 }
 
@@ -142,6 +142,10 @@ export async function deleteConfirmedEmailCache(
     );
 }
 
+// ============================= //
+// Forget Password Cache
+// ============================= //
+
 export interface ForgotPasswordSessionParams {
   sessionID: string;
   userID: string;
@@ -181,6 +185,55 @@ export async function getForgotPasswordSessionCache(
 }
 
 export async function deleteForgotPasswordSessionCache(
+  sessionID: string
+) {
+
+  await redisClient.deleteCache(
+    `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`,
+  );
+}
+
+// ============================= //
+// Change Email Cache
+// ============================= //
+
+export interface ChangeEmailSessionParams {
+  sessionID: string;
+  userID: string;
+  newEmail: string;
+  createdOn: Date;
+}
+
+export interface ChangeEmailSessionCache {
+  userID: string;
+  newEmail: string;
+  createdOn: Date;
+}
+
+export async function setChangeEmailSessionCache(
+  { userID, sessionID, newEmail, createdOn }: ChangeEmailSessionParams
+): Promise<"OK"> {
+
+  return await redisClient.setCache(
+    `${env.CHANGE_EMAIL_SESSION_REDIS_KEY_PREFIX}:${sessionID}`,
+    JSON.stringify({
+      userID,
+      newEmail,
+      createdOn
+    }),
+    exp.REDIS_FORGOT_PASSWORD_SESSION_TTL,
+  );
+}
+
+export async function getChangeEmailSessionCache(
+  sessionID: string
+): Promise<ChangeEmailSessionCache> {
+  return JSON.parse(await redisClient.getCache(
+    `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`,
+  ));
+}
+
+export async function deleteChangeEmailSessionCache(
   sessionID: string
 ) {
 

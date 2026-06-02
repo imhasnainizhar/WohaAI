@@ -44,7 +44,7 @@ export const VerifyUserEmailRequestSchema = z.object({
     verificationCode: VerificationCodeSchema,
 });
 
-export const NameValidationSchema = z.object({
+export const NameValidationRequestSchema = z.object({
     firsrName: FirstNameSchema,
     lastName: LastNameSchema
 })
@@ -52,7 +52,7 @@ export const NameValidationSchema = z.object({
 /**
  * Object validation schema
  */
-export const PasswordValidationSchema = z
+export const PasswordValidationRequestSchema = z
     .object({
         password: PasswordSchema,
         confirmPassword: ConfirmPasswordSchema,

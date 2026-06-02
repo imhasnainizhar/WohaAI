@@ -3,6 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@packages/http";
 
 import {
+  ForgotPasswordInitRequest,
   ForgotPasswordInitRequestSchema
 } from "@packages/contracts/auth";
 
@@ -17,7 +18,7 @@ interface ForgotPasswordInitResponse {
 export const forgotPasswordInitHandler = asyncHandler(
   async (req: Request, res: Response) => {
 
-    const body = req.body;
+    const body: ForgotPasswordInitRequest = req.body;
 
     const parsed =
       ForgotPasswordInitRequestSchema.safeParse(body);

@@ -4,7 +4,7 @@ import authService from "@/services/auth-service";
 import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
 import { PrivilegedAccessTokenPayload, verifyJwtToken } from "@packages/jwt";
-import { TotpCodeSchema } from "@packages/contracts/auth";
+import { TwoFARequest, TwoFARequestSchema } from "@packages/contracts/auth";
 import { ValidationError } from "@packages/errors";
 import { Enable2FAServiceResponse } from "@/services/two-fa/enable";
 
@@ -20,12 +20,13 @@ export const enable2FAHandler = asyncHandler(
         }) as PrivilegedAccessTokenPayload
 
         const userID = payload.sub
-        
-        const totp = TotpCodeSchema.safeParse(req.body.totp)
-        if(!totp.success) throw new ValidationError("Invalid Totp, use allowed characters");
+        const body: TwoFARequest = req.body
+
+        const parsed = TwoFARequestSchema.safeParse(body)
+        if(!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");
 
         const { enabled } =
-            await authService.enable2FA({ userID, token: totp.data })
+            await authService.enable2FA({ userID, token: parsed.data.totp })
 
         return sendResponse<Enable2FAServiceResponse>({
             res,

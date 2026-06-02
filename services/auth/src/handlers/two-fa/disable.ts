@@ -4,7 +4,7 @@ import authService from "@/services/auth-service";
 import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
 import { PrivilegedAccessTokenPayload, verifyJwtToken } from "@packages/jwt";
-import { TotpCodeSchema } from "@packages/contracts/auth";
+import { TwoFARequest, TwoFARequestSchema } from "@packages/contracts/auth";
 import { ValidationError } from "@packages/errors";
 import { Disable2FAServiceResponse } from "@/services/two-fa/disable";
 
@@ -20,12 +20,13 @@ export const disable2FAHandler = asyncHandler(
         }) as PrivilegedAccessTokenPayload
 
         const userID = payload.sub
+        const body: TwoFARequest = req.body
 
-        const totp = TotpCodeSchema.safeParse(req.body.totp)
-        if (!totp.success) throw new ValidationError("Invalid Totp, use allowed characters");
+        const parsed = TwoFARequestSchema.safeParse(body)
+        if (!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");
 
         const { disabled } =
-            await authService.disable2FA({ userID, token: totp.data })
+            await authService.disable2FA({ userID, token: parsed.data.totp })
 
         return sendResponse<Disable2FAServiceResponse>({
             res,

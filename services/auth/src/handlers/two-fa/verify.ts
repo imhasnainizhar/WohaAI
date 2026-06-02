@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
 import { PrivilegedAccessTokenPayload, verifyJwtToken } from "@packages/jwt";
 import { Verify2FAServiceResponse } from "@/services/two-fa/verify";
-import { TotpCodeSchema } from "@packages/contracts/auth";
+import { TwoFARequest, TwoFARequestSchema } from "@packages/contracts/auth";
 import { ValidationError } from "@packages/errors";
 
 
@@ -20,12 +20,13 @@ export const verify2FAHandler = asyncHandler(
         }) as PrivilegedAccessTokenPayload
 
         const userID = payload.sub
+        const body: TwoFARequest = req.body
 
-        const totp = TotpCodeSchema.safeParse(req.body.totp)
-        if(!totp.success) throw new ValidationError("Invalid Totp, use allowed characters");
+        const parsed = TwoFARequestSchema.safeParse(body)
+        if(!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");
 
         const { verified } =
-            await authService.verify2FA({ userID, token: totp.data })
+            await authService.verify2FA({ userID, token: parsed.data.totp })
 
         return sendResponse<Verify2FAServiceResponse>({
             res,

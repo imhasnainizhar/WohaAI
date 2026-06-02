@@ -5,7 +5,7 @@ import authService from "@/services/auth-service";
 import { sendResponse } from "@packages/http";
 import { Request, Response } from "express";
 import { ValidationError } from "@packages/errors";
-import { ContinueWithEmailRequestSchema } from "@packages/contracts/auth";
+import { ContinueWithEmailRequest, ContinueWithEmailRequestSchema } from "@packages/contracts/auth";
 import { ContinueWithEmailServiceResponse } from "@/services/signup/continue/email";
 
 /**
@@ -25,9 +25,9 @@ export const continueWithEmailHandler = asyncHandler(async (req: Request, res: R
 
     // Getting signupSessionID from payload
     const signupSessionID = payload.signupSessionID;
-
+    const body: ContinueWithEmailRequest = req.body
     // Validate input using Zod schema
-    const parsed = ContinueWithEmailRequestSchema.safeParse(req.body);
+    const parsed = ContinueWithEmailRequestSchema.safeParse(body);
     if (!parsed.success) throw new ValidationError("Email is invalid", parsed.error);
 
     // Call service → either returns ServiceResponse OR throws ServiceException

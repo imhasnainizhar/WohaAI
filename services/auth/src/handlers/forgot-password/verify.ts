@@ -11,7 +11,7 @@ import {
 
 import authService from "@/services/auth-service";
 import { env } from "@/config/env";
-import { exp } from "@/config/exp";
+import { SessionIDSchema } from "@packages/contracts/auth";
 
 interface VerifyForgotPasswordResponse {
 
@@ -20,24 +20,19 @@ interface VerifyForgotPasswordResponse {
 export const verifyForgotPasswordSessionHandler = asyncHandler(
   async (req: Request, res: Response) => {
 
-    const sessionID = req.query.sessionId;
+    const sessionID = req.query.sessionID as string
 
-    if (
-      typeof sessionID !== "string" ||
-      sessionID.length === 0
-    ) {
-      throw new ValidationError(
-        "Invalid forgot password session id."
-      );
-    }
+    const parsed = SessionIDSchema.safeParse(sessionID)
+    if(!parsed.success) throw new ValidationError("Invalid session id")
 
     const {
       forgotPasswordSessionToken,
       redirectTo
     } = await authService.verifyForgetPasswordRequest({
-      sessionID
+      sessionID: parsed.data
     });
 
+    // This cookie has no age, it is just for a sesison where a user will change their password.
     const forgotPasswordCookie = buildCookie({
       name: env.FORGOT_PASSWORD_SESSION_TOKEN_NAME,
       value: forgotPasswordSessionToken,

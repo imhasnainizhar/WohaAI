@@ -1,3 +1,6 @@
+import { requestEmailChangeHandler } from "@/handlers/change-email/request";
+import { verifyEmailChangeHandler } from "@/handlers/change-email/verify";
+import { changeForgottenPasswordHandler, forgotPasswordInitHandler, verifyForgotPasswordSessionHandler } from "@/handlers/forgot-password";
 import { refreshSessionHandler } from "@/handlers/refresh-session";
 import { signinHandler } from "@/handlers/signin";
 import { signoutHandler } from "@/handlers/signout";
@@ -36,5 +39,12 @@ router.post("/2fa-generate-secret", generate2FASecretHandler);
 router.post("/verify-2fa-totp", verify2FAHandler);
 router.post("/enable-2fa", enable2FAHandler);
 router.post("/disable-2fa", disable2FAHandler);
+
+router.post("/forgot-password-init", forgotPasswordInitHandler)
+router.post("/verify-forgot-password-session", verifyForgotPasswordSessionHandler)
+router.post("/change-forgotten-password", changeForgottenPasswordHandler)
+
+router.post("/request-email-change", requestEmailChangeHandler)
+router.post("/verify-change-email-session", verifyEmailChangeHandler)
 
 export default router;

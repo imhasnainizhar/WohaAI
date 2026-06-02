@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/async-handler";
 import { Cookie, sendResponse } from "@packages/http";
 import authService from "@/services/auth-service";
-import { SigninRequestSchema, SigninResponse } from "@packages/contracts/auth";
+import { SignInRequest, SigninRequestSchema, SigninResponse } from "@packages/contracts/auth";
 import { getClientData } from "../ua/client-data";
 import { ValidationError } from "@packages/errors";
 import { buildCookie } from "@packages/http";
@@ -17,7 +17,10 @@ import { exp } from "@/config/exp";
 export const signinHandler = asyncHandler(
     async (req: Request, res: Response) => {
         // Validate request body
-        const parsed = SigninRequestSchema.safeParse(req.body);
+
+        const body: SignInRequest = req.body
+
+        const parsed = SigninRequestSchema.safeParse(body);
         if (!parsed.success) throw new ValidationError("Validation error", parsed.error);
 
         // Get client data for creating device signin record in DB

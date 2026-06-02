@@ -88,3 +88,19 @@ export class TwoFANotInitError extends ServiceError {
         );
     }
 }
+
+export class EmailAlreadyTakenError extends ServiceError {
+    constructor(
+
+    ) {
+        const errors: Record<string, string[]> = {};
+        errors.email = ["Email is already registered"];
+
+        super(
+            "Email is already taken",
+            "EMAIL_ALREADY_TAKEN",
+            409,
+            errors,
+        );
+    }
+}

@@ -10,7 +10,7 @@ import { createJwtToken, ForgotPasswordSessionPayload } from "@packages/jwt";
 import { exp } from "@/config/exp";
 import { SignOptions } from "jsonwebtoken";
 import { getForgotPasswordProducer } from "@/producer/forgot-password";
-import { ForgotPasswordEmailEvent } from "@packages/contracts/mailer";
+import { ForgotPasswordEvent } from "@packages/contracts/mailer";
 import argon2 from "argon2"
 import {
   MaliciousActivityError,
@@ -78,12 +78,12 @@ export class ForgotPasswordService {
     // create producer to push events on kafka
     const producer = await getForgotPasswordProducer();
 
-    const event: ForgotPasswordEmailEvent = {
+    const event: ForgotPasswordEvent = {
       sessionID,
       userID: foundUser.userID,
       username: foundUser.username,
       email: foundUser.email,
-      uriSessionToken: `http://localhost:8001/verify-forgot-password-session?sessionId=${sessionID}`,
+      uriSessionToken: `http://localhost:8001/verify-forgot-password-session?sessionID=${sessionID}`,
       createdOn: new Date()
     }
 

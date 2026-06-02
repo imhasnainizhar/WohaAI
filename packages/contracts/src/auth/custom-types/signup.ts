@@ -1,11 +1,14 @@
 import z from "zod";
-import { SignupInitRequestSchema, ContinueWithUsernameRequestSchema, ContinueWithEmailRequestSchema, VerifyUserEmailRequestSchema, SignupCompleteRequestSchema } from "../schema";
+import { SignupInitRequestSchema, ContinueWithUsernameRequestSchema, ContinueWithEmailRequestSchema, VerifyUserEmailRequestSchema, SignupCompleteRequestSchema, NameValidationRequestSchema, PasswordValidationRequestSchema } from "../schema";
 
 export type SignupInitRequest = z.infer<typeof SignupInitRequestSchema>;
-export type UsernameSignupRequest = z.infer<typeof ContinueWithUsernameRequestSchema>;
-export type EmailSignupRequest = z.infer<typeof ContinueWithEmailRequestSchema>;
+export type ContinueWithUsernameRequest = z.infer<typeof ContinueWithUsernameRequestSchema>;
+export type ContinueWithEmailRequest = z.infer<typeof ContinueWithEmailRequestSchema>;
 export type VerifyUserEmailRequest = z.infer<typeof VerifyUserEmailRequestSchema>;
 export type SignupCompleteRequest = z.infer<typeof SignupCompleteRequestSchema>
+
+export type NameValidationRequest  = z.infer<typeof NameValidationRequestSchema>
+export type PasswordValidationRequest = z.infer<typeof PasswordValidationRequestSchema>
 
 export interface SignupInitResponse {
     signupSessionInit: boolean

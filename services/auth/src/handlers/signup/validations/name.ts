@@ -2,8 +2,9 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
 import { env } from "@/config/env";
 import { 
+    NameValidationRequest,
+    NameValidationRequestSchema,
     NameValidationResponse, 
-    NameValidationSchema, 
 } from "@packages/contracts/auth";
 import { Request, Response } from "express";
 import { ValidationError } from "@packages/errors";
@@ -19,14 +20,9 @@ export const NameValidationHandler = asyncHandler(
             token,
             secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
         });
+        const body: NameValidationRequest = req.body;
 
-        const firstName = req.body.firstName;
-        const lastName = req.body.lastName
-
-        const parsed = NameValidationSchema.safeParse({
-            firstName,
-            lastName
-        })
+        const parsed = NameValidationRequestSchema.safeParse(body)
 
         if (!parsed.success) throw new ValidationError("Incorrect name format", parsed.error)
 
