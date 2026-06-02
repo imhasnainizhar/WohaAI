@@ -1,7 +1,7 @@
 import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
 import { env } from "@/config/env";
-import { PasswordValidationResponse, PasswordValidationSchema } from "@packages/contracts/auth";
+import { PasswordValidationResponse, PasswordValidationRequestSchema, PasswordValidationRequest } from "@packages/contracts/auth";
 import { Request, Response } from "express";
 import { ValidationError } from "@packages/errors";
 import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
@@ -17,13 +17,8 @@ export const PasswordValidationHandler = asyncHandler(
             secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
         });
 
-        const rawPassword = req.body.password;
-        const rawConfirmPassword = req.body.confirmPassword
-
-        const parsed = PasswordValidationSchema.safeParse({
-            rawPassword,
-            rawConfirmPassword
-        })
+        const body: PasswordValidationRequest = req.body
+        const parsed = PasswordValidationRequestSchema.safeParse(body)
 
         if (!parsed.success) throw new ValidationError("Incorrect password format", parsed.error)
 

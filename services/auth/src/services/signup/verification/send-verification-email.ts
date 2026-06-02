@@ -58,7 +58,7 @@ export class SendVerificationEmailService {
     // cache OTP
     await setVerificationCodeCache(
       {
-        signupSessionID,
+        id: signupSessionID,
         verificationCode: code,
       },
     );

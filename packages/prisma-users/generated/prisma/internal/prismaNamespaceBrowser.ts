@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  TwoFactorBackupCode: 'TwoFactorBackupCode',
   Card: 'Card',
   UserSession: 'UserSession'
 } as const
@@ -79,12 +80,26 @@ export const UserScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   username: 'username',
+  dateOfBirth: 'dateOfBirth',
   hashedPassword: 'hashedPassword',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  twoFactorEnabled: 'twoFactorEnabled',
+  twoFactorSecret: 'twoFactorSecret',
+  twoFactorEnabledAt: 'twoFactorEnabledAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const TwoFactorBackupCodeScalarFieldEnum = {
+  backupCodeID: 'backupCodeID',
+  userID: 'userID',
+  codeHash: 'codeHash',
+  used: 'used'
+} as const
+
+export type TwoFactorBackupCodeScalarFieldEnum = (typeof TwoFactorBackupCodeScalarFieldEnum)[keyof typeof TwoFactorBackupCodeScalarFieldEnum]
 
 
 export const CardScalarFieldEnum = {

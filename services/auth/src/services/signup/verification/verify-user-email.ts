@@ -9,10 +9,10 @@ import {
   setConfirmedEmailCache,
   setSignupSession,
 } from "@/redis/redis";
-import { InvalidVerificationCodeError, SessionExpiredError } from "@packages/errors";
-import { VerificationCodeExpiredError } from '@packages/errors';
+import { SessionExpiredError } from "@packages/errors";
 import { randomUUID } from "crypto";
 import { SignOptions } from "jsonwebtoken";
+import { InvalidVerificationCodeError, VerificationCodeExpiredError } from "@/errors/service-error";
 
 
 export interface VerifyUserEmailServiceParams {

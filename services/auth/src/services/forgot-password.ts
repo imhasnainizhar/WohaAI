@@ -10,10 +10,9 @@ import { createJwtToken, ForgotPasswordSessionPayload } from "@packages/jwt";
 import { exp } from "@/config/exp";
 import { SignOptions } from "jsonwebtoken";
 import { getForgotPasswordProducer } from "@/producer/forgot-password";
-import { ForgotPasswordEmailEvent } from "@packages/contracts/mailer";
+import { ForgotPasswordEvent } from "@packages/contracts/mailer";
 import argon2 from "argon2"
 import {
-  InvalidCredentialsError,
   MaliciousActivityError,
   SessionExpiredError
 } from "@packages/errors";
@@ -22,6 +21,7 @@ import { AuthRepo } from "@/repo/auth-repo";
 import { Password } from "@packages/contracts/auth";
 import { authLogger } from "@packages/observability";
 import { ForgotPasswordInitRequest } from '@packages/contracts/auth';
+import { InvalidCredentialsError } from "@/errors/service-error";
 
 
 // init()
@@ -78,12 +78,12 @@ export class ForgotPasswordService {
     // create producer to push events on kafka
     const producer = await getForgotPasswordProducer();
 
-    const event: ForgotPasswordEmailEvent = {
+    const event: ForgotPasswordEvent = {
       sessionID,
       userID: foundUser.userID,
       username: foundUser.username,
       email: foundUser.email,
-      uriSessionToken: `http://localhost:8001/verify-forgot-password-session?sessionId=${sessionID}`,
+      uriSessionToken: `http://localhost:8001/verify-forgot-password-session?sessionID=${sessionID}`,
       createdOn: new Date()
     }
 
@@ -108,7 +108,7 @@ export class ForgotPasswordService {
   }: VerifyForgotPasswordServiceParams): Promise<VerifyForgotPasswordServiceResponse> {
     const key = `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`;
 
-    // error handling is already done in redisHelpers methods.
+    // error handling is already done in redisClient methods.
     const cache = await getForgotPasswordSessionCache(key);
     if(!cache) throw new SessionExpiredError()
       
@@ -142,7 +142,7 @@ export class ForgotPasswordService {
   }: ChangeForgottenPasswordServiceParams): Promise<ChangeForgottenPasswordServiceResponse> {
     const key = `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`;
 
-    // error handling is already done in redisHelpers methods.
+    // error handling is already done in redisClient methods.
     const cache = 
       await getForgotPasswordSessionCache(key);
       

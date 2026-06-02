@@ -1,9 +1,9 @@
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { Client } from "@modelcontextprotocol/sdk/client/index.js"
-import { REGISTRY } from './registry.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp';
+import { Client } from "@modelcontextprotocol/sdk/client/index"
+import { REGISTRY } from './registry';
 import { mcpGatewayLogger as logger } from '@packages/observability';
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { asyncHandler } from './middlewares/async-handler.js';
+import { Tool } from '@modelcontextprotocol/sdk/types';
+import { asyncHandler } from './middlewares/async-handler';
 
 
 export const listToolsHandler = 

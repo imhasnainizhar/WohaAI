@@ -6,7 +6,7 @@ import { env } from "@/config/env";
 import { exp } from "@/config/exp";
 import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
 import { ValidationError } from "@packages/errors";
-import { VerifyUserEmailRequestSchema } from "@packages/contracts/auth";
+import { VerifyUserEmailRequest, VerifyUserEmailRequestSchema } from "@packages/contracts/auth";
 import { VerifyUserEmailResponse } from '@packages/contracts/auth';
 
 /**
@@ -24,10 +24,10 @@ export const verifyUserEmailHandler = asyncHandler(
         });
 
         // extracting code from request body
-        const code = req.body.code
+        const body: VerifyUserEmailRequest = req.body
 
         // validating code with zod
-        const parsed = VerifyUserEmailRequestSchema.safeParse(code)
+        const parsed = VerifyUserEmailRequestSchema.safeParse(body)
 
         if (!parsed.success) throw new ValidationError("Invalid code", parsed.error)
 

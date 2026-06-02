@@ -1,5 +1,3 @@
-// src/bootstrap/server.bootstrap.ts
-
 import {
     authMailerLogger,
   } from "@packages/observability";

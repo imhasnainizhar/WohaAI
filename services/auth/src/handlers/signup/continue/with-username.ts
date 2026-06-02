@@ -3,7 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { env } from "@/config/env";
 import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
 import { sendResponse } from "@packages/http";
-import { ContinueWithUsernameRequestSchema, ContinueWithUsernameResponse } from "@packages/contracts/auth";
+import { ContinueWithUsernameRequest, ContinueWithUsernameRequestSchema, ContinueWithUsernameResponse } from "@packages/contracts/auth";
 import { ValidationError } from "@packages/errors";
 
 /**
@@ -20,10 +20,11 @@ export const continueWithUsernameHandler = asyncHandler(async (req, res) => {
         token,
         secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
     });
+    const body: ContinueWithUsernameRequest = req.body
 
     // Validate input using Zod schema
     const parsed = 
-        ContinueWithUsernameRequestSchema.safeParse(req.body);
+        ContinueWithUsernameRequestSchema.safeParse(body);
 
     if (!parsed.success) throw new ValidationError("Username is invalid", parsed.error);
 

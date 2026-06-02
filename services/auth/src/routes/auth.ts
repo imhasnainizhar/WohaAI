@@ -1,3 +1,6 @@
+import { requestEmailChangeHandler } from "@/handlers/change-email/request";
+import { verifyEmailChangeHandler } from "@/handlers/change-email/verify";
+import { changeForgottenPasswordHandler, forgotPasswordInitHandler, verifyForgotPasswordSessionHandler } from "@/handlers/forgot-password";
 import { refreshSessionHandler } from "@/handlers/refresh-session";
 import { signinHandler } from "@/handlers/signin";
 import { signoutHandler } from "@/handlers/signout";
@@ -9,6 +12,10 @@ import { NameValidationHandler } from "@/handlers/signup/validations/name";
 import { PasswordValidationHandler } from "@/handlers/signup/validations/password";
 import { sendVerificationEmailHandler } from "@/handlers/signup/verification/send-verification-email";
 import { verifyUserEmailHandler } from "@/handlers/signup/verification/verify-user-email";
+import { disable2FAHandler } from "@/handlers/two-fa/disable";
+import { enable2FAHandler } from "@/handlers/two-fa/enable";
+import { generate2FASecretHandler } from "@/handlers/two-fa/generate";
+import { verify2FAHandler } from "@/handlers/two-fa/verify";
 import { Router } from "express";
 
 
@@ -19,7 +26,6 @@ router.post("/signin", signinHandler);
 router.post("/refresh-session", refreshSessionHandler);
 router.post("/signout", signoutHandler);
 
-
 router.post("/signup-init", signupInitHandler);
 router.post("/continue-with-email", continueWithUsernameHandler);
 router.post("/continue-with-username", continueWithEmailHandler);
@@ -28,5 +34,17 @@ router.post("/verify-user-email", verifyUserEmailHandler);
 router.post("/validate-names", NameValidationHandler);
 router.post("/validate-password", PasswordValidationHandler);
 router.post("/signup-complete", completeSignupHandler);
+
+router.post("/2fa-generate-secret", generate2FASecretHandler);
+router.post("/verify-2fa-totp", verify2FAHandler);
+router.post("/enable-2fa", enable2FAHandler);
+router.post("/disable-2fa", disable2FAHandler);
+
+router.post("/forgot-password-init", forgotPasswordInitHandler)
+router.post("/verify-forgot-password-session", verifyForgotPasswordSessionHandler)
+router.post("/change-forgotten-password", changeForgottenPasswordHandler)
+
+router.post("/request-email-change", requestEmailChangeHandler)
+router.post("/verify-change-email-session", verifyEmailChangeHandler)
 
 export default router;

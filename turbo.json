@@ -22,13 +22,35 @@
             "outputs": [],
             "cache": true
         },
-        "typecheck": {
-            "outputs": [],
-            "cache": true
-        },
         "dev": {
             "cache": false,
             "persistent": true
+        },
+        "clean": {
+            "cache": false
+        },
+        "package:dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "package:build": {
+            "dependsOn": [
+                "^package:build"
+            ],
+            "outputs": [
+                "dist/**"
+            ]
+        },
+        "prisma:generate": {
+            "cache": false
+        },
+        "typecheck": {
+            "dependsOn": [
+                "^typecheck"
+            ]
+        },
+        "clean:deep": {
+            "cache": false
         }
     }
 }

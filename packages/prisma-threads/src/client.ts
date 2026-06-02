@@ -12,9 +12,11 @@ const globalForPrisma = globalThis as typeof globalThis & {
 /**
  * PrismaClient for threads db
  */
-export const threadsPrismaClient: PrismaClient =
+export const threadsPrisma: PrismaClient =
   globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = threadsPrismaClient;
+  globalForPrisma.prisma = threadsPrisma;
 }
+
+export { PrismaClient as ThreadsPrismaClient } from "../generated/prisma/client"

@@ -24,6 +24,7 @@
   "scripts": {
     "package:dev": "tsc -b -w",
     "package:build": "tsc -b",
+    "build:types": "tsc --emitDeclarationOnly",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy"

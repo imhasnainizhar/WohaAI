@@ -3,7 +3,6 @@ import authRoutes from "@/routes/auth.js";
 import { authLogger } from "@packages/observability";
 import { httpLogger } from "@packages/observability";
 import { errorHandler } from "@/middlewares/error-handler";
-import { redisClient } from "@packages/redis";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { envConfigs } from "@packages/config";
@@ -21,22 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Global error handler
 app.use(errorHandler);
-
-// Connect to Redis in background (non-blocking)
-// Don't block server startup if Redis is unavailable
-(async () => {
-  try {
-    await Promise.race([
-      redisClient.redis.connect(),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Redis connection timeout")), 10000)
-      )
-    ]);
-  } catch (err) {
-    // Log error but don't crash - Redis might not be available yet
-    authLogger.error("⚠️ Redis connection failed or timed out, continuing without Redis:" + (err as Error).message);
-  }
-})();
 
 const corsOptions = {
   origin: envConfigs.CLIENT_ORIGIN, // frontend origin

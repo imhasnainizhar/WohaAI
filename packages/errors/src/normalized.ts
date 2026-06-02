@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import { ZodError } from "zod";
-import { PrismaClientKnownRequestError } from "@packages/prisma";
+
+// Will be reviewed later, currently importing from users prisma.
+import { PrismaClientKnownRequestError } from "@packages/prisma-users";
 
 import {
     ServiceError,

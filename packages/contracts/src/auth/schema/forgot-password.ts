@@ -1,6 +1,6 @@
-import { authRegex } from "../../utils/auth-regex";
+import { authRegex } from "../../auth-regex";
 import z from "zod";
-import { PasswordSchema } from "./user";
+import { PasswordSchema } from "./fields";
 
 export const ForgotPasswordInitRequestSchema = z.object({
     forgotPasswordUsernameOrEmail: z
@@ -24,5 +24,13 @@ export const ForgotPasswordInitRequestSchema = z.object({
 });
 
 export const ChangeForgottenPasswordRequestSchema = z.object({
-    password: PasswordSchema
-})
+    newPassword: PasswordSchema,
+    newConfirmPassword: PasswordSchema
+})    .refine(
+    ({ newPassword, newConfirmPassword }) =>
+        newPassword === newConfirmPassword,
+    {
+        message: "Passwords do not match",
+        path: ["newConfirmPassword"],
+    }
+);

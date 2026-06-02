@@ -9,7 +9,7 @@ import {
   deleteVerificationCodeCache,
 } from "@/redis/redis";
 import { UserProvisioningClient } from "@/clients/user-provision";
-import { EmailVerificationRequiredError, MaliciousActivityError, SessionExpiredError } from "@packages/errors";
+import { MaliciousActivityError, SessionExpiredError } from "@packages/errors";
 import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
 import { randomUUID } from "crypto";
 import { env } from "@/config/env";
@@ -22,6 +22,7 @@ import { ClientData } from "@packages/contracts/auth";
  */
 import { SessionDuration } from "@packages/prisma-users";
 import { AuthRepo } from "@/repo/auth-repo";
+import { EmailVerificationRequiredError } from "@/errors/service-error";
 
 export interface SignupCompleteServiceParams {
   signupSessionID: string;

@@ -16,10 +16,10 @@
  *  - This file intentionally keeps network calls minimal and parser simple (cheerio).
  */
 
-import { env } from "@/config/env.js";
+import { env } from "@/config/env";
 import axios from "axios";
 import { mcpServerLogger as logger } from "@packages/observability";
-import { WebSearchParams } from "@/types/input.js";
+import { WebSearchParams } from "@/types/input";
 import { InternalServerError, MisconfigError, NormalizedError } from "@packages/errors";
 
 interface SerperSearchResult {

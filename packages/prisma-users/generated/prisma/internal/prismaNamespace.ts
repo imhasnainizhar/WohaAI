@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  TwoFactorBackupCode: 'TwoFactorBackupCode',
   Card: 'Card',
   UserSession: 'UserSession'
 } as const
@@ -402,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "card" | "userSession"
+    modelProps: "user" | "twoFactorBackupCode" | "card" | "userSession"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -477,6 +478,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    TwoFactorBackupCode: {
+      payload: Prisma.$TwoFactorBackupCodePayload<ExtArgs>
+      fields: Prisma.TwoFactorBackupCodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TwoFactorBackupCodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TwoFactorBackupCodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>
+        }
+        findFirst: {
+          args: Prisma.TwoFactorBackupCodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TwoFactorBackupCodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>
+        }
+        findMany: {
+          args: Prisma.TwoFactorBackupCodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>[]
+        }
+        create: {
+          args: Prisma.TwoFactorBackupCodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>
+        }
+        createMany: {
+          args: Prisma.TwoFactorBackupCodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TwoFactorBackupCodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>[]
+        }
+        delete: {
+          args: Prisma.TwoFactorBackupCodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>
+        }
+        update: {
+          args: Prisma.TwoFactorBackupCodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>
+        }
+        deleteMany: {
+          args: Prisma.TwoFactorBackupCodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TwoFactorBackupCodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TwoFactorBackupCodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>[]
+        }
+        upsert: {
+          args: Prisma.TwoFactorBackupCodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TwoFactorBackupCodePayload>
+        }
+        aggregate: {
+          args: Prisma.TwoFactorBackupCodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTwoFactorBackupCode>
+        }
+        groupBy: {
+          args: Prisma.TwoFactorBackupCodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TwoFactorBackupCodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TwoFactorBackupCodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TwoFactorBackupCodeCountAggregateOutputType> | number
         }
       }
     }
@@ -674,12 +749,26 @@ export const UserScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   username: 'username',
+  dateOfBirth: 'dateOfBirth',
   hashedPassword: 'hashedPassword',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  twoFactorEnabled: 'twoFactorEnabled',
+  twoFactorSecret: 'twoFactorSecret',
+  twoFactorEnabledAt: 'twoFactorEnabledAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const TwoFactorBackupCodeScalarFieldEnum = {
+  backupCodeID: 'backupCodeID',
+  userID: 'userID',
+  codeHash: 'codeHash',
+  used: 'used'
+} as const
+
+export type TwoFactorBackupCodeScalarFieldEnum = (typeof TwoFactorBackupCodeScalarFieldEnum)[keyof typeof TwoFactorBackupCodeScalarFieldEnum]
 
 
 export const CardScalarFieldEnum = {
@@ -912,6 +1001,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  twoFactorBackupCode?: Prisma.TwoFactorBackupCodeOmit
   card?: Prisma.CardOmit
   userSession?: Prisma.UserSessionOmit
 }

@@ -535,14 +535,6 @@ export type UserSessionUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.UserSessionScalarWhereInput | Prisma.UserSessionScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type EnumSessionDurationFieldUpdateOperationsInput = {
   set?: $Enums.SessionDuration
 }

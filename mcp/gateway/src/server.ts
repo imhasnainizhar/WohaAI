@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
-import { env } from '@/config/env.js';
+import { env } from '@/config/env';
 import { mcpGatewayLogger as logger } from '@packages/observability';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import MCPGatewayServer from './gateway.js';
-import { listToolsHandler,callToolHandler } from './handlers.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types';
+import MCPGatewayServer from './gateway';
+import { listToolsHandler,callToolHandler } from './handlers';
 import { InternalServerError } from "@packages/errors";
-import { errorHandler } from "./middlewares/error-handler.js";
+import { errorHandler } from "./middlewares/error-handler";
 
 const PORT = parseInt(env.MCP_GATEWAY_PORT, 10)
 

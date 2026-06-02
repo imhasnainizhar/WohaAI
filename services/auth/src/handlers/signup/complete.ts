@@ -5,7 +5,7 @@ import { buildCookie, Cookie, sendResponse } from "@packages/http";
 import { env } from "@/config/env";
 import authService from "@/services/auth-service";
 import { SessionExpiredError, ValidationError } from "@packages/errors";
-import { ClientData, SignupCompleteRequestSchema } from "@packages/contracts/auth";
+import { ClientData, SignupCompleteRequest, SignupCompleteRequestSchema } from "@packages/contracts/auth";
 import { exp } from "@/config/exp";
 import { getClientData } from "@/ua/client-data";
 
@@ -26,8 +26,10 @@ export const completeSignupHandler = asyncHandler(
 
     if (!payload) throw new SessionExpiredError()
 
+    const body: SignupCompleteRequest = req.body
+
     const parsed =
-      SignupCompleteRequestSchema.safeParse(req.body.rememberMe)
+      SignupCompleteRequestSchema.safeParse(body)
 
     if (!parsed.success) throw new ValidationError("Invalid remember me option", parsed.error)
     const { rememberMe } = parsed.data

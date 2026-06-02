@@ -3,6 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@packages/http";
 import { env } from "@/config/env";
 import {
+  ChangeForgottenPasswordRequest,
   ChangeForgottenPasswordRequestSchema
 } from "@packages/contracts/auth";
 
@@ -31,7 +32,7 @@ export const changeForgottenPasswordHandler = asyncHandler(
 
     if (!payload) throw new SessionExpiredError()
 
-    const body = req.body;
+    const body: ChangeForgottenPasswordRequest = req.body;
 
     const parsed =
       ChangeForgottenPasswordRequestSchema.safeParse(body);
@@ -47,7 +48,7 @@ export const changeForgottenPasswordHandler = asyncHandler(
       forgottenPasswordChanged
     } = await authService.changeForgottenPassword({
       sessionID: payload.sub!,
-      password: parsed.data.password
+      password: parsed.data.newConfirmPassword
     });
 
     return sendResponse<ChangeForgottenPasswordResponse>({

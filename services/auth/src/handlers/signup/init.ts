@@ -2,7 +2,7 @@ import { asyncHandler } from '@/middlewares/async-handler';
 import { Request, Response } from "express";
 import { buildCookie, sendResponse } from "@packages/http";
 import authService from '@/services/auth-service';
-import { SignupInitRequestSchema, SignupInitResponse } from "@packages/contracts/auth";
+import { SignupInitRequest, SignupInitRequestSchema, SignupInitResponse } from "@packages/contracts/auth";
 import { ValidationError } from '@packages/errors';
 import { env } from '@/config/env';
 import { exp } from '@/config/exp';
@@ -17,10 +17,11 @@ export const signupInitHandler = asyncHandler(
 
         // Parsing request body
         // type: username | email is ignored as ican be verified through schema again.
-        const body = req.body
+        const body: SignupInitRequest = req.body
 
         const parsed = 
             SignupInitRequestSchema.safeParse(body);
+            
         if (!parsed.success) {
             throw new ValidationError(
                 "Given credentials could not be validated, please use allowed characters.",
