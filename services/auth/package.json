@@ -12,7 +12,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "esbuild src/server.ts --bundle --platform=node --outdir=dist --format=cjs --sourcemap",
     "start": "node dist/server.js",
-    "test": "jest",
+    "test": "vitest run",
     "clean:dist": "rimraf dist"
   },
   "repository": {
@@ -33,9 +33,10 @@
     "@packages/jwt": "workspace:*",
     "@packages/kafka": "workspace:*",
     "@packages/observability": "workspace:*",
-    "@packages/prisma-users": "workspace:*",
+    "@packages/db": "workspace:*",
+    "@packages/models": "workspace:*",
     "@packages/redis": "workspace:*",
-    "argon2": "^0.44.0",
+    "argon2": "0.44.0",
     "axios": "^1.16.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

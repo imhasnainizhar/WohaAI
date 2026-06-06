@@ -20,12 +20,5 @@ export function loadEnv() {
     ? path.resolve("/app/.env")
     : path.resolve(__dirname, "../../../../.env");
 
-  const localPath = 
-    path.resolve(__dirname, "../../../../.env.local");
-
-  // base config (base is docker default)
-  // loadFile(basePath);
-
-  // overrides docker for local dev (IMPORTANT: loaded after base)
-  loadFile(localPath);
+  loadFile(basePath);
 }

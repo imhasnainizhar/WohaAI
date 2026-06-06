@@ -1,10 +1,10 @@
 "use client";
 
-import { useAppContext } from "@providers/AppProvider";
+import { useAppContext } from "@/providers/AppProvider";
 import { useRef, useState, useEffect } from "react";
-import { useTheme } from "@providers/ThemeProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 import Image from "next/image";
-import UsernameCollapsablePlate from "@components/ui/cards/UsernameCollapsablePlate"
+import UsernameCollapsablePlate from "@/components/ui/cards/UsernameCollapsablePlate"
 import { LuSquareLibrary } from "react-icons/lu";
 import { LuImage } from "react-icons/lu";
 import { MdHistoryEdu } from "react-icons/md";
@@ -12,7 +12,7 @@ import { IoCreate } from "react-icons/io5";
 import { LuSearch } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LeftArrowButton } from "@components/ui/buttons/LeftArrowButton";
+import { LeftArrowButton } from "@/components/ui/buttons/LeftArrowButton";
 
 
 export default function Sidebar() {

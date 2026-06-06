@@ -38,19 +38,21 @@ export const EmailSchema = z
  * Date of birth field definition for zod schema
  */
 export const DateOfBirthSchema = z
-  .string()
-  .refine((val) => !isNaN(Date.parse(val)), "Invalid date")
-  .transform((val) => new Date(val))
+  .date()
   .refine((dob) => {
     const today = new Date();
-    const minAge = new Date(
+
+    const minAgeDate = new Date(
       today.getFullYear() - 14,
       today.getMonth(),
       today.getDate()
     );
-    return dob <= minAge;
-  }, "Must be at least 14 years old");
 
+    return dob <= minAgeDate;
+  }, {
+    message: "Must be at least 14 years old",
+  });
+  
 /**
  * Password field definition for zod schema
  */
@@ -79,3 +81,23 @@ export const VerificationCodeSchema = z
 
 export const SessionIDSchema =
   z.uuid();
+
+
+export const UsernameOrEmailSchema = z
+  .string()
+  .min(1, "Required")
+  .transform((val, ctx) => {
+    if (EmailSchema.safeParse(val)) {
+      return { type: "email" as const, value: val };
+    }
+    if (UsernameSchema.safeParse(val)) {
+      return { type: "username" as const, value: val };
+    }
+
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Must be a valid username or email",
+    });
+
+    return z.NEVER;
+  })

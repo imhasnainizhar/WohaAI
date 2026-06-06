@@ -1,21 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useTheme } from "@providers/ThemeProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupEmailInput, SignupEmailSchema } from "@lib/schemas/signup";
-import ClassicButton from "@components/ui/buttons/ClassicButton";
-import { RoundedInputField } from "@components/ui/input/fields/RoundedInputField";
-import { EmailData } from "@internals/types/auth"
+import ClassicButton from "@/components/ui/buttons/ClassicButton";
+import { RoundedInputField } from "@/components/ui/input/fields/RoundedInputField";
 import { useEffect } from "react";
+import { ContinueWithEmailRequestSchema, ContinueWithEmailRequest } from "@packages/contracts/auth";
 
 export default function SignupEmail({
     next,
     data,
 }: {
     next: (next: any) => void;
-    data?: EmailData;
+    data?: ContinueWithEmailRequest;
 }) {
     const [personalInputError, setPersonalInputError] = useState<string>("")
     const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
@@ -27,8 +26,8 @@ export default function SignupEmail({
         handleSubmit,
         reset,
         formState: { errors, isValid, isSubmitting },
-    } = useForm<SignupEmailInput>({
-        resolver: zodResolver(SignupEmailSchema),
+    } = useForm<ContinueWithEmailRequest>({
+        resolver: zodResolver(ContinueWithEmailRequestSchema),
     });
 
     useEffect(() => {

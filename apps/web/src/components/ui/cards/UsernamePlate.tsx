@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@providers/AuthProvider";
+import { User } from "@/providers/AuthProvider";
 import { useState } from "react";
 import Image from "next/image";
 import { HiOutlineUserCircle } from "react-icons/hi2";

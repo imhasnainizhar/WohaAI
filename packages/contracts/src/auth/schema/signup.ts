@@ -1,26 +1,8 @@
 import z from "zod";
-import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameSchema, VerificationCodeSchema } from "./fields";
-import { authRegex } from "../../auth-regex";
+import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameOrEmailSchema, UsernameSchema, VerificationCodeSchema } from "./fields";
 
 export const SignupInitRequestSchema = z.object({
-    usernameOrEmail: z
-        .string()
-        .min(1, "Required")
-        .transform((val, ctx) => {
-            if (authRegex.emailRegex.test(val)) {
-                return { type: "email" as const, value: val };
-            }
-            if (authRegex.usernameRegex.test(val)) {
-                return { type: "username" as const, value: val };
-            }
-
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Must be a valid username or email",
-            });
-
-            return z.NEVER;
-        }),
+    usernameOrEmail: UsernameOrEmailSchema
 });
 
 /**
@@ -44,9 +26,10 @@ export const VerifyUserEmailRequestSchema = z.object({
     verificationCode: VerificationCodeSchema,
 });
 
-export const NameValidationRequestSchema = z.object({
-    firsrName: FirstNameSchema,
-    lastName: LastNameSchema
+export const PersonalInfoValidationRequestSchema = z.object({
+    firstName: FirstNameSchema,
+    lastName: LastNameSchema,
+    dateOfBirth: DateOfBirthSchema
 })
 
 /**

@@ -1,37 +1,38 @@
-# ---------------------
-# Base
-# ---------------------
-FROM node:22-alpine AS base
+# syntax=docker/dockerfile:1.7
+
+FROM python:3.11-slim
+
+# Python settings
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
 WORKDIR /app
-COPY package*.json ./
 
-# ---------------------
-# Development
-# ---------------------
-FROM base AS development
-RUN npm install
-COPY . .
-CMD ["npm", "run", "dev"]
+COPY agent/requirements.txt ./agent/requirements.txt
 
-# ---------------------
-# Build
-# ---------------------
-FROM base AS build
-COPY . .
-RUN npm install
-RUN npm run build
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-# ---------------------
-# Production
-# ---------------------
-FROM node:22-alpine AS production
-WORKDIR /app
-COPY --from=build /src/dist ./dist
-COPY package*.json ./
-RUN npm install --omit=dev
+# System packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Security best practice
-RUN useradd -m appuser
+# Copy application
+COPY agent/ ./agent/
+
+WORKDIR /app/agent
+
+# Non-root user
+RUN useradd --create-home --shell /bin/bash appuser
+
+RUN chown -R appuser:appuser /app
+
 USER appuser
 
-CMD ["npm", "start"]
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

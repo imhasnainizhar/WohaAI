@@ -1,5 +1,5 @@
-import SignupFlow from "@components/auth/SignupFlow";
-import { AuthCacheProvider } from "@providers/AuthCacheProvider";
+import SignupFlow from "@/components/auth/signup/SignupFlow";
+import { AuthCacheProvider } from "@/providers/AuthCacheProvider";
 
 export default function AuthLayout({
   children,

@@ -4,6 +4,7 @@ import { Email, VerificationCode } from "@packages/contracts/auth";
 import { InternalServerError, ServiceError, SessionExpiredError } from "@packages/errors";
 import { authLogger } from "@packages/observability";
 import { RedisClient } from '@packages/redis';
+import { DateOfBirth } from '@packages/contracts/auth';
 
 
 export interface SignupSessionData {
@@ -12,6 +13,7 @@ export interface SignupSessionData {
   firstName?: string;
   lastName?: string;
   email?: string;
+  dateOfBirth?: DateOfBirth;
   hashedPassword?: string;
 }
 

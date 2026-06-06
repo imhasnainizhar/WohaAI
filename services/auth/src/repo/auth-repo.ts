@@ -1,121 +1,106 @@
 import { ClientData, Password, UserSession } from "@packages/contracts/auth";
 import { InternalServerError, NormalizedError, PrismaError } from "@packages/errors";
 import { authLogger } from "@packages/observability";
-import { userPrisma, UserPrismaClient } from "@packages/prisma-users";
+import { User, SessionDuration, UserSession as Session } from "@packages/models"
+import { connectUsersDB } from "@packages/db"
 import argon2 from "argon2";
 
 /**
  * Taking SessionDuration from @packages/prisma-users UserSession Model export
  */
-import { SessionDuration } from "@packages/prisma-users";
 
 
 export class AuthRepo {
     constructor(
-        protected readonly prisma: UserPrismaClient
+        private readonly user = User,
+        private readonly userSession = Session
     ) { }
 
     async getUserWithUsername(username: string) {
-        return await this.prisma.user.findUnique({
-            where: {
-                username
-            }
+        return await this.user.findOne({
+            username
         })
     }
-
     async getUserWithEmail(email: string) {
-        return await this.prisma.user.findUnique({
-            where: {
-                email
-            }
+        return await this.user.findOne({
+            email
         })
     }
-
     async getUserWithUserID(userID: string) {
-        return await this.prisma.user.findUnique({
-            where: {
-                userID
-            }
-        })
+        return await this.user.findById(userID)
     }
 
     async changeUserPassword({
-        userID, 
+        userID,
         hashedPassword
     }: {
         userID: string;
         hashedPassword: string;
     }) {
         try {
-            const updatedUser = await this.prisma.user.update({
-                where: { userID },
-                data: {
+            const updatedUser = await this.user.findOneAndUpdate(
+                { userID },
+                {
                     hashedPassword,
                 },
-                select: {
-                    userID: true,
-                    username: true,
-                },
-            });
-        
-            return updatedUser;                
+                {
+                    new: true,
+                    projection: {
+                        userID: 1,
+                        username: 1,
+                    }
+                }
+            );
+
+            return updatedUser;
         } catch (error: unknown) {
             throw new PrismaError(error)
         }
     }
-
     async getUserWithUsernameOrEmail(
         usernameOrEmail: {
             type: "username", value: string
         } | {
             type: "email", value: string
         }) {
-            try{
-        return await this.prisma.user.findFirst({
-            where: {
-                OR: [
-                    { username: usernameOrEmail.value },
-                    { email: usernameOrEmail.value },
-                ],
-            },
-            select: {
-                userID: true,
-                profilePicURI: true,
-                firstName: true,
-                lastName: true,
-                email: true,
-                username: true,
-                hashedPassword: true,
-            },
-        })
-    } catch (err: any) {
-        console.error(err);
-        throw new PrismaError(err)
-    };
+        try {
+            return await this.user.findOne(
+                {
+                    $or: [
+                        { username: usernameOrEmail.value },
+                        { email: usernameOrEmail.value },
+                    ],
+                },
+                {
+                    userID: 1,
+                    profilePicURI: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    email: 1,
+                    username: 1,
+                    hashedPassword: 1,
+                }
+            )
+        } catch (err: any) {
+            console.error(err);
+            throw new PrismaError(err)
+        };
     }
 
-    async findUserWithUsername(username: string): Promise<boolean> {
-        const user = await this.prisma.user.findUnique({
-            where: {
-                username
-            },
-            select: {
-                userID: true
-            }
-        });
+    async findUserWithEmail(email: string): Promise<boolean> {
+        const user = await this.user.findOne(
+            { email },
+            { userID: 1 }
+        );
 
         return !!user;
     }
 
-    async findUserWithEmail(email: string): Promise<boolean> {
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email
-            },
-            select: {
-                userID: true
-            }
-        });
+    async findUserWithUsername(username: string): Promise<boolean> {
+        const user = await this.user.findOne(
+            { username },
+            { userID: 1 }
+        );
 
         return !!user;
     }
@@ -126,17 +111,15 @@ export class AuthRepo {
         } | {
             type: "email", value: string
         }) {
-        const user = await this.prisma.user.findFirst({
-            where: {
-                OR: [
+        const user = await this.user.findOne(
+            {
+                $or: [
                     { username: usernameOrEmail.value },
                     { email: usernameOrEmail.value },
                 ],
             },
-            select: {
-                userID: true,
-            },
-        });
+            { userID: 1 }
+        );
 
         return !!user;
     }
@@ -149,14 +132,15 @@ export class AuthRepo {
         newEmail: string;
     }) {
         try {
-            const changed = await this.prisma.user.update({
-                where: {
-                    userID
-                },
-                data: {
+            const changed = await this.user.findOneAndUpdate(
+                { userID },
+                {
                     email: newEmail
+                },
+                {
+                    new: true
                 }
-            })
+            )
 
             return !!changed;
         } catch (error: any) {
@@ -182,71 +166,36 @@ export class AuthRepo {
     }): Promise<UserSession> {
         try {
             const refreshTokenHash =
-                await argon2.hash(
-                    refreshToken
-                );
+                await argon2.hash(refreshToken);
 
-            if (
-                !clientData.userIPAddress
-            ) {
+            if (!clientData.userIPAddress) {
                 authLogger.warn(
                     "⚠️ [SESSION] Missing client IP — defaulting to 'unknown'"
                 );
             }
 
             const session =
-                await this.prisma.userSession.create(
-                    {
-                        data: {
-                            userSessionID:
-                                userSessionID ??
-                                "Unknown",
-                            refreshTokenHash,
-                            userID,
-                            revoked: false,
-                            sessionDuration,
-                            userIPAddress:
-                                clientData.userIPAddress ??
-                                "Unknown",
-                            userDeviceName:
-                                clientData.userDeviceName ??
-                                "Unknown Device",
-                            userDeviceType:
-                                clientData.userDeviceType ??
-                                "Unknown",
-                            userDeviceBrowser:
-                                clientData.userDeviceBrowser ??
-                                "Unknown",
-                            userDeviceOS:
-                                clientData.userDeviceOS ??
-                                "Unknown",
-                        },
+                await this.userSession.create({
+                    userSessionID: userSessionID ?? "Unknown",
+                    refreshTokenHash,
+                    userID,
+                    revoked: false,
+                    sessionDuration,
+                    userIPAddress: clientData.userIPAddress ?? "Unknown",
+                    userDeviceName: clientData.userDeviceName ?? "Unknown Device",
+                    userDeviceType: clientData.userDeviceType ?? "Unknown",
+                    userDeviceBrowser: clientData.userDeviceBrowser ?? "Unknown",
+                    userDeviceOS: clientData.userDeviceOS ?? "Unknown",
+                });
 
-                        include: {
-                            user: {
-                                select: {
-                                    userID: true,
-                                    email: true,
-                                    firstName: true,
-                                    lastName: true,
-                                },
-                            },
-                        },
-                    }
-                );
             return session;
         } catch (err: any) {
             authLogger.error({
-                message:
-                    "❌ [SESSION] Failed to create user session",
-
-                error:
-                    err?.message || err,
+                message: "❌ [SESSION] Failed to create user session",
+                error: err?.message || err,
             });
 
-            throw new NormalizedError(
-                err
-            );
+            throw new NormalizedError(err);
         }
     }
 
@@ -262,14 +211,15 @@ export class AuthRepo {
         const hash = await argon2.hash(refreshToken);
 
         try {
-            return await this.prisma.userSession.update({
-                where: { userSessionID },
-                data: {
+            return await this.userSession.findOneAndUpdate(
+                { userSessionID },
+                {
                     refreshTokenHash: hash,
                     revokedAt: null,
                     userIPAddress: ip,
                 },
-            });
+                { new: true }
+            );
         } catch (err: unknown) {
             throw new InternalServerError(err);
         }
@@ -285,16 +235,11 @@ export class AuthRepo {
         userID: string,
         userSessionID: string
     }) {
-        return await this.prisma.userSession.findFirst({
-            where: {
-                userID,
-                userSessionID,
-                revoked: false,
-            },
-            include: {
-                user: true
-            }
-        });
+        return await this.userSession.findOne({
+            userID,
+            userSessionID,
+            revoked: false,
+        }).populate("user");
     }
 
     /**
@@ -304,17 +249,17 @@ export class AuthRepo {
         userSessionID: string
     ) {
         try {
-            return await this.prisma.userSession.update({
-                where: { userSessionID },
-                data: {
+            return await this.userSession.findOneAndUpdate(
+                { userSessionID },
+                {
                     revoked: true,
                     revokedAt: new Date(),
                 },
-            });
+                { new: true }
+            );
         } catch (err) {
             authLogger.error({
-                message:
-                    "[SIGNOUT] Prisma error updating session",
+                message: "[SIGNOUT] Prisma error updating session",
                 userSessionID,
                 error: err,
             });
@@ -323,10 +268,7 @@ export class AuthRepo {
         }
     }
 
-    // ======================== //
     // Two FA
-    // ======================== //
-
     async saveTwoFactorSecret({
         userID,
         secret
@@ -336,25 +278,21 @@ export class AuthRepo {
     }) {
         try {
             const user =
-                await this.prisma.user.update({
-                    where: {
-                        userID,
-                    },
-                    data: {
+                await this.user.findOneAndUpdate(
+                    { userID },
+                    {
                         twoFactorSecret: secret
                     },
-                });
-    
+                    { new: true }
+                );
+
             return user;
         } catch (err: any) {
             authLogger.error({
-                message:
-                    "❌ [2FA] Failed to set 2fa secret in prisma",
-    
-                error:
-                    err?.message || err,
+                message: "❌ [2FA] Failed to set 2fa secret in prisma",
+                error: err?.message || err,
             });
-    
+
             throw new NormalizedError(err);
         }
     }
@@ -364,31 +302,24 @@ export class AuthRepo {
     ) {
         try {
             const user =
-                await this.prisma.user.findUnique({
-                    where: {
-                        userID,
-                    },
-    
-                    select: {
-                        userID: true,
-                        email: true,
-    
-                        twoFactorEnabled: true,
-                        twoFactorSecret: true,
-                        twoFactorEnabledAt: true,
-                    },
-                });
-    
+                await this.user.findOne(
+                    { userID },
+                    {
+                        userID: 1,
+                        email: 1,
+                        twoFactorEnabled: 1,
+                        twoFactorSecret: 1,
+                        twoFactorEnabledAt: 1,
+                    }
+                );
+
             return user;
         } catch (err: any) {
             authLogger.error({
-                message:
-                    "❌ [2FA] Failed to get user 2FA settings",
-    
-                error:
-                    err?.message || err,
+                message: "❌ [2FA] Failed to get user 2FA settings",
+                error: err?.message || err,
             });
-    
+
             throw new NormalizedError(err);
         }
     }
@@ -402,35 +333,30 @@ export class AuthRepo {
     }) {
         try {
             const user =
-                await this.prisma.user.update({
-                    where: {
-                        userID,
-                    },
-    
-                    data: {
+                await this.user.findOneAndUpdate(
+                    { userID },
+                    {
                         twoFactorEnabled: true,
                         twoFactorSecret: secret,
-                        twoFactorEnabledAt:
-                            new Date(),
+                        twoFactorEnabledAt: new Date(),
                     },
-    
-                    select: {
-                        userID: true,
-                        email: true,
-                        twoFactorEnabled: true,
-                    },
-                });
-    
+                    {
+                        new: true,
+                        projection: {
+                            userID: 1,
+                            email: 1,
+                            twoFactorEnabled: 1,
+                        }
+                    }
+                );
+
             return user;
         } catch (err: any) {
             authLogger.error({
-                message:
-                    "❌ [2FA] Failed to enable 2FA",
-    
-                error:
-                    err?.message || err,
+                message: "❌ [2FA] Failed to enable 2FA",
+                error: err?.message || err,
             });
-    
+
             throw new NormalizedError(err);
         }
     }
@@ -440,39 +366,30 @@ export class AuthRepo {
     ) {
         try {
             const user =
-                await this.prisma.user.update({
-                    where: {
-                        userID,
+                await this.user.findOneAndUpdate(
+                    { userID },
+                    {
+                        twoFactorEnabled: false,
+                        twoFactorSecret: null,
+                        twoFactorEnabledAt: null,
                     },
-    
-                    data: {
-                        twoFactorEnabled:
-                            false,
-    
-                        twoFactorSecret:
-                            null,
-    
-                        twoFactorEnabledAt:
-                            null,
-                    },
-    
-                    select: {
-                        userID: true,
-                        email: true,
-                        twoFactorEnabled: true,
-                    },
-                });
-    
+                    {
+                        new: true,
+                        projection: {
+                            userID: 1,
+                            email: 1,
+                            twoFactorEnabled: 1,
+                        }
+                    }
+                );
+
             return user;
         } catch (err: any) {
             authLogger.error({
-                message:
-                    "❌ [2FA] Failed to disable 2FA",
-    
-                error:
-                    err?.message || err,
+                message: "❌ [2FA] Failed to disable 2FA",
+                error: err?.message || err,
             });
-    
+
             throw new NormalizedError(err);
         }
     }
@@ -485,28 +402,18 @@ export class AuthRepo {
         codeHashes: string[]
     }) {
         try {
-            await this.prisma.twoFactorBackupCode.createMany(
-                {
-                    data:
-                        codeHashes.map(
-                            (
-                                codeHash
-                            ) => ({
-                                userID,
-                                codeHash,
-                            })
-                        ),
-                }
+            await this.userSession.insertMany(
+                codeHashes.map((codeHash) => ({
+                    userID,
+                    codeHash,
+                }))
             );
         } catch (err: any) {
             authLogger.error({
-                message:
-                    "❌ [2FA] Failed to create backup codes",
-    
-                error:
-                    err?.message || err,
+                message: "❌ [2FA] Failed to create backup codes",
+                error: err?.message || err,
             });
-    
+
             throw new NormalizedError(err);
         }
     }

@@ -8,7 +8,7 @@ import { completeSignupHandler } from "@/handlers/signup/complete";
 import { continueWithEmailHandler } from "@/handlers/signup/continue/with-email";
 import { continueWithUsernameHandler } from "@/handlers/signup/continue/with-username";
 import { signupInitHandler } from "@/handlers/signup/init";
-import { NameValidationHandler } from "@/handlers/signup/validations/name";
+import { PersonalInfoValidationHandler } from "@/handlers/signup/validations/personal-info";
 import { PasswordValidationHandler } from "@/handlers/signup/validations/password";
 import { sendVerificationEmailHandler } from "@/handlers/signup/verification/send-verification-email";
 import { verifyUserEmailHandler } from "@/handlers/signup/verification/verify-user-email";
@@ -31,7 +31,7 @@ router.post("/continue-with-email", continueWithUsernameHandler);
 router.post("/continue-with-username", continueWithEmailHandler);
 router.post("/send-verification-email", sendVerificationEmailHandler);
 router.post("/verify-user-email", verifyUserEmailHandler);
-router.post("/validate-names", NameValidationHandler);
+router.post("/validate-personal-info", PersonalInfoValidationHandler);
 router.post("/validate-password", PasswordValidationHandler);
 router.post("/signup-complete", completeSignupHandler);
 

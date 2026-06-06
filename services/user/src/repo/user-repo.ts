@@ -1,5 +1,4 @@
-import { UserPrismaClient } from "@packages/prisma-users";
-
+import { User } from "@packages/models"
 
 export interface CreateUserParams {
     firstName: string;
@@ -20,7 +19,7 @@ export interface UpdateUserParams {
 
 export class UserRepo {
     constructor(
-        protected readonly prisma: UserPrismaClient
+        protected readonly user = User
     ) {}
 
     async createUser({
@@ -31,15 +30,13 @@ export class UserRepo {
         hashedPassword,
         dateOfBirth
     }: CreateUserParams) {
-        return await this.prisma.user.create({
-            data: {
-                firstName,
-                lastName,
-                username,
-                email,
-                hashedPassword,
-                dateOfBirth
-            }
+        return await this.user.create({
+            firstName,
+            lastName,
+            username,
+            email,
+            hashedPassword,
+            dateOfBirth
         });
     }
 
@@ -50,47 +47,35 @@ export class UserRepo {
         username,
         dateOfBirth
     }: UpdateUserParams) {
-        return await this.prisma.user.update({
-            where: {
-                userID
-            },
-            data: {
+        return await this.user.findOneAndUpdate(
+            { userID },
+            {
                 firstName,
                 lastName,
                 username,
                 dateOfBirth
+            },
+            {
+                new: true
             }
-        });
+        );
     }
 
     async getUserWithUsername(username: string) {
-        return await this.prisma.user.findUnique({
-            where: {
-                username
-            }
+        return await this.user.findOne({
+            username
         });
     }
 
     async getUserWithEmail(email: string) {
-        return await this.prisma.user.findUnique({
-            where: {
-                email
-            }
+        return await this.user.findOne({
+            email
         });
     }
 
     async getUserWithUserID(userID: string) {
-        return await this.prisma.user.findUnique({
-            where: {
-                userID
-            }
+        return await this.user.findOne({
+            userID
         });
     }
 }
-
-export type CreateUserResult = Awaited<ReturnType<UserRepo["createUser"]>>
-export type UpdateUserResult = Awaited<ReturnType<UserRepo["updateUser"]>>
-
-export type GetUserWithUserIDResult = Awaited<ReturnType<UserRepo["getUserWithUserID"]>>;
-export type GetUserWithUsernameResult = Awaited<ReturnType<UserRepo["getUserWithUsername"]>>;
-export type GetUserWithEmailResult = Awaited<ReturnType<UserRepo["getUserWithEmail"]>>;

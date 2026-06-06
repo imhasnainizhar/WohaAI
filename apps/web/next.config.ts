@@ -2,19 +2,20 @@ import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
 import type { NextConfig } from "next";
+import { nextAppLogger as logger } from "@packages/observability";
 
 const isDocker = fs.existsSync("/.dockerenv");
 const isProduction = process.env.NODE_ENV === "production";
 
 // Determine env path
 const envPath = isDocker
-  ? "/app/.env"                // Docker
-  : path.resolve(__dirname, "../../.env.local"); // local monorepo
+  ? "/app/.env"
+  : path.resolve(__dirname, "../../.env");
 
 if (!isProduction) {
   const result = dotenv.config({ path: envPath });
   if (result.error) throw result.error;
-  console.log(`✅ Loaded env from ${envPath}`);
+  logger.debug(`✅ Loaded env from ${envPath}`);
 }
 
 // Validate env
@@ -32,7 +33,7 @@ if (missing.length > 0) {
 
 const nextConfig: NextConfig = {
   devIndicators: false,
-  transpilePackages: ["@packages/shared"],
+  serverExternalPackages: ["pino", "pino-http"],
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {

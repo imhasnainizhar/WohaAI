@@ -1,6 +1,11 @@
-node_modules
-npm-debug.log
-Dockerfile
+.venv
+venv
+__pycache__
+.pytest_cache
+.mypy_cache
 .git
+.gitignore
 .env
-dist
+*.pyc
+*.pyo
+node_modules

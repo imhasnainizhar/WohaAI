@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useTheme } from "@providers/ThemeProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupUsernameSchema, SignupUsernameInput } from "@lib/schemas/signup";
-import ClassicButton from "@components/ui/buttons/ClassicButton";
-import { RoundedInputField } from "@components/ui/input/fields/RoundedInputField";
-import { UsernameData } from "@internals/types/auth"
+import ClassicButton from "@/components/ui/buttons/ClassicButton";
+import { RoundedInputField } from "@/components/ui/input/fields/RoundedInputField";
+import { ContinueWithUsernameRequestSchema, ContinueWithUsernameRequest } from "@packages/contracts/auth";
 import { useEffect } from "react";
 
 export default function SignupUsername({
@@ -15,7 +14,7 @@ export default function SignupUsername({
     data,
 }: {
     next: (next: any) => void;
-    data?: UsernameData;
+    data?: ContinueWithUsernameRequest;
 }) {
     const [personalInputError, setPersonalInputError] = useState<string>("")
     const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
@@ -27,8 +26,8 @@ export default function SignupUsername({
         handleSubmit,
         reset,
         formState: { errors, isValid, isSubmitting },
-    } = useForm<SignupUsernameInput>({
-        resolver: zodResolver(SignupUsernameSchema),
+    } = useForm<ContinueWithUsernameRequest>({
+        resolver: zodResolver(ContinueWithUsernameRequestSchema),
     });
 
     // Responsible for populating the form fields with cached data

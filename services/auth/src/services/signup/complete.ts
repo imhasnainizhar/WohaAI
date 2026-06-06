@@ -15,7 +15,7 @@ import { randomUUID } from "crypto";
 import { env } from "@/config/env";
 import { exp } from "@/config/exp";
 import { SignOptions } from "jsonwebtoken";
-import { ClientData } from "@packages/contracts/auth";
+import { ClientData, DateOfBirth } from "@packages/contracts/auth";
 
 /**
  * Taking SessionDuration from @packages/prisma-users UserSession Model export
@@ -37,6 +37,7 @@ export interface SignupCompleteServiceResponse {
   profilePicURI?: string;
   firstName: string;
   lastName: string;
+  dateOfBirth: DateOfBirth;
   refreshToken: string;
   accessToken: string;
 }
@@ -84,6 +85,7 @@ export class SignupCompleteService {
       lastName:
         session.lastName!,
 
+      dateOfBirth: session.dateOfBirth!,
       hashedPassword: session.hashedPassword!,
     };
 

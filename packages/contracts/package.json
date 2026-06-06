@@ -39,6 +39,11 @@
       "import": "./dist/mailer/index.js",
       "require": "./dist/mailer/index.js",
       "types": "./dist/mailer/index.d.ts"
+    },
+    "./forms": {
+      "import": "./dist/forms/index.js",
+      "require": "./dist/forms/index.js",
+      "types": "./dist/forms/index.d.ts"
     }
   },
   "dependencies": {

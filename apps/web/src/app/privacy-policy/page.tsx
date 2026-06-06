@@ -1,6 +1,5 @@
 import { NextPage } from "next";
 import { Metadata } from 'next';
-import "../../styles/pages/privacy-page.style.css"
 
 export const metadata: Metadata = {
   title: 'Privacy Policy || Barlon',

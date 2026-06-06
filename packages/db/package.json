@@ -1,0 +1,45 @@
+{
+  "name": "@packages/db",
+  "version": "1.0.0",
+  "description": "MondoDB Shared stuff for repo",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "keywords": [
+    "ai",
+    "agents",
+    "typescript",
+    "openai",
+    "models"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "WohaAI"
+  },
+  "license": "MIT",
+  "author": "Hasnain Izhar",
+  "scripts": {
+    "package:dev": "tsc -b -w",
+    "package:build": "tsc -b",
+    "build:types": "tsc --emitDeclarationOnly"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@packages/config": "workspace:*",
+    "@packages/observability": "workspace:*",
+    "mongoose": "^9.6.3"
+  },
+  "devDependencies": {
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^6.0.3"
+  }
+}

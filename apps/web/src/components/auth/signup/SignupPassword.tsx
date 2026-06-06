@@ -1,9 +1,9 @@
-import ClassicButton from "@components/ui/buttons/ClassicButton";
-import { RoundedInputField } from "@components/ui/input/fields/RoundedInputField";
+import ClassicButton from "@/components/ui/buttons/ClassicButton";
+import { RoundedInputField } from "@/components/ui/input/fields/RoundedInputField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { SignupPasswordInput, SignupPasswordSchema } from "@lib/schemas/signup";
-import { useTheme } from "@providers/ThemeProvider";
+import { useTheme } from "@/providers/ThemeProvider";
+import { PasswordValidationRequestSchema, PasswordValidationRequest } from "@packages/contracts/auth";
 
 export default function SignupPassword({ next }: { next: (next: any) => void }) {
     const { theme } = useTheme();
@@ -14,8 +14,8 @@ export default function SignupPassword({ next }: { next: (next: any) => void }) 
         handleSubmit,
         control,
         formState: { errors, isValid, isSubmitting },
-    } = useForm<SignupPasswordInput>({
-        resolver: zodResolver(SignupPasswordSchema),
+    } = useForm<PasswordValidationRequest>({
+        resolver: zodResolver(PasswordValidationRequestSchema),
     });
 
     return (

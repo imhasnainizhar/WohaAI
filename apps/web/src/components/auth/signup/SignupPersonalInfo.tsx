@@ -1,21 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DatePicker } from "@components/ui/DatePicker"
-import { RoundedInputField } from "@components/ui/input/fields/RoundedInputField";
-import { useTheme } from "@providers/ThemeProvider";
+import { DatePicker } from "@/components/ui/DatePicker"
+import { RoundedInputField } from "@/components/ui/input/fields/RoundedInputField";
+import { useTheme } from "@/providers/ThemeProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupPersonalInfoSchema, SignupPersonalInfoInput } from "@lib/schemas/signup";
-import ClassicButton from "@components/ui/buttons/ClassicButton";
-import { PersonalData } from "@internals/types/auth"
+import { PersonalInfoValidationRequest, PersonalInfoValidationRequestSchema } from "@packages/contracts/auth";
+import ClassicButton from "@/components/ui/buttons/ClassicButton";
+
 
 export default function SignupPersonalInfo({
     next,
     data,
 }: {
     next: (next: any) => void;
-    data?: PersonalData;
+    data?: PersonalInfoValidationRequest;
 }) {
     const [personalInputError, setPersonalInputError] = useState<string>("")
     const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
@@ -28,8 +28,8 @@ export default function SignupPersonalInfo({
         control,
         reset,
         formState: { errors, isValid, isSubmitting },
-    } = useForm<SignupPersonalInfoInput>({
-        resolver: zodResolver(SignupPersonalInfoSchema),
+    } = useForm<PersonalInfoValidationRequest>({
+        resolver: zodResolver(PersonalInfoValidationRequestSchema),
     });
 
     const SIGNUP_API_URI = process.env.NEXT_PUBLIC_SIGNUP_API_URI!;
@@ -42,7 +42,7 @@ export default function SignupPersonalInfo({
     }, [data, reset]);
 
 
-    const onSignupPersonalInput = async (signupPersonalInput: SignupPersonalInfoInput) => {
+    const onSignupPersonalInput = async (signupPersonalInput: PersonalInfoValidationRequest) => {
         setPersonalInputError("");
 
         try {

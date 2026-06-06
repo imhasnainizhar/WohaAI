@@ -1,6 +1,6 @@
 "use client";
 
-import { logger } from "@utils/logger";
+import { nextAppLogger as logger } from "@packages/observability";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
@@ -14,7 +14,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({
   theme: "dark",
   darkTheme: true,
-  toggleTheme: () => {},
+  toggleTheme: () => { },
 });
 
 function getCookie(name: string): string | undefined {

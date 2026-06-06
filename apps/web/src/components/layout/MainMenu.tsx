@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import TransitionalLink from "@utils/transitional-link";
-import { useTheme } from "@providers/ThemeProvider";
-import { useAppContext } from "@providers/AppProvider";
-import UsernamePlate from "@components/ui/cards/UsernamePlate";
+import TransitionalLink from "@/components/ui/TransitionalLink";
+import { useTheme } from "@/providers/ThemeProvider";
+import { useAppContext } from "@/providers/AppProvider";
+import UsernamePlate from "@/components/ui/cards/UsernamePlate";
 import Link from "next/link";
 
 type Props = {

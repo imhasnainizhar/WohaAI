@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, AlertTitle } from "@lib/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/Alert";
 import { AlertCircleIcon } from "lucide-react";
 
 interface InputFieldProps {

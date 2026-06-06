@@ -3,23 +3,24 @@
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "@lib/schemas/signin";
-import { useTheme } from "@providers/ThemeProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SigninRequestSchema, SignInRequest } from "@packages/contracts/auth"
 import z from "zod";
-import { Alert, AlertTitle } from "@lib/components/ui/alert"
+import { Alert, AlertTitle } from "@/components/ui/Alert"
 import { AlertCircleIcon } from "lucide-react"
 
-type SignInInput = z.infer<typeof signInSchema>;
+type SigninIUnput = z.input<typeof SigninRequestSchema>;
+type SigninOutput = z.output<typeof SigninRequestSchema>;
 
 export default function SignIn() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInInput>({
-    resolver: zodResolver(signInSchema),
+  } = useForm<SigninIUnput, any, SigninOutput>({
+    resolver: zodResolver(SigninRequestSchema),
   });
 
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function SignIn() {
 
   const SIGNIN_API_URI = process.env.NEXT_PUBLIC_SIGNIN_API_URI!;
 
-  const onSignIn = async (SignInData: SignInInput) => {
+  const onSignIn = async (SignInData: SignInRequest) => {
     setSignInError("");
 
     try {
@@ -110,13 +111,13 @@ export default function SignIn() {
             onSubmit={handleSubmit(onSignIn)}
           >
             <div
-              className={`w-full max-w-[340px] h-[50px] rounded-[50px] flex items-center justify-center border border-border-secondary border-solid text-text ${errors.email ? "border border-[rgb(255,53,53)]" : ""}`}
+              className={`w-full max-w-[340px] h-[50px] rounded-[50px] flex items-center justify-center border border-border-secondary border-solid text-text ${errors.usernameOrEmail ? "border border-[rgb(255,53,53)]" : ""}`}
               data-theme={theme}
             >
               <div className="relative flex items-center justify-start w-full max-w-[340px] h-[50px] pl-4">
                 <input
                   placeholder="   "
-                  {...register("email")}
+                  {...register("usernameOrEmail")}
                   className="peer w-full h-full bg-transparent cursor-pointer z-20 rounded-[50px] font-sans font-small focus:outline-none"
                 />
                 <label
@@ -139,10 +140,10 @@ export default function SignIn() {
                 ">
                   Email
                 </label>
-                {errors.email && (
+                {errors.usernameOrEmail && (
                   <Alert variant="destructive" className="absolute top-[55px] left-3.5 bg-transparent border-none w-[200px] h-[50px] text-[15px]">
                     <AlertCircleIcon />
-                    <AlertTitle>{errors.email.message}</AlertTitle>
+                    <AlertTitle>{errors.usernameOrEmail.message}</AlertTitle>
                   </Alert>
                 )}
               </div>
