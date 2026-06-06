@@ -4,11 +4,25 @@
     "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
     "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
   
-    "editor.hover.enabled": true,
+    "editor.hover.enabled": "on",
     "editor.parameterHints.enabled": true,
   
     "typescript.tsserver.maxTsServerMemory": 8192, 
 
     "typescript.updateImportsOnFileMove.enabled": "always",
-    "javascript.updateImportsOnFileMove.enabled": "always"  
+    "javascript.updateImportsOnFileMove.enabled": "always",
+
+        "python.analysis.typeCheckingMode": "strict",
+
+    "editor.formatOnSave": true,
+
+    "editor.codeActionsOnSave": {
+        "source.fixAll.ruff": "always",
+        "source.organizeImports.ruff": "always"
+    },
+
+    "python.analysis.autoImportCompletions": true,
+
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
 }

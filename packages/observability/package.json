@@ -29,6 +29,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./http": {
+      "import": "./dist/http.js",
+      "require": "./dist/http.js",
+      "types": "./dist/http.d.ts"
     }
   },
   "dependencies": {

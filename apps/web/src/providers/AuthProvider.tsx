@@ -1,8 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { env } from "@config/env";
-import ApiResponseOptions from "@packages/shared"
+import { env } from "@/config/env";
 
 //* Types
 /** User type is used for those specifiers who uses auth info from this auth Context. */
@@ -27,14 +26,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userInfo, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const USER_SERVICE_URI = process.env.NEXT_PUBLIC_USER_API_URI;
-  if (!USER_SERVICE_URI) throw new Error("USER_SERVICE_URI is not defined");
-  console.log(USER_SERVICE_URI)
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(env.USER_SERVICE_URI, {
+        const res = await fetch(env.NEXT_PUBLIC_USER_API_URI, {
           method: "GET",
           credentials: "include",
         });

@@ -1,5 +1,4 @@
 import { NextPage } from "next";
-import "@styles/pages/terms-page.style.css"
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

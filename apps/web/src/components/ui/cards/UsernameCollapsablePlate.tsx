@@ -1,10 +1,10 @@
 "use client";
 
-import { User } from "@providers/AuthProvider";
+import { User } from "@/providers/AuthProvider";
 import { useState } from "react";
 import Image from "next/image";
 import { HiOutlineUserCircle } from "react-icons/hi2";
-import { useAppContext } from "@providers/AppProvider";
+import { useAppContext } from "@/providers/AppProvider";
 
 export default function UsernameCollapsablePlate() {
   const { sidebarExpanded } = useAppContext();

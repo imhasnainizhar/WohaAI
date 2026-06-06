@@ -1,12 +1,10 @@
 "use client";
 
-import Sidebar from "@components/layout/Sidebar";
-import PathChecker from "@lib/page-path-checker";
-import TextArea from "@components/ui/input/TextArea";
-import "@styles/main/main.global.css";
+import PathChecker from "@/lib/get-page-url";
+import TextArea from "@/components/ui/input/TextArea";
 import "boxicons/css/boxicons.min.css";
-import { useTheme } from "@providers/ThemeProvider";
-import { useAppContext } from "@providers/AppProvider";
+import { useTheme } from "@/providers/ThemeProvider";
+import { useAppContext } from "@/providers/AppProvider";
 
 export default function ChatPage() {
   const { theme } = useTheme();

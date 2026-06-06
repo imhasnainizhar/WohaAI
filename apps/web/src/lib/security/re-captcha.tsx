@@ -2,11 +2,9 @@
 
 import ReCAPTCHA from "react-google-recaptcha";
 import { useRef } from "react";
+import { env } from "@/config/env";
 
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-if (!RECAPTCHA_SITE_KEY) {
-    throw new Error("Missing NEXT_PUBLIC_RECAPTCHA_SITE_KEY in environment variables");
-}
+const RECAPTCHA_SITE_KEY = env.APP_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export default function CAPTCHA ({ onVerify }: { onVerify: (token: string | null) => void }) {
     const recaptchaRef  = useRef<ReCAPTCHA  | null>(null);

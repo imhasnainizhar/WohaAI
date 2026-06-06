@@ -2,40 +2,55 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SignupEmailSchema,
-  SignupPasswordSchema,
-  SignupPersonalInfoSchema,
-  SignupUsernameSchema 
-} from "@lib/schemas/signup";
-import SignupPersonalInfo from "./signup/SignupPersonalInfo";
-import { LeftArrowButton } from "@components/ui/buttons/LeftArrowButton";
-import { GetStartedSchema } from "@lib/schemas/get-started";
-import GetStarted from "./signup/GetStarted";
-import SignupEmail from "./signup/SignupEmail";
-import SignupUsername from "./signup/SignupUsername";
-import SignupPassword from "./signup/SignupPassword";
-import { useAuthCache } from "@providers/AuthCacheProvider";
-import { AuthForm } from "@internals/types/auth";
+import SignupPersonalInfo from "./SignupPersonalInfo";
+import { LeftArrowButton } from "@/components/ui/buttons/LeftArrowButton";
+import SignupEmail from "./SignupEmail";
+import SignupUsername from "./SignupUsername";
+import SignupPassword from "./SignupPassword";
+import { useAuthCache } from "@/providers/AuthCacheProvider";
+import {
+  SignupInitRequestSchema,
+  ContinueWithEmailRequestSchema,
+  ContinueWithUsernameRequestSchema,
+  PasswordValidationRequestSchema,
+  PersonalInfoValidationRequestSchema,
+  SignupFormCache
+} from "@packages/contracts/auth";
+import SignupInit from "./SignupInit";
+
 
 export default function SignupFlow() {
   const { step, setStep, nextStep, setNextStep, form, setForm } = useAuthCache();
-  const dataForm = form as AuthForm;
+  const dataForm = form as SignupFormCache;
   const [direction, setDirection] = useState<1 | -1>(1);
 
   const steps = [
-    { name: "", schema: GetStartedSchema, render: (next: (v: any) => void) => <GetStarted next={next} setNextStep={setNextStep} data={form} /> },
+    { name: "", schema: SignupInitRequestSchema, render: (next: (v: any) => void) => <SignupInit next={next} setNextStep={setNextStep} data={form} /> },
     {
       name: nextStep === "email" ? "Email" : nextStep === "username" ? "Username" : "Password",
-      schema: nextStep === "email" ? SignupEmailSchema : nextStep === "username" ? SignupUsernameSchema : SignupPasswordSchema,
+      schema: nextStep === "email" 
+        ? ContinueWithEmailRequestSchema 
+        : nextStep === "username" 
+          ? ContinueWithUsernameRequestSchema 
+          : PasswordValidationRequestSchema,
       render: (next: (v: any) => void) =>
         nextStep === "email"
-          ? <SignupEmail next={next} data={{email: dataForm.email}} />
+          ? <SignupEmail next={next} data={{ email: dataForm.email }} />
           : nextStep === "username"
-          ? <SignupUsername next={next} data={{username: dataForm.username}} />
-          : <SignupPassword next={next} />
+            ? <SignupUsername next={next} data={{ username: dataForm.username }} />
+            : <SignupPassword next={next} />
     },
-    { name: "Personal Info", schema: SignupPersonalInfoSchema, render: (next: (v: any) => void) => <SignupPersonalInfo next={next} data={{firstName: dataForm.firstName, lastName: dataForm.lastName, dateOfBirth: dataForm.dateOfBirth}} /> },
-    { name: "Password", schema: SignupPasswordSchema, render: (next: (v: any) => void) => <SignupPassword next={next} /> },
+    { name: "Personal Info", schema: PersonalInfoValidationRequestSchema, render: (next: (v: any) => void) => 
+      <SignupPersonalInfo 
+        next={next} 
+        data={{
+          firstName: dataForm.firstName,
+          lastName: dataForm.lastName,
+          dateOfBirth: dataForm.dateOfBirth
+        }}
+      />
+    },
+    { name: "Password", schema: PasswordValidationRequestSchema, render: (next: (v: any) => void) => <SignupPassword next={next} /> },
   ];
 
   const next = (values: any) => {
@@ -82,7 +97,7 @@ export default function SignupFlow() {
               className="absolute left-[40px] cursor-pointer w-[25px] h-[25px] flex items-center justify-center"
             />
           )}
-          <div className="font-sans font-semibold text-[22px] text-center text-text w-auto">{current.name}</div>
+          <div className="font-sans font-semibold text-[22px] text-center text-text w-auto">{current?.name}</div>
         </div>
         <div className="w-full">
           <div className="w-full flex items-center justify-center flex-col">
@@ -99,7 +114,7 @@ export default function SignupFlow() {
               >
                 {/* We are providing next function here so component can 
                 natively handle zod validation and api calls before going to next step */}
-                {current.render(next)}
+                {current?.render(next)}
                 <p className="text-center mt-3 text-sm opacity-70">
                   Step {step + 1} of {steps.length}
                 </p>

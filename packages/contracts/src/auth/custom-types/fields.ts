@@ -8,7 +8,8 @@ import {
     PasswordSchema,
     ConfirmPasswordSchema,
     VerificationCodeSchema,
-    SessionIDSchema
+    SessionIDSchema,
+    UsernameOrEmailSchema
 } from "../schema/fields";
 
 export type FirstName = z.infer<typeof FirstNameSchema>;
@@ -18,6 +19,7 @@ export type Email = z.infer<typeof EmailSchema>;
 export type DateOfBirth = z.infer<typeof DateOfBirthSchema>;
 export type Password = z.infer<typeof PasswordSchema>;
 export type ConfirmPassword = z.infer<typeof ConfirmPasswordSchema>;
+export type UsernameOrEmail = z.infer<typeof UsernameOrEmailSchema>;
 
 export type VerificationCode = z.infer<typeof VerificationCodeSchema>;
 export type SessionID = z.infer<typeof SessionIDSchema>

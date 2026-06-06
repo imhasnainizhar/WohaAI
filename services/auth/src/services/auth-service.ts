@@ -43,7 +43,7 @@ import {
     NameValidationService,
     NameValidationServiceParams,
     NameValidationServiceResponse
-} from "./signup/validations/name";
+} from "./signup/validations/personal-info";
 
 import {
     PasswordValidationService,
@@ -113,10 +113,11 @@ import { SendVerificationEmailResponse } from "@packages/contracts/auth";
 import { RequestEmailChangeService, RequestEmailChangeServiceParams, RequestEmailChangeServiceResponse } from "./change-email/request";
 import { VerifyEmailChangeService, VerifyEmailChangeServiceParams, VerifyEmailChangeServiceResponse } from "./change-email/verify";
 
-class AuthService {
+export class AuthService {
     private static instance: AuthService;
 
-    private constructor(
+    // Making constructor public for testing. (For mocking)
+    constructor(
         private readonly signinService: SigninService,
         private readonly signoutService: SignoutService,
         private readonly refreshSessionService: RefreshSessionService,

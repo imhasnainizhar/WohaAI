@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 
 import { authLogger } from "@packages/observability";
 import { InternalServerError } from "@packages/errors";
-import { CreatedUserResponseSchema } from "@packages/contracts/auth";
+import { CreatedUserResponseSchema, DateOfBirth } from "@packages/contracts/auth";
 
 export interface CreateUserParams {
     username: string;
@@ -11,6 +11,7 @@ export interface CreateUserParams {
     profilePicURI?: string;
     firstName: string;
     lastName: string;
+    dateOfBirth: DateOfBirth;
     hashedPassword: string;
 }
 
@@ -21,6 +22,7 @@ export interface CreatedUserResponse {
     profilePicURI?: string;
     firstName: string;
     lastName: string;
+    dateOfBirth: DateOfBirth;
 }
 
 export class UserProvisioningClient {

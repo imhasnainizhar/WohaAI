@@ -1,15 +1,15 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { AuthForm } from "@internals/types/auth";
+import { SignupFormCache } from "@packages/contracts/auth";
 
 type SignupContextType = {
   step: number;
   setStep: (step: number) => void;
   nextStep: "username" | "email" | "password" | null;
   setNextStep: (step: "username" | "email" | "password" | null) => void;
-  form: AuthForm;
-  setForm: (form: Partial<AuthForm>) => void;
+  form: SignupFormCache;
+  setForm: (form: Partial<SignupFormCache>) => void;
 };
 
 const AuthCacheContext = createContext<SignupContextType | undefined>(undefined);
@@ -17,16 +17,15 @@ const AuthCacheContext = createContext<SignupContextType | undefined>(undefined)
 export function AuthCacheProvider({ children }: { children: ReactNode }) {
   const [step, setStepState] = useState(0);
   const [nextStep, setNextStepState] = useState<"username" | "email" | "password" | null>(null);
-  const [form, setFormState] = useState<AuthForm>({
+  const [form, setFormState] = useState<SignupFormCache>({
     firstName: "",
     lastName: "",
     username: "",
     email: "",
     dateOfBirth: new Date(),
-    usernameOrEmail: "",
   });
 
-  const setForm = (values: Partial<AuthForm>) => {
+  const setForm = (values: Partial<SignupFormCache>) => {
     setFormState((prev) => ({ ...prev, ...values }));
   };
 

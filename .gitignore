@@ -2,6 +2,7 @@ node_modules
 .env
 .env.local
 .env.docker
+/venv
 dist
 *.log
 target
@@ -51,3 +52,5 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+__pycache__

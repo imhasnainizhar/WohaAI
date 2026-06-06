@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import "@styles/main/main.global.css";
-import "@styles/dist/main.global.css";
-import "@styles/main/theme.style.css";
+import "../styles/main.global.css";
+import "../styles/theme.style.css";
+import "../styles/dist/main.global.css";
 import "boxicons/css/boxicons.min.css";
-import { ThemeProvider } from "@providers/ThemeProvider";
-import { AppProvider } from "@providers/AppProvider";
-import { ReactLenis } from "@utils/react-lenis";
+import { ThemeProvider } from "@/providers/ThemeProvider";
+import { AppProvider } from "@/providers/AppProvider";
+import { LenisProvider } from "@/providers/LenisProvider";
 
 export const metadata: Metadata = {
   title: "WoahGPT",
@@ -22,20 +22,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-w-[380px] max-w-[2560px] h-screen
+      <body className="min-w-95 max-w-640 h-screen
       no-underline font-sans tracking-letter-spacing-primary bg-bg-primary
       ">
         <AppProvider>
           <ThemeProvider>
-            <ReactLenis
-              root
-              options={{
-                lerp: 0.1,
-                touchMultiplier: 1.25,
-              }}
-            >
+            <LenisProvider>
               <div className="h-full w-full">{children}</div>
-            </ReactLenis>
+            </LenisProvider>
           </ThemeProvider>
         </AppProvider>
       </body>
