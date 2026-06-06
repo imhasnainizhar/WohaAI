@@ -15,7 +15,6 @@ export default function ChatLayout({
     const { mainMenuVisible, setMainMenuVisible } = useAppContext();
     return (
         <>
-            <TopLoader />
             <div className="h-full w-full bg-bg-primary text-text-primary overflow-hidden">
                 <div className="flex h-full w-full">
                     <div className="shrink-0 transition-all duration-750 ease-in-out 
