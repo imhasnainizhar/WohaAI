@@ -173,24 +173,24 @@ const env: EnvConfig = {
     p.NEXT_PUBLIC_USER_API_URI!,
 
   // ========================================
-  // Users PostgreSQL
+  // Users Mongo
   // ========================================
 
-  USERS_PRISMA_DB_URI:
-    p.USERS_PRISMA_DB_URI!,
+  USERS_MONGO_URI:
+    p.USERS_MONGO_URI!,
 
-  USERS_POSTGRES_DB_PORT:
-    Number(p.USERS_POSTGRES_DB_PORT),
+  USERS_MONGO_DB_DATABASE:
+    p.USERS_MONGO_DB_DATABASE!,
 
   // ========================================
-  // Threads PostgreSQL
+  // Threads Mongo
   // ========================================
 
-  THREADS_PRISMA_DB_URI:
-    p.THREADS_PRISMA_DB_URI!,
+  THREADS_MONGO_URI:
+    p.THREADS_MONGO_URI!,
 
-  THREADS_POSTGRES_DB_PORT:
-    Number(p.THREADS_POSTGRES_DB_PORT),
+  THREADS_MONGO_DB_DATABASE:
+    p.THREADS_MONGO_DB_DATABASE!,
 
   // ========================================
   // Auth Redis

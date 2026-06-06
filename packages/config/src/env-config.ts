@@ -63,13 +63,13 @@ export interface EnvConfig {
     NEXT_PUBLIC_AUTH_MAILER_API_URI: string;
     NEXT_PUBLIC_USER_API_URI: string;
 
-    // Postgres store for users.
-    USERS_PRISMA_DB_URI: string;
-    USERS_POSTGRES_DB_PORT: number;
+    // Mongo store for users.
+    USERS_MONGO_URI: string;
+    USERS_MONGO_DB_DATABASE: string;
 
-    // Postgres store for threads.
-    THREADS_PRISMA_DB_URI: string;
-    THREADS_POSTGRES_DB_PORT: number;
+    // Mongo store for threads.
+    THREADS_MONGO_URI: string;
+    THREADS_MONGO_DB_DATABASE: string;
 
     // Redis store for caching memories in live chat session.
     AUTH_SESSION_STORE_URI: string;

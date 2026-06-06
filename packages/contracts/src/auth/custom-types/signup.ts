@@ -40,7 +40,7 @@ export interface VerifyUserEmailResponse {
     emailVerified: boolean
 }
 
-export interface NameValidationResponse {
+export interface PersonalInfoValidationResponse {
     personalInfoValidated: boolean
 }
 

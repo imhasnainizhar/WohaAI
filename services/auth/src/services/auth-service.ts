@@ -1,5 +1,4 @@
 import { AuthRepo } from "@/repo/auth-repo";
-import { userPrisma } from "@packages/prisma-users";
 import { UserProvisioningClient } from "@/clients/user-provision";
 import { env } from "@/config/env";
 
@@ -40,9 +39,9 @@ import {
 } from './signup/continue/username';
 
 import {
-    NameValidationService,
-    NameValidationServiceParams,
-    NameValidationServiceResponse
+    PersonalInfoValidationService,
+    PersonalInfoValidationServiceParams,
+    PersonalInfoValidationServiceResponse
 } from "./signup/validations/personal-info";
 
 import {
@@ -129,7 +128,7 @@ export class AuthService {
         private readonly sendVerificationEmailService: SendVerificationEmailService,
         private readonly verifyUserEmailService: VerifyUserEmailService,
 
-        private readonly nameValidationService: NameValidationService,
+        private readonly personalInfoValidationService: PersonalInfoValidationService,
         private readonly passwordValidationService: PasswordValidationService,
 
         private readonly signupCompleteService: SignupCompleteService,
@@ -152,7 +151,7 @@ export class AuthService {
      */
     public static getInstance(): AuthService {
         if (!AuthService.instance) {
-            const authRepo = new AuthRepo(userPrisma);
+            const authRepo = new AuthRepo();
 
             // Currently using nextjs var, but URI is same for the service
             const userProvisioningClient = new UserProvisioningClient(env.NEXT_PUBLIC_USER_API_URI);
@@ -168,7 +167,7 @@ export class AuthService {
             const sendVerificationEmailService = new SendVerificationEmailService();
             const verifyUserEmailService = new VerifyUserEmailService();
 
-            const nameValidationService = new NameValidationService();
+            const personalInfoValidationService = new PersonalInfoValidationService();
             const passwordValidationService = new PasswordValidationService();
 
             const signupCompleteService = new SignupCompleteService(authRepo, userProvisioningClient);
@@ -197,7 +196,7 @@ export class AuthService {
                 sendVerificationEmailService,
                 verifyUserEmailService,
 
-                nameValidationService,
+                personalInfoValidationService,
                 passwordValidationService,
 
                 signupCompleteService,
@@ -280,12 +279,13 @@ export class AuthService {
         return this.verifyUserEmailService.execute({ signupSessionID, verificationCode })
     }
 
-    public async validateName({
+    public async validatePersonalInfo({
         signupSessionID,
         firstName,
-        lastName
-    }: NameValidationServiceParams): Promise<NameValidationServiceResponse> {
-        return this.nameValidationService.execute({ signupSessionID, firstName, lastName })
+        lastName,
+        dateOfBirth
+    }: PersonalInfoValidationServiceParams): Promise<PersonalInfoValidationServiceResponse> {
+        return this.personalInfoValidationService.execute({ signupSessionID, firstName, lastName, dateOfBirth })
     }
 
     public async validatePassword({

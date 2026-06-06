@@ -1,0 +1,1 @@
+export { EXPIRATION as exp } from "@packages/config"

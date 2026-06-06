@@ -1,44 +1,39 @@
 services:
   # ===========================
-  # Users Postgres DB
+  # Users MongoDB
   # ===========================
-  users-postgres-db:
-    image: postgres:16
-    container_name: ${USERS_POSTGRES_DB_NAME}
+  users-mongo-db:
+    image: mongo:7
+    container_name: ${USERS_MONGO_DB_NAME}
     restart: always
     environment:
-      POSTGRES_USER: ${USERS_POSTGRES_DB_USER}
-      POSTGRES_PASSWORD: ${USERS_POSTGRES_DB_PASSWORD}
-      POSTGRES_DB: ${USERS_POSTGRES_DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${USERS_MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${USERS_MONGO_DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${USERS_MONGO_DB_DATABASE}
     ports:
-      - "${USERS_POSTGRES_DB_PORT}:5432"
+      - "${USERS_MONGO_DB_PORT}:27017"
     volumes:
-      - users_postgres_data:/var/lib/postgresql/data
+      - users_mongo_data:/data/db
     networks:
       - WohaAI_dev_net
     profiles:
       - "repo"
 
   # ===========================
-  # Threads Postgres DB
+  # Threads MongoDB
   # ===========================
-  threads-postgres-db:
-    image: postgres:16
-    container_name: ${THREADS_POSTGRES_DB_NAME}
+  threads-mongo-db:
+    image: mongo:7
+    container_name: ${THREADS_MONGO_DB_NAME}
     restart: always
     environment:
-      POSTGRES_USER: ${THREADS_POSTGRES_DB_USER}
-      POSTGRES_PASSWORD: ${THREADS_POSTGRES_DB_PASSWORD}
-      POSTGRES_DB: ${THREADS_POSTGRES_DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${THREADS_MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${THREADS_MONGO_DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${THREADS_MONGO_DB_DATABASE}
     ports:
-      - "${THREADS_POSTGRES_DB_PORT}:5432"
+      - "${THREADS_MONGO_DB_PORT}:27017"
     volumes:
-      - threads_postgres_data:/var/lib/postgresql/datagINTER
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${THREADS_POSTGRES_DB_USER} -d ${THREADS_POSTGRES_DB_NAME}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - threads_mongo_data:/data/db
     networks:
       - WohaAI_dev_net
     profiles:

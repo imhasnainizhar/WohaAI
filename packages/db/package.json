@@ -1,12 +1,13 @@
 {
-  "name": "@packages/errors",
+  "name": "@packages/db",
   "version": "1.0.0",
-  "description": "Reusable errors for this monorepo",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "MondoDB Shared stuff for repo",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
     "dist"
   ],
+  "type": "module",
   "keywords": [
     "ai",
     "agents",
@@ -22,7 +23,8 @@
   "author": "Hasnain Izhar",
   "scripts": {
     "package:dev": "tsc -b -w",
-    "package:build": "tsc -b"
+    "package:build": "tsc -b",
+    "build:types": "tsc --emitDeclarationOnly"
   },
   "exports": {
     ".": {
@@ -32,15 +34,11 @@
     }
   },
   "dependencies": {
+    "@packages/config": "workspace:*",
     "@packages/observability": "workspace:*",
-    "ioredis": "^5.11.0",
-    "jsonwebtoken": "^9.0.3",
-    "zod": "^4.4.3",
     "mongoose": "^9.6.3"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/redis": "^4.0.11",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.3"
   }
