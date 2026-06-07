@@ -1,59 +1,49 @@
 "use client";
 
 import PathChecker from "@/lib/get-page-url";
-import TextArea from "@/components/ui/input/TextArea";
+import ChatTextArea from "@/components/ui/ChatTextArea";
 import "boxicons/css/boxicons.min.css";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useAppContext } from "@/providers/AppProvider";
 
 export default function ChatPage() {
   const { theme } = useTheme();
-  const { sidebarExpanded } = useAppContext();
+  const { sidebarExpanded, smallDevice } = useAppContext();
 
   return (
-    <div className="text-text-secondary h-full w-full bg-bg-primary">
-      <PathChecker />
+    < section
+      className={
+        `h-full transition-all duration-750 ease-in-out`
+      }
+      style={{
+        width: `${smallDevice ?
+          "100%" : sidebarExpanded ?
+            `calc(100% - 260px)` :
+            `calc(100% - 60px)`
+          }`,
+      }}
+    >
+      <div className={
+        `flex flex-col w-full h-full justify-end`
+      }>
+        <div className={
+          `w-full h-auto flex flex-col justify-end items-center gap-3 text-center
+             text-fluid-xl font-semibold tracking-letter-spacing-primary`
+        }>
+          How Can I Help You Today?
+        </div>
 
-      <div className="flex h-full w-full">
-        {/* Main content */}
-        <section
-          className="flex flex-col h-full transition-all duration-750 ease-in-out"
-          style={{
-            width: `calc(100% - ${sidebarExpanded ? "260px" : "60px"})`,
-          }}
-        >
-          {/* Chat page content */}
-          <main className="chat-page h-full w-full">
-            <div className="h-full flex flex-col w-full">
-
-              {/* Text Content */}
-              <div className="h-[50%] w-full flex flex-col justify-end items-center gap-3">
-                <h1
-                  className="min-w-[300px] max-w-[600px] w-full px-4 text-center
-                             font-bold font-sans text-[24px] text-text"
-                >
-                  What Can I Help You With?
-                </h1>
-
-                <p
-                  className="min-w-[300px] max-w-[600px] w-full px-4 text-center pb-2.5
-                             text-[14px] text-text-secondary font-sans"
-                >
-                  WoahGPT now has our smartest, fastest, most useful model yet,
-                  with thinking built in — so you get the best answer, every time.
-                </p>
-              </div>
-
-              {/* Chat Box */}
-              <div className="h-[50%] w-full flex flex-col justify-start items-center">
-                <div className="min-w-[300px] max-w-[690px] w-full px-4">
-                  <TextArea />
-                </div>
-              </div>
-            </div>
-          </main>
-        </section>
+        {/* Chat Box */}
+        <div className={
+          `w-full h-[50vh] flex justify-center items-end`
+        }>
+          <div className={
+            `max-w-[690px] w-full px-4 py-7`
+          }>
+            <ChatTextArea />
+          </div>
+        </div>
       </div>
-    </div>
+    </section >
   );
 }

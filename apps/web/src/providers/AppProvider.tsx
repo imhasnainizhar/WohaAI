@@ -1,5 +1,6 @@
 "use client";
 
+import { useMinWidth } from "@/hooks/useMinWidth";
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 type AppContextType = {
@@ -30,6 +31,9 @@ type AppContextType = {
 
   // Can go back state
   canGoBack: boolean;
+
+  // Device layout
+  smallDevice: boolean;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -50,11 +54,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Settings state
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
 
+  // Device layout state
+  const [smallDevice, setSmallDevice] = useState<boolean>(false);
+
   const toggleSidebar = () => setSidebarExpanded((prev) => !prev);
   const toggleSearch = () => setSearchActive((prev) => !prev);
   const toggleMainMenu = () => setMainMenuVisible((prev) => !prev);
   const toggleSettings = () => setSettingsVisible((prev) => !prev);
-  const toggleSignin = () => setSignin((prev) => !prev)
+  const toggleSignin = () => setSignin((prev) => !prev);
+   
 
   const [canGoBack, setCanGoBack] = useState(false)
 
@@ -66,6 +74,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCanGoBack(true)
     }
   }, [])
+
+  const isSmallSevice = !useMinWidth(1024)
+
+  useEffect(() => {
+    setSmallDevice(isSmallSevice)
+  }, [isSmallSevice])
 
 
   return (
@@ -87,6 +101,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setSignin,
         toggleSignin,
         canGoBack,
+        smallDevice
       }}
     >
       {children}

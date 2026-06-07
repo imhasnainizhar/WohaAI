@@ -1,98 +1,160 @@
 "use client";
+
+import {
+    LexicalComposer,
+} from "@lexical/react/LexicalComposer";
+
+import {
+    $getRoot,
+    KEY_BACKSPACE_COMMAND,
+    KEY_DELETE_COMMAND,
+    KEY_ENTER_COMMAND,
+} from "lexical";
+
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useTheme } from "@/providers/ThemeProvider";
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 
-export default function TextArea() {
-  const textArea = useRef<HTMLTextAreaElement | null>(null);
-  const container = useRef<HTMLDivElement | null>(null);
-  const { theme } = useTheme();
-  const darkTheme = theme === "dark";
+import { useState, useEffect, useRef } from "react";
+import type { EditorState, LexicalEditor } from "lexical";
 
-  const [height, setHeight] = useState(40);
 
-  useEffect(() => {
-    const ta = textArea.current;
-    const parent = container.current;
-    if (!ta || !parent) return;
+type ChatInputProps = {
+    setHeight: (height: number) => void;
+    maxHeight: number;
+}
 
-    const lineHeight = 24;
-    const maxHeight = lineHeight * 6;
+// Placeholder
+function Placeholder() {
+    const [editor] = useLexicalComposerContext();
+    const [placeholderVisible, setPlaceholderVisible] = useState<boolean>(true);
 
-    const handleInput = () => {
-      ta.style.height = "auto";
-      const newHeight = Math.min(ta.scrollHeight, maxHeight);
-      ta.style.height = `${newHeight}px`;
-      ta.style.overflowY = ta.scrollHeight > maxHeight ? "scroll" : "hidden";
+    useEffect(() => {
+        editor.registerUpdateListener(({ editorState }) => {
+            editorState.read(() => {
+                const text = $getRoot().getTextContent();
+                setPlaceholderVisible(text.length === 0);
+            })
+        })
+    }, [editor])
+    return (
+        placeholderVisible ? (
+            <div className="
+            absolute
+            left-0
+            top-1/2
+            -translate-y-1/2
+            pointer-events-none
+            text-muted-foreground
+            text-fluid-md
+            "
+            >
+                Ask me anything...
+            </div>
+        ) : null
+    );
+}
+
+
+// Editor Ref Plugin
+function EditorRefPlugin({
+    onReady,
+}: {
+    onReady: (editor: LexicalEditor) => void;
+}) {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+        onReady(editor);
+    }, [editor, onReady]);
+
+    return null;
+}
+
+// Word Level History Plugin
+function WordLevelHistoryPlugin() {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+        const root = editor.getRootElement();
+
+        if (!root) return;
+
+        const handler = () => {
+            editor.update(() => {
+                // force snapshot per keypress
+            });
+        };
+
+        root.addEventListener("keydown", handler);
+
+        return () => root.removeEventListener("keydown", handler);
+    }, [editor]);
+
+    return null;
+}
+
+// Main Component
+export default function TextArea({ setHeight, maxHeight }: ChatInputProps) {
+  const [localHeight, setLocalHeight] = useState(40);
+  const { darkTheme } = useTheme();
+
+  const initialConfig = {
+    namespace: "chat-composer",
+    onError(error: Error) {
+      throw error;
+    },
+  };
+
+  const handleChange = (editorState: EditorState, editor: LexicalEditor) => {
+    editorState.read(() => {
+      const rootElement = editor.getRootElement();
+      if (!rootElement) return;
+
+      // measure content
+      const scrollHeight = rootElement.scrollHeight;
+      const newHeight = Math.min(scrollHeight, maxHeight);
+
+      setLocalHeight(newHeight);
       setHeight(newHeight);
-    };
-
-    ta.addEventListener("input", handleInput);
-    handleInput();
-
-    return () => ta.removeEventListener("input", handleInput);
-  }, []);
+    });
+  };
 
   return (
-    <div
-      ref={container}
-      style={{
-        minHeight: `${height + 60}px`,
-        transition: "min-height 0.2s ease, max-height 0.2s ease",
-      }}
-      className={`flex flex-col justify-between gap-3.5 p-2 pb-1 rounded-[25px] w-full 
-        relative border border-solid border-primary bg-bg-tertiary`}
-    >
-      <textarea
-        ref={textArea}
-        placeholder="Ask me anything..."
-        className={`w-full max-w-[700px] min-w-[280px] resize-none text-left text-[15px] 
-          pl-[5px] whitespace-pre-wrap wrap-break-word border-none
-          leading-[24px] focus:outline-none rounded-md p-2 pb-[4px] touch-auto
-          [webkit-overflow-scrolling:touch] text-text-primary bg-bg-tertiary`}
-        style={{
-          minHeight: "40px",
-          maxHeight: "144px",
-          overflowY: "auto",
-        }}
-      ></textarea>
-
-      {/* Gradient Shadow Behind Buttons */}
+    <LexicalComposer initialConfig={initialConfig}>
+      {/* OUTER WRAPPER controls animation */}
       <div
-        className={`absolute bottom-[50px] left-0 w-full h-[50px] pointer-events-none z-0 ${darkTheme
-          ? "bg-linear-to-t from-bg-bg/90 to-transparent"
-          : "bg-linear-to-t from-bg-primary/90 to-transparent"
-          }`}
-      ></div>
+        className="
+          relative w-full bg-bg-secondary mt-2.5 mb-4
+          overflow-hidden
+          transition-[height] duration-150 ease-out
+          will-change-[height]
+        "
+        style={{ height: localHeight }}
+      >
+        <RichTextPlugin
+          contentEditable={
+            <div className="relative">
+              <ContentEditable
+                className="
+                  outline-none text-fluid-md whitespace-pre-wrap wrap-break-word
+                  min-h-6 max-h-60 overflow-y-auto
+                "
+              />
+              <Placeholder />
+            </div>
+          }
+          placeholder={null}
+          ErrorBoundary={() => null}
+        />
 
-      {/* Button Row */}
-      <div className="relative flex items-center justify-between z-10">
-        <div className="flex gap-3 items-center justify-start">
-          <span
-            className={`border border-solid border-primary rounded-[90px] w-[80px] h-[35px] flex 
-              items-center justify-center cursor-pointer text-text-primary`}
-          >
-            Tools
-          </span>
-          <span
-            className={`rounded-full flex items-center
-              justify-center cursor-pointer w-auto h-auto text-text text-[25px]`}
-          >
-            +
-          </span>
-        </div>
-        <div
-          className={`border border-solid border-primary rounded-full flex items-center 
-            justify-center cursor-pointer w-[35px] h-[35px] text-text-primary`}
-        >
-          <Image
-            src={"/icons/arrow-up-stroke.png"}
-            alt="Submit"
-            width={30}
-            height={30}
-          />
-        </div>
+        <HistoryPlugin />
+        <WordLevelHistoryPlugin />
+        <OnChangePlugin onChange={handleChange} />
       </div>
-    </div>
+    </LexicalComposer>
   );
 }

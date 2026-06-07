@@ -43,6 +43,14 @@
   --color-link: rgb(0, 154, 255);
   --color-link-hover: rgb(0, 89, 148);
 
+  /* Fluid text sizes variables */
+  --text-fluid-xs: clamp(8px, calc(7px + 0.2vw), 11px);
+  --text-fluid-sm: clamp(12px, calc(11px + 0.2vw), 14px);
+  --text-fluid-base: clamp(16px, calc(14px + 0.3vw), 18px);
+  --text-fluid-lg: clamp(18px, calc(15px + 0.5vw), 22px);
+  --text-fluid-xl: clamp(24px, calc(19px + 0.8vw), 30px);
+  --text-fluid-2xl: clamp(30px, calc(23px + 1.1vw), 37px);
+
   /* Fonts and misc */
   --font-montserrat-sans: "Montserrat", sans-serif;
   --font-calton-elegance-sans: "Calton Elegance Sans", sans-serif;
@@ -90,36 +98,36 @@
 ====================================================== */
 .light {
   /* BG colors */
-  --color-bg-primary: hsl(0, 0%, 98%);
-  --color-bg-secondary: hsl(0, 0%, 96%);
-  --color-bg-tertiary: hsl(0, 0%, 92%);
+  --color-bg-primary: rgb(250, 250, 250);
+  --color-bg-secondary: rgb(245, 245, 245);
+  --color-bg-tertiary: rgb(235, 235, 235);
 
   /* Text Colors */
-  --color-text-primary: hsl(220, 13%, 12%);
-  --color-text-secondary: hsl(218, 11%, 38%);
-  --color-text-muted: hsl(218, 11%, 45%);
-  --color-text-inverse: hsl(220, 13%, 96%);
+  --color-text-primary: rgb(27, 29, 35);
+  --color-text-secondary: rgb(86, 94, 108);
+  --color-text-muted: rgb(102, 111, 127);
+  --color-text-inverse: rgb(243, 244, 246);
 
   /* Btn Colors */
-  --color-bg-btn: hsl(0, 0%, 5%);
-  --color-text-btn: hsl(0, 0%, 100%);
+  --color-bg-btn: rgb(13, 13, 13);
+  --color-text-btn: rgb(255, 255, 255);
 
   /* --color-bg-btn-hover: hsl(0, 0%, 5%, 0.362);
   --color-bg-btn-active: hsl(0, 0%, 75%, 0.362); */
 
-  --color-text-hover: hsl(0, 0%, 41%, 0.362);
-  --color-text-active: hsl(0, 0%, 20%, 0.362);
+  --color-text-hover: rgba(105, 105, 105, 0.362);
+  --color-text-active: rgba(51, 51, 51, 0.362);
 
   /* Borders / Shadows */
-  /* --color-border-primary: hsla(0, 0%, 25%, 0.751);
-  --color-border-secondary: hsla(0, 0%, 57%, 0.751); */
+  --color-border-primary: hsla(0, 0%, 25%, 0.751);
+  --color-border-secondary: hsla(0, 0%, 57%, 0.751);
 
-  --color-shadow-primary: hsla(0, 0%, 10%, 0.25);
+  --color-shadow-primary: rgba(26, 26, 26, 0.25);
   --color-shadow-secondary: rgba(0, 0, 0, 0.08);
 
   /* Grays */
-  --color-gray-primary: hsl(240, 0%, 48%);
-  --color-gray-muted: hsla(0, 0%, 31%, 0.06)
+  --color-gray-primary: rgb(122, 122, 122);
+  --color-gray-muted: rgba(79, 79, 79, 0.06);
 
   /* Links */
   --color-link: rgb(0, 102, 204);
@@ -171,10 +179,35 @@
   /* === Links === */
   --color-link: var(--color-link);
   --color-link-hover: var(--color-link-hover);
-  
+
   /* === Fonts === */
   --font-montserrat-sans: var(--font-montserrat-sans);
   --font-calton-elegance-sans: var(--font-calton-elegance-sans);
+
+  /* fluid text: clamp(min, calc(intercept + vw-factor), max) */
+  --text-fluid-xs: var(--text-fluid-xs);
+  --text-fluid-sm: var(--text-fluid-sm);
+  --text-fluid-base: var(--text-fluid-base);
+  --text-fluid-lg: var(--text-fluid-lg);
+  --text-fluid-xl: var(--text-fluid-xl);
+  --text-fluid-2xl: var(--text-fluid-2xl);
+  /* Media Queries Breakpoints */
+  --breakpoint-xs: 320px;
+  /* small/old phones */
+  --breakpoint-sm: 390px;
+  /* iPhone 14/15 — most common mobile */
+  --breakpoint-md: 550px;
+  /* large phones / landscape */
+  --breakpoint-lg: 768px;
+  /* tablet portrait */
+  --breakpoint-xl: 1024px;
+  /* tablet landscape / small laptop */
+  --breakpoint-2xl: 1280px;
+  /* standard desktop */
+  --breakpoint-3xl: 1536px;
+  /* large monitor */
+  --breakpoint-4xl: 1920px;
+  /* ultrawide */
 }
 
 ::-webkit-scrollbar {
@@ -206,6 +239,18 @@
   outline: none;
 }
 
+html,
+body {
+  height: 100vh;
+  min-width: 320px;
+}
+
+[contenteditable]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -218,7 +263,8 @@ input:-webkit-autofill:active {
 }
 
 ::selection {
-  background: hsla(0, 0%, 20%, 0.705); /* highlight bg */
+  background: hsla(0, 0%, 20%, 0.705);
+  /* highlight bg */
   color: white;
 }
 
@@ -228,7 +274,13 @@ input:-webkit-autofill:active {
   color: white;
 }
 
-svg, i, a, button, input, image, label {
+svg,
+i,
+a,
+button,
+input,
+image,
+label {
   user-select: none;
   -webkit-user-select: none;
 }
@@ -317,6 +369,7 @@ svg, i, a, button, input, image, label {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

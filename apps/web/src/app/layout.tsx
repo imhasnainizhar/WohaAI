@@ -22,13 +22,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-w-95 max-w-640 h-screen
+      <body className="min-w-95 max-w-480 h-full
       no-underline font-sans tracking-letter-spacing-primary bg-bg-primary
       ">
         <AppProvider>
           <ThemeProvider>
             <LenisProvider>
-              <div className="h-full w-full">{children}</div>
+              {children}
             </LenisProvider>
           </ThemeProvider>
         </AppProvider>
