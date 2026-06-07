@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Calendar } from "@/components/ui/Calendar"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/Popover"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popovers/Popover"
 import { format } from "date-fns"
 import { Controller, useFormContext } from "react-hook-form"
 import { RoundedDataSelector } from "./input/date/RoundedDataSelector"

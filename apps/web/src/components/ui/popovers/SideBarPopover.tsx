@@ -20,14 +20,14 @@ type Props = {
   };
 };
 
-export default function MainMenu({ onClickToggle, position }: Props) {
+export default function SideBarPopover({ onClickToggle, position }: Props) {
   const { darkTheme, toggleTheme } = useTheme();
-  const mainMenuRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const { toggleSettings, setSignin } = useAppContext();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (mainMenuRef.current && !mainMenuRef.current.contains(event.target as Node)) {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
         onClickToggle();
       }
     };
@@ -46,7 +46,7 @@ export default function MainMenu({ onClickToggle, position }: Props) {
       style={position}
       onClick={stopClick} // Stop all clicks from bubbling outside
     >
-      <div ref={mainMenuRef} className="h-auto w-auto p-2">
+      <div ref={popoverRef} className="h-auto w-auto p-2">
         {userInfo ? (
           <div className="flex flex-col items-start justify-center gap-1 text-text rounded-[25px] text-[15px] font-montserrat-sans h-auto">
             {/* Username plate */}

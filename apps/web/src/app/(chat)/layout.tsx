@@ -1,6 +1,6 @@
 "use client"
 
-import MainMenu from "@/components/layout/MainMenu";
+import SidebarPopover from "@/components/ui/popovers/SideBarPopover";
 import Sidebar from "@/components/layout/Sidebar";
 import { Settings } from "@/components/settings/Settings";
 import TopLoader from "@/components/ui/TopLoader";
@@ -46,7 +46,7 @@ export default function ChatLayout({
                                 ``
                             }
                         >
-                            <MainMenu onClickToggle={() => setMainMenuVisible(false)} position={{ zIndex: 100, width: "215px", height: "auto", top: "auto", left: `15px`, right: "auto", bottom: "75px" }} />
+                            <SidebarPopover onClickToggle={() => setMainMenuVisible(false)} position={{ zIndex: 100, width: "215px", height: "auto", top: "auto", left: `15px`, right: "auto", bottom: "75px" }} />
                         </div>
                     )}
                 </div>
