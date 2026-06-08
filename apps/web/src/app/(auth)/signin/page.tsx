@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SigninRequestSchema, SignInRequest } from "@packages/contracts/auth"
 import z from "zod";
-import { Alert, AlertTitle } from "@/components/ui/Alert"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon } from "lucide-react"
 
 type SigninIUnput = z.input<typeof SigninRequestSchema>;

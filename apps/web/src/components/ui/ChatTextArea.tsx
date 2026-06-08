@@ -2,9 +2,9 @@
 import { useTheme } from "@/providers/ThemeProvider";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import ChatMenu from "./expandables/ChatMenu";
+import ChatMenu from "../expandables/ChatMenu";
 import SubmitButton from "./buttons/SubmitButton";
-import TextArea from './input/TextArea';
+import TextArea from '../input/TextArea';
 
 export default function ChatTextArea() {
 

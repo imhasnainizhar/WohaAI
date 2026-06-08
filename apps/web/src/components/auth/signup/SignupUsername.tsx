@@ -5,7 +5,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ClassicButton from "@/components/ui/buttons/ClassicButton";
-import { RoundedInputField } from "@/components/ui/input/fields/RoundedInputField";
+import { RoundedInputField } from "@/components/input/fields/RoundedInputField";
 import { ContinueWithUsernameRequestSchema, ContinueWithUsernameRequest } from "@packages/contracts/auth";
 import { useEffect } from "react";
 
@@ -20,7 +20,7 @@ export default function SignupUsername({
     const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
     const { theme } = useTheme();
     const darkTheme = theme === "dark";
-    
+
     const {
         register,
         handleSubmit,

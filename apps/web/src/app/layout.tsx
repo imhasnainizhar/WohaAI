@@ -6,6 +6,7 @@ import "boxicons/css/boxicons.min.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AppProvider } from "@/providers/AppProvider";
 import { LenisProvider } from "@/providers/LenisProvider";
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 export const metadata: Metadata = {
   title: "WoahGPT",
@@ -28,7 +29,9 @@ export default function RootLayout({
         <AppProvider>
           <ThemeProvider>
             <LenisProvider>
-              {children}
+              <TooltipProvider>
+                {children}
+              </TooltipProvider>
             </LenisProvider>
           </ThemeProvider>
         </AppProvider>

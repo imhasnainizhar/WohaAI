@@ -1,5 +1,5 @@
 import { forwardRef } from "react"
-import { Alert, AlertTitle } from "@/components/ui/Alert"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon } from "lucide-react"
 
 interface DataSelectorProps {

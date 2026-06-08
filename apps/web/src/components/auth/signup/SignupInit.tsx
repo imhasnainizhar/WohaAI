@@ -7,7 +7,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ClassicButton from "@/components/ui/buttons/ClassicButton";
-import { RoundedInputField } from "@/components/ui/input/fields/RoundedInputField";
+import { RoundedInputField } from "@/components/input/fields/RoundedInputField";
 import { useAppContext } from "@/providers/AppProvider";
 import { env } from "@/config/env";
 import { SignupInitRequest, SignupInitRequestSchema, SignupInitResponse } from "@packages/contracts/auth";

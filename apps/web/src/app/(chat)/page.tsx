@@ -5,6 +5,8 @@ import ChatTextArea from "@/components/ui/ChatTextArea";
 import "boxicons/css/boxicons.min.css";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useAppContext } from "@/providers/AppProvider";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
 
 export default function ChatPage() {
   const { theme } = useTheme();

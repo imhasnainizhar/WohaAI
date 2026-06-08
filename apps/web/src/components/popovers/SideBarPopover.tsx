@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import TransitionalLink from "@/components/ui/TransitionalLink";
+import TransitionalLink from "@/components/TransitionalLink";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useAppContext } from "@/providers/AppProvider";
 import UsernamePlate from "@/components/ui/cards/UsernamePlate";
