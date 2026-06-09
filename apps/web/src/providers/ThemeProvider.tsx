@@ -1,65 +1,81 @@
-"use client";
+"use client"
 
-import { nextAppLogger as logger } from "@packages/observability";
-import { createContext, useContext, useEffect, useState } from "react";
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 
-type Theme = "light" | "dark";
-
-interface ThemeContextType {
-  theme: Theme;
-  darkTheme: boolean;
-  toggleTheme: () => void;
+function ThemeProvider({
+  children,
+  ...props
+}: React.ComponentProps<typeof NextThemesProvider>) {
+  return (
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="dark"
+      disableTransitionOnChange
+      {...props}
+    >
+      <ThemeHotkey />
+      {children}
+    </NextThemesProvider>
+  )
 }
 
-const ThemeContext = createContext<ThemeContextType>({
-  theme: "dark",
-  darkTheme: true,
-  toggleTheme: () => { },
-});
-
-function getCookie(name: string): string | undefined {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(";").shift();
-}
-
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>("dark");
-
-  // Initialize from cookie
-  useEffect(() => {
-    const cookieTheme = (getCookie("theme") as Theme) || "dark";
-    setTheme(cookieTheme);
-  }, []);
-
-  logger.debug("Theme Cookie value: " + theme);
-  console.log("Theme Cookie value: " + theme);
-
-  // Update html class and cookie when theme changes
-  useEffect(() => {
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
-    document.cookie = `theme=${theme}; path=/; max-age=31536000`;
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
-  logger.debug("ThemeProvider initialized with theme: " + theme);
-  console.log("ThemeProvider initialized with theme: " + theme);
+function isTypingTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false
+  }
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        darkTheme: theme === "dark",
-        toggleTheme,
-      }}
-    >
-      {children}
-    </ThemeContext.Provider>
-  );
-};
+    target.isContentEditable ||
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT"
+  )
+}
 
-export const useTheme = () => useContext(ThemeContext);
+export const toggleTheme = () => {
+  const { resolvedTheme, setTheme } = useTheme()
+  setTheme(resolvedTheme === "dark" ? "light" : "dark")
+}
+
+export const isDarkTheme = () => {
+  const { resolvedTheme, setTheme } = useTheme()
+  return resolvedTheme === "dark"
+}
+
+function ThemeHotkey() {
+  const { resolvedTheme, setTheme } = useTheme()
+
+  React.useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.defaultPrevented || event.repeat) {
+        return
+      }
+
+      if (event.metaKey || event.ctrlKey || event.altKey) {
+        return
+      }
+
+      if (event.key.toLowerCase() !== "d") {
+        return
+      }
+
+      if (isTypingTarget(event.target)) {
+        return
+      }
+
+      setTheme(resolvedTheme === "dark" ? "light" : "dark")
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [resolvedTheme, setTheme])
+
+  return null
+}
+
+export { ThemeProvider }
+export { useTheme }

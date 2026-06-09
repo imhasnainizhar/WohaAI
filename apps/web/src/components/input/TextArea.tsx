@@ -1,14 +1,14 @@
 "use client";
 
 import {
-    LexicalComposer,
+  LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 
 import {
-    $getRoot,
-    KEY_BACKSPACE_COMMAND,
-    KEY_DELETE_COMMAND,
-    KEY_ENTER_COMMAND,
+  $getRoot,
+  KEY_BACKSPACE_COMMAND,
+  KEY_DELETE_COMMAND,
+  KEY_ENTER_COMMAND,
 } from "lexical";
 
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -23,26 +23,25 @@ import type { EditorState, LexicalEditor } from "lexical";
 
 
 type ChatInputProps = {
-    setHeight: (height: number) => void;
-    maxHeight: number;
+  maxHeight: number;
 }
 
 // Placeholder
 function Placeholder() {
-    const [editor] = useLexicalComposerContext();
-    const [placeholderVisible, setPlaceholderVisible] = useState<boolean>(true);
+  const [editor] = useLexicalComposerContext();
+  const [placeholderVisible, setPlaceholderVisible] = useState<boolean>(true);
 
-    useEffect(() => {
-        editor.registerUpdateListener(({ editorState }) => {
-            editorState.read(() => {
-                const text = $getRoot().getTextContent();
-                setPlaceholderVisible(text.length === 0);
-            })
-        })
-    }, [editor])
-    return (
-        placeholderVisible ? (
-            <div className="
+  useEffect(() => {
+    editor.registerUpdateListener(({ editorState }) => {
+      editorState.read(() => {
+        const text = $getRoot().getTextContent();
+        setPlaceholderVisible(text.length === 0);
+      })
+    })
+  }, [editor])
+  return (
+    placeholderVisible ? (
+      <div className="
             absolute
             left-0
             top-1/2
@@ -51,56 +50,55 @@ function Placeholder() {
             text-muted-foreground
             text-fluid-md
             "
-            >
-                Ask me anything...
-            </div>
-        ) : null
-    );
+      >
+        Ask me anything...
+      </div>
+    ) : null
+  );
 }
 
 
 // Editor Ref Plugin
-function EditorRefPlugin({
-    onReady,
-}: {
-    onReady: (editor: LexicalEditor) => void;
-}) {
-    const [editor] = useLexicalComposerContext();
+// function EditorRefPlugin({
+//     onReady,
+// }: {
+//     onReady: (editor: LexicalEditor) => void;
+// }) {
+//     const [editor] = useLexicalComposerContext();
 
-    useEffect(() => {
-        onReady(editor);
-    }, [editor, onReady]);
+//     useEffect(() => {
+//         onReady(editor);
+//     }, [editor, onReady]);
 
-    return null;
-}
+//     return null;
+// }
 
 // Word Level History Plugin
 function WordLevelHistoryPlugin() {
-    const [editor] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext();
 
-    useEffect(() => {
-        const root = editor.getRootElement();
+  useEffect(() => {
+    const root = editor.getRootElement();
 
-        if (!root) return;
+    if (!root) return;
 
-        const handler = () => {
-            editor.update(() => {
-                // force snapshot per keypress
-            });
-        };
+    const handler = () => {
+      editor.update(() => {
+        // force snapshot per keypress
+      });
+    };
 
-        root.addEventListener("keydown", handler);
+    root.addEventListener("keydown", handler);
 
-        return () => root.removeEventListener("keydown", handler);
-    }, [editor]);
+    return () => root.removeEventListener("keydown", handler);
+  }, [editor]);
 
-    return null;
+  return null;
 }
 
 // Main Component
-export default function TextArea({ setHeight, maxHeight }: ChatInputProps) {
-  const [localHeight, setLocalHeight] = useState(40);
-  const { darkTheme } = useTheme();
+export default function TextArea({ maxHeight }: ChatInputProps) {
+  const [height, setHeight] = useState(24);
 
   const initialConfig = {
     namespace: "chat-composer",
@@ -118,7 +116,6 @@ export default function TextArea({ setHeight, maxHeight }: ChatInputProps) {
       const scrollHeight = rootElement.scrollHeight;
       const newHeight = Math.min(scrollHeight, maxHeight);
 
-      setLocalHeight(newHeight);
       setHeight(newHeight);
     });
   };
@@ -128,12 +125,12 @@ export default function TextArea({ setHeight, maxHeight }: ChatInputProps) {
       {/* OUTER WRAPPER controls animation */}
       <div
         className="
-          relative w-full bg-bg-secondary mt-2.5 mb-4
+          relative w-full bg-secondary mt-2.5 mb-2
           overflow-hidden
           transition-[height] duration-150 ease-out
           will-change-[height]
         "
-        style={{ height: localHeight }}
+        style={{ height: height }}
       >
         <RichTextPlugin
           contentEditable={

@@ -2,7 +2,6 @@ import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
 import type { NextConfig } from "next";
-import { nextAppLogger as logger } from "@packages/observability";
 
 const isDocker = fs.existsSync("/.dockerenv");
 const isProduction = process.env.NODE_ENV === "production";
@@ -15,7 +14,7 @@ const envPath = isDocker
 if (!isProduction) {
   const result = dotenv.config({ path: envPath });
   if (result.error) throw result.error;
-  logger.debug(`✅ Loaded env from ${envPath}`);
+  console.log(`✅ Loaded env from ${envPath}`);
 }
 
 // Validate env

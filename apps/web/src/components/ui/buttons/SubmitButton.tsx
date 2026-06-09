@@ -1,20 +1,27 @@
-import Image from "next/image"
-
+import { ArrowUp } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export default function SubmitButton() {
     return (
-        <div
-            className={
-                `border border-solid border-primary rounded-full flex items-center
-           justify-center cursor-pointer w-[35px] h-[35px] text-text-primary`
-            }
+        <Button
+            type="submit"
+            size="icon"
+            className="
+                border-none!
+                outline-none!
+                rounded-full
+                w-[35px]
+                h-[35px]
+                border
+                border-primary
+                bg-black
+                text-text-primary
+                cursor-pointer
+                hover:bg-black/50
+                active:scale-95!
+            "
         >
-            <Image
-                src={"/icons/arrow-up-stroke.png"}
-                alt="Submit"
-                width={30}
-                height={30}
-            />
-        </div>
+            <ArrowUp className="size-5" />
+        </Button>
     )
 }

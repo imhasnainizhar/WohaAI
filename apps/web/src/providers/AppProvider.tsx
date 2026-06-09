@@ -33,7 +33,7 @@ type AppContextType = {
   canGoBack: boolean;
 
   // Device layout
-  smallDevice: boolean;
+  isSmallDevice: boolean;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -55,14 +55,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
 
   // Device layout state
-  const [smallDevice, setSmallDevice] = useState<boolean>(false);
+  const [isSmallDevice, setIsSmallDevice] = useState<boolean>(false);
 
   const toggleSidebar = () => setSidebarExpanded((prev) => !prev);
   const toggleSearch = () => setSearchActive((prev) => !prev);
   const toggleMainMenu = () => setMainMenuVisible((prev) => !prev);
   const toggleSettings = () => setSettingsVisible((prev) => !prev);
   const toggleSignin = () => setSignin((prev) => !prev);
-   
+
 
   const [canGoBack, setCanGoBack] = useState(false)
 
@@ -78,7 +78,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const isSmallSevice = !useMinWidth(1024)
 
   useEffect(() => {
-    setSmallDevice(isSmallSevice)
+    setIsSmallDevice(isSmallSevice)
   }, [isSmallSevice])
 
 
@@ -101,7 +101,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setSignin,
         toggleSignin,
         canGoBack,
-        smallDevice
+        isSmallDevice
       }}
     >
       {children}

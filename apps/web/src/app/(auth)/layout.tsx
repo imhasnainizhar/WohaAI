@@ -1,4 +1,3 @@
-import SignupFlow from "@/components/auth/signup/SignupFlow";
 import { AuthCacheProvider } from "@/providers/AuthCacheProvider";
 
 export default function AuthLayout({
@@ -6,12 +5,11 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <main>
+  return ( 
+  <main>
     <AuthCacheProvider>
-    <div className="z-110 w-full h-full absolute flex items-center justify-center bg-bg-primary">
-      <SignupFlow />
-    </div>
-    {children}
+      {children}
     </AuthCacheProvider>
-  </main>;
+  </main>
+  );
 }

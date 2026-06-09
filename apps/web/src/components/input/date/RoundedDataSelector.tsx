@@ -60,7 +60,7 @@ export const RoundedDataSelector = forwardRef<
             peer-focus:text-[12px]
             peer-focus:text-text-primary
             peer-focus:left-[25px]
-            bg-bg-primary rounded-[6px] w-10
+            bg-secondary rounded-[6px] w-10
             text-center
           `}
         >

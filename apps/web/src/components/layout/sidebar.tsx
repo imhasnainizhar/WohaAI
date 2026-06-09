@@ -118,7 +118,7 @@ export default function Sidebar() {
       data-sidebar-root
       onClick={handleSidebarClick}
       className={`
-        relative h-full bg-bg-secondary flex flex-col
+        relative h-full bg-secondary flex flex-col
         transition-width duration-450 ease-in-out pt-2 select-none
         ${sidebarExpanded ? "w-[245px]" : "cursor-w-resize w-[60px]"}
       `}

@@ -139,7 +139,7 @@ export default function SignupInit({ next, setNextStep, data }: { next: (next: a
                         </span>
                     </div>
                     <div className="relative w-full max-w-[340px] h-[1px] mt-[20px] bg-border-secondary">
-                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-bg-primary w-[50px] text-center text-text-gray-muted">OR</p>
+                        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-secondary w-[50px] text-center text-text-gray-muted">OR</p>
                     </div>
                     <form
                         className="my-[20px] flex flex-col items-center justify-start gap-[20px] w-full max-w-[340px] h-auto"

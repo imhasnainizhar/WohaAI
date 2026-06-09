@@ -1,140 +1,92 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import TransitionalLink from "@/components/TransitionalLink";
-import { useTheme } from "@/providers/ThemeProvider";
-import { useAppContext } from "@/providers/AppProvider";
-import UsernamePlate from "@/components/ui/cards/UsernamePlate";
 import Link from "next/link";
+import UsernamePlate from "@/components/ui/cards/UsernamePlate";
+import { useAppContext } from "@/providers/AppProvider";
+import { toggleTheme, isDarkTheme } from "@/providers/ThemeProvider";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+// Will be updated to exact type
 type Props = {
-  onClickToggle: () => void;
-  position: {
-    zIndex: number;
-    width: string;
-    height: string;
-    top: string;
-    left: string;
-    right: string;
-    bottom: string;
-  };
+  userInfo?: unknown;
 };
 
-export default function SideBarPopover({ onClickToggle, position }: Props) {
-  const { darkTheme, toggleTheme } = useTheme();
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const { toggleSettings, setSignin } = useAppContext();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
-        onClickToggle();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClickToggle]);
-
-  const userInfo = null; // Replace with actual user info when available
-
-  const stopClick = (e: React.MouseEvent) => e.stopPropagation();
+export default function SideBarPopover({ userInfo }: Props) {
+  const { toggleSettings } = useAppContext();
 
   return (
-    <div
-      className="fixed border border-solid border-primary rounded-[18px] bg-bg-tertiary w-full h-auto"
-      style={position}
-      onClick={stopClick} // Stop all clicks from bubbling outside
-    >
-      <div ref={popoverRef} className="h-auto w-auto p-2">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="w-full rounded-xl outline-none"
+          aria-label="Open account menu"
+        >
+          <UsernamePlate />
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        side="right"
+        align="start"
+        className="w-64"
+      >
         {userInfo ? (
-          <div className="flex flex-col items-start justify-center gap-1 text-text rounded-[25px] text-[15px] font-montserrat-sans h-auto">
-            {/* Username plate */}
-            <div
-              className="flex items-center justify-center border-b border-solid border-secondary w-full h-auto"
-              onClick={stopClick}
-            >
+          <>
+            <div className="px-2 py-2">
               <UsernamePlate />
             </div>
 
-            {/* SignOut */}
-            <div
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
-              onClick={(e) => {
-                e.stopPropagation();
-                // signOut logic here
-              }}
-            >
-              <p>SignOut</p>
-            </div>
+            <DropdownMenuSeparator />
 
-            {/* Settings */}
-            <div
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleSettings();
-              }}
-            >
-              <p>Settings</p>
-            </div>
-          </div>
+            <DropdownMenuItem>
+              Sign Out
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={toggleSettings}>
+              Settings
+            </DropdownMenuItem>
+          </>
         ) : (
-          <div className="flex flex-col items-start justify-center gap-1 text-text rounded-[25px] text-[15px] font-montserrat-sans h-auto">
-            {/* Username plate */}
-            <div
-              className="border-b border-solid border-primary w-full h-full flex items-center justify-center"
-              onClick={stopClick}
-            >
-              <div className="flex items-center justify-center mb-2 w-[197px] h-[50px]">
-                <UsernamePlate />
-              </div>
+          <>
+            <div className="px-2 py-2">
+              <UsernamePlate />
             </div>
 
-            {/* SignIn */}
-            <Link
-              href="/signin"
-              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active cursor-pointer transition-all duration-300 ease-in-out rounded-[13px]"
-            >
-              <div>
-                SignIn
-              </div>
-            </Link>
+            <DropdownMenuSeparator />
 
-            {/* SignUp */}
-            <Link
-              href="/signup"
-              className="w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active cursor-pointer transition-all duration-300 ease-in-out rounded-[13px]"
-            >
-              <div>
-                SignUp
-              </div>
-            </Link>
+            <DropdownMenuItem asChild>
+              <Link href="/signin">
+                Sign In
+              </Link>
+            </DropdownMenuItem>
 
-            {/* Dark/Light toggle */}
-            <button
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleTheme();
-              }}
-            >
-              <p>{darkTheme ? "Switch Light Mode" : "Switch Dark Mode"}</p>
-            </button>
+            <DropdownMenuItem asChild>
+              <Link href="/signup">
+                Sign Up
+              </Link>
+            </DropdownMenuItem>
 
-            {/* Settings */}
-            <button
-              className="cursor-pointer w-full h-[40px] flex items-center justify-start px-2 py-1 hover:bg-bg-btn-hover active:bg-bg-btn-active transition-all duration-300 ease-in-out rounded-[13px]"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleSettings();
-              }}
-            >
-              <p className="pointer-none">Settings</p>
-            </button>
-          </div>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem onClick={toggleTheme}>
+              {isDarkTheme()
+                ? "Switch Light Mode"
+                : "Switch Dark Mode"}
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={toggleSettings}>
+              Settings
+            </DropdownMenuItem>
+          </>
         )}
-      </div>
-    </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

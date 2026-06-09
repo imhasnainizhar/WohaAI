@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar } from "@/components/ui/Calendar"
+import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { Controller, useFormContext } from "react-hook-form"

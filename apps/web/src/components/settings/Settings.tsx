@@ -17,9 +17,9 @@ export function Settings({ schema }: Props) {
     (settingsVisible ? (
       <div className="fixed bg-translucent-bg w-full h-full flex items-center justify-center transition-all duration-500 ease-in-out
     z-120 py-8 space-y-8">
-        <section className="flex items-start justify-start flex-col space-y-2 overflow-hidden w-[640px] h-[700px] bg-bg-secondary rounded-[25px]">
+        <section className="flex items-start justify-start flex-col space-y-2 overflow-hidden w-[640px] h-[700px] bg-secondary rounded-[25px]">
           <div className="flex items-center justify-center h-full w-full min-h-[500px]">
-            <div className="flex flex-col items-start justify-start gap-4 bg-bg-primary h-full p-5 w-[220px]">
+            <div className="flex flex-col items-start justify-start gap-4 bg-secondary h-full p-5 w-[220px]">
               <div className="w-full h-auto">
                 <UsernamePlate />
               </div>
