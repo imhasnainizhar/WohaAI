@@ -15,11 +15,11 @@ export const getMeHandler = asyncHandler(async (req: Request, res: Response) => 
   }) as AccessTokenPayload;
 
   // sub is user id, as per standards
-  const userID = payload.sub
-  if (!userID) throw new AccessSessionExpiredError()
+  const id = payload.sub
+  if (!id) throw new AccessSessionExpiredError()
 
   // Call service
-  const result = await userService.getMe({userID});
+  const result = await userService.getMe({ id });
 
   // Send response
   return sendResponse<GetMeServiceResponse>({

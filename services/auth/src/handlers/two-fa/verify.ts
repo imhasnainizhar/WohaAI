@@ -19,14 +19,14 @@ export const verify2FAHandler = asyncHandler(
             secret: env.JWT_PRIVATE_ACCESS_SECRET_KEY
         }) as PrivilegedAccessTokenPayload
 
-        const userID = payload.sub
+        const id = payload.sub
         const body: TwoFARequest = req.body
 
         const parsed = TwoFARequestSchema.safeParse(body)
-        if(!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");
+        if (!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");
 
         const { verified } =
-            await authService.verify2FA({ userID, token: parsed.data.totp })
+            await authService.verify2FA({ id, token: parsed.data.totp })
 
         return sendResponse<Verify2FAServiceResponse>({
             res,

@@ -8,10 +8,6 @@ import { authLogger } from "@packages/observability";
 import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
 import { exp } from "@/config/exp";
 
-/**
- * Taking SessionDuration from @packages/prisma-users UserSession Model export
- */
-import { SessionDuration } from "@packages/prisma-users";
 import { InvalidCredentialsError } from "@/errors/service-error";
 
 
@@ -22,13 +18,12 @@ export interface SigninServiceParams {
     type: "email"; value: string;
   };
   password: string;
-  rememberMe: boolean;
   clientData: ClientData;
 }
 
 export interface SigninServiceResponse {
   profilePicURI: string;
-  userID: string;
+  id: string;
   username: string;
   firstName: string;
   lastName: string;
@@ -47,7 +42,6 @@ export class SigninService {
   public async execute({
     usernameOrEmail,
     password,
-    rememberMe,
     clientData
   }: SigninServiceParams): Promise<SigninServiceResponse> {
     const user =
@@ -74,31 +68,28 @@ export class SigninService {
     const refreshToken = createJwtToken<RefreshTokenPayload>({
       payload: {
         jti: refreshTokenJti,
-        sub: user.userID,
+        sub: user.id,
         sid: userSessionID,
       },
       secret: JWT_REFRESH_SECRET_KEY,
       options: {
-        expiresIn: rememberMe? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
+        expiresIn: exp.JWT_REFRESH_TOKEN
       } as SignOptions
     });
-
-    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
 
     /**
      * Persist session
      */
     const session = await this.repo.createUserSession({
-      userID: user.userID,
+      id: user.id,
       clientData,
       refreshToken,
-      sessionDuration,
       userSessionID,
     });
 
     authLogger.debug({
       message: "✅ [SESSION] Created new user session",
-      userID: session.userID,
+      id: session.id,
       ip: clientData.userIPAddress,
       device: clientData.userDeviceName,
     });
@@ -110,7 +101,7 @@ export class SigninService {
     const accessToken = createJwtToken<AccessTokenPayload>({
       payload: {
         jti: accessTokenJti,
-        sub: user.userID,
+        sub: user.id,
         sid: session.userSessionID,
         role: "user"
       },
@@ -122,7 +113,7 @@ export class SigninService {
 
     return {
       profilePicURI: user.profilePicURI || "",
-      userID: user.userID,
+      id: user.id,
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,

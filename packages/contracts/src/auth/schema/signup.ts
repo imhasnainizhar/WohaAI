@@ -48,8 +48,3 @@ export const PasswordValidationRequestSchema = z
             path: ["confirmPassword"],
         }
     );
-
-export const SignupCompleteRequestSchema = z.object({
-    rememberMe: z
-        .boolean()
-})

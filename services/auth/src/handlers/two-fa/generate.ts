@@ -17,10 +17,10 @@ export const generate2FASecretHandler = asyncHandler(
             secret: env.JWT_PRIVATE_ACCESS_SECRET_KEY
         }) as PrivilegedAccessTokenPayload
 
-        const userID = payload.sub
+        const id = payload.sub
 
         const { secret, otpauthURL } =
-            await authService.generate2FASecret({ userID })
+            await authService.generate2FASecret({ id })
 
         return sendResponse<Generate2FASecretServiceResponse>({
             res,

@@ -222,21 +222,19 @@ export class AuthService {
         usernameOrEmail,
         password,
         clientData,
-        rememberMe
     }: SigninServiceParams): Promise<SigninServiceResponse> {
         return this.signinService.execute({
             usernameOrEmail,
             password,
             clientData,
-            rememberMe
         });
     }
 
     public async signout({
-        userID,
+        id,
         userSessionID
     }: SignoutServiceParams): Promise<SignoutServiceResponse> {
-        return this.signoutService.execute({ userID, userSessionID })
+        return this.signoutService.execute({ id, userSessionID })
     }
 
     public async refreshSession({
@@ -297,10 +295,9 @@ export class AuthService {
 
     public async completeSignup({
         signupSessionID,
-        rememberMe,
         clientData
     }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
-        return this.signupCompleteService.execute({ signupSessionID, rememberMe, clientData })
+        return this.signupCompleteService.execute({ signupSessionID, clientData })
     }
 
     public async forgotPasswordInit({
@@ -323,55 +320,55 @@ export class AuthService {
     }
 
     public async changePassword({
-        userID,
+        id,
         oldPassword,
         newPassword
     }: ChangePasswordServiceParams): Promise<ChangePasswordServiceResponse> {
-        return this.changePasswordService.execute({ userID, oldPassword, newPassword })
+        return this.changePasswordService.execute({ id, oldPassword, newPassword })
     }
 
     public async generate2FASecret({
-        userID
+        id
     }: Generate2FASecretServiceParams): Promise<Generate2FASecretServiceResponse> {
-        return this.generate2FASecretService.execute({ userID })
+        return this.generate2FASecretService.execute({ id })
     }
 
     public async verify2FA({
-        userID,
+        id,
         token
     }: Verify2FAServiceParams): Promise<Verify2FAServiceResponse> {
         return this.verify2FAService.execute({
-            userID,
+            id,
             token
         })
     }
 
     public async enable2FA({
-        userID,
+        id,
         token
     }: Enable2FAServiceParams): Promise<Enable2FAServiceResponse> {
         return this.enable2FAService.execute({
-            userID,
+            id,
             token
         })
     }
 
     public async disable2FA({
-        userID,
+        id,
         token
     }: Disable2FAServiceParams): Promise<Disable2FAServiceResponse> {
         return this.disable2FAService.execute({
-            userID,
+            id,
             token
         })
     }
 
     public async requestEmailChange({
-        userID,
+        id,
         newEmail
     }: RequestEmailChangeServiceParams): Promise<RequestEmailChangeServiceResponse> {
         return this.requestEmailChangeService.execute({
-            userID,
+            id,
             newEmail
         })
     }

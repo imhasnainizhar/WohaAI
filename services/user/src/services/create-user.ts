@@ -7,7 +7,7 @@ export interface CreateUserServiceParams {
     username: string;
     email: string;
     hashedPassword: string;
-    dateOfBirth?: Date | null;
+    dateOfBirth?: Date;
 }
 
 export class CreateUserService {

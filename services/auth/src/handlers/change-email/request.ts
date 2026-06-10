@@ -19,7 +19,7 @@ export const requestEmailChangeHandler = asyncHandler(
     const payload = verifyJwtToken(accessToken) as AccessTokenPayload
 
     const body: EmailChangeRequest = req.body;
-    const userID: string = payload.sub;
+    const id: string = payload.sub;
 
     const parsed =
       EmailChangeRequestSchema.safeParse(body);
@@ -31,9 +31,9 @@ export const requestEmailChangeHandler = asyncHandler(
       );
     }
 
-    const { verificationEmailSent } = 
+    const { verificationEmailSent } =
       await authService.requestEmailChange({
-        userID,
+        id,
         newEmail: parsed.data.newEmail
       });
 

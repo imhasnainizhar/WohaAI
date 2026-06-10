@@ -2,7 +2,7 @@ import { Schema, model, Types } from "mongoose";
 
 const ThreadSchema = new Schema(
   {
-    userID: {
+    id: {
       type: Types.ObjectId,
       ref: "User",
       index: true,

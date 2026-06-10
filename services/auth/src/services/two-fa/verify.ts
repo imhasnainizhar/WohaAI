@@ -6,7 +6,7 @@ import {
 import { InvalidCredentialsError } from "@/errors/service-error";
 
 export interface Verify2FAServiceParams {
-    userID: string;
+    id: string;
     token: string;
 }
 
@@ -16,15 +16,15 @@ export interface Verify2FAServiceResponse {
 
 export class Verify2FAService {
 
-    constructor(private repo: AuthRepo) {}
+    constructor(private repo: AuthRepo) { }
 
     public async execute({
-        userID,
+        id,
         token,
     }: Verify2FAServiceParams): Promise<Verify2FAServiceResponse> {
 
         const user =
-            await this.repo.getUserWithUserID(userID);
+            await this.repo.getUserWithid(id);
 
         if (!user) throw new NotFoundError("User not found");
 

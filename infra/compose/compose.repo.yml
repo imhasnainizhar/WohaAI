@@ -86,9 +86,8 @@ services:
 
 
 volumes:
-  users_postgres_data:
-  threads_postgres_data:
-  pgdata:
+  users_mongo_data:
+  threads_mongo_data:
 
   memory_redis_data:
   threads_redis_data:

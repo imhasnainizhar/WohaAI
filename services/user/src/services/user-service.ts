@@ -1,5 +1,4 @@
-import { userPrisma } from "@packages/prisma-users";
-import { UserRepo } from "@/repo/user-repo";
+import { User } from "@packages/models";
 
 import {
     UpdateUserService,
@@ -7,6 +6,7 @@ import {
 } from "./update-user";
 import { CreateUserService, CreateUserServiceParams } from "./create-user";
 import { GetMeService, GetMeServiceParams, GetMeServiceResponse } from "./get-me";
+import { UserRepo } from "@/repo/user-repo";
 
 export class UserService {
     private static instance: UserService;
@@ -20,7 +20,7 @@ export class UserService {
 
     public static getInstance(): UserService {
         if (!UserService.instance) {
-            const userRepo = new UserRepo(userPrisma);
+            const userRepo = new UserRepo(User);
 
             const createUserService =
                 new CreateUserService(userRepo)
@@ -59,14 +59,14 @@ export class UserService {
         })
     }
     public async updateUser({
-        userID,
+        id,
         firstName,
         lastName,
         username,
         dateOfBirth
     }: UpdateUserServiceParams) {
         return this.updateUserService.execute({
-            userID,
+            id,
             firstName,
             lastName,
             username,
@@ -75,10 +75,10 @@ export class UserService {
     }
 
     public async getMe({
-        userID
+        id
     }: GetMeServiceParams): Promise<GetMeServiceResponse> {
         return this.getMeService.execute({
-            userID
+            id
         })
     }
 }

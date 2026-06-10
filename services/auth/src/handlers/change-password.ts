@@ -4,8 +4,8 @@ import { sendResponse } from "@packages/http";
 import { env } from "@/config/env";
 
 import {
-    AccessSessionExpiredError,
-    ValidationError
+  AccessSessionExpiredError,
+  ValidationError
 } from "@packages/errors";
 
 import authService from "@/services/auth-service";
@@ -40,7 +40,7 @@ export const changePasswordHandler = asyncHandler(
     const {
       passwordChanged
     } = await authService.changePassword({
-      userID: payload.sub!,
+      id: payload.sub!,
       oldPassword: parsed.data.oldPassword,
       newPassword: parsed.data.newConfirmPassword
     });

@@ -63,7 +63,7 @@ export class RefreshSessionService {
     }
 
     const refreshTokenPayload: RefreshTokenPayload = {
-      sub: user.userID,
+      sub: user.id,
       jti: tokenJti.refreshTokenJti,
       sid: session.userSessionID
     };
@@ -78,7 +78,7 @@ export class RefreshSessionService {
     });
 
     const accessPayload: AccessTokenPayload = {
-      sub: user.userID,
+      sub: user.id,
       jti: tokenJti.accessTokenJti,
       sid: session.userSessionID,
       role: "user",
@@ -100,7 +100,7 @@ export class RefreshSessionService {
     );
 
     authLogger.debug(
-      `Tokens rotated successfully for userID: ${user.userID}`
+      `Tokens rotated successfully for id: ${user.id}`
     );
 
     return {
@@ -140,7 +140,7 @@ export class RefreshSessionService {
     try {
       const session =
         await this.authRepo.findActiveSession({
-          userID: payload.sub,
+          id: payload.sub,
           userSessionID: payload.userSessionID
         });
 

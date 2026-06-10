@@ -4,7 +4,7 @@ import { SessionExpiredError } from "@packages/errors";
 
 
 export interface SignoutServiceParams {
-  userID: string;
+  id: string;
   userSessionID: string;
 }
 
@@ -19,22 +19,22 @@ export class SignoutService {
    * Main signout orchestration
    */
   public async execute({
-    userID,
+    id,
     userSessionID
   }: SignoutServiceParams): Promise<SignoutServiceResponse> {
     const session = await this.authRepo.findActiveSession({
-      userID,
+      id,
       userSessionID
     });
 
-    if(session === null) throw new SessionExpiredError
+    if (session === null) throw new SessionExpiredError
 
     await this.authRepo.revokeSession(userSessionID);
 
     authLogger.debug({
       message:
         "[SIGNOUT] Session revoked successfully",
-      userID,
+      id,
       userSessionID,
       deviceName: session.userDeviceName,
       ipAddress: session.userIPAddress,

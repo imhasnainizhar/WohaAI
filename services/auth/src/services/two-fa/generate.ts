@@ -3,7 +3,7 @@ import { AuthRepo } from "@/repo/auth-repo";
 import { NotFoundError } from "@packages/errors";
 
 export interface Generate2FASecretServiceParams {
-    userID: string;
+    id: string;
 }
 
 export interface Generate2FASecretServiceResponse {
@@ -13,14 +13,14 @@ export interface Generate2FASecretServiceResponse {
 
 export class Generate2FASecretService {
 
-    constructor(private repo: AuthRepo) {}
+    constructor(private repo: AuthRepo) { }
 
     public async execute({
-        userID,
+        id,
     }: Generate2FASecretServiceParams): Promise<Generate2FASecretServiceResponse> {
 
         const user =
-            await this.repo.getUserWithUserID(userID);
+            await this.repo.getUserWithid(id);
 
         if (!user) throw new NotFoundError("User not found");
 
@@ -31,7 +31,7 @@ export class Generate2FASecretService {
         });
 
         await this.repo.saveTwoFactorSecret({
-            userID,
+            id,
             secret: secret.base32,
         });
 

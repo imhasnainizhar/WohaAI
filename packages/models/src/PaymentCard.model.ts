@@ -10,7 +10,7 @@ export enum CardBrand {
 
 const PaymentCardSchema = new Schema(
   {
-    userID: {
+    id: {
       type: Types.ObjectId,
       ref: "User",
       required: true,
@@ -88,6 +88,6 @@ const PaymentCardSchema = new Schema(
 );
 
 // ⚡ prevent duplicate token per user
-PaymentCardSchema.index({ userID: 1, paymentMethodToken: 1 }, { unique: true });
+PaymentCardSchema.index({ id: 1, paymentMethodToken: 1 }, { unique: true });
 
 export const PaymentCard = model("PaymentCard", PaymentCardSchema);

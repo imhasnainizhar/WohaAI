@@ -85,7 +85,8 @@ export const SessionIDSchema =
 
 export const UsernameOrEmailSchema = z
   .string()
-  .min(1, "Required")
+  .min(5, "Minimum 5 Characters")
+  .max(40, "Maximum 40 Characters")
   .transform((val, ctx) => {
     if (EmailSchema.safeParse(val)) {
       return { type: "email" as const, value: val };

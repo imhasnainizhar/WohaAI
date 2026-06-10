@@ -17,9 +17,9 @@ export default function SubmitButton() {
                 transition-colors
                 duration-300
                 bg-black
-                text-text-primary
+                text-white
                 cursor-pointer
-                hover:bg-input
+                hover:bg-black/80
                 active:scale-95!
             "
         >

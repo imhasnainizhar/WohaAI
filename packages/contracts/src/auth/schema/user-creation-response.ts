@@ -3,7 +3,7 @@ import { DateOfBirthSchema, EmailSchema, LastNameSchema, UsernameSchema, FirstNa
 
 export const CreatedUserResponseSchema = z.object({
     success: z.boolean(),
-    userID: z.string(),
+    id: z.string(),
     username: UsernameSchema,
     email: EmailSchema,
     profilePicURI: z.string().optional(),

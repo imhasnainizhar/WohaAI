@@ -1,13 +1,8 @@
 import { ClientData, Password, UserSession } from "@packages/contracts/auth";
-import { InternalServerError, NormalizedError, PrismaError } from "@packages/errors";
+import { InternalServerError, NormalizedError, MongooseError } from "@packages/errors";
 import { authLogger } from "@packages/observability";
-import { User, SessionDuration, UserSession as Session } from "@packages/models"
-import { connectUsersDB } from "@packages/db"
+import { User, UserSession as Session } from "@packages/models"
 import argon2 from "argon2";
-
-/**
- * Taking SessionDuration from @packages/prisma-users UserSession Model export
- */
 
 
 export class AuthRepo {
@@ -26,27 +21,27 @@ export class AuthRepo {
             email
         })
     }
-    async getUserWithUserID(userID: string) {
-        return await this.user.findById(userID)
+    async getUserWithid(id: string) {
+        return await this.user.findById(id)
     }
 
     async changeUserPassword({
-        userID,
+        id,
         hashedPassword
     }: {
-        userID: string;
+        id: string;
         hashedPassword: string;
     }) {
         try {
             const updatedUser = await this.user.findOneAndUpdate(
-                { userID },
+                { id },
                 {
                     hashedPassword,
                 },
                 {
                     new: true,
                     projection: {
-                        userID: 1,
+                        id: 1,
                         username: 1,
                     }
                 }
@@ -54,7 +49,7 @@ export class AuthRepo {
 
             return updatedUser;
         } catch (error: unknown) {
-            throw new PrismaError(error)
+            throw new MongooseError(error)
         }
     }
     async getUserWithUsernameOrEmail(
@@ -72,7 +67,7 @@ export class AuthRepo {
                     ],
                 },
                 {
-                    userID: 1,
+                    id: 1,
                     profilePicURI: 1,
                     firstName: 1,
                     lastName: 1,
@@ -83,14 +78,14 @@ export class AuthRepo {
             )
         } catch (err: any) {
             console.error(err);
-            throw new PrismaError(err)
+            throw new MongooseError(err)
         };
     }
 
     async findUserWithEmail(email: string): Promise<boolean> {
         const user = await this.user.findOne(
             { email },
-            { userID: 1 }
+            { id: 1 }
         );
 
         return !!user;
@@ -99,7 +94,7 @@ export class AuthRepo {
     async findUserWithUsername(username: string): Promise<boolean> {
         const user = await this.user.findOne(
             { username },
-            { userID: 1 }
+            { id: 1 }
         );
 
         return !!user;
@@ -118,22 +113,22 @@ export class AuthRepo {
                     { email: usernameOrEmail.value },
                 ],
             },
-            { userID: 1 }
+            { id: 1 }
         );
 
         return !!user;
     }
 
     async changeEmail({
-        userID,
+        id,
         newEmail
     }: {
-        userID: string;
+        id: string;
         newEmail: string;
     }) {
         try {
             const changed = await this.user.findOneAndUpdate(
-                { userID },
+                { id },
                 {
                     email: newEmail
                 },
@@ -152,16 +147,14 @@ export class AuthRepo {
     * Create user session
     */
     async createUserSession({
-        userID,
+        id,
         clientData,
         refreshToken,
-        sessionDuration,
         userSessionID,
     }: {
-        userID: string;
+        id: string;
         clientData: ClientData;
         refreshToken: string;
-        sessionDuration: SessionDuration,
         userSessionID?: string;
     }): Promise<UserSession> {
         try {
@@ -178,9 +171,8 @@ export class AuthRepo {
                 await this.userSession.create({
                     userSessionID: userSessionID ?? "Unknown",
                     refreshTokenHash,
-                    userID,
+                    id,
                     revoked: false,
-                    sessionDuration,
                     userIPAddress: clientData.userIPAddress ?? "Unknown",
                     userDeviceName: clientData.userDeviceName ?? "Unknown Device",
                     userDeviceType: clientData.userDeviceType ?? "Unknown",
@@ -229,14 +221,14 @@ export class AuthRepo {
     * Find active user session
     */
     async findActiveSession({
-        userID,
+        id,
         userSessionID
     }: {
-        userID: string,
+        id: string,
         userSessionID: string
     }) {
         return await this.userSession.findOne({
-            userID,
+            id,
             userSessionID,
             revoked: false,
         }).populate("user");
@@ -270,16 +262,16 @@ export class AuthRepo {
 
     // Two FA
     async saveTwoFactorSecret({
-        userID,
+        id,
         secret
     }: {
-        userID: string;
+        id: string;
         secret: string;
     }) {
         try {
             const user =
                 await this.user.findOneAndUpdate(
-                    { userID },
+                    { id },
                     {
                         twoFactorSecret: secret
                     },
@@ -298,14 +290,14 @@ export class AuthRepo {
     }
 
     async getUserTwoFactorSettings(
-        userID: string
+        id: string
     ) {
         try {
             const user =
                 await this.user.findOne(
-                    { userID },
+                    { id },
                     {
-                        userID: 1,
+                        id: 1,
                         email: 1,
                         twoFactorEnabled: 1,
                         twoFactorSecret: 1,
@@ -325,16 +317,16 @@ export class AuthRepo {
     }
 
     async enableTwoFactor({
-        userID,
+        id,
         secret
     }: {
-        userID: string;
+        id: string;
         secret: string;
     }) {
         try {
             const user =
                 await this.user.findOneAndUpdate(
-                    { userID },
+                    { id },
                     {
                         twoFactorEnabled: true,
                         twoFactorSecret: secret,
@@ -343,7 +335,7 @@ export class AuthRepo {
                     {
                         new: true,
                         projection: {
-                            userID: 1,
+                            id: 1,
                             email: 1,
                             twoFactorEnabled: 1,
                         }
@@ -362,12 +354,12 @@ export class AuthRepo {
     }
 
     async disableTwoFactor(
-        userID: string
+        id: string
     ) {
         try {
             const user =
                 await this.user.findOneAndUpdate(
-                    { userID },
+                    { id },
                     {
                         twoFactorEnabled: false,
                         twoFactorSecret: null,
@@ -376,7 +368,7 @@ export class AuthRepo {
                     {
                         new: true,
                         projection: {
-                            userID: 1,
+                            id: 1,
                             email: 1,
                             twoFactorEnabled: 1,
                         }
@@ -395,16 +387,16 @@ export class AuthRepo {
     }
 
     async createBackupCodes({
-        userID,
+        id,
         codeHashes
     }: {
-        userID: string;
+        id: string;
         codeHashes: string[]
     }) {
         try {
             await this.userSession.insertMany(
                 codeHashes.map((codeHash) => ({
-                    userID,
+                    id,
                     codeHash,
                 }))
             );

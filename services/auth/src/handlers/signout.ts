@@ -19,23 +19,23 @@ export const signoutHandler = asyncHandler(
         // Verify user session token
         const userSessionToken = req.cookies[env.REFRESH_TOKEN_NAME];
         const payload = verifyJwtToken({
-            token: userSessionToken, 
+            token: userSessionToken,
             secret: env.JWT_REFRESH_SECRET_KEY
         }) as RefreshTokenPayload;
 
         // If payload is not valid, throw session expired error
         if (!payload) throw new SessionExpiredError();
 
-        // Getting userID & userSessionID from payload
-        const userID = payload.sub;    // Same as userID
+        // Getting id & userSessionID from payload
+        const id = payload.sub;    // Same as id
         const userSessionID = payload.userSessionID;
 
         authLogger.debug(
-            `Attempting signout for userID: ${userID}, sessionID: ${userSessionID}`
+            `Attempting signout for id: ${id}, sessionID: ${userSessionID}`
         );
 
         // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await authService.signout({ userID, userSessionID });
+        const result = await authService.signout({ id, userSessionID });
 
         res.clearCookie(env.ACCESS_TOKEN_NAME, {
             path: "/",

@@ -9,11 +9,15 @@ WORKDIR /app
 
 # COPY MONOREPO ROOT MANIFESTS FIRST (CACHE LAYER)
 COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY tsconfig.json ./
+COPY tsconfig.base.json ./
+COPY turbo.json ./
 
 # Copy workspace packages and service
 COPY packages ./packages
 COPY services/auth ./services/auth
+
+## PNPM Install
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # INSTALL DEPENDENCIES (WORKSPACE WIDE)
 RUN pnpm install --frozen-lockfile

@@ -1,6 +1,6 @@
 
 export interface GetUserResponse {
-    userID: string;
+    id: string;
     firstName: string;
     lastName: string;
     username: string;

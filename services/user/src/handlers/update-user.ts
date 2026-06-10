@@ -16,8 +16,8 @@ export const updateUserHandler = asyncHandler(async (req: Request, res: Response
   }) as AccessTokenPayload;
 
   // sub is user id, as per standards
-  const userID = payload.sub
-  if (!userID) throw new AccessSessionExpiredError()
+  const id = payload.sub
+  if (!id) throw new AccessSessionExpiredError()
 
   // Validate input
   const parsed = UpdateUserSchema.safeParse(req.body);
@@ -28,7 +28,7 @@ export const updateUserHandler = asyncHandler(async (req: Request, res: Response
   const { username, firstName, lastName, dateOfBirth } = parsed.data
   // Call service
   const result = await userService.updateUser({
-    userID,
+    id,
     username,
     firstName,
     lastName,

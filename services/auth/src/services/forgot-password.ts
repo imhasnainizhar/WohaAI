@@ -60,7 +60,7 @@ export class ForgotPasswordService {
     // user session validaiton happens at handler
 
     // prisma check
-    const foundUser = 
+    const foundUser =
       await this.authRepo.getUserWithUsernameOrEmail(parsed.forgotPasswordUsernameOrEmail)
 
     if (!foundUser) throw new InvalidCredentialsError();
@@ -69,7 +69,7 @@ export class ForgotPasswordService {
 
     await setForgotPasswordSessionCache({
       sessionID,
-      userID: foundUser.userID,
+      id: foundUser.id,
       email: foundUser.email,
       username: foundUser.username,
       createdOn: new Date()
@@ -80,7 +80,7 @@ export class ForgotPasswordService {
 
     const event: ForgotPasswordEvent = {
       sessionID,
-      userID: foundUser.userID,
+      id: foundUser.id,
       username: foundUser.username,
       email: foundUser.email,
       uriSessionToken: `http://localhost:8001/verify-forgot-password-session?sessionID=${sessionID}`,
@@ -110,8 +110,8 @@ export class ForgotPasswordService {
 
     // error handling is already done in redisClient methods.
     const cache = await getForgotPasswordSessionCache(key);
-    if(!cache) throw new SessionExpiredError()
-      
+    if (!cache) throw new SessionExpiredError()
+
     // one-time use
     await deleteForgotPasswordSessionCache(key);
 
@@ -143,19 +143,19 @@ export class ForgotPasswordService {
     const key = `${env.FORGOT_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`;
 
     // error handling is already done in redisClient methods.
-    const cache = 
+    const cache =
       await getForgotPasswordSessionCache(key);
-      
-    if(!cache) throw new SessionExpiredError()
 
-    const userID = cache.userID;
+    if (!cache) throw new SessionExpiredError()
+
+    const id = cache.id;
 
     const hashedPassword = await argon2.hash(password);
 
-    const result = 
-      await this.authRepo.changeUserPassword({ userID, hashedPassword })
+    const result =
+      await this.authRepo.changeUserPassword({ id, hashedPassword })
 
-    authLogger.debug(`Forgotten password changed for userID: ${result.userID}, username: ${result.username}`)
+    authLogger.debug(`Forgotten password changed for id: ${result.id}, username: ${result.username}`)
 
     return {
       forgottenPasswordChanged: true

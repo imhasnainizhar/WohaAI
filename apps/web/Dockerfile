@@ -1,59 +1,77 @@
-# ---------------------
-# Base Stage
-# ---------------------
-FROM node:22-alpine AS base
+# syntax=docker/dockerfile:1.4
+
+# ======================================================
+# BASE IMAGE
+# ======================================================
+FROM node:22-slim AS base
+
 WORKDIR /app
 
-# Copy packages from additional context to /packages at /app
-COPY --from=packages ./ /app/packages
+# COPY MONOREPO ROOT MANIFESTS FIRST (CACHE LAYER)
+COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY tsconfig.base.json ./
+COPY turbo.json ./
 
-# Install shared package dependencies
-RUN cd /app/packages/shared && npm install
-RUN cd /app/packages/shared && npm run packages:build
+# Copy workspace packages and service
+COPY packages ./packages
+COPY apps/web ./apps/web
 
-# Seeking in auth_service
-WORKDIR /app/services/frontend
+## PNPM Install
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Caching packages manifests at start of Image
-COPY package*.json .
+# INSTALL DEPENDENCIES (WORKSPACE WIDE)
+RUN pnpm install --frozen-lockfile
 
-# ---------------------
-# Development Stage
-# ---------------------
+# ======================================================
+# DEVELOPMENT STAGE
+# ======================================================
 FROM base AS development
 
-# Installing Build tools for native modules
-RUN apk update && apk add python3 build-base gcc g++ make git
+# Put packages on dev mode
+RUN pnpm packages:dev
 
-# Installing Modules
-RUN npm ci
+WORKDIR /app/apps/web
 
-# Copying Source Code, Ignoring node modules.
-COPY . .
+CMD ["pnpm", "run", "dev"]
 
-# Default command for development
-CMD ["npm", "run", "dev"]
-
-# ---------------------
-# Production Build Stage
-# ---------------------
+# ======================================================
+# BUILD STAGE
+# ======================================================
 FROM base AS build
-RUN npm ci --omit=dev
-RUN npm run build
 
-# ---------------------
-# Production Runtime Stage
-# ---------------------
-FROM node:22-alpine AS production
-COPY --from=build /app/package*.json ./
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
+WORKDIR /app
+
+# Build shared packages first
+RUN pnpm run packages:build
+
+WORKDIR /app/apps/web
+
+# Build only auth service
+RUN pnpm run build
+
+# Keep production deps tree only
+RUN pnpm prune --prod
+
+# ======================================================
+# PRODUCTION STAGE
+# ======================================================
+FROM build AS production
+
+WORKDIR /app
+
+# Copy only production dependencies + built output
+COPY --from=build /app/package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY --from=build tsconfig.json ./
 COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/apps/web/dist ./apps/web/dist
 
-# Non-sensitive defaults
-ENV NODE_ENV=${NODE_ENV}
-ENV APP_PUBLIC_RECAPTCHA_SITE_KEY=${APP_PUBLIC_RECAPTCHA_SITE_KEY}
-ENV APP_PUBLIC_GATEWAY_BASE_URL_01=${APP_PUBLIC_GATEWAY_BASE_URL_01}
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-EXPOSE 3000
-CMD ["npm", "run", "start"]
+# Switch user
+USER appuser
+
+WORKDIR /app/apps/web
+
+CMD ["pnpm", "run", "start"]

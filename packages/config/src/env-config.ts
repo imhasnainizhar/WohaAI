@@ -47,8 +47,7 @@ export interface EnvConfig {
     CHANGE_EMAIL_SESSION_REDIS_KEY_PREFIX: string;
 
     // API keys
-    OPENAI_API_KEY: string;
-    SERPER_API_KEY: string;
+    ANTHROPIC_API_KEY: string;
 
     // Mailer Configs
     MAILER_HOST: string;

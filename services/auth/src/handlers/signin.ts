@@ -29,7 +29,7 @@ export const signinHandler = asyncHandler(
         // Call service → either returns ServiceResponse OR throws ServiceException
         const {
             profilePicURI,
-            userID,
+            id,
             username,
             firstName,
             lastName,
@@ -39,7 +39,6 @@ export const signinHandler = asyncHandler(
         } = await authService.signin({
             usernameOrEmail: parsed.data.usernameOrEmail,
             password: parsed.data.password,
-            rememberMe: parsed.data.rememberMe,
             clientData,
         });
 
@@ -54,8 +53,8 @@ export const signinHandler = asyncHandler(
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: parsed.data.rememberMe ? exp.REFRESH_TOKEN_COOKIE : undefined
-            }        
+                maxAge: exp.REFRESH_TOKEN_COOKIE
+            }
         });
 
         const accessTokenCookie: Cookie = buildCookie({
@@ -66,8 +65,8 @@ export const signinHandler = asyncHandler(
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: parsed.data.rememberMe ? exp.ACCESS_TOKEN_COOKIE : undefined
-            }        
+                maxAge: exp.ACCESS_TOKEN_COOKIE
+            }
         });
 
         // responding to client
@@ -78,13 +77,13 @@ export const signinHandler = asyncHandler(
             message: "Signin successful",
             data: {
                 profilePicURI,
-                userID,
+                id,
                 username,
                 firstName,
                 lastName,
-                email, 
+                email,
             },
-            cookies: [ refreshTokenCookie, accessTokenCookie ],
+            cookies: [refreshTokenCookie, accessTokenCookie],
             path: req.originalUrl,
         });
     }

@@ -3,7 +3,7 @@ import { AuthRepo } from '@/repo/auth-repo';
 import { InvalidCredentialsError } from "@/errors/service-error";
 
 export interface ChangePasswordServiceParams {
-    userID: string;
+    id: string;
     oldPassword: string;
     newPassword: string;
 }
@@ -20,12 +20,12 @@ export class ChangePasswordService {
      * Main signin business logic
      */
     public async execute({
-        userID,
+        id,
         oldPassword,
         newPassword,
     }: ChangePasswordServiceParams): Promise<ChangePasswordServiceResponse> {
         const user =
-            await this.repo.getUserWithUserID(userID);
+            await this.repo.getUserWithid(id);
 
         if (user === null) throw new InvalidCredentialsError()
 
@@ -39,7 +39,7 @@ export class ChangePasswordService {
         const hashedPassword = await argon2.hash(newPassword)
 
         const _ = await this.repo.changeUserPassword({
-            userID,
+            id,
             hashedPassword
         })
 

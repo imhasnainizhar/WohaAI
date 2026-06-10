@@ -70,7 +70,7 @@ const recentSessions = [
 
 export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props} className={`relative bg-background!`} >
+    <Sidebar collapsible="icon" {...props} className={`relative border-none!`} >
       <SidebarHeader className={`pt-3!`}>
         <SidebarMenu>
           <SidebarMenuItem>

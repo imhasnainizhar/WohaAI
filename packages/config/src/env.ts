@@ -2,8 +2,6 @@ import { EnvConfig } from "./env-config";
 import { loadEnv } from "./env/load";
 import { validateEnv } from "./env/validate-env";
 
-loadEnv();
-
 const p = process.env;
 
 const NODE_ENV = p.NODE_ENV || "development"
@@ -13,6 +11,9 @@ const secure = NODE_ENV === "production";
 const sameSite = (NODE_ENV === "production" ? "none" : "lax") as
   "none" | "lax" | "strict";
 
+loadEnv();
+
+console.log("AUTH_KAFKA_BROKERS =", process.env.AUTH_KAFKA_BROKERS)
 
 const env: EnvConfig = {
   // ========================================
@@ -131,11 +132,8 @@ const env: EnvConfig = {
   // API Keys
   // ========================================
 
-  OPENAI_API_KEY:
-    p.OPENAI_API_KEY!,
-
-  SERPER_API_KEY:
-    p.SERPER_API_KEY!,
+  ANTHROPIC_API_KEY:
+    p.ANTHROPIC_API_KEY!,
 
   // ========================================
   // Mailer

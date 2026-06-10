@@ -1,10 +1,5 @@
 import mongoose, { Schema, model, Types } from "mongoose";
 
-export enum SessionDuration {
-  temporary = "temporary",
-  persistent = "persistent",
-}
-
 const UserSchema = new Schema(
   {
     profilePicURI: { type: String },

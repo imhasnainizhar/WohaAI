@@ -33,7 +33,7 @@ export interface ClientData {
 }
 
 export interface UserSession {
-    userID: string;
+    id: string;
     userSessionID: string;
     userDeviceName: string;
     userDeviceType: string;

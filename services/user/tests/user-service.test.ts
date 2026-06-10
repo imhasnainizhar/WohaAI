@@ -7,7 +7,7 @@ import { EmailAlreadyTakenError, UsernameAlreadyTakenError, UserNotFoundError } 
 import type { UserRepo } from '@/repo/user-repo';
 
 const mockUser = {
-  userID: 'user-456',
+  id: 'user-456',
   firstName: 'Jane',
   lastName: 'Doe',
   username: 'janedoe',
@@ -29,7 +29,7 @@ beforeEach(() => {
     updateUser: vi.fn().mockResolvedValue(undefined),
     getUserWithEmail: vi.fn().mockResolvedValue(null),
     getUserWithUsername: vi.fn().mockResolvedValue(null),
-    getUserWithUserID: vi.fn().mockResolvedValue(mockUser),
+    getUserWithid: vi.fn().mockResolvedValue(mockUser),
   } as unknown as Mocked<UserRepo>
 
   // Wire services with the same mock repo
@@ -87,7 +87,7 @@ describe('UserService', () => {
   it('should update user successfully', async () => {
     await expect(
       service.updateUser({
-        userID: 'user-456',
+        id: 'user-456',
         firstName: 'Jane',
         lastName: 'Doe',
         username: 'janedoe2',
@@ -98,14 +98,14 @@ describe('UserService', () => {
   });
 
   it('should throw UserNotFoundError when getMe cannot find user', async () => {
-    mockRepo.getUserWithUserID.mockResolvedValue(null);
-    await expect(service.getMe({ userID: 'nonexistent' })).rejects.toBeInstanceOf(UserNotFoundError);
+    mockRepo.getUserWithid.mockResolvedValue(null);
+    await expect(service.getMe({ id: 'nonexistent' })).rejects.toBeInstanceOf(UserNotFoundError);
   });
 
   it('should return user profile with getMe', async () => {
-    const result = await service.getMe({ userID: 'user-456' });
+    const result = await service.getMe({ id: 'user-456' });
     expect(result).toMatchObject({
-      userID: 'user-456',
+      id: 'user-456',
       username: 'janedoe',
       email: 'jane@example.com',
     });

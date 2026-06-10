@@ -5,7 +5,7 @@ export type SigninRequest = z.infer<typeof SigninRequestSchema>;
 
 export interface SigninResponse {
     profilePicURI: string;
-    userID: string;
+    id: string;
     username: string;
     firstName: string;
     lastName: string;

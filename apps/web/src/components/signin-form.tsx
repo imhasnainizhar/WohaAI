@@ -3,20 +3,17 @@
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTheme } from "@/providers/ThemeProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SigninRequestSchema, SigninRequest } from "@packages/contracts/auth"
 import z from "zod";
-import { Alert, AlertTitle } from "@/components/ui/alert"
-import { AlertCircleIcon } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
-import { FieldGroup, Field, FieldSeparator, FieldLabel, FieldDescription } from "./ui/field";
-import { Input } from "./ui/input";
+import { Card, CardContent } from "./ui/card";
+import { FieldGroup, Field, FieldSeparator, FieldDescription } from "./ui/field";
 import Link from "next/link";
-import FloatingInput from "./input/fields/FloatingInput";
+import { FloatingInput } from "./input/fields/FloatingInput";
+import { FaApple } from "react-icons/fa";
 
 type SigninInput = z.input<typeof SigninRequestSchema>;
 type SigninOutput = z.output<typeof SigninRequestSchema>;
@@ -28,15 +25,20 @@ export default function SigninForm({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<SigninInput, any, SigninOutput>({
     resolver: zodResolver(SigninRequestSchema),
   });
 
-  const router = useRouter();
-  const { theme } = useTheme();
+  // console.log(`Form Errors: ${JSON.stringify(errors)}`);
 
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const username = watch("usernameOrEmail");
+
+  console.log(username);
+
+  const router = useRouter();
+
   const [signInError, setSignInError] = useState<string>("");
 
   const SIGNIN_API_URI = process.env.NEXT_PUBLIC_SIGNIN_API_URI!;
@@ -45,6 +47,7 @@ export default function SigninForm({
     setSignInError("");
 
     try {
+      console.log("calling signin api")
       const res = await fetch(SIGNIN_API_URI, {
         method: "POST",
         credentials: "include",
@@ -53,16 +56,18 @@ export default function SigninForm({
         },
         body: JSON.stringify({
           ...SigninData,
-          rememberMe,
         }),
       });
 
       const data = await res.json();
+      console.log(data)
 
       if (!res.ok) {
         setSignInError(data.message || "Failed to sign in.");
+        console.log(data.message)
         return;
       }
+      console.log("signin successfull")
       router.push("/");
       setTimeout(() => {
         window.location.reload();
@@ -74,62 +79,44 @@ export default function SigninForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("w-full flex flex-col gap-6", className)} {...props}>
       <Card className={`rounded-[35px] py-8 px-2 border-none! shadow-none!`}>
         <CardContent className={`px-3.5 md:px-6`}>
-          <form>
-            <FieldGroup className={`gap-4!`}>
-              <Field>
-                {/* <Button variant="outline" type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Login with Apple
-                </Button> */}
-                <Button variant="wohaOutline" type="button">
-                  <Image src={"/logos/google-logo-svg.svg"} alt="  " width={20} height={20} />
-                  Login with Google
-                </Button>
-              </Field>
-              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card my-2">
-                Or continue with
-              </FieldSeparator>
+          <FieldGroup className={`gap-4!`}>
+            <Field>
+              <Button variant="wohaOutline" type="button" className={`border-border!`}>
+                <Image src={"/logos/google-logo-svg.svg"} alt="  " width={20} height={20} />
+                Login with Google
+              </Button>
+              <Button variant="wohaOutline" type="button" className={`border-border!`}>
+                <FaApple className={`h-5 w-5`} />
+                Login with Apple
+              </Button>
+            </Field>
+            <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card my-2">
+              Or continue with
+            </FieldSeparator>
+            <form onSubmit={handleSubmit(onSignIn)} method="post">
+              <div className={`flex flex-col gap-4`}>
               <Field>
                 <FloatingInput
-                  id="email"
-                  label="Email"
-                  type="email"
+                  id="usernameOrEmail"
+                  label="Username or Email"
+                  error={errors.usernameOrEmail}
+                  {...register("usernameOrEmail")}
                 />
               </Field>
-
               <Field>
-                <FloatingInput
-                  id="password"
-                  label="Password"
-                  type="password"
-                />
-                <div className={`flex items-center mb-2`}>
-                  <a
-                    href="#"
-                    className="mr-auto ml-2 text-fluid-sm underline-offset-3 hover:underline text-link"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
+                <Button type="submit" className={`bg-primary text-primary-foreground! text-fluid-base font-semibold hover:bg-primary/70! transition-all ease-in-out duration-300 cursor-pointer`}>Continue</Button>
               </Field>
-              <Field>
-                <Button type="submit" className={`bg-primary text-primary-foreground! text-fluid-base font-semibold hover:bg-primary/70! transition-all ease-in-out duration-300 cursor-pointer`}>Signin</Button>
-              </Field>
-            </FieldGroup>
-          </form>
+              </div>
+            </form>
+          </FieldGroup>
         </CardContent>
       </Card>
       <FieldDescription className="px-4 text-center text-[10px]! text-muted-foreground">
-        By continuing, you acknowledge WohaAI’s <Link href="/terms">Terms of Service</Link>{" "}
-        and <Link href="/privacy">Privacy Policy</Link>.
+        By continuing, you acknowledge WohaAI’s <br /><Link href="/terms">Terms of Service</Link>{" "}
+        and <Link href="/privacy">Privacy Policy</Link>
       </FieldDescription>
     </div>
   )

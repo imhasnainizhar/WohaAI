@@ -6,7 +6,7 @@ import { env } from "@/config/env";
 //* Types
 /** User type is used for those specifiers who uses auth info from this auth Context. */
 export type User = {
-  userID: string;
+  id: string;
   profilePicture: string;
   email: string;
   username: string;

@@ -6,7 +6,7 @@ import {
 import { InvalidCredentialsError } from "@/errors/service-error";
 
 export interface Enable2FAServiceParams {
-    userID: string;
+    id: string;
     token: string;
 }
 
@@ -16,15 +16,15 @@ export interface Enable2FAServiceResponse {
 
 export class Enable2FAService {
 
-    constructor(private repo: AuthRepo) {}
+    constructor(private repo: AuthRepo) { }
 
     public async execute({
-        userID,
+        id,
         token,
     }: Enable2FAServiceParams): Promise<Enable2FAServiceResponse> {
 
         const user =
-            await this.repo.getUserWithUserID(userID);
+            await this.repo.getUserWithid(id);
 
         if (!user) throw new NotFoundError("User not found");
 
@@ -42,7 +42,7 @@ export class Enable2FAService {
             throw new InvalidCredentialsError();
 
         await this.repo.enableTwoFactor({
-            userID,
+            id,
             secret: user.twoFactorSecret
         });
 

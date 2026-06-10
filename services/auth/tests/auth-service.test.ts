@@ -10,7 +10,7 @@ vi.mock('@packages/jwt');
 vi.mock('argon2');
 
 const mockUser = {
-  userID: 'user-123',
+  id: 'user-123',
   username: 'testuser',
   email: 'test@example.com',
   firstName: 'Test',
@@ -35,7 +35,6 @@ describe('SigninService', () => {
     const result = await service.execute({
       usernameOrEmail: { type: 'email', value: 'test@example.com' },
       password: 'plainPwd',
-      rememberMe: false,
       clientData: {
         userIPAddress: '127.0.0.1',
         userDeviceName: 'test-device',
@@ -48,7 +47,7 @@ describe('SigninService', () => {
     expect(argon2.verify).toHaveBeenCalledWith(mockUser.hashedPassword, 'plainPwd');
     expect(result).toEqual({
       profilePicURI: '',
-      userID: 'user-123',
+      id: 'user-123',
       username: 'testuser',
       firstName: 'Test',
       lastName: 'User',
@@ -64,7 +63,6 @@ describe('SigninService', () => {
       service.execute({
         usernameOrEmail: { type: 'email', value: 'test@example.com' },
         password: 'wrongPwd',
-        rememberMe: false,
         clientData: {
           userIPAddress: '127.0.0.1',
           userDeviceName: 'test-device',

@@ -7,7 +7,7 @@ import { ChangeEmailEvent } from "@packages/contracts/mailer";
 
 
 export interface RequestEmailChangeServiceParams {
-    userID: string;
+    id: string;
     newEmail: string;
 }
 
@@ -21,7 +21,7 @@ export class RequestEmailChangeService {
     ) { }
 
     public async execute({
-        userID,
+        id,
         newEmail
     }: RequestEmailChangeServiceParams): Promise<RequestEmailChangeServiceResponse> {
         const user = await this.repo.findUserWithEmail(newEmail);
@@ -31,7 +31,7 @@ export class RequestEmailChangeService {
         const sessionID = crypto.randomUUID();
 
         await setChangeEmailSessionCache({
-            userID,
+            id,
             sessionID,
             newEmail,
             createdOn: new Date
@@ -40,7 +40,7 @@ export class RequestEmailChangeService {
         const producer = await getChangeEmailProducer()
         const event: ChangeEmailEvent = {
             sessionID,
-            userID,
+            id,
             newEmail,
             uriSessionToken: "http://localhost:8001/verify-change-email-session?sessionID=${sessionID}",
             createdOn: new Date

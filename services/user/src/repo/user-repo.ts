@@ -10,7 +10,7 @@ export interface CreateUserParams {
 }
 
 export interface UpdateUserParams {
-    userID: string;
+    id: string;
     firstName?: string;
     lastName?: string;
     username?: string;
@@ -20,7 +20,7 @@ export interface UpdateUserParams {
 export class UserRepo {
     constructor(
         protected readonly user = User
-    ) {}
+    ) { }
 
     async createUser({
         firstName,
@@ -41,14 +41,14 @@ export class UserRepo {
     }
 
     async updateUser({
-        userID,
+        id,
         firstName,
         lastName,
         username,
         dateOfBirth
     }: UpdateUserParams) {
         return await this.user.findOneAndUpdate(
-            { userID },
+            { id },
             {
                 firstName,
                 lastName,
@@ -73,9 +73,9 @@ export class UserRepo {
         });
     }
 
-    async getUserWithUserID(userID: string) {
+    async getUserWithid(id: string) {
         return await this.user.findOne({
-            userID
+            id
         });
     }
 }

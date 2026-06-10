@@ -17,23 +17,19 @@ import { exp } from "@/config/exp";
 import { SignOptions } from "jsonwebtoken";
 import { ClientData, DateOfBirth } from "@packages/contracts/auth";
 
-/**
- * Taking SessionDuration from @packages/prisma-users UserSession Model export
- */
-import { SessionDuration } from "@packages/prisma-users";
+
 import { AuthRepo } from "@/repo/auth-repo";
 import { EmailVerificationRequiredError } from "@/errors/service-error";
 
 export interface SignupCompleteServiceParams {
   signupSessionID: string;
-  rememberMe: boolean;
   clientData: ClientData
 }
 
 export interface SignupCompleteServiceResponse {
   username: string;
   email: string;
-  userID: string;
+  id: string;
   profilePicURI?: string;
   firstName: string;
   lastName: string;
@@ -54,7 +50,6 @@ export class SignupCompleteService {
    */
   async execute({
     signupSessionID,
-    rememberMe,
     clientData
   }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
 
@@ -114,11 +109,11 @@ export class SignupCompleteService {
       payload: {
         jti: randomUUID(),
         sid: userSessionID,
-        sub: createdUser.userID
+        sub: createdUser.id
       },
       secret: env.JWT_REFRESH_SECRET_KEY,
       options: {
-        expiresIn: rememberMe ? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
+        expiresIn: exp.JWT_REFRESH_TOKEN
       } as SignOptions
     })
 
@@ -126,7 +121,7 @@ export class SignupCompleteService {
       payload: {
         jti: randomUUID(),
         sid: userSessionID,
-        sub: createdUser.userID,
+        sub: createdUser.id,
         role: "user"
       },
       secret: env.JWT_ACCESS_SECRET_KEY,
@@ -135,16 +130,13 @@ export class SignupCompleteService {
       } as SignOptions
     })
 
-    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
-
     /**
      * Persist session
      */
     await this.authRepo.createUserSession({
-      userID: createdUser.userID,
+      id: createdUser.id,
       clientData,
       refreshToken,
-      sessionDuration,
       userSessionID,
     });
 
@@ -167,8 +159,8 @@ export class SignupCompleteService {
       message:
         "Signup completed successfully",
 
-      userID:
-        createdUser.userID,
+      id:
+        createdUser.id,
 
       username:
         createdUser.username,

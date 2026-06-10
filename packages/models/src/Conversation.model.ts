@@ -13,7 +13,7 @@ export enum ConversationEventType {
 
 const ConversationSchema = new Schema(
   {
-    userID: {
+    id: {
       type: Types.ObjectId,
       ref: "User",
       index: true,
@@ -90,7 +90,7 @@ const ConversationSchema = new Schema(
   }
 );
 
-ConversationSchema.index({ userID: 1, lastEventAt: -1 });
-ConversationSchema.index({ userID: 1, sequence: -1 });
+ConversationSchema.index({ id: 1, lastEventAt: -1 });
+ConversationSchema.index({ id: 1, sequence: -1 });
 
 export const Conversation = model("Conversation", ConversationSchema);

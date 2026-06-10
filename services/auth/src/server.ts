@@ -4,6 +4,9 @@ import { authLogger } from "@packages/observability";
 import app from "./app.js";
 import { env } from "@/config/env.js";
 import cors from "cors"
+import { connectUsersDB } from "@packages/db";
+
+
 
 // CORS configuration
 const corsOptions = {
@@ -18,8 +21,14 @@ app.use(cors(corsOptions));
 
 const PORT = env.AUTH_SERVICE_PORT;
 
-app.listen(PORT, () => {
-  authLogger.info(`✅ Auth Service running on port ${PORT}`);
-});
+async function bootstrap() {
+  await connectUsersDB();
 
-console.log("DB URI:", process.env.USERS_PRISMA_DB_URI);
+  app.listen(PORT, () => {
+    authLogger.info(`Server running on port ${PORT}`);
+  });
+}
+
+bootstrap();
+
+authLogger.debug("DB URI:" + env.USERS_MONGO_URI);

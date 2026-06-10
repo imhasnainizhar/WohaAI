@@ -26,7 +26,7 @@ export class VerifyEmailChangeService {
         const cache = await getChangeEmailSessionCache(sessionID)
 
         const user = await this.repo.changeEmail({
-            userID: cache.userID,
+            id: cache.id,
             newEmail: cache.newEmail
         })
 

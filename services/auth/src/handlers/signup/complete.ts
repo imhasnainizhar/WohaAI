@@ -32,7 +32,6 @@ export const completeSignupHandler = asyncHandler(
       SignupCompleteRequestSchema.safeParse(body)
 
     if (!parsed.success) throw new ValidationError("Invalid remember me option", parsed.error)
-    const { rememberMe } = parsed.data
 
     const signupSessionID = payload.signupSessionID;
 
@@ -41,7 +40,6 @@ export const completeSignupHandler = asyncHandler(
 
     const result = await authService.completeSignup({
       signupSessionID,
-      rememberMe,
       clientData
     });
 
@@ -54,7 +52,7 @@ export const completeSignupHandler = asyncHandler(
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: parsed.data.rememberMe ? exp.REFRESH_TOKEN_COOKIE : undefined
+        maxAge: exp.REFRESH_TOKEN_COOKIE
       }
     });
 
@@ -66,7 +64,7 @@ export const completeSignupHandler = asyncHandler(
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: parsed.data.rememberMe ? exp.ACCESS_TOKEN_COOKIE : undefined
+        maxAge: exp.ACCESS_TOKEN_COOKIE
       }
     });
 

@@ -1,7 +1,5 @@
 import express, { Express } from "express";
 import authRoutes from "@/routes/auth.js";
-import { authLogger } from "@packages/observability";
-import { httpLogger } from "@packages/observability";
 import { errorHandler } from "@/middlewares/error-handler";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -27,8 +25,6 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // if using cookies or auth headers
 };
-
-app.use(httpLogger);
 
 // Mount auth-related routes
 app.use("/", cors(corsOptions), authRoutes);

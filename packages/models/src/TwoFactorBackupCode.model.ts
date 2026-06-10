@@ -2,7 +2,7 @@ import { Schema, Types, model } from "mongoose";
 
 const TwoFactorBackupCodeSchema = new Schema(
   {
-    userID: {
+    id: {
       type: Types.ObjectId,
       ref: "User",
       index: true,

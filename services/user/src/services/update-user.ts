@@ -2,11 +2,11 @@ import { UserRepo } from "@/repo/user-repo";
 import { UsernameAlreadyTakenError } from "@/errors/service-error";
 
 export interface UpdateUserServiceParams {
-    userID: string;
+    id: string;
     firstName?: string;
     lastName?: string;
     username?: string;
-    dateOfBirth?: Date | null;
+    dateOfBirth?: Date;
 }
 
 export class UpdateUserService {
@@ -15,7 +15,7 @@ export class UpdateUserService {
     ) { }
 
     async execute({
-        userID,
+        id,
         firstName,
         lastName,
         username,
@@ -27,14 +27,14 @@ export class UpdateUserService {
 
             if (
                 existingUser &&
-                existingUser.userID !== userID
+                existingUser.id !== id
             ) {
                 throw new UsernameAlreadyTakenError();
             }
         }
 
         await this.userRepo.updateUser({
-            userID,
+            id,
             firstName,
             lastName,
             username,
