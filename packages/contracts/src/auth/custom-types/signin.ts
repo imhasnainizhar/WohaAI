@@ -1,7 +1,7 @@
 import z from "zod";
 import { SigninRequestSchema } from "../schema/signin";
 
-export type SignInRequest = z.infer<typeof SigninRequestSchema>;
+export type SigninRequest = z.infer<typeof SigninRequestSchema>;
 
 export interface SigninResponse {
     profilePicURI: string;

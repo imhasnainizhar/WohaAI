@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar } from "@/components/ui/Calendar"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/Popover"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { Controller, useFormContext } from "react-hook-form"
-import { RoundedDataSelector } from "./input/date/RoundedDataSelector"
+import { RoundedDataSelector } from "../input/date/RoundedDataSelector"
 
 interface DatePickerProps {
     name: string

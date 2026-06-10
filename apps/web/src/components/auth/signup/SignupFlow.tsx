@@ -28,10 +28,10 @@ export default function SignupFlow() {
     { name: "", schema: SignupInitRequestSchema, render: (next: (v: any) => void) => <SignupInit next={next} setNextStep={setNextStep} data={form} /> },
     {
       name: nextStep === "email" ? "Email" : nextStep === "username" ? "Username" : "Password",
-      schema: nextStep === "email" 
-        ? ContinueWithEmailRequestSchema 
-        : nextStep === "username" 
-          ? ContinueWithUsernameRequestSchema 
+      schema: nextStep === "email"
+        ? ContinueWithEmailRequestSchema
+        : nextStep === "username"
+          ? ContinueWithUsernameRequestSchema
           : PasswordValidationRequestSchema,
       render: (next: (v: any) => void) =>
         nextStep === "email"
@@ -40,15 +40,16 @@ export default function SignupFlow() {
             ? <SignupUsername next={next} data={{ username: dataForm.username }} />
             : <SignupPassword next={next} />
     },
-    { name: "Personal Info", schema: PersonalInfoValidationRequestSchema, render: (next: (v: any) => void) => 
-      <SignupPersonalInfo 
-        next={next} 
-        data={{
-          firstName: dataForm.firstName,
-          lastName: dataForm.lastName,
-          dateOfBirth: dataForm.dateOfBirth
-        }}
-      />
+    {
+      name: "Personal Info", schema: PersonalInfoValidationRequestSchema, render: (next: (v: any) => void) =>
+        <SignupPersonalInfo
+          next={next}
+          data={{
+            firstName: dataForm.firstName,
+            lastName: dataForm.lastName,
+            dateOfBirth: dataForm.dateOfBirth
+          }}
+        />
     },
     { name: "Password", schema: PasswordValidationRequestSchema, render: (next: (v: any) => void) => <SignupPassword next={next} /> },
   ];
@@ -88,7 +89,7 @@ export default function SignupFlow() {
   const current = steps[step];
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-bg-primary">
+    <div className="w-full h-full flex items-center justify-center bg-secondary">
       <div className="p-6 flex flex-col items-center justify-center rounded-[16px] gap-[30px] w-[450px] h-[400px]">
         <div className="relative w-full flex items-center justify-center">
           {step > 0 && (

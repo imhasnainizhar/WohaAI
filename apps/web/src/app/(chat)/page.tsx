@@ -1,59 +1,41 @@
 "use client";
 
 import PathChecker from "@/lib/get-page-url";
-import TextArea from "@/components/ui/input/TextArea";
+import ChatTextArea from "@/components/ui/ChatTextArea";
 import "boxicons/css/boxicons.min.css";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useThemeUtils } from '@/providers/ThemeProvider';
 import { useAppContext } from "@/providers/AppProvider";
+import IncognitoModeButton from "@/components/ui/buttons/IncognitoModeButton";
 
 export default function ChatPage() {
-  const { theme } = useTheme();
-  const { sidebarExpanded } = useAppContext();
-
+  const { sidebarExpanded, isSmallDevice } = useAppContext();
+  const { isDarkTheme } = useThemeUtils();
   return (
-    <div className="text-text-secondary h-full w-full bg-bg-primary">
-      <PathChecker />
+    <section
+      className={
+        `w-full h-full transition-all duration-300 ease-in-out flex justify-center`
+      }
+    >
+      { /* Button to switch to incognito mode */}
+      <IncognitoModeButton color={isDarkTheme ? "#e0e0e0" : "#0f0f0f"} />
 
-      <div className="flex h-full w-full">
-        {/* Main content */}
-        <section
-          className="flex flex-col h-full transition-all duration-750 ease-in-out"
-          style={{
-            width: `calc(100% - ${sidebarExpanded ? "260px" : "60px"})`,
-          }}
-        >
-          {/* Chat page content */}
-          <main className="chat-page h-full w-full">
-            <div className="h-full flex flex-col w-full">
+      <div className={
+        `w-full h-full relative max-w-160`
+      }>
+        <div className={
+          `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center
+             text-fluid-2xl font-gerogia-sans tracking-tighter`
+        }>
+          How can I help U?
+        </div>
 
-              {/* Text Content */}
-              <div className="h-[50%] w-full flex flex-col justify-end items-center gap-3">
-                <h1
-                  className="min-w-[300px] max-w-[600px] w-full px-4 text-center
-                             font-bold font-sans text-[24px] text-text"
-                >
-                  What Can I Help You With?
-                </h1>
-
-                <p
-                  className="min-w-[300px] max-w-[600px] w-full px-4 text-center pb-2.5
-                             text-[14px] text-text-secondary font-sans"
-                >
-                  WoahGPT now has our smartest, fastest, most useful model yet,
-                  with thinking built in — so you get the best answer, every time.
-                </p>
-              </div>
-
-              {/* Chat Box */}
-              <div className="h-[50%] w-full flex flex-col justify-start items-center">
-                <div className="min-w-[300px] max-w-[690px] w-full px-4">
-                  <TextArea />
-                </div>
-              </div>
-            </div>
-          </main>
-        </section>
+        {/* Chat Box */}
+        <div className={
+          `absolute bottom-0 w-full h-auto px-4 py-7`
+        }>
+          <ChatTextArea />
+        </div>
       </div>
-    </div>
+    </section >
   );
 }

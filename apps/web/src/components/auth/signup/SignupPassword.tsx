@@ -1,5 +1,5 @@
 import ClassicButton from "@/components/ui/buttons/ClassicButton";
-import { RoundedInputField } from "@/components/ui/input/fields/RoundedInputField";
+import { RoundedInputField } from "@/components/input/fields/RoundedInputField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTheme } from "@/providers/ThemeProvider";

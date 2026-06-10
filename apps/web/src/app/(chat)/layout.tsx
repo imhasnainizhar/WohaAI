@@ -1,48 +1,37 @@
 "use client"
 
-import MainMenu from "@/components/layout/MainMenu";
-import Sidebar from "@/components/layout/Sidebar";
 import { Settings } from "@/components/settings/Settings";
-import TopLoader from "@/components/ui/TopLoader";
-import { useAppContext } from "@/providers/AppProvider";
 import SettingSchema from "@/schema/settings"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { ChatSidebar } from "@/components/layout/ChatSidebar"
+import "@/styles/dist/main.global.css"
+import AgentOptionsProvider from "@/providers/AgentOptionsProvider";
+import IncognitoModeButton from "@/components/ui/buttons/IncognitoModeButton";
+import SidebarScrollTrigger from "@/components/ui/buttons/SidebarScrollTrigger";
+
 
 export default function ChatLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { mainMenuVisible, setMainMenuVisible } = useAppContext();
     return (
-        <>
-            <TopLoader />
-            <div className="h-full w-full bg-bg-primary text-text-primary overflow-hidden">
-                <div className="flex h-full w-full">
-                    <div className="shrink-0 transition-all duration-750 ease-in-out 
-                max-[910px]:bg-bg-secondary max-[910px]:absolute
-                max-[910px]:w-full max-[910px]:min-w-[380px] h-full"
+        <AgentOptionsProvider>
+            <SidebarProvider className={`w-full h-full`}>
+                { /* Button to expand sidebar on mobile */}
+                <ChatSidebar />
+                <SidebarInset className={`relative`}>
+                    <div
+                        className={`absolute top-3 left-3 z-50`}
                     >
-                        <Sidebar />
+                        <SidebarScrollTrigger />
                     </div>
-                    {/* Chat Page */}
-                    <section className="h-full w-full flex flex-col justify-center align-center">
-                        <main className="flex flex-col justify-center h-full  
-                        w-full bg-bg-primary border border-primary border-solid">
-                            {children}
-                        </main>
-                    </section>
-                    {/* Settings */}
-                    <Settings schema={SettingSchema} />
-                    {/* Main Menu */}
-                    {mainMenuVisible && (
-                        <div
-                            className=""
-                        >
-                            <MainMenu onClickToggle={() => setMainMenuVisible(false)} position={{ zIndex: 100, width: "215px", height: "auto", top: "auto", left: `15px`, right: "auto", bottom: "75px" }} />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </>
+                    {children}
+                </SidebarInset>
+
+                {/* Settings */}
+                <Settings schema={SettingSchema} />
+            </SidebarProvider>
+        </AgentOptionsProvider>
     );
 }
