@@ -75,10 +75,10 @@ export default function SigninForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className={`rounded-[25px] py-8 px-2`}>
-        <CardContent>
+      <Card className={`rounded-[35px] py-8 px-2 border-none! shadow-none!`}>
+        <CardContent className={`px-3.5 md:px-6`}>
           <form>
-            <FieldGroup>
+            <FieldGroup className={`gap-4!`}>
               <Field>
                 {/* <Button variant="outline" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@ export default function SigninForm({
                   Login with Google
                 </Button>
               </Field>
-              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card my-2">
                 Or continue with
               </FieldSeparator>
               <Field>
@@ -111,27 +111,23 @@ export default function SigninForm({
                   label="Password"
                   type="password"
                 />
-                {/* <div className={`flex items-center mb-2`}>
+                <div className={`flex items-center mb-2`}>
                   <a
                     href="#"
-                    className="ml-auto mr-auto text-sm underline-offset-3 hover:underline text-link"
+                    className="mr-auto ml-2 text-fluid-sm underline-offset-3 hover:underline text-link"
                   >
                     Forgot your password?
                   </a>
-                </div> */}
+                </div>
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
-                <FieldDescription className="text-center flex items-center justify-center gap-10 text-link ">
-                  <Link href="/forgot-password">Forgot Password?</Link>
-                  <Link href="/signup">Sign up</Link>
-                </FieldDescription>
+                <Button type="submit" className={`bg-primary text-primary-foreground! text-fluid-base font-semibold hover:bg-primary/70! transition-all ease-in-out duration-300 cursor-pointer`}>Signin</Button>
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
-      <FieldDescription className="px-4 text-center text-[9px]! text-muted-foreground">
+      <FieldDescription className="px-4 text-center text-[10px]! text-muted-foreground">
         By continuing, you acknowledge WohaAI’s <Link href="/terms">Terms of Service</Link>{" "}
         and <Link href="/privacy">Privacy Policy</Link>.
       </FieldDescription>

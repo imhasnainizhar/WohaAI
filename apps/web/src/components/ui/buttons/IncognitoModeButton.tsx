@@ -1,4 +1,5 @@
 export default function IncognitoModeButton({color}: {color: string}) {
+    console.log(color)
     return (
         <div className={`fixed top-3 right-3 z-10 w-7 h-7 cursor-pointer`}>
             <svg

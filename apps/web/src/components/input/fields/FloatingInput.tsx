@@ -4,47 +4,54 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 
 export default function FloatingInput({
-  id,
-  label,
-  type = "text",
+    id,
+    label,
+    type = "text",
 }: {
-  id: string
-  label: string
-  type?: string
+    id: string
+    label: string
+    type?: string
 }) {
-  const [value, setValue] = useState("")
+    const [value, setValue] = useState("")
 
-  return (
-    <div className="relative">
-      <Input
-        id={id}
-        type={type}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder=" "
-        className="peer h-10 bg-background!"
-      />
+    return (
+        <div className={
+            `relative`
+        }>
+            <Input
+                id={id}
+                type={type}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder=" "
+                className="
+                    peer h-10 bg-background!
+                    focus-visible:ring-0
+                    focus-visible:ring-offset-0
+                    focus-visible:border-border
+                    focus:border-border
+                "
+            />
 
-      <label
-        htmlFor={id}
-        className={`
+            <label
+                htmlFor={id}
+                className={`
           absolute left-3 px-1 bg-background
           transition-all duration-200 pointer-events-none
           
-          ${
-            value
-              ? "-top-2 text-xs"
-              : "top-1/2 -translate-y-1/2 text-sm text-muted-foreground"
-          }
+          ${value
+                        ? "-top-2 text-xs"
+                        : "top-1/2 -translate-y-1/2 text-sm text-muted-foreground"
+                    }
 
           peer-focus:-top-2
           peer-focus:translate-y-0
           peer-focus:text-xs
           peer-focus:text-foreground
         `}
-      >
-        {label}
-      </label>
-    </div>
-  )
+            >
+                {label}
+            </label>
+        </div>
+    )
 }

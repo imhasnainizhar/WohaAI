@@ -15,6 +15,8 @@
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
+  --selection: oklch(0.708 0 0);
+  --selection-foreground: oklch(0.269 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -149,7 +151,7 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --input: hsla(0, 0%, 100%, 0.17);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -229,9 +231,9 @@ input:-webkit-autofill:active {
 }
 
 ::selection {
-  background: hsla(0, 0%, 20%, 0.705);
+  background: var(--selection);
   /* highlight bg */
-  color: white;
+  color: var(--selection-foreground);
 }
 
 /* Firefox needs this */
@@ -280,7 +282,34 @@ label {
   }
 }
 
+/* For incognito mode buttom */
 .ghost-icon:hover .eyes {
   animation: look-around 2s infinite ease-in-out;
   transform-origin: 12px 11px;
+}
+
+@keyframes collapsible-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+.animate-collapsible-down {
+  animation: collapsible-down 0.25s ease-out;
+}
+
+.animate-collapsible-up {
+  animation: collapsible-up 0.2s ease-out;
 }

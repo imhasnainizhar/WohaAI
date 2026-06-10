@@ -3,90 +3,73 @@
 import Link from "next/link";
 import UsernamePlate from "@/components/ui/cards/UsernamePlate";
 import { useAppContext } from "@/providers/AppProvider";
-import { toggleTheme, isDarkTheme } from "@/providers/ThemeProvider";
+import { useThemeUtils } from "@/providers/ThemeProvider";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import ThemePopover from "./ThemePopover";
 
-// Will be updated to exact type
+// We will remove this unknown later
 type Props = {
-  userInfo?: unknown;
+  user?: unknown;
+  className?: string;
 };
 
-export default function SideBarPopover({ userInfo }: Props) {
+export default function SideBarPopover({ user, className }: Props) {
   const { toggleSettings } = useAppContext();
+  const { toggleTheme, isDarkTheme } = useThemeUtils();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <button
-          className="w-full rounded-xl outline-none"
+          className={`w-full rounded-xl outline-none ${className}`}
           aria-label="Open account menu"
         >
           <UsernamePlate />
         </button>
-      </DropdownMenuTrigger>
+      </PopoverTrigger>
 
-      <DropdownMenuContent
-        side="right"
+      <PopoverContent
+        side="top"
         align="start"
-        className="w-64"
+        className={
+          `max-w-50 p-1 z-51`
+        }
       >
-        {userInfo ? (
-          <>
-            <div className="px-2 py-2">
-              <UsernamePlate />
-            </div>
+        <>
+          <div className={
+            `px-2 py-2 cursor-pointer`
+          }>
+            <UsernamePlate />
+          </div>
 
-            <DropdownMenuSeparator />
+          <div className={
+            `h-px bg-border`
+          } />
+          <div className={`text-fluid-sm font-small my-1.5`}>
+          <ThemePopover className={`rounded-md hover:bg-accent hover:text-accent-foreground`} />
+          <button className={
+            `w-full text-left px-2 py-2 cursor-pointer rounded-md hover:bg-accent hover:text-accent-foreground`
+          }>
+            Sign Out
+          </button>
 
-            <DropdownMenuItem>
-              Sign Out
-            </DropdownMenuItem>
+          <button
+            onClick={toggleSettings}
+            className={
+              `w-full text-left px-2 py-2 cursor-pointer rounded-md hover:bg-accent hover:text-accent-foreground`
+            }
+          >
+            Settings
+          </button>
 
-            <DropdownMenuItem onClick={toggleSettings}>
-              Settings
-            </DropdownMenuItem>
-          </>
-        ) : (
-          <>
-            <div className="px-2 py-2">
-              <UsernamePlate />
-            </div>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem asChild>
-              <Link href="/signin">
-                Sign In
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
-              <Link href="/signup">
-                Sign Up
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem onClick={toggleTheme}>
-              {isDarkTheme()
-                ? "Switch Light Mode"
-                : "Switch Dark Mode"}
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={toggleSettings}>
-              Settings
-            </DropdownMenuItem>
-          </>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </div>
+        </>
+      </PopoverContent>
+    </Popover>
   );
 }

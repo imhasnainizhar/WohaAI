@@ -14,10 +14,12 @@ export default function SubmitButton() {
                 h-[35px]
                 border
                 border-primary
+                transition-colors
+                duration-300
                 bg-black
                 text-text-primary
                 cursor-pointer
-                hover:bg-black/50
+                hover:bg-input
                 active:scale-95!
             "
         >

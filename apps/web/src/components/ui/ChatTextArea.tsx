@@ -10,7 +10,7 @@ export default function ChatTextArea() {
   return (
     <div
       className={
-        `w-full bg-secondary relative p-2 rounded-[24px]`
+        `w-full dark:bg-input/30 relative p-2 rounded-[24px]`
       }
     >
       <div className={

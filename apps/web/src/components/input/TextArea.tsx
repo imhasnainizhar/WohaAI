@@ -125,7 +125,7 @@ export default function TextArea({ maxHeight }: ChatInputProps) {
       {/* OUTER WRAPPER controls animation */}
       <div
         className="
-          relative w-full bg-secondary mt-2.5 mb-2
+          relative w-full bg-none mt-2.5 mb-2
           overflow-hidden
           transition-[height] duration-150 ease-out
           will-change-[height]

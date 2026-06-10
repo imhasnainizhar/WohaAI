@@ -11,7 +11,6 @@ import { useAgentOptions } from "@/providers/AgentOptionsProvider"
 import { MODELS } from "@/lib/constants/models-map"
 import { useState } from "react"
 import { Switch } from "../ui/switch"
-import { useAppContext } from '@/providers/AppProvider';
 import { motion } from "framer-motion"
 
 const getModelName = (id: string) => MODELS.find((model) => model.id === id)?.name
@@ -20,7 +19,6 @@ export default function ModelOptionsPopover() {
 
     const { modelSelected, setModelSelected, thinkingEnabled, setThinkingEnabled } = useAgentOptions()
     const [open, setOpen] = useState<boolean>(false)
-    const { isSmallDevice } = useAppContext()
 
     return (
         <Popover open={open} onOpenChange={setOpen}>

@@ -3,28 +3,21 @@
 import PathChecker from "@/lib/get-page-url";
 import ChatTextArea from "@/components/ui/ChatTextArea";
 import "boxicons/css/boxicons.min.css";
-import { isDarkTheme } from "@/providers/ThemeProvider";
+import { useThemeUtils } from '@/providers/ThemeProvider';
 import { useAppContext } from "@/providers/AppProvider";
 import IncognitoModeButton from "@/components/ui/buttons/IncognitoModeButton";
 
 export default function ChatPage() {
   const { sidebarExpanded, isSmallDevice } = useAppContext();
-
+  const { isDarkTheme } = useThemeUtils();
   return (
     <section
       className={
-        `h-full transition-all duration-750 ease-in-out flex justify-center`
+        `w-full h-full transition-all duration-300 ease-in-out flex justify-center`
       }
-      style={{
-        width: `${isSmallDevice ?
-          "100%" : sidebarExpanded ?
-            `calc(100% - 260px)` :
-            `calc(100% - 60px)`
-          }`,
-      }}
     >
-      { /* Button to switch to incognito mode */ }
-      <IncognitoModeButton color={isDarkTheme() ? "#e0e0e0" : "#0f0f0f"} />
+      { /* Button to switch to incognito mode */}
+      <IncognitoModeButton color={isDarkTheme ? "#e0e0e0" : "#0f0f0f"} />
 
       <div className={
         `w-full h-full relative max-w-160`

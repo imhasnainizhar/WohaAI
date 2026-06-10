@@ -1,7 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
+import {
+  ThemeProvider as NextThemesProvider,
+  useTheme,
+} from "next-themes"
 
 function ThemeProvider({
   children,
@@ -33,14 +36,23 @@ function isTypingTarget(target: EventTarget | null) {
   )
 }
 
-export const toggleTheme = () => {
+/**
+ * Custom hook for theme utilities
+ */
+export function useThemeUtils() {
   const { resolvedTheme, setTheme } = useTheme()
-  setTheme(resolvedTheme === "dark" ? "light" : "dark")
-}
 
-export const isDarkTheme = () => {
-  const { resolvedTheme, setTheme } = useTheme()
-  return resolvedTheme === "dark"
+  const toggleTheme = React.useCallback(() => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark")
+  }, [resolvedTheme, setTheme])
+
+  const isDarkTheme = resolvedTheme === "dark"
+
+  return {
+    toggleTheme,
+    isDarkTheme,
+    resolvedTheme,
+  }
 }
 
 function ThemeHotkey() {
@@ -48,11 +60,13 @@ function ThemeHotkey() {
 
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.defaultPrevented || event.repeat) {
-        return
-      }
-
-      if (event.metaKey || event.ctrlKey || event.altKey) {
+      if (
+        event.defaultPrevented ||
+        event.repeat ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey
+      ) {
         return
       }
 
@@ -77,5 +91,4 @@ function ThemeHotkey() {
   return null
 }
 
-export { ThemeProvider }
-export { useTheme }
+export { ThemeProvider, useTheme }

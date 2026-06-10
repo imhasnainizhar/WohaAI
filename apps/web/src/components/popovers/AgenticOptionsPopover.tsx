@@ -57,6 +57,7 @@ export default function AgenticOptionsPopover() {
             <Switch
               checked={webSearchEnabled}
               onCheckedChange={setWebSearchEnabled}
+              className={`cursor-pointer`}
             />
             </label>
           </DropdownMenuItem>
