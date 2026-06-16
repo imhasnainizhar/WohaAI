@@ -1,0 +1,15 @@
+{
+  "clientId": "auth-service",
+
+  "topics": {
+    "changePassword": "auth.password.change.event",
+    "emailVerification": "auth.email.verification.event",
+    "changeEmail": "auth.change.email.event"
+  },
+
+  "consumerGroups": {
+    "changePassword": "consumer.change.password.group",
+    "emailVerification": "consumer.email.verification.group",
+    "changeEmail": "consumer.change.email.group"
+  }
+}

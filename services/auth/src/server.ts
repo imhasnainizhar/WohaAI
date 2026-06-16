@@ -2,15 +2,19 @@
 
 import { authLogger } from "@packages/observability";
 import app from "./app.js";
-import { env } from "@/config/env.js";
 import cors from "cors"
+import { env } from "@packages/env-ts";
 import { connectUsersDB } from "@packages/db";
 
-
+// Connect to MongoDB
+(async () => {
+  await connectUsersDB(env.USERS_MONGO_URI);
+  authLogger.info("✅ Auth Service connected to MongoDB" + env.USERS_MONGO_URI);
+})();
 
 // CORS configuration
 const corsOptions = {
-  origin: env.CLIENT_ORIGIN, // frontend origin
+  origin: env.CLIENT_ORIGIN || "http://localhost:3000", // frontend origin
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // if using cookies or auth headers
@@ -19,16 +23,8 @@ const corsOptions = {
 // Apply CORS middleware
 app.use(cors(corsOptions));
 
-const PORT = env.AUTH_SERVICE_PORT;
+const PORT = env.AUTH_SERVICE_PORT || 8091;
 
-async function bootstrap() {
-  await connectUsersDB();
-
-  app.listen(PORT, () => {
-    authLogger.info(`Server running on port ${PORT}`);
-  });
-}
-
-bootstrap();
-
-authLogger.debug("DB URI:" + env.USERS_MONGO_URI);
+app.listen(PORT, () => {
+  authLogger.info(`✅ Auth Service running on port ${PORT}`);
+});

@@ -1,15 +1,5 @@
-import { Schema, model, Types } from "mongoose";
-
-export enum ConversationEventType {
-  USER = "user",
-  ASSISTANT = "assistant",
-  THINKING = "thinking",
-
-  TOOL_CALL = "tool_call",
-  TOOL_RESULT = "tool_result",
-
-  SYSTEM = "system",
-}
+import { Schema, model, Types, models } from "mongoose";
+import { ConversationEventType } from "./conversation.types";
 
 const ConversationSchema = new Schema(
   {
@@ -93,4 +83,4 @@ const ConversationSchema = new Schema(
 ConversationSchema.index({ id: 1, lastEventAt: -1 });
 ConversationSchema.index({ id: 1, sequence: -1 });
 
-export const Conversation = model("Conversation", ConversationSchema);
+export const Conversation = models.Conversation ?? model("Conversation", ConversationSchema);

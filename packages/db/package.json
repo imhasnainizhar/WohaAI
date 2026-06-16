@@ -34,7 +34,6 @@
     }
   },
   "dependencies": {
-    "@packages/config": "workspace:*",
     "@packages/observability": "workspace:*",
     "mongoose": "^9.6.3"
   },

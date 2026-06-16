@@ -14,7 +14,7 @@ export function SettingRow({
   danger
 }: Props) {
   return (
-    <div className="flex items-center justify-between px-4 py-3">
+    <div className="flex items-center justify-between pr-2 py-3">
       <div>
         <p
           className={`text-sm font-medium ${

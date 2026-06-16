@@ -1,16 +1,15 @@
-import { Kafka, Producer } from "kafkajs";
-import { env } from "@/config/env";
+import { Producer } from "kafkajs";
 import { getProducer } from "@packages/kafka";
-
-
+import kafka from "../../../../packages/config/kafka.json";
+import { env } from "@packages/env-ts";
 
 /**
  * Get or create a Kafka producer for email verification topic
  */
 export async function getChangeEmailProducer(): Promise<Producer> {
   return await getProducer(
-      env.AUTH_KAFKA_CLIENT_ID,
-      env.AUTH_KAFKA_BROKERS,
-      env.AUTH_KAFKA_CHANGE_EMAIL_EVENTS_TOPIC
+    env.AUTH_KAFKA_CLIENT_ID,
+    [env.AUTH_KAFKA_BROKER],
+    kafka.topics.changeEmail
   )
 }

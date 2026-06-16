@@ -1,18 +1,15 @@
-import { env } from "@/config/env";
+import { env } from "@packages/env-ts";
 import { EmailAlreadyTakenError } from "@/errors/service-error";
 import { getChangeEmailProducer } from "@/producer/change-emai";
 import { setChangeEmailSessionCache, setVerificationCodeCache } from "@/redis/redis";
 import { AuthRepo } from "@/repo/auth-repo";
 import { ChangeEmailEvent } from "@packages/contracts/mailer";
+import kafka from "../../../../../packages/config/kafka.json"
 
 
 export interface RequestEmailChangeServiceParams {
-    id: string;
+    userID: string;
     newEmail: string;
-}
-
-export interface RequestEmailChangeServiceResponse {
-    verificationEmailSent: boolean;
 }
 
 export class RequestEmailChangeService {
@@ -21,9 +18,9 @@ export class RequestEmailChangeService {
     ) { }
 
     public async execute({
-        id,
+        userID,
         newEmail
-    }: RequestEmailChangeServiceParams): Promise<RequestEmailChangeServiceResponse> {
+    }: RequestEmailChangeServiceParams): Promise<{success: boolean}> {
         const user = await this.repo.findUserWithEmail(newEmail);
 
         if (user) throw new EmailAlreadyTakenError();
@@ -31,7 +28,7 @@ export class RequestEmailChangeService {
         const sessionID = crypto.randomUUID();
 
         await setChangeEmailSessionCache({
-            id,
+            userID,
             sessionID,
             newEmail,
             createdOn: new Date
@@ -40,14 +37,14 @@ export class RequestEmailChangeService {
         const producer = await getChangeEmailProducer()
         const event: ChangeEmailEvent = {
             sessionID,
-            id,
+            userID,
             newEmail,
             uriSessionToken: "http://localhost:8001/verify-change-email-session?sessionID=${sessionID}",
             createdOn: new Date
         }
 
         producer.send({
-            topic: env.AUTH_KAFKA_CHANGE_EMAIL_EVENTS_TOPIC,
+            topic: kafka.topics.changeEmail,
             messages: [
                 {
                     value: JSON.stringify(event)
@@ -56,7 +53,7 @@ export class RequestEmailChangeService {
         })
 
         return {
-            verificationEmailSent: true
+            success: true
         }
     }
 }

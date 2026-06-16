@@ -6,25 +6,21 @@ import {
 import { InvalidCredentialsError } from "@/errors/service-error";
 
 export interface Verify2FAServiceParams {
-    id: string;
+    userID: string;
     token: string;
-}
-
-export interface Verify2FAServiceResponse {
-    verified: boolean;
 }
 
 export class Verify2FAService {
 
-    constructor(private repo: AuthRepo) { }
+    constructor(private repo: AuthRepo) {}
 
     public async execute({
-        id,
+        userID,
         token,
-    }: Verify2FAServiceParams): Promise<Verify2FAServiceResponse> {
+    }: Verify2FAServiceParams): Promise<{success: boolean}> {
 
         const user =
-            await this.repo.getUserWithid(id);
+            await this.repo.getUserWithUserID(userID);
 
         if (!user) throw new NotFoundError("User not found");
 
@@ -46,7 +42,7 @@ export class Verify2FAService {
             throw new InvalidCredentialsError();
 
         return {
-            verified: true,
+            success: true,
         };
     }
 }

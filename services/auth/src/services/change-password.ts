@@ -1,51 +1,138 @@
-import argon2 from "argon2";
-import { AuthRepo } from '@/repo/auth-repo';
-import { InvalidCredentialsError } from "@/errors/service-error";
+import { randomUUID } from "crypto";
+import { createJwtToken, ChangePasswordSessionPayload } from "@packages/security/jwt";
+import { SignOptions } from "jsonwebtoken";
+import { getChangePasswordProducer } from "@/producer/change-password";
+import { ChangePasswordEvent } from "@packages/contracts/mailer";
+import argon2 from "argon2"
+import {
+  SessionExpiredError
+} from "@packages/errors";
 
-export interface ChangePasswordServiceParams {
-    id: string;
-    oldPassword: string;
-    newPassword: string;
+import { AuthRepo } from "@/repo/auth-repo";
+import { Password, UsernameOrEmail } from "@packages/contracts/auth";
+import { authLogger } from "@packages/observability";
+import { InvalidCredentialsError } from "@/errors/service-error";
+import { getChangePasswordSessionCache, setChangePasswordSessionCache } from "@/redis/redis";
+import exp from "../../../../packages/config/exp.json"
+import { env } from "@packages/env-ts";
+import kafka from "../../../../packages/config/kafka.json"
+
+// init()
+export interface ChangePasswordInitServiceParams {
+  usernameOrEmail: UsernameOrEmail;
 }
 
-export interface ChangePasswordServiceResponse {
-    passwordChanged: boolean;
+export interface VerifyChangePasswordServiceParams {
+  sessionID: string;
+}
+export interface VerifyChangePasswordServiceResponse {
+  changePasswordSessionToken: string;
+}
+
+export interface ChangePasswordServiceParams {
+  sessionID: string;
+  password: Password;
 }
 
 export class ChangePasswordService {
+  constructor(private authRepo: AuthRepo) { }
 
-    constructor(private repo: AuthRepo) { }
+  public async init({
+    usernameOrEmail
+  }: ChangePasswordInitServiceParams): Promise<{ success: boolean }> {
 
-    /**
-     * Main signin business logic
-     */
-    public async execute({
-        id,
-        oldPassword,
-        newPassword,
-    }: ChangePasswordServiceParams): Promise<ChangePasswordServiceResponse> {
-        const user =
-            await this.repo.getUserWithid(id);
+    // user session validation happens at handler
 
-        if (user === null) throw new InvalidCredentialsError()
+    // db check
+    const foundUser =
+      await this.authRepo.getUserWithUsernameOrEmail(usernameOrEmail)
 
-        const isPasswordCorrect = await argon2.verify(
-            user.hashedPassword,
-            oldPassword
-        );
+    if (!foundUser) throw new InvalidCredentialsError();
 
-        if (!isPasswordCorrect) throw new InvalidCredentialsError()
+    const sessionID = randomUUID();
 
-        const hashedPassword = await argon2.hash(newPassword)
+    await setChangePasswordSessionCache({
+      sessionID,
+      userID: foundUser.userID,
+      email: foundUser.email,
+      username: foundUser.username,
+      createdOn: new Date()
+    })
 
-        const _ = await this.repo.changeUserPassword({
-            id,
-            hashedPassword
-        })
+    // create producer to push events on kafka
+    const producer = await getChangePasswordProducer();
 
-        return {
-            passwordChanged: true
-        }
+    const event: ChangePasswordEvent = {
+      sessionID,
+      userID: foundUser.id,
+      username: foundUser.username,
+      email: foundUser.email,
+      uriSessionToken: `http://localhost:8001/verify-forgot-password-session?sessionID=${sessionID}`,
+      createdOn: new Date()
     }
 
+    // Push event on kafka
+    // produce email event on kafka
+    await producer.send({
+      topic: kafka.topics.changePassword,
+      messages: [
+        {
+          value: JSON.stringify(event),
+        },
+      ],
+    });
+
+    return {
+      success: true
+    }
+  }
+
+  public async verify({
+    sessionID
+  }: VerifyChangePasswordServiceParams): Promise<VerifyChangePasswordServiceResponse> {
+
+    const jti = randomUUID()
+
+    const token = createJwtToken<ChangePasswordSessionPayload>({
+      payload: {
+        jti,
+        sub: sessionID
+      },
+      secret: env.JWT_CHANGE_PASSWORD_SECRET_KEY,
+      options: {
+        expiresIn: exp.JWT_AUTH_SESSION_TOKEN
+      } as SignOptions
+    })
+
+    return {
+      changePasswordSessionToken: token,
+    };
+  }
+
+  // This is our new method of typing things related to user using types of zod schemas from @packages/contracts/auth
+  // ChangePasswordSessionToken will be validated at handler after being extracted from session cookie. 
+  public async changePassword({
+    sessionID,
+    password
+  }: ChangePasswordServiceParams): Promise<{ success: boolean }> {
+
+    // error handling is already done in redisClient methods.
+    const cache =
+      await getChangePasswordSessionCache(sessionID);
+
+    if (!cache) throw new SessionExpiredError()
+
+    const userID = cache.userID;
+
+    const hashedPassword = await argon2.hash(password);
+
+    const result =
+      await this.authRepo.changeUserPassword({ userID, hashedPassword })
+
+    authLogger.debug(`Password changed for userID: ${result.userID}, username: ${result.username}`)
+
+    return {
+      success: true
+    }
+  }
 }

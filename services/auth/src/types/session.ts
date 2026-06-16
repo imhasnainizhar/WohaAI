@@ -3,7 +3,7 @@ import type { Prisma } from "@packages/prisma-users";
 // Interface for user session refresh
 export interface UserSessionRefresh {
   refreshSessionToken: string,
-  id: string,
+  userID: string,
   userSessionID: string,
   userIPAddress: string
 }
@@ -18,7 +18,7 @@ export const ActiveSessionSelect: Prisma.UserSessionSelect = {
   createdAt: true,
   user: {
     select: {
-      id: true,
+      userID: true,
       username: true,
       email: true,
       firstName: true,
@@ -29,4 +29,4 @@ export const ActiveSessionSelect: Prisma.UserSessionSelect = {
 
 // Type for active session record
 export type ActiveSessionRecord =
-  Prisma.UserSessionGetPayload<{ select: typeof ActiveSessionSelect }>;
+Prisma.UserSessionGetPayload<{ select: typeof ActiveSessionSelect }>;

@@ -2,65 +2,6 @@ import { SettingSectionType, SettingItem } from "@/types/settings";
 
 const SettingSchema: SettingSectionType[] = [
   {
-    id: "general",
-    label: "General",
-    items: [
-      {
-        id: "general.theme",
-        ui: "select",
-        valueType: "enum",
-        level: "critical",
-        label: "Theme",
-        description: "Choose your preferred theme",
-        icon: "palette",
-        default: "system",
-        options: [
-          { value: "system", label: "System" },
-          { value: "dark", label: "Dark" },
-          { value: "light", label: "Light" }
-        ]
-      } as SettingItem,
-      {
-        id: "general.accentColor",
-        ui: "select",
-        valueType: "enum",
-        level: "usual",
-        label: "Accent Color",
-        description: "Choose your preferred accent color",
-        icon: "palette",
-        default: "blue",
-        options: [
-          { value: "blue", label: "Blue" },
-          { value: "red", label: "Red" },
-          { value: "green", label: "Green" },
-          { value: "purple", label: "Purple" },
-          { value: "orange", label: "Orange" },
-          { value: "yellow", label: "Yellow" },
-          { value: "pink", label: "Pink" }
-        ]
-      } as SettingItem,
-      {
-        id: "general.language",
-        ui: "select",
-        valueType: "enum",
-        level: "usual",
-        label: "Language",
-        description: "Choose your preferred language",
-        icon: "globe",
-        default: "en",
-        options: [
-          { value: "en", label: "English" },
-          { value: "es", label: "Spanish" },
-          { value: "fr", label: "French" },
-          { value: "de", label: "German" },
-          { value: "it", label: "Italian" },
-          { value: "ar", label: "Arabic" }
-        ]
-        } as SettingItem,
-    ] as SettingItem[]
-  },
-
-  {
     id: "security",
     label: "Security",
     items: [

@@ -1,7 +1,7 @@
 
-export interface ForgotPasswordEvent {
+export interface ChangePasswordEvent {
     sessionID: string;
-    id: string;
+    userID: string;
     username: string;
     email: string;
     uriSessionToken: string;
@@ -18,7 +18,7 @@ export interface VerifySignupEmailEvent {
 
 export interface ChangeEmailEvent {
     sessionID: string;
-    id: string;
+    userID: string;
     newEmail: string;
     uriSessionToken: string;
     createdOn: Date;

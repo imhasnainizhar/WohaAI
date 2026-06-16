@@ -6,25 +6,21 @@ import {
 import { InvalidCredentialsError } from "@/errors/service-error";
 
 export interface Disable2FAServiceParams {
-    id: string;
+    userID: string;
     token: string;
-}
-
-export interface Disable2FAServiceResponse {
-    disabled: boolean;
 }
 
 export class Disable2FAService {
 
-    constructor(private repo: AuthRepo) { }
+    constructor(private repo: AuthRepo) {}
 
     public async execute({
-        id,
+        userID,
         token,
-    }: Disable2FAServiceParams): Promise<Disable2FAServiceResponse> {
+    }: Disable2FAServiceParams): Promise<{success: boolean}> {
 
         const user =
-            await this.repo.getUserWithid(id);
+            await this.repo.getUserWithUserID(userID);
 
         if (!user) throw new NotFoundError("User not found");
 
@@ -41,10 +37,10 @@ export class Disable2FAService {
         if (!isValid)
             throw new InvalidCredentialsError();
 
-        await this.repo.disableTwoFactor(id);
+        await this.repo.disableTwoFactor(userID);
 
         return {
-            disabled: true,
+            success: true,
         };
     }
 }

@@ -1,9 +1,6 @@
 import z from "zod";
 import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameOrEmailSchema, UsernameSchema, VerificationCodeSchema } from "./fields";
 
-export const SignupInitRequestSchema = z.object({
-    usernameOrEmail: UsernameOrEmailSchema
-});
 
 /**
  * Used for continueWithUsername service for username validation at second step after get started step.
@@ -25,12 +22,6 @@ export const ContinueWithEmailRequestSchema = z.object({
 export const VerifyUserEmailRequestSchema = z.object({
     verificationCode: VerificationCodeSchema,
 });
-
-export const PersonalInfoValidationRequestSchema = z.object({
-    firstName: FirstNameSchema,
-    lastName: LastNameSchema,
-    dateOfBirth: DateOfBirthSchema
-})
 
 /**
  * Object validation schema

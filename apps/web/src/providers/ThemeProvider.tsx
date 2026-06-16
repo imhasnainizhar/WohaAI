@@ -10,12 +10,15 @@ function ThemeProvider({
   children,
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
+  const scriptProps = typeof window === "undefined" ? undefined : ({ type: "application/json" } as const);
+
   return (
     <NextThemesProvider
       attribute="class"
       defaultTheme="dark"
       disableTransitionOnChange
       {...props}
+      scriptProps={scriptProps}
     >
       <ThemeHotkey />
       {children}

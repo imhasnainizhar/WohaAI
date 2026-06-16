@@ -1,12 +1,12 @@
-import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
+import { AuthSessionPayload, verifyJwtToken } from "@packages/security/jwt";
 import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
 import { buildCookie, Cookie, sendResponse } from "@packages/http";
-import { env } from "@/config/env";
+import { env } from "@packages/env-ts";
 import authService from "@/services/auth-service";
 import { SessionExpiredError, ValidationError } from "@packages/errors";
-import { ClientData, SignupCompleteRequest, SignupCompleteRequestSchema } from "@packages/contracts/auth";
-import { exp } from "@/config/exp";
+import { ClientData } from "@packages/contracts/auth";
+import exp from "../../../../../packages/config/exp.json";
 import { getClientData } from "@/ua/client-data";
 
 /**
@@ -32,6 +32,7 @@ export const completeSignupHandler = asyncHandler(
       SignupCompleteRequestSchema.safeParse(body)
 
     if (!parsed.success) throw new ValidationError("Invalid remember me option", parsed.error)
+    const { rememberMe } = parsed.data
 
     const signupSessionID = payload.signupSessionID;
 
@@ -40,6 +41,7 @@ export const completeSignupHandler = asyncHandler(
 
     const result = await authService.completeSignup({
       signupSessionID,
+      rememberMe,
       clientData
     });
 
@@ -52,7 +54,7 @@ export const completeSignupHandler = asyncHandler(
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: exp.REFRESH_TOKEN_COOKIE
+        maxAge: parsed.data.rememberMe ? exp.REFRESH_TOKEN_COOKIE : undefined
       }
     });
 
@@ -64,7 +66,7 @@ export const completeSignupHandler = asyncHandler(
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: exp.ACCESS_TOKEN_COOKIE
+        maxAge: parsed.data.rememberMe ? exp.ACCESS_TOKEN_COOKIE : undefined
       }
     });
 

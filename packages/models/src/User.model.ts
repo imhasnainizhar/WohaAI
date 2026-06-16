@@ -1,11 +1,10 @@
-import mongoose, { Schema, model, Types } from "mongoose";
+import mongoose, { Schema, model, Types, models } from "mongoose";
 
 const UserSchema = new Schema(
   {
     profilePicURI: { type: String },
 
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    fullName: { type: String, required: true },
 
     email: { type: String, required: true, unique: true, index: true },
     username: { type: String, required: true, unique: true, index: true },
@@ -22,10 +21,11 @@ const UserSchema = new Schema(
     backupCodes: [{ type: Types.ObjectId, ref: "TwoFactorBackupCode" }],
     userSessions: [{ type: Types.ObjectId, ref: "UserSession" }],
     cards: [{ type: Types.ObjectId, ref: "Card" }],
+    settings: [{ type: Types.ObjectId, ref: "Settings" }],
   },
   {
     timestamps: true, // replaces createdAt + updatedAt
   }
 );
 
-export const User = model("User", UserSchema);
+export const User = models.User ?? model("User", UserSchema);

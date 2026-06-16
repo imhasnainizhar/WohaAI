@@ -2,34 +2,30 @@ import { authLogger } from "@packages/observability";
 import {
   getSignupSession,
   deleteSignupSession,
-
-  getConfirmedEmailCache,
-  deleteConfirmedEmailCache,
-
   deleteVerificationCodeCache,
 } from "@/redis/redis";
 import { UserProvisioningClient } from "@/clients/user-provision";
 import { MaliciousActivityError, SessionExpiredError } from "@packages/errors";
 import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
 import { randomUUID } from "crypto";
-import { env } from "@/config/env";
-import { exp } from "@/config/exp";
+import { env } from "@packages/env-ts";
+import exp from "../../../../../packages/config/exp.json";
 import { SignOptions } from "jsonwebtoken";
 import { ClientData, DateOfBirth } from "@packages/contracts/auth";
-
 
 import { AuthRepo } from "@/repo/auth-repo";
 import { EmailVerificationRequiredError } from "@/errors/service-error";
 
 export interface SignupCompleteServiceParams {
   signupSessionID: string;
+  rememberMe: boolean;
   clientData: ClientData
 }
 
 export interface SignupCompleteServiceResponse {
   username: string;
   email: string;
-  id: string;
+  userID: string;
   profilePicURI?: string;
   firstName: string;
   lastName: string;
@@ -50,6 +46,7 @@ export class SignupCompleteService {
    */
   async execute({
     signupSessionID,
+    rememberMe,
     clientData
   }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
 
@@ -109,11 +106,11 @@ export class SignupCompleteService {
       payload: {
         jti: randomUUID(),
         sid: userSessionID,
-        sub: createdUser.id
+        sub: createdUser.userID
       },
-      secret: env.JWT_REFRESH_SECRET_KEY,
+      secret: env.JWT_AUTH_SECRET_KEY,
       options: {
-        expiresIn: exp.JWT_REFRESH_TOKEN
+        expiresIn: rememberMe ? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
       } as SignOptions
     })
 
@@ -121,22 +118,25 @@ export class SignupCompleteService {
       payload: {
         jti: randomUUID(),
         sid: userSessionID,
-        sub: createdUser.id,
+        sub: createdUser.userID,
         role: "user"
       },
-      secret: env.JWT_ACCESS_SECRET_KEY,
+      secret: env.JWT_AUTH_SECRET_KEY,
       options: {
         expiresIn: exp.JWT_ACCESS_TOKEN
       } as SignOptions
     })
 
+    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
+
     /**
      * Persist session
      */
     await this.authRepo.createUserSession({
-      id: createdUser.id,
+      userID: createdUser.userID,
       clientData,
       refreshToken,
+      sessionDuration,
       userSessionID,
     });
 
@@ -159,8 +159,8 @@ export class SignupCompleteService {
       message:
         "Signup completed successfully",
 
-      id:
-        createdUser.id,
+      userID:
+        createdUser.userID,
 
       username:
         createdUser.username,

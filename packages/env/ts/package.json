@@ -1,0 +1,46 @@
+{
+  "name": "@packages/env-ts",
+  "version": "1.0.0",
+  "description": "Environment variables configuration using t3-oss/env-nextjs and zod",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "typescript",
+    "openai",
+    "models"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "WohaAI"
+  },
+  "license": "MIT",
+  "author": "Hasnain Izhar",
+  "scripts": {
+    "package:dev": "tsc -b -w",
+    "package:build": "tsc -b"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@packages/errors": "workspace:*",
+    "@packages/observability": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.13.11",
+    "node": "^26.3.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
+  }
+}

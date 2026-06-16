@@ -32,8 +32,8 @@ describe('SignoutService', () => {
   });
 
   it('revokes an active session', async () => {
-    const result = await service.execute({ id: 'user-1', userSessionID: 'sess-123' });
-    expect(repo.findActiveSession).toHaveBeenCalledWith({ id: 'user-1', userSessionID: 'sess-123' });
+    const result = await service.execute({ userID: 'user-1', userSessionID: 'sess-123' });
+    expect(repo.findActiveSession).toHaveBeenCalledWith({ userID: 'user-1', userSessionID: 'sess-123' });
     expect(repo.revokeSession).toHaveBeenCalledWith('sess-123');
     expect(result).toEqual({ signedOut: true });
   });
@@ -45,7 +45,7 @@ describe('RefreshSessionService', () => {
 
   beforeEach(() => {
     repo = new AuthRepo(null as any);
-    (repo.findActiveSession as any) = vi.fn().mockResolvedValue({ ...mockSession, id: 'user-1' });
+    (repo.findActiveSession as any) = vi.fn().mockResolvedValue({ ...mockSession, userID: 'user-1' });
     (repo.revokeSession as any) = vi.fn().mockResolvedValue(undefined);
     (repo.createSession as any) = vi.fn().mockResolvedValue({ accessToken: 'newAccess', refreshToken: 'newRefresh' });
     (createJwtToken as any) = vi.fn().mockImplementation(() => 'jwt');

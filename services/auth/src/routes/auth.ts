@@ -1,6 +1,6 @@
 import { requestEmailChangeHandler } from "@/handlers/change-email/request";
 import { verifyEmailChangeHandler } from "@/handlers/change-email/verify";
-import { changeForgottenPasswordHandler, forgotPasswordInitHandler, verifyForgotPasswordSessionHandler } from "@/handlers/forgot-password";
+import { changeForgottenPasswordHandler, forgotPasswordInitHandler, verifyForgotPasswordSessionHandler } from "@/handlers/change-password/index";
 import { refreshSessionHandler } from "@/handlers/refresh-session";
 import { signinHandler } from "@/handlers/signin";
 import { signoutHandler } from "@/handlers/signout";

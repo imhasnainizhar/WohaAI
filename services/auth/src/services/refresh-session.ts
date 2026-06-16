@@ -9,12 +9,11 @@ import {
   AccessTokenPayload,
   createJwtToken,
   RefreshTokenPayload,
-} from "@packages/jwt";
+} from "@packages/security/jwt";
 import { AuthRepo } from "@/repo/auth-repo";
 import { randomUUID } from "node:crypto";
-import { exp } from "@/config/exp";
-import { env } from "@/config/env";
-
+import exp from "../../../../packages/config/exp.json";
+import { env } from "@packages/env-ts";
 
 export interface RefreshSessionServiceParams {
   refreshToken: string;
@@ -38,13 +37,12 @@ export class RefreshSessionService {
     userIPAddress,
   }: RefreshSessionServiceParams): Promise<RefreshSessionServiceResponse> {
     const {
-      JWT_REFRESH_SECRET_KEY,
-      JWT_ACCESS_SECRET_KEY,
+      JWT_AUTH_SECRET_KEY,
     } = env;
 
     const payload = this.verifyToken(
       refreshToken,
-      JWT_REFRESH_SECRET_KEY
+      JWT_AUTH_SECRET_KEY!
     );
 
     const session =
@@ -63,14 +61,14 @@ export class RefreshSessionService {
     }
 
     const refreshTokenPayload: RefreshTokenPayload = {
-      sub: user.id,
+      sub: user.userID,
       jti: tokenJti.refreshTokenJti,
       sid: session.userSessionID
     };
 
     const newRefreshToken = createJwtToken<RefreshTokenPayload>({
       payload: refreshTokenPayload,
-      secret: JWT_REFRESH_SECRET_KEY,
+      secret: JWT_AUTH_SECRET_KEY!,
       options: {
         expiresIn:
           exp.JWT_REFRESH_TOKEN,
@@ -78,7 +76,7 @@ export class RefreshSessionService {
     });
 
     const accessPayload: AccessTokenPayload = {
-      sub: user.id,
+      sub: user.userID,
       jti: tokenJti.accessTokenJti,
       sid: session.userSessionID,
       role: "user",
@@ -86,7 +84,7 @@ export class RefreshSessionService {
 
     const newAccessToken = createJwtToken<AccessTokenPayload>({
       payload: accessPayload,
-      secret: JWT_ACCESS_SECRET_KEY,
+      secret: JWT_AUTH_SECRET_KEY!,
       options: {
         expiresIn:
           exp.JWT_ACCESS_TOKEN,
@@ -100,7 +98,7 @@ export class RefreshSessionService {
     );
 
     authLogger.debug(
-      `Tokens rotated successfully for id: ${user.id}`
+      `Tokens rotated successfully for userID: ${user.userID}`
     );
 
     return {
@@ -140,7 +138,7 @@ export class RefreshSessionService {
     try {
       const session =
         await this.authRepo.findActiveSession({
-          id: payload.sub,
+          userID: payload.sub,
           userSessionID: payload.userSessionID
         });
 

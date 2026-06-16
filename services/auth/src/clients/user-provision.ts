@@ -16,7 +16,7 @@ export interface CreateUserParams {
 }
 
 export interface CreatedUserResponse {
-    id: string;
+    userID: string;
     username: string;
     email: string;
     profilePicURI?: string;

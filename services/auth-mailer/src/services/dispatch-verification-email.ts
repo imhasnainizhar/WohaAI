@@ -1,4 +1,4 @@
-import { env } from "@/config/env";
+import { env } from "@packages/env-ts";
 import { mailerTransport } from "@/mailer";
 
 import { authMailerLogger } from "@packages/observability";

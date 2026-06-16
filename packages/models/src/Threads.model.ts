@@ -1,4 +1,4 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, model, Types, models } from "mongoose";
 
 const ThreadSchema = new Schema(
   {
@@ -24,4 +24,4 @@ const ThreadSchema = new Schema(
   }
 );
 
-export const Thread = model("Thread", ThreadSchema);
+export const Thread = models.Thread ?? model("Thread", ThreadSchema);

@@ -1,14 +1,6 @@
-"use client";
-
-import Image from "next/image";
-import Link from "next/link";
-import { useThemeUtils } from '@/providers/ThemeProvider';
-import SigninForm from "@/components/signin-form";
-import { WohaLogo } from "@/components/ui/WohaLogo";
+import SigninFlow from "@/components/signin/flow";
 
 export default function SignIn() {
-
-  const { isDarkTheme } = useThemeUtils()
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2 font-reading">
@@ -27,7 +19,7 @@ export default function SignIn() {
           </div>
           <div className={`w-full flex items-center justify-center`}>
             <div className="w-full max-w-90">
-              <SigninForm />
+              <SigninFlow />
             </div>
           </div>
         </div>

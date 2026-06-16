@@ -14,10 +14,11 @@
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@lexical/react": "^0.45.0",
-    "@packages/config": "workspace:*",
     "@packages/contracts": "workspace:*",
+    "@packages/db": "workspace:*",
     "@packages/errors": "workspace:*",
     "@packages/http": "workspace:*",
+    "@packages/models": "workspace:*",
     "@packages/observability": "workspace:*",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-popover": "^1.1.15",
@@ -49,7 +50,8 @@
     "redis": "^5.12.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.0",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

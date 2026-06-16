@@ -2,12 +2,11 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@packages/http";
 import authService from "@/services/auth-service";
-import { RefreshTokenPayload, verifyJwtToken } from "@packages/jwt";
-import { env } from "@/config/env";
-import jwt from "jsonwebtoken";
+import { RefreshTokenPayload, verifyJwtToken } from "@packages/security/jwt";
+import { env } from "@packages/env-ts";
 import { authLogger } from "@packages/observability";
 import { SessionExpiredError } from "@packages/errors";
-import { SignoutResponse } from '@packages/contracts/auth';
+import JwtTokenNames from "../../../../packages/config/token-names.json";
 
 /**
  * Handler for user sign-out.
@@ -17,49 +16,46 @@ export const signoutHandler = asyncHandler(
     async (req: Request, res: Response) => {
         authLogger.debug("Logging out user")
         // Verify user session token
-        const userSessionToken = req.cookies[env.REFRESH_TOKEN_NAME];
+        const refreshToken = req.cookies[JwtTokenNames.REFRESH_TOKEN];
         const payload = verifyJwtToken({
-            token: userSessionToken,
-            secret: env.JWT_REFRESH_SECRET_KEY
+            token: refreshToken,
+            secret: env.JWT_AUTH_SECRET_KEY
         }) as RefreshTokenPayload;
 
         // If payload is not valid, throw session expired error
         if (!payload) throw new SessionExpiredError();
 
-        // Getting id & userSessionID from payload
-        const id = payload.sub;    // Same as id
+        // Getting userID & userSessionID from payload
+        const userID = payload.sub;    // Same as userID
         const userSessionID = payload.userSessionID;
 
         authLogger.debug(
-            `Attempting signout for id: ${id}, sessionID: ${userSessionID}`
+            `Attempting signout for userID: ${userID}, sessionID: ${userSessionID}`
         );
 
         // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await authService.signout({ id, userSessionID });
+        const result = await authService.signout({ userID, userSessionID });
 
-        res.clearCookie(env.ACCESS_TOKEN_NAME, {
+        res.clearCookie(JwtTokenNames.ACCESS_TOKEN, {
             path: "/",
             httpOnly: true,
-            secure: env.SECURE_COOKIE_OPTION,
-            sameSite: env.SAME_SITE_COOKIE_OPTION,
+            secure: env.NODE_ENV === "production",
+            sameSite: "lax",
         });
 
-        res.clearCookie(env.REFRESH_TOKEN_NAME, {
+        res.clearCookie(JwtTokenNames.REFRESH_TOKEN, {
             path: "/",
             httpOnly: true,
-            secure: env.SECURE_COOKIE_OPTION,
-            sameSite: env.SAME_SITE_COOKIE_OPTION,
+            secure: env.NODE_ENV === "production",
+            sameSite: "lax",
         });
 
         // Handler only returns response
-        return sendResponse<SignoutResponse>({
+        return sendResponse({
             res,
             success: true,
             statusCode: 200,
             message: "user signed out",
-            data: {
-                signedOut: result.signedOut
-            },
             path: req.originalUrl,
         });
     }

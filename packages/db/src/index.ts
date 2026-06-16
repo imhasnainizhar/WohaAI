@@ -1,3 +1,2 @@
-
-export * from "./threads.db"
-export * from "./users.db"
+export * from "./threads";
+export * from "./users";

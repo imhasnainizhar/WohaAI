@@ -1,9 +1,8 @@
 import { ClientData, Password, UserSession } from "@packages/contracts/auth";
-import { InternalServerError, NormalizedError, MongooseError } from "@packages/errors";
+import { InternalServerError, MongooseError, NormalizedError } from "@packages/errors";
 import { authLogger } from "@packages/observability";
 import { User, UserSession as Session } from "@packages/models"
 import argon2 from "argon2";
-
 
 export class AuthRepo {
     constructor(
@@ -21,27 +20,27 @@ export class AuthRepo {
             email
         })
     }
-    async getUserWithid(id: string) {
-        return await this.user.findById(id)
+    async getUserWithUserID(userID: string) {
+        return await this.user.findById(userID)
     }
 
     async changeUserPassword({
-        id,
+        userID,
         hashedPassword
     }: {
-        id: string;
+        userID: string;
         hashedPassword: string;
     }) {
         try {
             const updatedUser = await this.user.findOneAndUpdate(
-                { id },
+                { userID },
                 {
                     hashedPassword,
                 },
                 {
                     new: true,
                     projection: {
-                        id: 1,
+                        userID: 1,
                         username: 1,
                     }
                 }
@@ -67,7 +66,7 @@ export class AuthRepo {
                     ],
                 },
                 {
-                    id: 1,
+                    userID: 1,
                     profilePicURI: 1,
                     firstName: 1,
                     lastName: 1,
@@ -85,7 +84,7 @@ export class AuthRepo {
     async findUserWithEmail(email: string): Promise<boolean> {
         const user = await this.user.findOne(
             { email },
-            { id: 1 }
+            { userID: 1 }
         );
 
         return !!user;
@@ -94,7 +93,7 @@ export class AuthRepo {
     async findUserWithUsername(username: string): Promise<boolean> {
         const user = await this.user.findOne(
             { username },
-            { id: 1 }
+            { userID: 1 }
         );
 
         return !!user;
@@ -113,22 +112,22 @@ export class AuthRepo {
                     { email: usernameOrEmail.value },
                 ],
             },
-            { id: 1 }
+            { userID: 1 }
         );
 
         return !!user;
     }
 
     async changeEmail({
-        id,
+        userID,
         newEmail
     }: {
-        id: string;
+        userID: string;
         newEmail: string;
     }) {
         try {
             const changed = await this.user.findOneAndUpdate(
-                { id },
+                { userID },
                 {
                     email: newEmail
                 },
@@ -147,12 +146,12 @@ export class AuthRepo {
     * Create user session
     */
     async createUserSession({
-        id,
+        userID,
         clientData,
         refreshToken,
         userSessionID,
     }: {
-        id: string;
+        userID: string;
         clientData: ClientData;
         refreshToken: string;
         userSessionID?: string;
@@ -171,7 +170,7 @@ export class AuthRepo {
                 await this.userSession.create({
                     userSessionID: userSessionID ?? "Unknown",
                     refreshTokenHash,
-                    id,
+                    userID,
                     revoked: false,
                     userIPAddress: clientData.userIPAddress ?? "Unknown",
                     userDeviceName: clientData.userDeviceName ?? "Unknown Device",
@@ -221,14 +220,14 @@ export class AuthRepo {
     * Find active user session
     */
     async findActiveSession({
-        id,
+        userID,
         userSessionID
     }: {
-        id: string,
+        userID: string,
         userSessionID: string
     }) {
         return await this.userSession.findOne({
-            id,
+            userID,
             userSessionID,
             revoked: false,
         }).populate("user");
@@ -262,16 +261,16 @@ export class AuthRepo {
 
     // Two FA
     async saveTwoFactorSecret({
-        id,
+        userID,
         secret
     }: {
-        id: string;
+        userID: string;
         secret: string;
     }) {
         try {
             const user =
                 await this.user.findOneAndUpdate(
-                    { id },
+                    { userID },
                     {
                         twoFactorSecret: secret
                     },
@@ -290,14 +289,14 @@ export class AuthRepo {
     }
 
     async getUserTwoFactorSettings(
-        id: string
+        userID: string
     ) {
         try {
             const user =
                 await this.user.findOne(
-                    { id },
+                    { userID },
                     {
-                        id: 1,
+                        userID: 1,
                         email: 1,
                         twoFactorEnabled: 1,
                         twoFactorSecret: 1,
@@ -317,16 +316,16 @@ export class AuthRepo {
     }
 
     async enableTwoFactor({
-        id,
+        userID,
         secret
     }: {
-        id: string;
+        userID: string;
         secret: string;
     }) {
         try {
             const user =
                 await this.user.findOneAndUpdate(
-                    { id },
+                    { userID },
                     {
                         twoFactorEnabled: true,
                         twoFactorSecret: secret,
@@ -335,7 +334,7 @@ export class AuthRepo {
                     {
                         new: true,
                         projection: {
-                            id: 1,
+                            userID: 1,
                             email: 1,
                             twoFactorEnabled: 1,
                         }
@@ -354,12 +353,12 @@ export class AuthRepo {
     }
 
     async disableTwoFactor(
-        id: string
+        userID: string
     ) {
         try {
             const user =
                 await this.user.findOneAndUpdate(
-                    { id },
+                    { userID },
                     {
                         twoFactorEnabled: false,
                         twoFactorSecret: null,
@@ -368,7 +367,7 @@ export class AuthRepo {
                     {
                         new: true,
                         projection: {
-                            id: 1,
+                            userID: 1,
                             email: 1,
                             twoFactorEnabled: 1,
                         }
@@ -387,16 +386,16 @@ export class AuthRepo {
     }
 
     async createBackupCodes({
-        id,
+        userID,
         codeHashes
     }: {
-        id: string;
+        userID: string;
         codeHashes: string[]
     }) {
         try {
             await this.userSession.insertMany(
                 codeHashes.map((codeHash) => ({
-                    id,
+                    userID,
                     codeHash,
                 }))
             );

@@ -1,9 +1,10 @@
 import express, { Express } from "express";
 import authRoutes from "@/routes/auth.js";
+import { authLogger } from "@packages/observability";
 import { errorHandler } from "@/middlewares/error-handler";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { envConfigs } from "@packages/config";
+import { env } from "@packages/env-ts";
 
 const app: Express = express();
 
@@ -20,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(errorHandler);
 
 const corsOptions = {
-  origin: envConfigs.CLIENT_ORIGIN, // frontend origin
+  origin: env.CLIENT_ORIGIN || "http://localhost:3000", // frontend origin
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // if using cookies or auth headers
@@ -29,7 +30,7 @@ const corsOptions = {
 // Mount auth-related routes
 app.use("/", cors(corsOptions), authRoutes);
 app.use("/hi", cors(corsOptions), (req, res) => {
-  res.json({status: 200, text: "hello"})
+  res.json({ status: 200, text: "hello" })
 })
 
 export default app;

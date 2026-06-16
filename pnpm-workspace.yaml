@@ -6,4 +6,5 @@ packages:
   - "./services/*"
   - "./tooling/*"
   - "./packages/*"
+  - "./packages/**/*"
   - "./infra/*"

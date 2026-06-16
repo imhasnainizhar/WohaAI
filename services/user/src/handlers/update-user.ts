@@ -2,17 +2,18 @@ import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
 import { userService } from "@/services/user-service";
 import { userLogger as logger } from "@packages/observability";
-import { env } from "@/config/env";
-import { AccessTokenPayload, verifyJwtToken } from "@packages/jwt";
+import { env } from "@packages/env-ts";
+import { AccessTokenPayload, verifyJwtToken } from "@packages/security/jwt";
 import { AccessSessionExpiredError, ValidationError } from "@packages/errors";
 import { CreateUserSchema, UpdateUserSchema } from '@packages/contracts/user';
 import { asyncHandler } from '../middlewares/async-handler';
+import tokenNames from "../../../../packages/config/token-names.json"
 
 export const updateUserHandler = asyncHandler(async (req: Request, res: Response) => {
-  const accessToken = req.cookies?.[env.ACCESS_TOKEN_NAME];
+  const accessToken = req.cookies?.[tokenNames.ACCESS_TOKEN];
   const payload = verifyJwtToken({
     token: accessToken,
-    secret: env.ACCESS_TOKEN_NAME
+    secret: env.JWT_AUTH_SECRET_KEY
   }) as AccessTokenPayload;
 
   // sub is user id, as per standards
@@ -32,7 +33,7 @@ export const updateUserHandler = asyncHandler(async (req: Request, res: Response
     username,
     firstName,
     lastName,
-    dateOfBirth
+    dateOfBirth: dateOfBirth || undefined
   });
 
   // Send response

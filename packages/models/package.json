@@ -30,10 +30,14 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client.js",
+      "require": "./dist/client.js",
+      "types": "./dist/client.d.ts"
     }
   },
   "dependencies": {
-    "@packages/config": "workspace:*",
     "@packages/observability": "workspace:*",
     "mongoose": "^9.6.3"
   },

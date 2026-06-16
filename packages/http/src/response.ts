@@ -3,13 +3,23 @@ import { Cookie } from "./cookie";
 
 export interface ApiResponseOptions<T = unknown> {
   res: Response;
-  success: boolean; // defaults handled inside sendResponse
   statusCode: number;
+  success: boolean; // defaults handled inside sendResponse
   message: string;
   data?: T;
   cookies?: Cookie[];
   errors?: Record<string, string[]>;
   errorType?: string;
+  path?: string;
+}
+
+export interface ApiResponseBody<T = unknown> {
+  success: boolean;
+  message: string;
+  data?: T | null;
+  errors?: Record<string, string[]> | null;
+  errorType?: string;
+  timestamp: string;
   path?: string;
 }
 
@@ -35,9 +45,8 @@ export const sendResponse = <T>({
   }
 
   // Build payload
-  const payload = {
+  const payload: ApiResponseBody = {
     success,
-    statusCode,
     message,
     data: success ? data ?? null : undefined,
     errors: success ? undefined : errors ?? null,

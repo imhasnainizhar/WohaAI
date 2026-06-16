@@ -1,4 +1,4 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, Types, model, models } from "mongoose";
 
 const UserSessionSchema = new Schema(
   {
@@ -31,4 +31,4 @@ const UserSessionSchema = new Schema(
   }
 );
 
-export const UserSession = model("UserSession", UserSessionSchema);
+export const UserSession = models.UserSession ?? model("UserSession", UserSessionSchema);

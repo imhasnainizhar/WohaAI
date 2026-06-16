@@ -1,15 +1,14 @@
-import { ClientData, RefreshSessionResponse } from '@packages/contracts/auth';
+import { ClientData } from '@packages/contracts/auth';
 import { asyncHandler } from "@/middlewares/async-handler";
 import { getClientData } from "@/ua/client-data";
 import { buildCookie, sendResponse } from "@packages/http";
 import { Request, Response } from "express";
-import { env } from '@/config/env';
-import { exp } from '@/config/exp';
-import jwt from 'jsonwebtoken';
-import { RefreshTokenPayload, verifyJwtToken } from '@packages/jwt';
+import { env } from "@packages/env-ts";
+import exp from '../../../../packages/config/exp.json';
+import { RefreshTokenPayload, verifyJwtToken } from '@packages/security/jwt';
 import { ValidationError } from '@packages/errors';
 import authService from '@/services/auth-service';
-import { NormalizedError } from '@packages/errors';
+import JwtTokenNames from '../../../../packages/config//token-names.json';
 
 
 /**
@@ -19,11 +18,11 @@ import { NormalizedError } from '@packages/errors';
  */
 export const refreshSessionHandler = asyncHandler(
     async (req: Request, res: Response) => {
-        const refreshToken = req.cookies[env.REFRESH_TOKEN_NAME];
+        const refreshToken = req.cookies[JwtTokenNames.REFRESH_TOKEN];
 
         const _ = verifyJwtToken({
-            token: refreshToken, 
-            secret: env.JWT_REFRESH_SECRET_KEY
+            token: refreshToken,
+            secret: env.JWT_AUTH_SECRET_KEY
         }) as RefreshTokenPayload;
 
         // Getting client data
@@ -45,7 +44,7 @@ export const refreshSessionHandler = asyncHandler(
         });
 
         const refreshTokenCookie = buildCookie({
-            name: env.REFRESH_TOKEN_NAME,
+            name: JwtTokenNames.REFRESH_TOKEN,
             value: newRefreshToken,
             options: {
                 httpOnly: true,
@@ -53,11 +52,11 @@ export const refreshSessionHandler = asyncHandler(
                 sameSite: "lax",
                 path: "/",
                 maxAge: exp.REFRESH_TOKEN_COOKIE
-            }        
+            }
         })
 
         const accessTokenCookie = buildCookie({
-            name: env.ACCESS_TOKEN_NAME,
+            name: JwtTokenNames.ACCESS_TOKEN,
             value: newAccessToken,
             options: {
                 httpOnly: true,
@@ -65,18 +64,15 @@ export const refreshSessionHandler = asyncHandler(
                 sameSite: "lax",
                 path: "/",
                 maxAge: exp.ACCESS_TOKEN_COOKIE
-            }        
+            }
         })
 
         // Handler only returns response
         // Cookies are under the hood set as Express Cookies with name having token as value in this refresh token context. Cookie options are used to configure security and exp options.
-        return sendResponse<RefreshSessionResponse>({
+        return sendResponse({
             res,
             success: true,
             statusCode: 200,
-            data: {
-                sessionRefreshed: true
-            },
             message: "user session refreshed",
             path: req.originalUrl,
             cookies: [refreshTokenCookie, accessTokenCookie]

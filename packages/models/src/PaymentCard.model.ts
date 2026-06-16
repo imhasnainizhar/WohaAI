@@ -1,17 +1,10 @@
-import { Schema, model, Types } from "mongoose";
-
-export enum CardBrand {
-  visa = "visa",
-  mastercard = "mastercard",
-  amex = "amex",
-  discover = "discover",
-  other = "other",
-}
+import { Schema, model, Types, models } from "mongoose";
+import { CardBrand } from "./payment-card.types";
 
 const PaymentCardSchema = new Schema(
   {
     id: {
-      type: Types.ObjectId,
+      type: Types.ObjectId, 
       ref: "User",
       required: true,
       index: true,
@@ -90,4 +83,4 @@ const PaymentCardSchema = new Schema(
 // ⚡ prevent duplicate token per user
 PaymentCardSchema.index({ id: 1, paymentMethodToken: 1 }, { unique: true });
 
-export const PaymentCard = model("PaymentCard", PaymentCardSchema);
+export const PaymentCard = models.PaymentCard ?? model("PaymentCard", PaymentCardSchema);

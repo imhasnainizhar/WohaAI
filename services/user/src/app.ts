@@ -2,9 +2,16 @@ import { Express } from "express";
 import express from "express";
 import cors from "cors";
 import userRoutes from "@/routes/user";
-import { env } from "@/config/env";
+import { env } from "@packages/env-ts";
+import { connectUsersDB } from "@packages/db";
+import { userLogger as logger } from "@packages/observability";
 
 const app: Express = express();
+
+(async () => {
+    await connectUsersDB(env.USERS_MONGO_URI);
+    logger.info("✅ User Service connected to MongoDB" + env.USERS_MONGO_URI);
+})();
 
 // Middleware
 app.use(

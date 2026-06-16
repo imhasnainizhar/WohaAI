@@ -1,4 +1,4 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, Types, model, models } from "mongoose";
 
 const TwoFactorBackupCodeSchema = new Schema(
   {
@@ -17,7 +17,7 @@ const TwoFactorBackupCodeSchema = new Schema(
   }
 );
 
-export const TwoFactorBackupCode = model(
+export const TwoFactorBackupCode = models.TwoFactorBackupCode ?? model(
   "TwoFactorBackupCode",
   TwoFactorBackupCodeSchema
 );

@@ -1,7 +1,8 @@
-import { env } from "@/config/env";
+import { env } from "@packages/env-ts";
 import { getConsumer } from "@packages/kafka";
 import { authMailerLogger } from "@packages/observability";
 import { dispatchVerificationEmailService } from "@/services/dispatch-verification-email";
+import kafka from "../../../../packages/config/kafka.json"
 
 // TYPES
 interface VerificationEmailMessage {
@@ -12,17 +13,16 @@ interface VerificationEmailMessage {
 // CONSUMER
 const consumer = getConsumer({
   kafkaClientID: "auth-mailer-service",
-  brokers: env.AUTH_KAFKA_BROKERS,
+  brokers: [env.AUTH_KAFKA_BROKER],
   consumerGroupID:
-    env.AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_CONSUMER_GROUP_ID,
+    kafka.consumerGroups.emailVerification
 });
 
 export async function consumeVerificationEmail() {
   await consumer.connect();
 
   await consumer.subscribe({
-    topic:
-      env.AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC,
+    topic: kafka.topics.emailVerification,
     fromBeginning: false,
   });
 

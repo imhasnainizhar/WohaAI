@@ -2,24 +2,25 @@ import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
 import { userService } from "@/services/user-service";
 import { userLogger as logger } from "@packages/observability";
-import { env } from "@/config/env";
-import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
+import { env } from "@packages/env-ts";
+import { AuthSessionPayload, verifyJwtToken } from "@packages/security/jwt";
 import { AccessSessionExpiredError, SessionExpiredError, ValidationError } from "@packages/errors";
 import { CreateUserSchema } from '@packages/contracts/user';
 import { asyncHandler } from '../middlewares/async-handler';
+import tokenNames from "../../../../packages/config/token-names.json"
 
 export const createUserHandler = asyncHandler(async (req: Request, res: Response) => {
     // We are using signupToken cuz User Provision is done by auth service request through User Provision Client under Signup session. User do not request directly for provisioning.
-    const signupSessionToken = req.cookies?.[env.SIGNUP_SESSION_TOKEN_NAME];
+    const signupSessionToken = req.cookies?.[tokenNames.AUTH_SESSION_TOKEN];
     const payload = verifyJwtToken({
         token: signupSessionToken,
-        secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
-    }) as SignupSessionPayload;
+        secret: env.JWT_AUTH_SECRET_KEY
+    }) as AuthSessionPayload;
 
     // Validate input
     const parsed = CreateUserSchema.safeParse(req.body);
     if (!parsed.success) {
-        
+
         logger.warn("Data integrity danger, auth servicce sent wrong invalid User Provision Request")
         throw new ValidationError("Validation error at User Provision. Check for data integrity.", parsed.error)
     }

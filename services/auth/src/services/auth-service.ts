@@ -1,17 +1,17 @@
 import { AuthRepo } from "@/repo/auth-repo";
 import { UserProvisioningClient } from "@/clients/user-provision";
-import { env } from "@/config/env";
 
 import {
-    SigninServiceParams,
     SigninService,
-    SigninServiceResponse
+    CompleteSigninServiceParams,
+    CompleteSigninServiceResponse,
+    SigninInitServiceParams,
+    SigninInitServiceResponse
 } from "./signin";
 
 import {
     SignoutServiceParams,
     SignoutService,
-    SignoutServiceResponse
 } from "./signout";
 
 import {
@@ -69,31 +69,21 @@ import {
 } from "./signup/verification/verify-user-email";
 
 import {
-    ChangeForgottenPasswordServiceParams,
-    ChangeForgottenPasswordServiceResponse,
-    ForgotPasswordInitServiceParams,
-    ForgotPasswordInitServiceResponse,
-    ForgotPasswordService,
-    VerifyForgotPasswordServiceParams,
-    VerifyForgotPasswordServiceResponse
-} from "./forgot-password";
-
-import {
+    ChangePasswordInitServiceParams,
+    VerifyChangePasswordServiceParams,
+    VerifyChangePasswordServiceResponse,
     ChangePasswordService,
     ChangePasswordServiceParams,
-    ChangePasswordServiceResponse
 } from "./change-password";
 
 import {
     Disable2FAService,
     Disable2FAServiceParams,
-    Disable2FAServiceResponse
 } from "./two-fa/disable";
 
 import {
     Enable2FAService,
     Enable2FAServiceParams,
-    Enable2FAServiceResponse
 } from "./two-fa/enable";
 
 import {
@@ -105,12 +95,11 @@ import {
 import {
     Verify2FAService,
     Verify2FAServiceParams,
-    Verify2FAServiceResponse
 } from "./two-fa/verify";
 
-import { SendVerificationEmailResponse } from "@packages/contracts/auth";
-import { RequestEmailChangeService, RequestEmailChangeServiceParams, RequestEmailChangeServiceResponse } from "./change-email/request";
-import { VerifyEmailChangeService, VerifyEmailChangeServiceParams, VerifyEmailChangeServiceResponse } from "./change-email/verify";
+import { RequestEmailChangeService, RequestEmailChangeServiceParams } from "./change-email/request";
+import { VerifyEmailChangeService, VerifyEmailChangeServiceParams } from "./change-email/verify";
+import { env } from "@packages/env-ts";
 
 export class AuthService {
     private static instance: AuthService;
@@ -132,8 +121,6 @@ export class AuthService {
         private readonly passwordValidationService: PasswordValidationService,
 
         private readonly signupCompleteService: SignupCompleteService,
-
-        private readonly forgotPasswordService: ForgotPasswordService,
 
         private readonly changePasswordService: ChangePasswordService,
 
@@ -172,8 +159,6 @@ export class AuthService {
 
             const signupCompleteService = new SignupCompleteService(authRepo, userProvisioningClient);
 
-            const forgotPasswordService = new ForgotPasswordService(authRepo);
-
             const changePasswordService = new ChangePasswordService(authRepo);
 
             const generate2FASecretService = new Generate2FASecretService(authRepo);
@@ -201,8 +186,6 @@ export class AuthService {
 
                 signupCompleteService,
 
-                forgotPasswordService,
-
                 changePasswordService,
 
                 generate2FASecretService,
@@ -218,23 +201,31 @@ export class AuthService {
         return AuthService.instance;
     }
 
-    public async signin({
+    public async signinInit({
+        usernameOrEmail,
+    }: SigninInitServiceParams): Promise<SigninInitServiceResponse> {
+        return this.signinService.init({
+            usernameOrEmail,
+        });
+    }
+
+    public async signinComplete({
         usernameOrEmail,
         password,
-        clientData,
-    }: SigninServiceParams): Promise<SigninServiceResponse> {
-        return this.signinService.execute({
+        clientData
+    }: CompleteSigninServiceParams): Promise<CompleteSigninServiceResponse> {
+        return this.signinService.complete({
             usernameOrEmail,
             password,
-            clientData,
+            clientData
         });
     }
 
     public async signout({
-        id,
+        userID,
         userSessionID
-    }: SignoutServiceParams): Promise<SignoutServiceResponse> {
-        return this.signoutService.execute({ id, userSessionID })
+    }: SignoutServiceParams) {
+        return this.signoutService.execute({ userID, userSessionID })
     }
 
     public async refreshSession({
@@ -266,7 +257,7 @@ export class AuthService {
 
     public async sendVerificationEmail({
         signupSessionID
-    }: SendVerificationServiceParams): Promise<SendVerificationEmailResponse> {
+    }: SendVerificationServiceParams) {
         return this.sendVerificationEmailService.execute({ signupSessionID })
     }
 
@@ -295,87 +286,80 @@ export class AuthService {
 
     public async completeSignup({
         signupSessionID,
+        rememberMe,
         clientData
     }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
-        return this.signupCompleteService.execute({ signupSessionID, clientData })
+        return this.signupCompleteService.execute({ signupSessionID, rememberMe, clientData })
     }
 
-    public async forgotPasswordInit({
-        parsed
-    }: ForgotPasswordInitServiceParams): Promise<ForgotPasswordInitServiceResponse> {
-        return this.forgotPasswordService.init({ parsed })
+    public async changePasswordInit({
+        usernameOrEmail
+    }: ChangePasswordInitServiceParams) {
+        return this.changePasswordService.init({ usernameOrEmail })
     }
 
-    public async verifyForgetPasswordRequest({
+    public async verifyChangePasswordRequest({
         sessionID
-    }: VerifyForgotPasswordServiceParams): Promise<VerifyForgotPasswordServiceResponse> {
-        return this.forgotPasswordService.verify({ sessionID })
-    }
-
-    public async changeForgottenPassword({
-        sessionID,
-        password
-    }: ChangeForgottenPasswordServiceParams): Promise<ChangeForgottenPasswordServiceResponse> {
-        return this.forgotPasswordService.changePassword({ sessionID, password })
+    }: VerifyChangePasswordServiceParams): Promise<VerifyChangePasswordServiceResponse> {
+        return this.changePasswordService.verify({ sessionID })
     }
 
     public async changePassword({
-        id,
-        oldPassword,
-        newPassword
-    }: ChangePasswordServiceParams): Promise<ChangePasswordServiceResponse> {
-        return this.changePasswordService.execute({ id, oldPassword, newPassword })
+        sessionID,
+        password
+    }: ChangePasswordServiceParams) {
+        return this.changePasswordService.changePassword({ sessionID, password })
     }
 
     public async generate2FASecret({
-        id
+        userID
     }: Generate2FASecretServiceParams): Promise<Generate2FASecretServiceResponse> {
-        return this.generate2FASecretService.execute({ id })
+        return this.generate2FASecretService.execute({ userID })
     }
 
     public async verify2FA({
-        id,
+        userID,
         token
-    }: Verify2FAServiceParams): Promise<Verify2FAServiceResponse> {
+    }: Verify2FAServiceParams): Promise<{ success: boolean }> {
         return this.verify2FAService.execute({
-            id,
+            userID,
             token
         })
     }
 
     public async enable2FA({
-        id,
+        userID,
         token
-    }: Enable2FAServiceParams): Promise<Enable2FAServiceResponse> {
+    }: Enable2FAServiceParams) {
         return this.enable2FAService.execute({
-            id,
+            userID,
             token
         })
     }
 
     public async disable2FA({
-        id,
+        userID,
         token
-    }: Disable2FAServiceParams): Promise<Disable2FAServiceResponse> {
+    }: Disable2FAServiceParams) {
         return this.disable2FAService.execute({
-            id,
+            userID,
             token
         })
     }
 
     public async requestEmailChange({
-        id,
+        userID,
         newEmail
-    }: RequestEmailChangeServiceParams): Promise<RequestEmailChangeServiceResponse> {
+    }: RequestEmailChangeServiceParams) {
         return this.requestEmailChangeService.execute({
-            id,
+            userID,
             newEmail
         })
     }
 
     public async verifyEmailChange({
         sessionID
-    }: VerifyEmailChangeServiceParams): Promise<VerifyEmailChangeServiceResponse> {
+    }: VerifyEmailChangeServiceParams) {
         return this.verifyEmailChangeService.execute({
             sessionID
         })
