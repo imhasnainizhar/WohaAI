@@ -17,15 +17,10 @@ type SigninPasswordOutput = z.output<typeof PasswordValidationRequestSchema>;
 
 interface SigninPasswordProps {
     next: (values: any) => void;
-    data?: {
-        username?: string;
-        email?: string;
-    };
 }
 
 export default function SigninPassword({
-    next,
-    data,
+    next
 }: SigninPasswordProps) {
     const {
         register,
@@ -50,8 +45,6 @@ export default function SigninPassword({
                 },
                 body: JSON.stringify({
                     ...formData,
-                    username: data?.username,
-                    email: data?.email,
                 }),
             });
 

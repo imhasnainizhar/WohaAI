@@ -14,13 +14,13 @@ import { SessionIDSchema } from "@packages/contracts/auth";
 import tokenNames from "../../../../../packages/config/token-names.json"
 import { env } from "@packages/env-ts";
 
-export const verifyChangePasswordSessionHandler = asyncHandler(
+export const verifyChangePasswordHandler = asyncHandler(
   async (req: Request, res: Response) => {
 
     const sessionID = req.query.sessionID as string
 
     const parsed = SessionIDSchema.safeParse(sessionID)
-    if(!parsed.success) throw new ValidationError("Invalid session id")
+    if (!parsed.success) throw new ValidationError("Invalid session id")
 
     const {
       changePasswordSessionToken

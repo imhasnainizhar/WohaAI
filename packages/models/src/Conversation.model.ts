@@ -1,5 +1,7 @@
-import { Schema, model, Types, models } from "mongoose";
+import mongoose, { Schema, model, Types } from "mongoose";
 import { ConversationEventType } from "./conversation.types";
+
+const { models } = mongoose;
 
 const ConversationSchema = new Schema(
   {

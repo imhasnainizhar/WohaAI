@@ -29,7 +29,7 @@ export interface VerifyChangePasswordServiceResponse {
   changePasswordSessionToken: string;
 }
 
-export interface ChangePasswordServiceParams {
+export interface CompleteChangePasswordServiceResponse {
   sessionID: string;
   password: Password;
 }
@@ -111,10 +111,10 @@ export class ChangePasswordService {
 
   // This is our new method of typing things related to user using types of zod schemas from @packages/contracts/auth
   // ChangePasswordSessionToken will be validated at handler after being extracted from session cookie. 
-  public async changePassword({
+  public async complete({
     sessionID,
     password
-  }: ChangePasswordServiceParams): Promise<{ success: boolean }> {
+  }: CompleteChangePasswordServiceResponse): Promise<{ success: boolean }> {
 
     // error handling is already done in redisClient methods.
     const cache =

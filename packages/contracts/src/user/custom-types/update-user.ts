@@ -1,8 +1,12 @@
 import z from "zod";
-import { UpdateUserSchema } from "../schemas/update-user";
+import { 
+    UpdateUsernameRequestSchema, 
+    UpdateFullNameRequestSchema, 
+    UpdateDOBRequestSchema, 
+    UpdateProfilePicRequestSchema 
+} from "../schemas/update-user";
 
-export type UpdateUser = z.infer<typeof UpdateUserSchema>
-
-export interface UpdateUserResponse {
-    userUpdated: boolean;
-}
+export type UpdateUsernameRequest = z.infer<typeof UpdateUsernameRequestSchema>
+export type UpdateFullNameRequest = z.infer<typeof UpdateFullNameRequestSchema>
+export type UpdateDOBRequest = z.infer<typeof UpdateDOBRequestSchema>
+export type UpdateProfilePicRequest = z.infer<typeof UpdateProfilePicRequestSchema>

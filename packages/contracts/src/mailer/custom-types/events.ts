@@ -12,7 +12,7 @@ export interface VerifySignupEmailEvent {
     type: string,
     email: string,
     code: string,
-    signupSessionID: string,
+    authSessionID: string,
     createdAt: Date
 }
 

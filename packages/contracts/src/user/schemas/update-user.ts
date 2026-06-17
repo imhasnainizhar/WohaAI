@@ -1,31 +1,18 @@
+import { DateOfBirthSchema } from "@/auth";
 import { z } from "zod";
 
-export const UpdateUserSchema = z.object({
-    id: z.string().uuid(),
+export const UpdateUsernameRequestSchema = z.object({
+    username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_]+$/)
+})
 
-    firstName: z
-        .string()
-        .min(1)
-        .max(50)
-        .optional(),
+export const UpdateFullNameRequestSchema = z.object({
+    fullName: z.string().min(1).max(30)
+})
 
-    lastName: z
-        .string()
-        .min(1)
-        .max(50)
-        .optional(),
+export const UpdateDOBRequestSchema = z.object({
+    dateOfBirth: DateOfBirthSchema
+})
 
-    username: z
-        .string()
-        .min(3)
-        .max(30)
-        .regex(/^[a-zA-Z0-9_]+$/)
-        .optional(),
-
-    dateOfBirth: z
-        .string()
-        .datetime()
-        .optional()
-        .nullable()
-        .transform((val) => (val ? new Date(val) : null))
-});
+export const UpdateProfilePicRequestSchema = z.object({
+    profilePicURI: z.string().url()
+})

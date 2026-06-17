@@ -4,13 +4,13 @@ import {
   findOrCreateSettings,
   patchSettings,
 } from "../repo/settings";
-
+import { env } from "@packages/env-ts";
 import {
   normalizeUpdates,
 } from "../validators/settings";
 
 export async function getUserSettings(userId: string) {
-  await connectUsersDB(process.env.USERS_MONGO_URI!);
+  await connectUsersDB(env.USERS_MONGO_URI);
 
   const doc = await findOrCreateSettings(userId);
 
@@ -25,8 +25,8 @@ export async function updateUserSettings(
   body: unknown
 ) {
   try {
-    console.log("Mongo URI:", process.env.USERS_MONGO_URI);
-    await connectUsersDB(process.env.USERS_MONGO_URI!);
+    logger.debug("Mongo URI:" + env.USERS_MONGO_URI);
+    await connectUsersDB(env.USERS_MONGO_URI);
 
     const updates = normalizeUpdates(body);
 

@@ -16,7 +16,7 @@ import authService from "@/services/auth-service";
 import { verifyJwtToken } from "@packages/security/jwt";
 import JwtTokenNames from "../../../../../packages/config/token-names.json";
 
-export const changePasswordHandler = asyncHandler(
+export const completeChangePasswordHandler = asyncHandler(
   async (req: Request, res: Response) => {
     const token = req.cookies[JwtTokenNames.CHANGE_PASSWORD_TOKEN]
 
@@ -25,8 +25,6 @@ export const changePasswordHandler = asyncHandler(
       token,
       secret: env.JWT_CHANGE_PASSWORD_SECRET_KEY
     })
-
-    if (!payload) throw new SessionExpiredError()
 
     const body: ChangePasswordRequest = req.body;
 
@@ -40,7 +38,7 @@ export const changePasswordHandler = asyncHandler(
       );
     }
 
-    await authService.changePassword({
+    await authService.completeChangePassword({
       sessionID: payload.sub!,
       password: parsed.data.newConfirmPassword
     });

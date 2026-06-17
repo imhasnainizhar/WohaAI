@@ -1,7 +1,6 @@
-import { env } from "@packages/env-ts";
 import { EmailAlreadyTakenError } from "@/errors/service-error";
 import { getChangeEmailProducer } from "@/producer/change-emai";
-import { setChangeEmailSessionCache, setVerificationCodeCache } from "@/redis/redis";
+import { setChangeEmailSessionCache } from "@/redis/redis";
 import { AuthRepo } from "@/repo/auth-repo";
 import { ChangeEmailEvent } from "@packages/contracts/mailer";
 import kafka from "../../../../../packages/config/kafka.json"
@@ -20,7 +19,7 @@ export class RequestEmailChangeService {
     public async execute({
         userID,
         newEmail
-    }: RequestEmailChangeServiceParams): Promise<{success: boolean}> {
+    }: RequestEmailChangeServiceParams): Promise<{ success: boolean }> {
         const user = await this.repo.findUserWithEmail(newEmail);
 
         if (user) throw new EmailAlreadyTakenError();

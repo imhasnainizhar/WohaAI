@@ -1,5 +1,5 @@
 import { seal, unseal, defaults, Password, algorithms } from 'iron-webcrypto';
-import { envConfigs as env } from '@packages/config';
+import { env } from "@packages/env-ts";
 
 const SECRET = env.ENCRYPTION_SECRET!;
 
@@ -12,7 +12,7 @@ export async function createToken(payload: any) {
 export async function verifyAndReadToken(token: string) {
   try {
     const decrypted = await unseal(token, SECRET, defaults) as any;
-    
+
     // Check if token has expired
     if (Date.now() > decrypted.expiresAt) {
       throw new Error("Flow token expired");

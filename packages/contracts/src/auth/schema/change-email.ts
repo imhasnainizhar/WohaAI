@@ -1,8 +1,8 @@
 import z from "zod";
-import { EmailSchema, VerificationCodeSchema } from "./fields";
+import { EmailSchema, VerificationCodeSchema } from "../../user/schemas/fields";
 
 
-export const EmailChangeRequestSchema = z.object({
+export const ChangeEmailRequestSchema = z.object({
     newEmail: EmailSchema
 })
 

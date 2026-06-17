@@ -1,4 +1,6 @@
-import { Schema, Types, model, models } from "mongoose";
+import mongoose, { Schema, Types, model } from "mongoose";
+
+const { models } = mongoose;
 
 const TwoFactorBackupCodeSchema = new Schema(
   {

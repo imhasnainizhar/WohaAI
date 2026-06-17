@@ -1,8 +1,8 @@
 import z from "zod";
-import { SigninInitRequestSchema, SigninCompleteSchema } from "../schema/signin";
+import { SigninInitRequestSchema, SigninCompleteRequestSchema } from "../schema/signin";
 
 export type SigninInitRequest = z.infer<typeof SigninInitRequestSchema>;
-export type SigninCompleteRequest = z.infer<typeof SigninCompleteSchema>;
+export type SigninCompleteRequest = z.infer<typeof SigninCompleteRequestSchema>;
 
 export interface SigninCompleteResponse {
     profilePicURI: string

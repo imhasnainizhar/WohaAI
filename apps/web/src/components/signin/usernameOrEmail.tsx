@@ -13,6 +13,8 @@ import Link from "next/link";
 import { FloatingInput } from "../input/fields/FloatingInput";
 import Image from "next/image";
 import { FaApple } from "react-icons/fa";
+import { env } from "@packages/env-ts";;
+import { ApiResponseOptions } from '@packages/http';
 
 const SigninInitRequestSchema = z.object({
     usernameOrEmail: UsernameOrEmailSchema,
@@ -23,7 +25,7 @@ type SigninInitOutput = z.output<typeof SigninInitRequestSchema>;
 
 interface SigninUsernameOrEmailProps {
     next: (values: any) => void;
-    setNextStep: (step: "email" | "username" | "password" | null) => void;
+    setNextStep: (step: "usernameOrEmail" | "password") => void;
     data?: any;
 }
 
@@ -49,49 +51,32 @@ export default function SigninUsernameOrEmail({
         setError("");
         const { usernameOrEmail } = formData;
 
-        // Determine if it's a username or email
-        const isEmail = usernameOrEmail.type === "email";
-        const value = usernameOrEmail.value;
-
         // Check if the user exists
         try {
-            const checkEndpoint = isEmail
-                ? "/api/auth/check-email"
-                : "/api/auth/check-username";
-
-            const res = await fetch(checkEndpoint, {
+            const authURI = env.NEXT_PUBLIC_AUTH_API_URI;
+            const rawRes = await fetch(`${authURI}/api/auth/signin-init`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ [isEmail ? "email" : "username"]: value }),
+                body: JSON.stringify({ usernameOrEmail }),
             });
 
-            const data = await res.json();
+            const res = await rawRes.json();
+            const body: ApiResponseOptions = res.body;
 
             if (!res.ok) {
-                setError(data.message || "Failed to check user.");
+                setError(body.message || "Failed to check user.");
                 return;
             }
 
-            const exists = isEmail ? data.emailExists : data.usernameExists;
-
-            if (exists) {
+            if (body.success) {
                 // User exists, go to password
                 setNextStep("password");
-                next({ [isEmail ? "email" : "username"]: value });
+                next({ usernameOrEmail });
             } else {
-                // User doesn't exist
-                if (isEmail) {
-                    // Started with email, go to password (new user flow)
-                    setNextStep("password");
-                    next({ email: value });
-                } else {
-                    // Started with username, go to email step
-                    setNextStep("email");
-                    next({ username: value });
-                }
+                setError("Username or Email doesn't exist.");
             }
         } catch (err) {
             console.error("Check user error:", err);

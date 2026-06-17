@@ -16,14 +16,14 @@ export default function SubmitButton() {
                 border-primary
                 transition-colors
                 duration-300
-                bg-black
-                text-white
+                bg-primary/90
+                text-primary-foreground
                 cursor-pointer
-                hover:bg-black/80
+                hover:bg-primary/40
                 active:scale-95!
             "
         >
-            <ArrowUp className="size-5" />
+            <ArrowUp className="size-5" strokeWidth={3} />
         </Button>
     )
 }

@@ -10,11 +10,10 @@ export const env = createEnv({
         LOG_LEVEL: process.env.LOG_LEVEL!,
 
         // JWT + Security
-        JWT_ACCESS_TOKEN_SECRET: process.env.JWT_ACCESS_TOKEN_SECRET!,
-        JWT_REFRESH_TOKEN_SECRET: process.env.JWT_REFRESH_TOKEN_SECRET!,
         JWT_AUTH_SECRET_KEY: process.env.JWT_AUTH_SECRET_KEY!,
         JWT_CHANGE_PASSWORD_SECRET_KEY:
             process.env.JWT_CHANGE_PASSWORD_SECRET_KEY!,
+            
         ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET!,
 
         // Mailer
@@ -39,9 +38,13 @@ export const env = createEnv({
         CLIENT_ORIGIN: process.env.CLIENT_ORIGIN!,
 
         // Service URIs (derived)
+        // Using name NEXT_PUBLIC_* env from .env files, as they have same value.
+        AUTH_API_URI: process.env.NEXT_PUBLIC_AUTH_API_URI!,
+        AUTH_MAILER_API_URI: process.env.NEXT_PUBLIC_AUTH_MAILER_API_URI!,
+        USER_API_URI: process.env.NEXT_PUBLIC_USER_API_URI!,
+
         NEXT_PUBLIC_AUTH_API_URI: process.env.NEXT_PUBLIC_AUTH_API_URI!,
-        NEXT_PUBLIC_AUTH_MAILER_API_URI:
-            process.env.NEXT_PUBLIC_AUTH_MAILER_API_URI!,
+        NEXT_PUBLIC_AUTH_MAILER_API_URI: process.env.NEXT_PUBLIC_AUTH_MAILER_API_URI!,
         NEXT_PUBLIC_USER_API_URI: process.env.NEXT_PUBLIC_USER_API_URI!,
 
         // MongoDB
@@ -74,10 +77,9 @@ export const env = createEnv({
         RUNNING_IN_DOCKER: z.string().optional(),
         LOG_LEVEL: z.string().default("info"),
 
-        JWT_ACCESS_TOKEN_SECRET: z.string().min(20),
-        JWT_REFRESH_TOKEN_SECRET: z.string().min(20),
         JWT_AUTH_SECRET_KEY: z.string().min(20),
         JWT_CHANGE_PASSWORD_SECRET_KEY: z.string().min(20),
+
         ENCRYPTION_SECRET: z.string().min(20),
 
         MAILER_HOST: z.string(),
@@ -97,6 +99,10 @@ export const env = createEnv({
 
         CLIENT_ORIGIN: z.string(),
 
+        AUTH_API_URI: z.string().url(),
+        AUTH_MAILER_API_URI: z.string().url(),
+        USER_API_URI: z.string().url(),
+
         USERS_MONGO_URI: z.string(),
         THREADS_MONGO_URI: z.string(),
 
@@ -115,8 +121,10 @@ export const env = createEnv({
     },
 
     client: {
-        NEXT_PUBLIC_AUTH_API_URI: z.string().url(),
-        NEXT_PUBLIC_AUTH_MAILER_API_URI: z.string().url(),
-        NEXT_PUBLIC_USER_API_URI: z.string().url(),
+        NEXT_PUBLIC_AUTH_API_URI: z.string(),
+        NEXT_PUBLIC_AUTH_MAILER_API_URI: z.string(),
+        NEXT_PUBLIC_USER_API_URI: z.string(),
     },
+
+    skipValidation: true,
 });

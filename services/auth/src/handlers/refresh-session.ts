@@ -4,6 +4,7 @@ import { getClientData } from "@/ua/client-data";
 import { buildCookie, sendResponse } from "@packages/http";
 import { Request, Response } from "express";
 import { env } from "@packages/env-ts";
+import { authLogger } from "@packages/observability";
 import exp from '../../../../packages/config/exp.json';
 import { RefreshTokenPayload, verifyJwtToken } from '@packages/security/jwt';
 import { ValidationError } from '@packages/errors';
@@ -18,6 +19,8 @@ import JwtTokenNames from '../../../../packages/config//token-names.json';
  */
 export const refreshSessionHandler = asyncHandler(
     async (req: Request, res: Response) => {
+        authLogger.debug({ path: req.originalUrl, method: req.method }, "🔄 Session refresh requested");
+
         const refreshToken = req.cookies[JwtTokenNames.REFRESH_TOKEN];
 
         const _ = verifyJwtToken({
@@ -31,6 +34,7 @@ export const refreshSessionHandler = asyncHandler(
         // If client data is not valid, throw client error
         // Under review
         if (!clientData) {
+            authLogger.debug({ path: req.originalUrl }, "❌ Session refresh failed - invalid client data");
             throw new ValidationError()
         }
 
@@ -66,6 +70,8 @@ export const refreshSessionHandler = asyncHandler(
                 maxAge: exp.ACCESS_TOKEN_COOKIE
             }
         })
+
+        authLogger.debug({ path: req.originalUrl, method: req.method, userIPAddress }, "✅ Session refresh successful");
 
         // Handler only returns response
         // Cookies are under the hood set as Express Cookies with name having token as value in this refresh token context. Cookie options are used to configure security and exp options.

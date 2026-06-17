@@ -68,8 +68,7 @@ export class AuthRepo {
                 {
                     userID: 1,
                     profilePicURI: 1,
-                    firstName: 1,
-                    lastName: 1,
+                    fullName: 1,
                     email: 1,
                     username: 1,
                     hashedPassword: 1,

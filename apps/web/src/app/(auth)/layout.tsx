@@ -8,8 +8,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-      <AuthCacheProvider>
-        <div className={`flex flex-col w-full h-full`}>
+    <AuthCacheProvider>
+      <div className={`flex flex-col w-full h-full`}>
         <div className={`flex justify-start mt-6 ml-6`}>
           <Link href="/" className="flex items-center gap-2 font-medium">
             <div className="flex items-center justify-center">
@@ -19,7 +19,7 @@ export default function AuthLayout({
           </Link>
         </div>
         {children}
-        </div>
-      </AuthCacheProvider>
+      </div>
+    </AuthCacheProvider>
   );
 }

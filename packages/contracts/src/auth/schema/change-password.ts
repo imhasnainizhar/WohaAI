@@ -1,6 +1,6 @@
 import { authRegex } from "../../auth-regex";
 import z from "zod";
-import { PasswordSchema } from "./fields";
+import { PasswordSchema } from "../../user/schemas/fields";
 
 export const ChangePasswordInitRequestSchema = z.object({
     usernameOrEmail: z
@@ -26,7 +26,7 @@ export const ChangePasswordInitRequestSchema = z.object({
 export const ChangePasswordRequestSchema = z.object({
     newPassword: PasswordSchema,
     newConfirmPassword: PasswordSchema
-})    .refine(
+}).refine(
     ({ newPassword, newConfirmPassword }) =>
         newPassword === newConfirmPassword,
     {

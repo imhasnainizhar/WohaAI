@@ -1,5 +1,7 @@
-import { Schema, model, Types, models } from "mongoose";
+import mongoose, { Schema, model, Types } from "mongoose";
 import { CardBrand } from "./payment-card.types";
+
+const { models } = mongoose;
 
 const PaymentCardSchema = new Schema(
   {

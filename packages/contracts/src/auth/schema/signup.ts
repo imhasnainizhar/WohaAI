@@ -1,5 +1,5 @@
 import z from "zod";
-import { ConfirmPasswordSchema, DateOfBirthSchema, EmailSchema, FirstNameSchema, LastNameSchema, PasswordSchema, UsernameOrEmailSchema, UsernameSchema, VerificationCodeSchema } from "./fields";
+import { EmailSchema, PasswordSchema, UsernameSchema, VerificationCodeSchema } from "../../user/schemas/fields";
 
 
 /**
@@ -29,7 +29,7 @@ export const VerifyUserEmailRequestSchema = z.object({
 export const PasswordValidationRequestSchema = z
     .object({
         password: PasswordSchema,
-        confirmPassword: ConfirmPasswordSchema,
+        confirmPassword: PasswordSchema,
     })
     .refine(
         ({ password, confirmPassword }) =>

@@ -1,24 +1,22 @@
 import { authLogger } from "@packages/observability";
 import {
-  getSignupSession,
-  deleteSignupSession,
+  getAuthSession,
+  deleteAuthSession,
   deleteVerificationCodeCache,
 } from "@/redis/redis";
 import { UserProvisioningClient } from "@/clients/user-provision";
 import { MaliciousActivityError, SessionExpiredError } from "@packages/errors";
-import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/jwt";
+import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@packages/security/jwt";
 import { randomUUID } from "crypto";
 import { env } from "@packages/env-ts";
 import exp from "../../../../../packages/config/exp.json";
 import { SignOptions } from "jsonwebtoken";
-import { ClientData, DateOfBirth } from "@packages/contracts/auth";
-
+import { ClientData } from "@packages/contracts/auth";
 import { AuthRepo } from "@/repo/auth-repo";
 import { EmailVerificationRequiredError } from "@/errors/service-error";
 
 export interface SignupCompleteServiceParams {
-  signupSessionID: string;
-  rememberMe: boolean;
+  authSessionID: string;
   clientData: ClientData
 }
 
@@ -26,10 +24,6 @@ export interface SignupCompleteServiceResponse {
   username: string;
   email: string;
   userID: string;
-  profilePicURI?: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: DateOfBirth;
   refreshToken: string;
   accessToken: string;
 }
@@ -45,39 +39,26 @@ export class SignupCompleteService {
    * Final signup completion flow
    */
   async execute({
-    signupSessionID,
-    rememberMe,
+    authSessionID,
     clientData
   }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
 
     // fetch signup session
-    const session = await getSignupSession(signupSessionID)
+    const session = await getAuthSession(authSessionID)
 
     if (!session) throw new SessionExpiredError()
 
-    // verify confirmed email state
-    const confirmedEmail =
-      await getConfirmedEmailCache(signupSessionID);
-
-    if (!confirmedEmail) throw new MaliciousActivityError();
+    if (!session.emailVerified) throw new MaliciousActivityError();
 
     // verify session integrity
     if (
-      session.email !== confirmedEmail
+      session.email !== session.email
     ) throw new EmailVerificationRequiredError()
 
     // prepare user payload
     const userPayload = {
       username: session.username!,
       email: session.email!,
-
-      firstName:
-        session.firstName!,
-
-      lastName:
-        session.lastName!,
-
-      dateOfBirth: session.dateOfBirth!,
       hashedPassword: session.hashedPassword!,
     };
 
@@ -110,7 +91,7 @@ export class SignupCompleteService {
       },
       secret: env.JWT_AUTH_SECRET_KEY,
       options: {
-        expiresIn: rememberMe ? exp.JWT_REFRESH_TOKEN : exp.JWT_REFRESH_REMEMBER_OFF_TOKEN
+        expiresIn: exp.JWT_REFRESH_TOKEN
       } as SignOptions
     })
 
@@ -127,8 +108,6 @@ export class SignupCompleteService {
       } as SignOptions
     })
 
-    const sessionDuration: SessionDuration = rememberMe ? "persistent" : "temporary"
-
     /**
      * Persist session
      */
@@ -136,22 +115,17 @@ export class SignupCompleteService {
       userID: createdUser.userID,
       clientData,
       refreshToken,
-      sessionDuration,
       userSessionID,
     });
 
     // cleanup temporary state
     await Promise.all([
-      deleteSignupSession(
-        signupSessionID
-      ),
-
-      deleteConfirmedEmailCache(
-        signupSessionID
+      deleteAuthSession(
+        authSessionID
       ),
 
       deleteVerificationCodeCache(
-        signupSessionID
+        authSessionID
       ),
     ]);
 

@@ -7,7 +7,10 @@ import exp from "../../../../packages/config/exp.json";
 import { env } from "@packages/env-ts";
 
 
-export interface SignupCacheData {
+export interface AuthCacheData {
+  username?: string;
+  email?: string;
+  emailVerified?: boolean;
   hashedPassword?: string;
 }
 
@@ -29,18 +32,6 @@ export const RedisKeys = {
 } as const;
 
 const redisClient = new RedisClient(env.AUTH_SESSION_REDIS_URI)
-
-
-export async function setSignupSession(
-  signupSessionID: string,
-  data: SignupCacheData
-): Promise<"OK"> {
-  return await redisClient.setCache(
-    RedisKeys.authSession(signupSessionID),
-    JSON.stringify(data),
-    exp.REDIS_AUTH_SESSION_TTL
-  )
-}
 
 export interface VerificationCodeCacheParams {
   id: string
@@ -73,13 +64,25 @@ export async function deleteVerificationCodeCache(
   );
 }
 
-// Signup Session
-export async function getSignupSession(
-  signupSessionID: string,
-): Promise<SignupCacheData> {
+// Auth session
+export async function setAuthSession(
+  authSessionID: string,
+  data: AuthCacheData
+): Promise<"OK"> {
+  return await redisClient.setCache(
+    RedisKeys.authSession(authSessionID),
+    JSON.stringify(data),
+    exp.REDIS_AUTH_SESSION_TTL
+  )
+}
+
+// Auth Session
+export async function getAuthSession(
+  authSessionID: string,
+): Promise<AuthCacheData> {
 
   const key =
-    RedisKeys.authSession(signupSessionID);
+    RedisKeys.authSession(authSessionID);
 
   const rawSession =
     await redisClient.getCache(key);
@@ -87,20 +90,20 @@ export async function getSignupSession(
   if (!rawSession) {
     authLogger.debug({
       message:
-        "Signup session expired",
-      signupSessionID,
+        "Auth session expired",
+      authSessionID,
     });
 
     throw new SessionExpiredError();
   }
 
   try {
-    return JSON.parse(rawSession) as SignupCacheData;
+    return JSON.parse(rawSession) as AuthCacheData;
   } catch (err) {
     authLogger.error({
       message:
         "Invalid session JSON in Redis",
-      signupSessionID,
+      authSessionID,
       error:
         (err as Error).message,
     });
@@ -111,16 +114,16 @@ export async function getSignupSession(
   }
 }
 
-// Delete signup session cache while finalizing user creation
-export async function deleteSignupSession(
-  signupSessionID: string,
+// Delete auth session cache while finalizing user creation
+export async function deleteAuthSession(
+  authSessionID: string,
 ): Promise<void> {
   authLogger.debug(
-    "Deleting signup session from Redis...",
+    "Deleting auth session from Redis...",
   );
 
   const key =
-    RedisKeys.authSession(signupSessionID);
+    RedisKeys.authSession(authSessionID);
 
   return await redisClient.deleteCache(key);
 }

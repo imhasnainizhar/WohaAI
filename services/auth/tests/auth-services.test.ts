@@ -4,9 +4,9 @@ import { SignoutService } from '@/services/signout';
 import { RefreshSessionService } from '@/services/refresh-session';
 import { SignupInitService } from '@/services/signup/init';
 import { createJwtToken } from '@packages/jwt';
-import { setSignupSession, getSignupSession } from '@/redis/redis';
-import { ContinueWithEmailService } from '@/services/signup/continue/email';
-import { ContinueWithUsernameService } from '@/services/signup/continue/username';
+import { setAuthSession, getAuthSession } from '@/redis/redis';
+import { ContinueWithEmailService } from '@/services/signup/email';
+import { ContinueWithUsernameService } from '@/services/signup/username';
 import { SendVerificationEmailService } from '@/services/signup/verification/send-verification-email';
 import { VerifyUserEmailService } from '@/services/signup/verification/verify-user-email';
 
@@ -68,7 +68,7 @@ describe('SignupInitService', () => {
   beforeEach(() => {
     repo = new AuthRepo(null as any);
     (repo.findUserWithUsernameOrEmail as any) = vi.fn().mockResolvedValue(null);
-    (setSignupSession as any) = vi.fn().mockResolvedValue(undefined);
+    (setAuthSession as any) = vi.fn().mockResolvedValue(undefined);
     (createJwtToken as any) = vi.fn().mockImplementation(() => 'signupToken');
     service = new SignupInitService(repo);
   });
@@ -76,7 +76,7 @@ describe('SignupInitService', () => {
   it('creates a signup session for a new email', async () => {
     const response = await service.execute({ usernameOrEmail: { type: 'email', value: 'new@example.com' } });
     expect(repo.findUserWithUsernameOrEmail).toHaveBeenCalled();
-    expect(setSignupSession).toHaveBeenCalled();
+    expect(setAuthSession).toHaveBeenCalled();
     expect(createJwtToken).toHaveBeenCalled();
     expect(response).toEqual({ signupSessionInit: true, alreadyExists: false, signupSessionToken: 'signupToken' });
   });
@@ -93,7 +93,7 @@ describe('ContinueWithUsernameService', () => {
   });
 
   it('stores the chosen username', async () => {
-    const result = await service.execute({ signupSessionID: 'sess-1', username: 'newuser' });
+    const result = await service.execute({ authSessionID: 'sess-1', username: 'newuser' });
     expect(repo.updateSignupSessionUsername).toHaveBeenCalledWith('sess-1', 'newuser');
     expect(result).toBeUndefined();
   });
@@ -110,7 +110,7 @@ describe('ContinueWithEmailService', () => {
   });
 
   it('stores the chosen email', async () => {
-    const result = await service.execute({ signupSessionID: 'sess-2', email: 'test@example.com' });
+    const result = await service.execute({ authSessionID: 'sess-2', email: 'test@example.com' });
     expect(repo.updateSignupSessionEmail).toHaveBeenCalledWith('sess-2', 'test@example.com');
     expect(result).toBeUndefined();
   });
@@ -125,7 +125,7 @@ describe('SendVerificationEmailService', () => {
   });
 
   it('generates a verification token', async () => {
-    const result = await service.execute({ signupSessionID: 'sess-3' });
+    const result = await service.execute({ authSessionID: 'sess-3' });
     expect(createJwtToken).toHaveBeenCalled();
     expect(result).toBeUndefined(); // actual email sending is side‑effect; we only verify token generation here
   });
@@ -142,7 +142,7 @@ describe('VerifyUserEmailService', () => {
   });
 
   it('finalizes signup when verification succeeds', async () => {
-    const result = await service.execute({ signupSessionID: 'sess-4', verificationCode: '123456' });
+    const result = await service.execute({ authSessionID: 'sess-4', verificationCode: '123456' });
     expect(repo.finalizeSignup).toHaveBeenCalledWith('sess-4');
     expect(result).toBeUndefined();
   });

@@ -1,90 +1,130 @@
-import { NextPage } from "next";
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Terms of Service || Barlon',
+  title: 'Terms of Service || WohaAI',
   description: 'Learn more about our terms of service and how we handle your data.',
 };
 
-const TermsOfService: NextPage = () => {
+export default function TermsOfService() {
   return (
-    <>
-      <main className="terms-of-service-container">
-        <section className="terms-service-box">
-          <h1>Terms of Service</h1>
-          <p>Last updated: [Insert Date]</p>
-          <p>Welcome to Barlon, your ultimate destination for stylish, high-quality clothing that fits every mood and moment. Whether {`you're looking for everyday essentials, bold statement pieces, or the latest fashion trends, we've got you covered. Here are the terms and conditions that govern your use of our website.`}</p>
-        </section>
-
-        <section className="terms-service-box">
-          <h2>1. Acceptance of Terms</h2>
-          <p>
-            By using this website, you agree to be bound by these Terms of Service and our Privacy
-            Policy. If you do not agree, please do not use our website.
+    <div className="min-h-svh font-reading bg-background">
+      <div className="max-w-3xl mx-auto px-6 py-12 md:py-20">
+        <div className="mb-12">
+          <h1 className="font-gerogia-sans text-fluid-2xl font-medium text-foreground mb-4">
+            Terms of Service
+          </h1>
+          <p className="text-muted-foreground text-fluid-sm mb-6">
+            Last updated: January 17, 2026
           </p>
-        </section>
-
-        <section className="terms-service-box">
-          <h2>2. Use of Our Website</h2>
-          <p>
-            You agree to use our website for lawful purposes only. You must not use it in any way
-            that breaches any applicable local, national, or international law.
+          <p className="text-foreground text-fluid-base leading-relaxed">
+            Welcome to WohaAI, your AI-powered assistant for thinking fast and crafting faster.
+            By using our services, you agree to these Terms of Service and our Privacy Policy.
           </p>
-        </section>
+        </div>
 
-        <section className="terms-service-box">
-          <h2>3. Products & Services</h2>
-          <p>
-            All products displayed are subject to availability. We reserve the right to modify or
-            discontinue any product without notice.
-          </p>
-        </section>
+        <div className="space-y-8">
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              1. Acceptance of Terms
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              By accessing or using WohaAI services, you agree to be bound by these Terms of Service
+              and our Privacy Policy. If you do not agree with these terms, please do not use our services.
+            </p>
+          </section>
 
-        <section className="terms-service-box">
-          <h2>4. Orders & Payment</h2>
-          <p>
-            By placing an order, you confirm that you are authorized to use the payment method
-            provided. All transactions are securely processed.
-          </p>
-        </section>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              2. Use of Our Services
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              You agree to use our AI services for lawful purposes only. You must not:
+            </p>
+            <ul className="list-disc list-inside text-muted-foreground text-fluid-base space-y-2 ml-2">
+              <li>Use the service to generate harmful, illegal, or inappropriate content</li>
+              <li>Attempt to reverse engineer or circumvent security measures</li>
+              <li>Use the service to violate any applicable laws or regulations</li>
+              <li>Interfere with the operation of our services or servers</li>
+            </ul>
+          </section>
 
-        <section className="terms-service-box">
-          <h2>5. Returns & Refunds</h2>
-          <p>
-            Our return and refund policy is outlined on the relevant product or help page. Please
-            review it before making a purchase.
-          </p>
-        </section>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              3. AI Content & Accuracy
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              Our AI generates content based on the input provided. While we strive for accuracy,
+              AI-generated content may not always be correct or complete. You should verify important
+              information independently. We are not responsible for decisions made based on AI-generated content.
+            </p>
+          </section>
 
-        <section className="terms-service-box">
-          <h2>6. Limitation of Liability</h2>
-          <p>
-            We are not liable for any damages resulting from your use of this website or the purchase
-            of our products, except as required by law.
-          </p>
-        </section>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              4. User Accounts
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              You are responsible for maintaining the confidentiality of your account credentials.
+              You agree to notify us immediately of any unauthorized use of your account.
+            </p>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              We reserve the right to suspend or terminate accounts that violate these terms.
+            </p>
+          </section>
 
-        <section className="terms-service-box">
-          <h2>7. Changes to Terms</h2>
-          <p>
-            We reserve the right to change these terms at any time. Continued use of the website
-            constitutes acceptance of the new terms.
-          </p>
-        </section>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              5. Intellectual Property
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              All content, features, and functionality of WohaAI are owned by WohaAI Corporation
+              and are protected by intellectual property laws.
+            </p>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              You retain ownership of content you provide, but grant us a license to use it for
+              providing and improving our services.
+            </p>
+          </section>
 
-        <section className="terms-service-box">
-          <h2>8. Contact Us</h2>
-          <p>
-            For any questions regarding these Terms of Service, please contact us at
-          </p>
-          <a href="mailto:support@yourbrand.com">support@yourbrand.com</a>
-          <a href="tel:+1234567890">+1234567890</a>
-          <p>For more Support and Contact, Visit here:</p>
-          <a href="https://barlon.com/contact">Get Support</a>
-        </section>
-      </main>
-    </>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              6. Limitation of Liability
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              WohaAI shall not be liable for any indirect, incidental, special, or consequential
+              damages resulting from your use of our services, to the maximum extent permitted by law.
+            </p>
+          </section>
+
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              7. Changes to Terms
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              We reserve the right to modify these terms at any time. Continued use of our services
+              after changes constitutes acceptance of the updated terms.
+            </p>
+          </section>
+
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              8. Contact Us
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              For questions about these Terms of Service, please contact us:
+            </p>
+            <div className="space-y-2">
+              <Link href="mailto:support@wohaai.com" className="text-primary hover:underline block">
+                support@wohaai.com
+              </Link>
+              <Link href="/" className="text-primary hover:underline block">
+                Return to WohaAI
+              </Link>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default TermsOfService;
+}

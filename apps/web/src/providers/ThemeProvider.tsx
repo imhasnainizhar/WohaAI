@@ -5,7 +5,6 @@ import {
   ThemeProvider as NextThemesProvider,
   useTheme,
 } from "next-themes"
-
 function ThemeProvider({
   children,
   ...props
@@ -48,6 +47,8 @@ export function useThemeUtils() {
   const toggleTheme = React.useCallback(() => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark")
   }, [resolvedTheme, setTheme])
+
+  console.log("resolvedTheme", resolvedTheme);
 
   const isDarkTheme = resolvedTheme === "dark"
 

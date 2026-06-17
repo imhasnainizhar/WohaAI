@@ -2,25 +2,24 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
 import { buildCookie, sendResponse } from "@packages/http";
 import authService from "@/services/auth-service";
-import { env } from "@/config/env";
-import { exp } from "@/config/exp";
-import { SignupSessionPayload, verifyJwtToken } from "@packages/jwt";
+import { env } from "@packages/env-ts";
+import exp from "../../../../../../packages/config/exp.json";
+import { AuthSessionPayload, verifyJwtToken } from "@packages/security/jwt";
 import { ValidationError } from "@packages/errors";
 import { VerifyUserEmailRequest, VerifyUserEmailRequestSchema } from "@packages/contracts/auth";
-import { VerifyUserEmailResponse } from '@packages/contracts/auth';
+import tokenNames from "../../../../../../packages/config/token-names.json";
 
 /**
- * Handler for user signup verification verify email.
- * Validates input & calls for verify email service.
+ * Handler for verifying signup signup email using OTP.
  */
 export const verifyUserEmailHandler = asyncHandler(
     async (req: Request, res: Response) => {
 
-        const token = req.cookies[env.SIGNUP_SESSION_TOKEN_NAME];
+        const token = req.cookies[tokenNames.AUTH_SESSION_TOKEN];
 
-        const payload: SignupSessionPayload = verifyJwtToken({
+        const payload: AuthSessionPayload = verifyJwtToken({
             token,
-            secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
+            secret: env.JWT_AUTH_SECRET_KEY
         });
 
         // extracting code from request body
@@ -31,39 +30,36 @@ export const verifyUserEmailHandler = asyncHandler(
 
         if (!parsed.success) throw new ValidationError("Invalid code", parsed.error)
 
-        // Getting signupSessionID from payload
-        const signupSessionID = payload.signupSessionID;
+        // Getting authSessionID from payload
+        const authSessionID = payload.sub;
 
         // Call service → either returns ServiceResponse OR throws ServiceException
         const result = await authService.verifyUserEmail({
-            signupSessionID,
+            authSessionID,
             verificationCode: parsed.data.verificationCode
         });
 
-        const extendedSignupSessionCookie = buildCookie({
-            name: env.SIGNUP_SESSION_TOKEN_NAME,
-            value: result.extendedSignupToken,
+        const cookie = buildCookie({
+            name: tokenNames.AUTH_SESSION_TOKEN,
+            value: result.authToken,
             options: {
                 httpOnly: true,
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: exp.SIGNUP_SESSION_COOKIE_EXTENDED
-            }          
+                maxAge: exp.AUTH_SESSION_COOKIE
+            }
         })
 
 
         // response
-        return sendResponse<VerifyUserEmailResponse>({
+        return sendResponse({
             res,
             success: true,
             statusCode: 200,
             message: "User email verified",
-            data: {
-                emailVerified: true
-            },
             path: req.originalUrl,
-            cookies: [ extendedSignupSessionCookie ]
+            cookies: [cookie]
         });
     }
 );

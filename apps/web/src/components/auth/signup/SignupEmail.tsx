@@ -1,58 +1,106 @@
 "use client";
 
-import { useState } from "react";
-import { useTheme } from "@/providers/ThemeProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ClassicButton from "@/components/ui/buttons/ClassicButton";
-import { RoundedInputField } from "@/components/input/fields/RoundedInputField";
-import { useEffect } from "react";
-import { ContinueWithEmailRequestSchema, ContinueWithEmailRequest } from "@packages/contracts/auth";
+import { useState } from "react";
+import { ContinueWithEmailRequestSchema } from "@packages/contracts/auth";
+import z from "zod";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { FieldGroup, Field, FieldDescription } from "@/components/ui/field";
+import { FloatingInput } from "@/components/input/fields/FloatingInput";
+import { env } from "@packages/env-ts";
+import { ApiResponseOptions } from "@packages/http";
+
+type SignupEmailInput = z.input<typeof ContinueWithEmailRequestSchema>;
+type SignupEmailOutput = z.output<typeof ContinueWithEmailRequestSchema>;
+
+interface SignupEmailProps {
+    next: (values: any) => void;
+    setNextStep: (step: "username" | "email" | "email_verification" | "password" | "complete_signup") => void;
+    data?: any;
+}
 
 export default function SignupEmail({
     next,
+    setNextStep,
     data,
-}: {
-    next: (next: any) => void;
-    data?: ContinueWithEmailRequest;
-}) {
-    const [personalInputError, setPersonalInputError] = useState<string>("")
-    const [cacheBeingUsed, setCacheBeingUsed] = useState(false);
-    const { theme } = useTheme();
-    const darkTheme = theme === "dark";
-
+}: SignupEmailProps) {
     const {
         register,
         handleSubmit,
-        reset,
-        formState: { errors, isValid, isSubmitting },
-    } = useForm<ContinueWithEmailRequest>({
+        formState: { errors },
+    } = useForm<SignupEmailInput, any, SignupEmailOutput>({
         resolver: zodResolver(ContinueWithEmailRequestSchema),
+        defaultValues: {
+            email: data?.email,
+        },
     });
 
-    useEffect(() => {
-        if (data?.email) {
-            reset({ email: data.email }); // populate with cached data
-            setCacheBeingUsed(true);
+    const [error, setError] = useState<string>("");
+
+    const onSubmit = async (formData: SignupEmailOutput) => {
+        setError("");
+        const { email } = formData;
+
+        try {
+            const authURI = env.NEXT_PUBLIC_AUTH_API_URI;
+            const rawRes = await fetch(`${authURI}/api/auth/signup/continue-with-email`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const res = await rawRes.json();
+            const body: ApiResponseOptions = res.body;
+
+            if (!res.ok) {
+                setError(body.message || "Failed to validate email.");
+                return;
+            }
+
+            if (body.success) {
+                setNextStep("email_verification");
+                next({ email });
+            } else {
+                setError("Email is already registered.");
+            }
+        } catch (err) {
+            console.error("Email validation error:", err);
+            setError("An unexpected error occurred. Please try again.");
         }
-    }, [data, reset]);
+    };
 
     return (
-        <form className="w-full flex flex-col items-center justify-center gap-8"
-            method="POST"
-            onSubmit={handleSubmit(next)}
-        >
-            <div className="w-[85%]">
-                <RoundedInputField
-                    label="Email"
-                    name="email"
-                    register={register}
-                    error={errors.email}
-                    theme={darkTheme ? "dark" : "light"}
-                    cacheBeingUsed={cacheBeingUsed}
-                />
-            </div>
-            <ClassicButton text="Continue" />
-        </form>
+        <div className="w-full flex flex-col gap-6">
+            <Card className={`rounded-[35px] border-none! shadow-none!`}>
+                <CardContent className={``}>
+                    <FieldGroup className={`gap-4!`}>
+                        <form onSubmit={handleSubmit(onSubmit)} method="post">
+                            <div className={`flex flex-col gap-4`}>
+                                {error && <p className="text-red-500 text-sm">{error}</p>}
+                                <Field>
+                                    <FloatingInput
+                                        id="email"
+                                        label="Email"
+                                        error={errors.email}
+                                        {...register("email")}
+                                    />
+                                </Field>
+                                <Field>
+                                    <Button type="submit" className={`bg-primary text-primary-foreground! text-fluid-base font-semibold hover:bg-primary/70! transition-all ease-in-out duration-300 cursor-pointer`}>Continue</Button>
+                                </Field>
+                            </div>
+                        </form>
+                    </FieldGroup>
+                </CardContent>
+            </Card>
+            <FieldDescription className="px-4 text-center text-[10px]! text-muted-foreground">
+                By continuing, you acknowledge WohaAI's Terms of Service and Privacy Policy
+            </FieldDescription>
+        </div>
     );
 }

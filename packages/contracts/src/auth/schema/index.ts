@@ -1,4 +1,4 @@
-export * from "./fields"
+export * from "../../user/schemas/fields"
 export * from "./signup"
 export * from "./user-creation-response"
 export * from "./change-password"

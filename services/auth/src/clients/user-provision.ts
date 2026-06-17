@@ -1,17 +1,12 @@
 import axios, { AxiosInstance } from "axios";
 import { randomUUID } from "crypto";
-
 import { authLogger } from "@packages/observability";
-import { InternalServerError } from "@packages/errors";
-import { CreatedUserResponseSchema, DateOfBirth } from "@packages/contracts/auth";
+import { InternalServerError, ValidationError } from "@packages/errors";
+import { CreatedUserResponseSchema } from "@packages/contracts/auth";
 
 export interface CreateUserParams {
     username: string;
     email: string;
-    profilePicURI?: string;
-    firstName: string;
-    lastName: string;
-    dateOfBirth: DateOfBirth;
     hashedPassword: string;
 }
 
@@ -19,10 +14,6 @@ export interface CreatedUserResponse {
     userID: string;
     username: string;
     email: string;
-    profilePicURI?: string;
-    firstName: string;
-    lastName: string;
-    dateOfBirth: DateOfBirth;
 }
 
 export class UserProvisioningClient {
@@ -67,7 +58,12 @@ export class UserProvisioningClient {
             );
 
             const data = CreatedUserResponseSchema.parse(response.data);
-            return data;
+
+            if (!data.success) {
+                throw new ValidationError("User creation failed");
+            }
+            
+            return data.userData;
         } catch (err: any) {
             authLogger.error({
                 message:

@@ -1,9 +1,5 @@
-import { env } from "@packages/env-ts";
-import { EmailAlreadyTakenError } from "@/errors/service-error";
-import { getChangeEmailProducer } from "@/producer/change-emai";
-import { getChangeEmailSessionCache, setChangeEmailSessionCache, setVerificationCodeCache } from "@/redis/redis";
+import { getChangeEmailSessionCache } from "@/redis/redis";
 import { AuthRepo } from "@/repo/auth-repo";
-import { ChangeEmailEvent } from "@packages/contracts/mailer";
 import { authLogger as logger } from "@packages/observability";
 
 export interface VerifyEmailChangeServiceParams {
@@ -17,7 +13,7 @@ export class VerifyEmailChangeService {
 
     public async execute({
         sessionID
-    }: VerifyEmailChangeServiceParams): Promise<{success: boolean}> {
+    }: VerifyEmailChangeServiceParams): Promise<{ success: boolean }> {
 
         const cache = await getChangeEmailSessionCache(sessionID)
 

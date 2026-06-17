@@ -4,14 +4,14 @@ services:
   # ===========================
   users-mongo-db:
     image: mongo:7
-    container_name: ${USERS_MONGO_DB_NAME}
+    container_name: ${USERS_MONGO_DB_HOST}
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${USERS_MONGO_DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${USERS_MONGO_DB_PASSWORD}
       MONGO_INITDB_DATABASE: ${USERS_MONGO_DB_DATABASE}
     ports:
-      - "${USERS_MONGO_DB_PORT}:27017"
+      - "${USERS_MONGO_DB_HOST_PORT}:${USERS_MONGO_DB_PORT}"
     volumes:
       - users_mongo_data:/data/db
     networks:
@@ -24,14 +24,14 @@ services:
   # ===========================
   threads-mongo-db:
     image: mongo:7
-    container_name: ${THREADS_MONGO_DB_NAME}
+    container_name: ${THREADS_MONGO_DB_HOST}
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${THREADS_MONGO_DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${THREADS_MONGO_DB_PASSWORD}
       MONGO_INITDB_DATABASE: ${THREADS_MONGO_DB_DATABASE}
     ports:
-      - "${THREADS_MONGO_DB_PORT}:27017"
+      - "${THREADS_MONGO_DB_HOST_PORT}:${THREADS_MONGO_DB_PORT}"
     volumes:
       - threads_mongo_data:/data/db
     networks:
@@ -43,9 +43,9 @@ services:
     image: redis:7
     container_name: ${AUTH_SESSION_REDIS_HOST}
     ports:
-      - "${AUTH_SESSION_STORE_PORT}:6379"
+      - "${AUTH_SESSION_REDIS_HOST_PORT}:${AUTH_SESSION_REDIS_PORT}"
     command: >
-      redis-server --requirepass "${AUTH_SESSION_STORE_PASSWORD}"
+      redis-server --requirepass "${AUTH_SESSION_REDIS_PASSWORD}"
     restart: always
     networks:
       - WohaAI_dev_net
@@ -54,35 +54,20 @@ services:
     profiles:
       - "repo"
 
-  memory-redis-store:
-    image: redis:7
-    container_name: ${AGENT_MEMORY_REDIS_HOST}
-    ports:
-      - "${AGENT_MEMORY_REDIS_PORT}:6379"
-    command: >
-      redis-server --requirepass "${AGENT_MEMORY_REDIS_PASSWORD}"
-    restart: always
-    networks:
-      - WohaAI_dev_net
-    volumes:
-      - memory_redis_data:/data
-    profiles:
-      - "repo"
-
-  threads-redis-store:
-    image: redis:7
-    container_name: ${THREADS_HISTORY_REDIS_HOST}
-    ports:
-      - "${THREADS_HISTORY_REDIS_PORT}:6379"
-    command: >
-      redis-server --requirepass "${THREADS_HISTORY_REDIS_PASSWORD}"
-    restart: always
-    networks:
-      - WohaAI_dev_net
-    volumes:
-      - threads_redis_data:/data
-    profiles:
-      - "repo"
+  # threads-redis-store:
+  #   image: redis:7
+  #   container_name: ${THREADS_HISTORY_REDIS_HOST}
+  #   ports:
+  #     - "${THREADS_HISTORY_REDIS_PORT}:6379"
+  #   command: >
+  #     redis-server --requirepass "${THREADS_HISTORY_REDIS_PASSWORD}"
+  #   restart: always
+  #   networks:
+  #     - WohaAI_dev_net
+  #   volumes:
+  #     - threads_redis_data:/data
+  #   profiles:
+  #     - "repo"
 
 
 volumes:

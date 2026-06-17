@@ -17,15 +17,15 @@ export const errorHandler = (
     // Known domain/application errors
     if (err instanceof ServiceError) {
         authLogger.debug({
-            message: "[SIGNOUT_ERROR]",
+            emoji: "⚠️",
             errorType: err.errorType,
-            errorMessage: err.message,
+            message: err.message,
             statusCode: err.statusCode,
             errors: err.errors,
             path: req.originalUrl,
             method: req.method,
             ip: req.ip,
-        });
+        }, `[${err.errorType.toUpperCase()}] ${err.message}`);
 
         return sendResponse({
             res,
@@ -40,23 +40,20 @@ export const errorHandler = (
 
     // Unexpected/unhandled errors
     authLogger.error({
-        message:
-            "Unhandled application error",
+        emoji: "🚨",
+        message: "Unhandled application error",
         path: req.originalUrl,
-        error:
-            err instanceof Error
-                ? err.stack
-                : String(err),
-    });
+        method: req.method,
+        ip: req.ip,
+        error: err instanceof Error ? err.stack : String(err),
+    }, "🚨 UNHANDLED ERROR");
 
     return sendResponse({
         res,
         success: false,
         statusCode: 500,
-        message:
-            "Internal server error",
-        errorType:
-            "internal_server_error",
+        message: "Internal server error",
+        errorType: "internal_server_error",
         path: req.originalUrl,
     });
 };

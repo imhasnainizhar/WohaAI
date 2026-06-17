@@ -1,6 +1,9 @@
 import { Response } from "express";
 import { Cookie } from "./cookie";
 
+/**
+ * @http Options with which handlers call sendResponse 
+ */
 export interface ApiResponseOptions<T = unknown> {
   res: Response;
   statusCode: number;
@@ -13,6 +16,9 @@ export interface ApiResponseOptions<T = unknown> {
   path?: string;
 }
 
+/**
+ * @http Response body structure
+ */
 export interface ApiResponseBody<T = unknown> {
   success: boolean;
   message: string;

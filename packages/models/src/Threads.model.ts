@@ -1,4 +1,6 @@
-import { Schema, model, Types, models } from "mongoose";
+import mongoose, { Schema, model, Types } from "mongoose";
+
+const { models } = mongoose;
 
 const ThreadSchema = new Schema(
   {

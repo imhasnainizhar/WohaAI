@@ -3,7 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
 import { Request, Response } from "express";
 import { sendResponse } from "@packages/http";
-import { PrivilegedAccessTokenPayload, verifyJwtToken } from "@packages/security/jwt";
+import { verifyJwtToken, AccessTokenPayload } from "@packages/security/jwt";
 import { TwoFARequest, TwoFARequestSchema } from "@packages/contracts/auth";
 import { ValidationError } from "@packages/errors";
 import JwtTokenNames from "../../../../../packages/config/token-names.json";
@@ -17,13 +17,13 @@ export const enable2FAHandler = asyncHandler(
         const payload = verifyJwtToken({
             token: accessToken,
             secret: env.JWT_AUTH_SECRET_KEY
-        }) as PrivilegedAccessTokenPayload
+        }) as AccessTokenPayload
 
         const userID = payload.sub
         const body: TwoFARequest = req.body
 
         const parsed = TwoFARequestSchema.safeParse(body)
-        if(!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");
+        if (!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");
 
         await authService.enable2FA({ userID, token: parsed.data.totp })
 

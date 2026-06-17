@@ -1,8 +1,8 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useTheme } from "@/providers/ThemeProvider";
+import { useEffect, useState } from "react";
 
 export function WohaLogo() {
   const { resolvedTheme } = useTheme();
@@ -13,24 +13,15 @@ export function WohaLogo() {
   }, []);
 
   if (!mounted) {
-    return (
-      <Image
-        src="/logos/black_triangle.png"
-        alt=""
-        width={28}
-        height={28}
-      />
-    );
+    return <div style={{ width: 28, height: 28 }} />; // placeholder
   }
+
+  const dark = resolvedTheme === "dark";
 
   return (
     <Image
-      src={
-        resolvedTheme === "dark"
-          ? "/logos/white_triangle.png"
-          : "/logos/black_triangle.png"
-      }
-      alt=""
+      src={dark ? "/logos/white_triangle.png" : "/logos/black_triangle.png"}
+      alt="logo"
       width={28}
       height={28}
     />

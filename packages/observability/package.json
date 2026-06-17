@@ -29,25 +29,14 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./http": {
-      "import": "./dist/http.js",
-      "require": "./dist/http.js",
-      "types": "./dist/http.d.ts"
     }
   },
   "dependencies": {
-    "pino": "^10.3.1",
-    "pino-http": "^11.0.0"
-  },
-  "peerDependencies": {
-    "express": "^4.18.2"
+    "pino": "^10.3.1"
   },
   "devDependencies": {
-    "esbuild": "^0.28.0",
+    "pino-pretty": "^13.1.3",
     "tsconfig-paths": "^4.2.0",
-    "tsx": "^4.22.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "typescript": "^6.0.3"
   }
 }

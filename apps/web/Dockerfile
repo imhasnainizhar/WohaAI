@@ -27,8 +27,8 @@ RUN pnpm install --frozen-lockfile
 # ======================================================
 FROM base AS development
 
-# Put packages on dev mode
-RUN pnpm packages:dev
+# Put packages
+RUN pnpm packages:build
 
 WORKDIR /app/apps/web
 

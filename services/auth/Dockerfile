@@ -7,15 +7,20 @@ FROM node:22-slim AS base
 
 WORKDIR /app
 
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+
 # COPY MONOREPO ROOT MANIFESTS FIRST (CACHE LAYER)
 COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY tsconfig.json ./
+COPY tsconfig.base.json ./
+COPY turbo.json ./
 
-# Copy workspace packages and service
 COPY packages ./packages
-COPY services/auth ./services/auth
+COPY services/auth ./services/auth/
 
-# INSTALL DEPENDENCIES (WORKSPACE WIDE)
+RUN find packages -name package*.json
+
+# Install ALL dependencies
 RUN pnpm install --frozen-lockfile
 
 # ======================================================
@@ -23,18 +28,20 @@ RUN pnpm install --frozen-lockfile
 # ======================================================
 FROM base AS development
 
-ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
+# Copy workspace packages and service
+COPY packages ./packages
+COPY services/auth ./services/auth
 
-# Put packages on dev mode
-RUN pnpm packages:dev
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/packages/ ./packages/
+COPY --from=base /app/services/auth/ ./services/auth/
 
-# Generate Prisma client
-RUN pnpm run prisma:generate
-RUN pnpm run prisma:migrate:dev
+# Put packages
+RUN pnpm --filter auth-service... build
 
 WORKDIR /app/services/auth
 
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "dev"]
 
 # ======================================================
 # BUILD STAGE
@@ -44,12 +51,12 @@ FROM base AS build
 WORKDIR /app
 
 # Build shared packages first
-RUN pnpm run packages:build
+RUN pnpm --filter auth-service... build
 
 WORKDIR /app/services/auth
 
 # Build only auth service
-RUN pnpm run build
+RUN pnpm build
 
 # Keep production deps tree only
 RUN pnpm prune --prod
@@ -75,4 +82,4 @@ USER appuser
 
 WORKDIR /app/services/auth
 
-CMD ["pnpm", "run", "start"]
+CMD ["pnpm", "start"]

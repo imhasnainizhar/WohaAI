@@ -14,7 +14,8 @@ import JwtTokenNames from "../../../../packages/config/token-names.json";
  */
 export const signoutHandler = asyncHandler(
     async (req: Request, res: Response) => {
-        authLogger.debug("Logging out user")
+        authLogger.debug({ path: req.originalUrl, method: req.method }, "👋 Signout requested");
+
         // Verify user session token
         const refreshToken = req.cookies[JwtTokenNames.REFRESH_TOKEN];
         const payload = verifyJwtToken({
@@ -23,18 +24,19 @@ export const signoutHandler = asyncHandler(
         }) as RefreshTokenPayload;
 
         // If payload is not valid, throw session expired error
-        if (!payload) throw new SessionExpiredError();
+        if (!payload) {
+            authLogger.debug({ path: req.originalUrl }, "❌ Signout failed - session expired");
+            throw new SessionExpiredError();
+        }
 
         // Getting userID & userSessionID from payload
         const userID = payload.sub;    // Same as userID
-        const userSessionID = payload.userSessionID;
+        const userSessionID = payload.sid;
 
-        authLogger.debug(
-            `Attempting signout for userID: ${userID}, sessionID: ${userSessionID}`
-        );
+        authLogger.debug({ userID, userSessionID }, "🔍 Processing signout");
 
         // Call service → either returns ServiceResponse OR throws ServiceException
-        const result = await authService.signout({ userID, userSessionID });
+        await authService.signout({ userID, userSessionID });
 
         res.clearCookie(JwtTokenNames.ACCESS_TOKEN, {
             path: "/",
@@ -49,6 +51,8 @@ export const signoutHandler = asyncHandler(
             secure: env.NODE_ENV === "production",
             sameSite: "lax",
         });
+
+        authLogger.debug({ path: req.originalUrl, method: req.method, userID }, "✅ Signout successful");
 
         // Handler only returns response
         return sendResponse({

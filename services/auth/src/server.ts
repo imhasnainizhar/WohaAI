@@ -27,4 +27,5 @@ const PORT = env.AUTH_SERVICE_PORT || 8091;
 
 app.listen(PORT, () => {
   authLogger.info(`✅ Auth Service running on port ${PORT}`);
+  authLogger.debug("DB URI:" + env.USERS_MONGO_URI);
 });

@@ -1,19 +1,13 @@
 import { randomInt } from "crypto";
-import { AuthRepo } from "@/repo/auth-repo";
 import { authLogger } from "@packages/observability";
 import { getEmailVerificationProducer } from "@/producer/verify-email";
-import { env } from "@/config/env";
-import { SessionExpiredError } from "@packages/errors";
+import { MaliciousActivityError, SessionExpiredError } from "@packages/errors";
 import { VerifySignupEmailEvent } from "@packages/contracts/mailer";
-import { getSignupSession, setVerificationCodeCache } from "@/redis/redis";
-
-
-export interface SendVerificationServiceResponse {
-  verificationEmailSent: boolean
-}
+import { getAuthSession, setVerificationCodeCache } from "@/redis/redis";
+import kafka from "../../../../../../packages/config/kafka.json"
 
 export interface SendVerificationServiceParams {
-  signupSessionID: string
+  authSessionID: string
 }
 
 /**
@@ -33,17 +27,16 @@ export class SendVerificationEmailService {
    * Send verification email (signup OTP flow)
    */
   async execute({
-    signupSessionID
-  }: SendVerificationServiceParams): Promise<SendVerificationServiceResponse> {
+    authSessionID
+  }: SendVerificationServiceParams): Promise<void> {
     let pendingEmail: string | undefined;
 
-    // fetch signup session
-    const cacheKey = `${env.SIGNUP_SESSION_REDIS_KEY_PREFIX}:${signupSessionID}`;
-
     const session =
-      await getSignupSession(cacheKey);
+      await getAuthSession(authSessionID);
 
     if (!session) throw new SessionExpiredError();
+    if (!session.email) throw new MaliciousActivityError("Email not found in session");
+    pendingEmail = session.email;
 
     // generate OTP
     const code = randomInt(
@@ -52,13 +45,13 @@ export class SendVerificationEmailService {
     ).toString();
 
     authLogger.debug(
-      `[VERIFICATION] Code generated for ${pendingEmail}`
+      `[VERIFICATION] Code generated for ${pendingEmail} -> ${code}`
     );
 
     // cache OTP
     await setVerificationCodeCache(
       {
-        id: signupSessionID,
+        id: authSessionID,
         verificationCode: code,
       },
     );
@@ -69,7 +62,7 @@ export class SendVerificationEmailService {
       type: "signup_verification_code",
       email: pendingEmail!,
       code,
-      signupSessionID,
+      authSessionID,
       createdAt: new Date(),
     };
 
@@ -78,7 +71,7 @@ export class SendVerificationEmailService {
 
     // produce email event on kafka
     await producer.send({
-      topic: env.AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC,
+      topic: kafka.topics.emailVerification,
       messages: [
         {
           value: JSON.stringify(event),
@@ -86,8 +79,6 @@ export class SendVerificationEmailService {
       ],
     });
 
-    authLogger.info(`[VERIFICATION] Event sent for ${pendingEmail}`);
-
-    return { verificationEmailSent: true }
+    authLogger.debug(`[VERIFICATION] Event sent`);
   }
 }

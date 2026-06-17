@@ -1,13 +1,12 @@
-import { env } from "@/config/env";
-import { exp } from "@/config/exp";
-import { createJwtToken, SignupSessionPayload } from "@packages/jwt";
+import { env } from "@packages/env-ts";
+import exp from "../../../../../../packages/config/exp.json";
+import { createJwtToken, AuthSessionPayload } from "@packages/security/jwt";
 import { authLogger } from "@packages/observability";
 import {
   deleteVerificationCodeCache,
-  getSignupSession,
+  getAuthSession,
   getVerificationCodeCache,
-  setConfirmedEmailCache,
-  setSignupSession,
+  setAuthSession,
 } from "@/redis/redis";
 import { SessionExpiredError } from "@packages/errors";
 import { randomUUID } from "crypto";
@@ -16,12 +15,12 @@ import { InvalidVerificationCodeError, VerificationCodeExpiredError } from "@/er
 
 
 export interface VerifyUserEmailServiceParams {
-  signupSessionID: string;
+  authSessionID: string;
   verificationCode: string;
 }
 
 export interface VerifyUserEmailServiceResponse {
-  extendedSignupToken: string
+  authToken: string
 }
 
 export class VerifyUserEmailService {
@@ -31,66 +30,61 @@ export class VerifyUserEmailService {
   async execute(
     {
       verificationCode,
-      signupSessionID
+      authSessionID
     }: VerifyUserEmailServiceParams
   ): Promise<VerifyUserEmailServiceResponse> {
 
-      // fetch pending signup session
-      const signupSession =
-        await getSignupSession(signupSessionID);
+    // fetch pending signup session
+    const signupSession =
+      await getAuthSession(authSessionID);
 
-      if (!signupSession) throw new SessionExpiredError
+    if (!signupSession) throw new SessionExpiredError
 
-      // As we are following a step by step signup flow, email will be present in cache temp session if signup session is not expired.
-      const pendingEmail =
-        signupSession.email!;
+    // As we are following a step by step signup flow, email will be present in cache temp session if signup session is not expired.
+    const pendingEmail =
+      signupSession.email!;
 
-      // fetch OTP cache
-      const cachedVerificationCode = await getVerificationCodeCache(signupSessionID);
+    // fetch OTP cache
+    const cachedVerificationCode = await getVerificationCodeCache(authSessionID);
 
-      if(!cachedVerificationCode) throw new VerificationCodeExpiredError();
+    if (!cachedVerificationCode) throw new VerificationCodeExpiredError();
 
-      // validate OTP 
-      if (
-        cachedVerificationCode !==
-        verificationCode
-      ) throw new InvalidVerificationCodeError();
+    // validate OTP 
+    if (
+      cachedVerificationCode !==
+      verificationCode
+    ) throw new InvalidVerificationCodeError();
 
-      // invalidate OTP after successful verification
-      await deleteVerificationCodeCache(signupSessionID)
+    // invalidate OTP after successful verification
+    await deleteVerificationCodeCache(authSessionID)
 
-      // generate extended signup token
-      const extendedSignupToken =
-        createJwtToken<SignupSessionPayload>({
-          payload: {
-            jti: randomUUID(),
-            sub: signupSessionID,
-          },
-          secret: env.JWT_SIGNUP_SESSION_SECRET_KEY,
-          options: {
-            expiresIn: exp.JWT_SIGNUP_SESSION_TOKEN_EXTENDED,
-          } as SignOptions
-  });
-
-      await setConfirmedEmailCache({
-        signupSessionID,
-        email: pendingEmail
+    // generate extended signup token
+    const authToken =
+      createJwtToken<AuthSessionPayload>({
+        payload: {
+          jti: randomUUID(),
+          sub: authSessionID,
+        },
+        secret: env.JWT_AUTH_SECRET_KEY,
+        options: {
+          expiresIn: exp.JWT_AUTH_SESSION_TOKEN,
+        } as SignOptions
       });
 
-      // to refresh expiry (ttl)
-      await setSignupSession(
-        signupSessionID,
-        {
-          ...signupSession
-        }
-      )
-
-      authLogger.info(
-        `✅ Email verified successfully for session ${signupSessionID}`
-      );
-
-      return {
-        extendedSignupToken,
+    await setAuthSession(
+      authSessionID,
+      {
+        ...signupSession,
+        emailVerified: true
       }
+    );
+
+    authLogger.info(
+      `✅ Email verified successfully for session ${authSessionID}`
+    );
+
+    return {
+      authToken,
+    }
   }
 }

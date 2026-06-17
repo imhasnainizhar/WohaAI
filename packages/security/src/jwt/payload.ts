@@ -18,7 +18,6 @@ interface AuthenticatedUserPayload extends BaseJwtPayload {
     sid: string;
 }
 
-
 /**
  * Access token payload.
  */
@@ -36,21 +35,6 @@ export interface RefreshTokenPayload
     extends AuthenticatedUserPayload { }
 
 /**
- * Elevated privilege token.
- */
-export interface PrivilegedAccessTokenPayload
-    extends AccessTokenPayload {
-    scope: "privileged_action";
-
-    reason:
-    | "change_email"
-    | "change_password"
-    | "view_sensitive_data"
-    | "delete_account"
-    | "update_security_settings";
-}
-
-/**
  * Temporary signup session token.
  */
 export interface AuthSessionPayload
@@ -61,14 +45,4 @@ export interface AuthSessionPayload
 
 export interface ChangePasswordSessionPayload extends BaseJwtPayload {
     sub: string
-}
-
-/**
- * Custom Payload for signin flow.
- * This must be encrypted using JWE.
- */
-export interface SigninFlowPayload extends BaseJwtPayload {
-  emailDraft?: string;
-  emailConfirmed?: boolean;
-  passwordHashed?: string;
 }

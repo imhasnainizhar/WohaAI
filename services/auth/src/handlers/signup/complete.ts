@@ -3,72 +3,74 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
 import { buildCookie, Cookie, sendResponse } from "@packages/http";
 import { env } from "@packages/env-ts";
+import { authLogger } from "@packages/observability";
 import authService from "@/services/auth-service";
 import { SessionExpiredError, ValidationError } from "@packages/errors";
 import { ClientData } from "@packages/contracts/auth";
 import exp from "../../../../../packages/config/exp.json";
 import { getClientData } from "@/ua/client-data";
+import tokenNames from "../../../../../packages/config/token-names.json";
 
 /**
  * Handler for user signup complete.
  */
 export const completeSignupHandler = asyncHandler(
   async (req: Request, res: Response) => {
+    authLogger.debug({ path: req.originalUrl, method: req.method }, "Signup completion requested");
 
-    const token = req.cookies?.[env.SIGNUP_SESSION_TOKEN_NAME];
+    const token = req.cookies?.[tokenNames.AUTH_SESSION_TOKEN];
 
-    if (!token) throw new SessionExpiredError()
+    if (!token) {
+      authLogger.debug({ path: req.originalUrl }, "❌ Signup complete failed - no token");
+      throw new SessionExpiredError()
+    }
 
-    const payload: SignupSessionPayload = verifyJwtToken({
+    const payload: AuthSessionPayload = verifyJwtToken({
       token,
-      secret: env.JWT_SIGNUP_SESSION_SECRET_KEY
+      secret: env.JWT_AUTH_SECRET_KEY
     });
 
-    if (!payload) throw new SessionExpiredError()
+    if (!payload) {
+      authLogger.debug({ path: req.originalUrl }, "❌ Signup complete failed - invalid payload");
+      throw new SessionExpiredError()
+    }
 
-    const body: SignupCompleteRequest = req.body
-
-    const parsed =
-      SignupCompleteRequestSchema.safeParse(body)
-
-    if (!parsed.success) throw new ValidationError("Invalid remember me option", parsed.error)
-    const { rememberMe } = parsed.data
-
-    const signupSessionID = payload.signupSessionID;
+    const authSessionID = payload.sub;
 
     // Get client data for creating device signin record in DB
     const clientData: ClientData = getClientData(req);
 
     const result = await authService.completeSignup({
-      signupSessionID,
-      rememberMe,
+      authSessionID,
       clientData
     });
 
     // Build authentication cookies
     const refreshTokenCookie: Cookie = buildCookie({
-      name: env.REFRESH_TOKEN_NAME,
+      name: tokenNames.REFRESH_TOKEN,
       value: result.refreshToken,
       options: {
         httpOnly: true,
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: parsed.data.rememberMe ? exp.REFRESH_TOKEN_COOKIE : undefined
+        maxAge: exp.REFRESH_TOKEN_COOKIE
       }
     });
 
     const accessTokenCookie: Cookie = buildCookie({
-      name: env.ACCESS_TOKEN_NAME,
+      name: tokenNames.ACCESS_TOKEN,
       value: result.accessToken,
       options: {
         httpOnly: true,
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: parsed.data.rememberMe ? exp.ACCESS_TOKEN_COOKIE : undefined
+        maxAge: exp.ACCESS_TOKEN_COOKIE
       }
     });
+
+    authLogger.debug({ path: req.originalUrl, method: req.method, userID: result.userID }, "🎉 Signup complete successful");
 
     // send response
     return sendResponse({

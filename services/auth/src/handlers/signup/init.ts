@@ -1,65 +1,42 @@
-import { asyncHandler } from '@/middlewares/async-handler';
+import { asyncHandler } from "@/middlewares/async-handler";
+import { env } from "@packages/env-ts";
+import authService from "@/services/auth-service";
+import { buildCookie, Cookie, sendResponse } from "@packages/http";
 import { Request, Response } from "express";
-import { buildCookie, sendResponse } from "@packages/http";
-import authService from '@/services/auth-service';
-import { SignupInitRequest, SignupInitRequestSchema, SignupInitResponse } from "@packages/contracts/auth";
-import { ValidationError } from '@packages/errors';
-import { env } from '@/config/env';
-import { exp } from '@/config/exp';
+import { authLogger } from "@packages/observability";
+import tokenNames from "../../../../../packages/config/token-names.json";
+import exp from "../../../../../packages/config/exp.json";
 
 /**
- * Handler for user signup get started.
- * Validates input and calls for get started service.
- * Then service create signup session if user is new.
+ * Handler for user signup init.
  */
-export const signupInitHandler = asyncHandler(
-    async (req: Request, res: Response) => {
+export const signupInitHandler =
+    asyncHandler(async (req: Request, res: Response) => {
 
-        // Parsing request body
-        // type: username | email is ignored as ican be verified through schema again.
-        const body: SignupInitRequest = req.body
+        const { authToken } = await authService.signupInit();
 
-        const parsed = 
-            SignupInitRequestSchema.safeParse(body);
-            
-        if (!parsed.success) {
-            throw new ValidationError(
-                "Given credentials could not be validated, please use allowed characters.",
-                parsed.error
-            );
-        }
-
-        // Call service → either returns ServiceResponse OR throws ServiceException
-        const {
-            signupSessionInit,
-            alreadyExists,
-            signupSessionToken        
-        } = await authService.signupInit(parsed.data);
-
-        const signupSessionCookie = buildCookie({
-            name: env.SIGNUP_SESSION_TOKEN_NAME,
-            value: signupSessionToken,
+        const accessTokenCookie: Cookie = buildCookie({
+            name: tokenNames.AUTH_SESSION_TOKEN,
+            value: authToken,
             options: {
                 httpOnly: true,
                 secure: env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",
-                maxAge: exp.SIGNUP_SESSION_COOKIE
+                maxAge: exp.AUTH_SESSION_COOKIE
             }
-        })
+        });
 
-        // Controller only forwards response
-        return sendResponse<SignupInitResponse>({
+        authLogger.debug({ path: req.originalUrl, method: req.method }, "🚀 Signup init successful");
+
+        // Handler only returns response
+        return sendResponse({
             res,
             success: true,
             statusCode: 200,
-            data: {
-                signupSessionInit,
-                alreadyExists
-            },
-            message: "signup init successful",
+            message: "Auth session initialized successfully",
             path: req.originalUrl,
-            cookies: [ signupSessionCookie ]
+            cookies: [accessTokenCookie]
         });
     }
-);
+    );

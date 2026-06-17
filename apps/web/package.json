@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^5.4.0",
     "@lexical/react": "^0.45.0",
     "@packages/contracts": "workspace:*",
+    "@packages/env-ts": "workspace:*",
     "@packages/db": "workspace:*",
     "@packages/errors": "workspace:*",
     "@packages/http": "workspace:*",

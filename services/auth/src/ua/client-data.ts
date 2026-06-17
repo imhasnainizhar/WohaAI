@@ -2,11 +2,6 @@ import { UAParser } from "ua-parser-js";
 import { ClientData } from "@packages/contracts/auth";
 import { Request } from "express";
 
-import * as Auth from "@packages/contracts/auth";
-
-console.log(Auth);
-
-
 /**
  * @description This is handler level util mainly to get client data from request headers.
  * But can be used everywhere as per needs.

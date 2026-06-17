@@ -1,86 +1,162 @@
-import { NextPage } from "next";
-import { Metadata } from 'next';
+import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy || Barlon',
+  title: 'Privacy Policy || WohaAI',
   description: 'Learn more about our privacy policy and how we handle your data.',
 };
 
-const PrivacyPolicy: NextPage = () => {
+export default function PrivacyPolicy() {
   return (
-    <>
-      <main className="policy-content-container">
-        <div className="policy-box">
-          <h1>Privacy Policy</h1>
-          <p>Last updated: [Insert Date]</p>
-          <p>
-            At YourBrandName, we are committed to protecting your privacy. This Privacy Policy
-            explains how we collect, use, and safeguard your information when you visit our website.
+    <div className="min-h-svh font-reading bg-background">
+      <div className="max-w-3xl mx-auto px-6 py-12 md:py-20">
+        <div className="mb-12">
+          <h1 className="font-gerogia-sans text-fluid-2xl font-medium text-foreground mb-4">
+            Privacy Policy
+          </h1>
+          <p className="text-muted-foreground text-fluid-sm mb-6">
+            Last updated: January 17, 2026
+          </p>
+          <p className="text-foreground text-fluid-base leading-relaxed">
+            At WohaAI, we are committed to protecting your privacy. This Privacy Policy
+            explains how we collect, use, and safeguard your information when you use our AI-powered services.
           </p>
         </div>
 
-        <div className="policy-box">
-          <h2>Information We Collect</h2>
-          <p>We may collect personal information such as:</p>
-          <ul>
-            <li>Name</li>
-            <li>Email address</li>
-            <li>Shipping address</li>
-            <li>Phone number</li>
-            <li>Payment information (processed securely through third-party gateways)</li>
-          </ul>
-        </div>
+        <div className="space-y-8">
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Information We Collect
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              We may collect the following types of information:
+            </p>
+            <ul className="list-disc list-inside text-muted-foreground text-fluid-base space-y-2 ml-2">
+              <li><strong>Account Information:</strong> Name, email address, username, and password</li>
+              <li><strong>Usage Data:</strong> AI interactions, prompts, and generated content</li>
+              <li><strong>Technical Data:</strong> IP address, device information, browser type</li>
+              <li><strong>Communication Data:</strong> Messages sent to our support team</li>
+            </ul>
+          </section>
 
-        <div className="policy-box">
-          <h2>How We Use Your Information</h2>
-          <p>We use the information we collect to:</p>
-          <ul>
-            <li>Process and fulfill your orders</li>
-            <li>Communicate with you about your order</li>
-            <li>Send promotional materials (if opted-in)</li>
-            <li>Improve our website and services</li>
-          </ul>
-        </div>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              How We Use Your Information
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              We use the information we collect to:
+            </p>
+            <ul className="list-disc list-inside text-muted-foreground text-fluid-base space-y-2 ml-2">
+              <li>Provide and improve our AI services</li>
+              <li>Process your requests and generate responses</li>
+              <li>Authenticate users and secure accounts</li>
+              <li>Communicate with you about service updates</li>
+              <li>Analyze usage patterns to enhance performance</li>
+              <li>Prevent fraud and abuse of our services</li>
+            </ul>
+          </section>
 
-        <div className="policy-box">
-          <h2>Sharing Your Information</h2>
-          <p>
-            We do not sell or rent your personal data. We may share information with trusted third
-            parties for order fulfillment, payment processing, and delivery. We do not share your data with any third parties for marketing purposes. You can opt out of receiving promotional materials at any time.
-          </p>
-        </div>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              AI Content & Data Processing
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              When you interact with our AI:
+            </p>
+            <ul className="list-disc list-inside text-muted-foreground text-fluid-base space-y-2 ml-2">
+              <li>Your prompts may be processed to generate relevant responses</li>
+              <li>We may use anonymized data to train and improve our AI models</li>
+              <li>We do not sell your personal data or conversations to third parties</li>
+              <li>You can request deletion of your conversation history at any time</li>
+            </ul>
+          </section>
 
-        <div className="policy-box">
-          <h2>Security</h2>
-          <p>
-            We implement appropriate technical and organizational measures to protect your personal
-            data. We use SSL encryption to protect your data. We do not share your payment information with any third parties. We do store your payment information on our servers with highly secure methods.
-          </p>
-        </div>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Data Security
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              We implement appropriate technical and organizational measures to protect your personal
+              data, including encryption, secure servers, and access controls. We regularly review our
+              security practices to ensure your data remains safe.
+            </p>
+          </section>
 
-        <div className="policy-box">
-          <h2>Your Rights</h2>
-          <p>You have the right to:</p>
-          <ul>
-            <li>Access the personal data we hold about you</li>
-            <li>Request correction or deletion of your data</li>
-            <li>Withdraw consent at any time</li>
-          </ul>
-        </div>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Your Rights
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              You have the right to:
+            </p>
+            <ul className="list-disc list-inside text-muted-foreground text-fluid-base space-y-2 ml-2">
+              <li>Access the personal data we hold about you</li>
+              <li>Request correction or deletion of your data</li>
+              <li>Withdraw consent at any time</li>
+              <li>Export your data in a portable format</li>
+              <li>Opt-out of data collection for non-essential purposes</li>
+            </ul>
+          </section>
 
-        <div className="policy-box">
-          <h2>Contact Us</h2>
-          <p>
-            If you have any other questions, please contact us at
-          </p>
-          <a href="mailto:support@yourbrand.com">support@yourbrand.com</a>
-          <a href="tel:+1234567890">+1234567890</a>
-          <p>For more Support and Contact, Visit here:</p>
-          <a href="https://barlon.com/contact">Get Support</a>
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Third-Party Services
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              We may use third-party services for analytics, authentication, and infrastructure.
+              These services have their own privacy policies, and we ensure they comply with
+              applicable data protection regulations.
+            </p>
+          </section>
+
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Cookies & Tracking
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              We use cookies and similar technologies to improve your experience, analyze usage,
+              and maintain security. You can manage your cookie preferences through your browser settings.
+            </p>
+          </section>
+
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Children's Privacy
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              Our services are not intended for children under 13. We do not knowingly collect
+              personal information from children under 13.
+            </p>
+          </section>
+
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Changes to This Policy
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed">
+              We may update this privacy policy from time to time. We will notify you of any
+              significant changes by posting the new policy on this page and updating the "Last updated" date.
+            </p>
+          </section>
+
+          <section className="border-l-2 border-border pl-6">
+            <h2 className="font-gerogia-sans text-fluid-xl font-medium text-foreground mb-3">
+              Contact Us
+            </h2>
+            <p className="text-muted-foreground text-fluid-base leading-relaxed mb-3">
+              If you have any questions about this Privacy Policy, please contact us:
+            </p>
+            <div className="space-y-2">
+              <Link href="mailto:privacy@wohaai.com" className="text-primary hover:underline block">
+                privacy@wohaai.com
+              </Link>
+              <Link href="/" className="text-primary hover:underline block">
+                Return to WohaAI
+              </Link>
+            </div>
+          </section>
         </div>
-      </main>
-    </>
+      </div>
+    </div>
   );
-};
-
-export default PrivacyPolicy;
+}

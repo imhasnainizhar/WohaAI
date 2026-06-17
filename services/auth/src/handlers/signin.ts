@@ -6,8 +6,9 @@ import { getClientData } from "../ua/client-data";
 import { ValidationError } from "@packages/errors";
 import { buildCookie } from "@packages/http";
 import { env } from "@packages/env-ts";
+import { authLogger } from "@packages/observability";
 import exp from "../../../../packages/config/exp.json";
-import { SigninCompleteRequest, SigninCompleteResponse, SigninCompleteSchema, SigninInitRequest, SigninInitRequestSchema } from "@packages/contracts/auth";
+import { SigninCompleteRequest, SigninCompleteResponse, SigninCompleteRequestSchema, SigninInitRequest, SigninInitRequestSchema } from "@packages/contracts/auth";
 import JwtTokenNames from "../../../../packages/config/token-names.json";
 import { AuthSessionPayload, verifyJwtToken } from "@packages/security/jwt";
 
@@ -16,13 +17,16 @@ import { AuthSessionPayload, verifyJwtToken } from "@packages/security/jwt";
  * Handler for user sign-in.
  * Validates input, verifies session token & calls for signin service.
  */
-export const SigninInitHandler = asyncHandler(
+export const signinInitHandler = asyncHandler(
     async (req: Request, res: Response) => {
         // Validate request body
         const body: SigninInitRequest = req.body
 
         const parsed = SigninInitRequestSchema.safeParse(body);
-        if (!parsed.success) throw new ValidationError("Validation error", parsed.error);
+        if (!parsed.success) {
+            authLogger.debug({ errors: parsed.error.issues }, "❌ Signin init validation failed");
+            throw new ValidationError("Validation error", parsed.error);
+        }
 
         // Get client data for creating device signin record in DB
         const clientData = getClientData(req);
@@ -45,6 +49,8 @@ export const SigninInitHandler = asyncHandler(
             }
         });
 
+        authLogger.debug({ path: req.originalUrl, method: req.method }, "✅ Signin init successful");
+
         // Handler only returns response
         // Cookies are under the hood set as Express Cookies with name having token as value in this sign-in context. Cookie options are used to configure security and exp options.
         return sendResponse({
@@ -57,7 +63,7 @@ export const SigninInitHandler = asyncHandler(
     }
 );
 
-export const signinHandler = asyncHandler(
+export const signinCompleteHandler = asyncHandler(
     async (req: Request, res: Response) => {
         const token = req.cookies[JwtTokenNames.AUTH_SESSION_TOKEN];
 
@@ -69,8 +75,11 @@ export const signinHandler = asyncHandler(
         // Validate request body
         const body: SigninCompleteRequest = req.body
 
-        const parsed = SigninCompleteSchema.safeParse(body);
-        if (!parsed.success) throw new ValidationError("Validation error", parsed.error);
+        const parsed = SigninCompleteRequestSchema.safeParse(body);
+        if (!parsed.success) {
+            authLogger.debug({ errors: parsed.error.issues }, "❌ Signin complete validation failed");
+            throw new ValidationError("Validation error", parsed.error);
+        }
 
         // Get client data for creating device signin record in DB
         const clientData = getClientData(req);
@@ -116,6 +125,8 @@ export const signinHandler = asyncHandler(
                 maxAge: exp.ACCESS_TOKEN_COOKIE
             }
         });
+
+        authLogger.debug({ path: req.originalUrl, method: req.method, userID }, "✅ Signin complete successful");
 
         // responding to client
         return sendResponse<SigninCompleteResponse>({
