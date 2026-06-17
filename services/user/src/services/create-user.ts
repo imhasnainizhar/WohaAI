@@ -2,12 +2,9 @@ import { UserRepo } from "@/repo/user-repo";
 import { EmailAlreadyTakenError, UsernameAlreadyTakenError } from '../errors/service-error';
 
 export interface CreateUserServiceParams {
-    firstName: string;
-    lastName: string;
     username: string;
     email: string;
     hashedPassword: string;
-    dateOfBirth?: Date;
 }
 
 export class CreateUserService {
@@ -16,12 +13,9 @@ export class CreateUserService {
     ) {}
 
     async execute({
-        firstName,
-        lastName,
         username,
         email,
-        hashedPassword,
-        dateOfBirth
+        hashedPassword
     }: CreateUserServiceParams): Promise<{userCreated: boolean}> {
         const existingEmail =
             await this.userRepo.getUserWithEmail(email);
@@ -38,12 +32,9 @@ export class CreateUserService {
         }
 
         await this.userRepo.createUser({
-            firstName,
-            lastName,
             username,
             email,
-            hashedPassword,
-            dateOfBirth
+            hashedPassword
         });
 
         return {

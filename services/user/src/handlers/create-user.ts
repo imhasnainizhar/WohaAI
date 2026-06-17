@@ -12,7 +12,7 @@ import tokenNames from "../../../../packages/config/token-names.json"
 export const createUserHandler = asyncHandler(async (req: Request, res: Response) => {
     // We are using signupToken cuz User Provision is done by auth service request through User Provision Client under Signup session. User do not request directly for provisioning.
     const signupSessionToken = req.cookies?.[tokenNames.AUTH_SESSION_TOKEN];
-    const payload = verifyJwtToken({
+    verifyJwtToken({
         token: signupSessionToken,
         secret: env.JWT_AUTH_SECRET_KEY
     }) as AuthSessionPayload;
@@ -21,16 +21,14 @@ export const createUserHandler = asyncHandler(async (req: Request, res: Response
     const parsed = CreateUserSchema.safeParse(req.body);
     if (!parsed.success) {
 
-        logger.warn("Data integrity danger, auth servicce sent wrong invalid User Provision Request")
+        logger.warn("Data integrity danger, auth service sent wrong invalid User Provision Request")
         throw new ValidationError("Validation error at User Provision. Check for data integrity.", parsed.error)
     }
 
-    const { username, firstName, lastName, email, hashedPassword } = parsed.data
+    const { username, email, hashedPassword } = parsed.data
     // Call service
     const result = await userService.createUser({
         username,
-        firstName,
-        lastName,
         email,
         hashedPassword
     });

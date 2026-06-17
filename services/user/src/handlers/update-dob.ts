@@ -5,11 +5,11 @@ import { userLogger as logger } from "@packages/observability";
 import { env } from "@packages/env-ts";
 import { AccessTokenPayload, verifyJwtToken } from "@packages/security/jwt";
 import { AccessSessionExpiredError, ValidationError } from "@packages/errors";
-import { CreateUserSchema, UpdateUserSchema } from '@packages/contracts/user';
+import { UpdateDOBRequestSchema } from '@packages/contracts/user';
 import { asyncHandler } from '../middlewares/async-handler';
 import tokenNames from "../../../../packages/config/token-names.json"
 
-export const updateUserHandler = asyncHandler(async (req: Request, res: Response) => {
+export const updateDOBHandler = asyncHandler(async (req: Request, res: Response) => {
   const accessToken = req.cookies?.[tokenNames.ACCESS_TOKEN];
   const payload = verifyJwtToken({
     token: accessToken,
@@ -17,34 +17,29 @@ export const updateUserHandler = asyncHandler(async (req: Request, res: Response
   }) as AccessTokenPayload;
 
   // sub is user id, as per standards
-  const id = payload.sub
-  if (!id) throw new AccessSessionExpiredError()
+  const userID = payload.sub
+  if (!userID) throw new AccessSessionExpiredError()
 
   // Validate input
-  const parsed = UpdateUserSchema.safeParse(req.body);
+  const parsed = UpdateDOBRequestSchema.safeParse(req.body);
   if (!parsed.success) {
     throw new ValidationError("Invalid User Update Data", parsed.error)
   }
+  
+  const { dateOfBirth } = parsed.data
 
-  const { username, firstName, lastName, dateOfBirth } = parsed.data
   // Call service
-  const result = await userService.updateUser({
-    id,
-    username,
-    firstName,
-    lastName,
-    dateOfBirth: dateOfBirth || undefined
+  await userService.updateDOB({
+    userID,
+    dateOfBirth
   });
 
   // Send response
-  return sendResponse<{ userUpdated: boolean }>({
+  return sendResponse<void>({
     res,
     success: true,
     statusCode: 200,
-    message: "user created",
-    data: {
-      userUpdated: result.userUpdated
-    },
+    message: "user DOB updated",
     path: req.path,
   });
 })

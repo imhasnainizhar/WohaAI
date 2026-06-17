@@ -7,19 +7,20 @@ FROM node:22-slim AS base
 
 WORKDIR /app
 
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+
 # COPY MONOREPO ROOT MANIFESTS FIRST (CACHE LAYER)
 COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY tsconfig.base.json ./
 COPY turbo.json ./
 
-# Copy workspace packages and service
 COPY packages ./packages
-COPY services/user ./services/user
+COPY services/user ./services/user/
 
-## PNPM Install
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN find packages -name package*.json
 
-# INSTALL DEPENDENCIES (WORKSPACE WIDE)
+# Install ALL dependencies
 RUN pnpm install --frozen-lockfile
 
 # ======================================================
@@ -27,18 +28,20 @@ RUN pnpm install --frozen-lockfile
 # ======================================================
 FROM base AS development
 
-ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
+# Copy workspace packages and service
+COPY packages ./packages
+COPY services/user ./services/user
 
-# Put packages on dev mode
-RUN pnpm packages:dev
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/packages/ ./packages/
+COPY --from=base /app/services/user/ ./services/user/
 
-# Generate Prisma client
-RUN pnpm run prisma:generate
-RUN pnpm run prisma:migrate:dev
+# Put packages
+RUN pnpm --filter user-service... build
 
 WORKDIR /app/services/user
 
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "dev"]
 
 # ======================================================
 # BUILD STAGE
@@ -48,12 +51,12 @@ FROM base AS build
 WORKDIR /app
 
 # Build shared packages first
-RUN pnpm run packages:build
+RUN pnpm --filter user-service... build
 
 WORKDIR /app/services/user
 
-# Build only auth service
-RUN pnpm run build
+# Build only user service
+RUN pnpm build
 
 # Keep production deps tree only
 RUN pnpm prune --prod
@@ -67,7 +70,6 @@ WORKDIR /app
 
 # Copy only production dependencies + built output
 COPY --from=build /app/package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY --from=build tsconfig.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages ./packages
 COPY --from=build /app/services/user/dist ./services/user/dist
@@ -80,4 +82,4 @@ USER appuser
 
 WORKDIR /app/services/user
 
-CMD ["pnpm", "run", "start"]
+CMD ["pnpm", "start"]

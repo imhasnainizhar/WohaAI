@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 import { UserService } from '@/services/user-service';
 import { CreateUserService } from '@/services/create-user';
-import { UpdateUserService } from '@/services/update-user';
+import { UpdateUserService } from '@/services/update-name.ts';
 import { GetMeService } from '@/services/get-me';
 import { EmailAlreadyTakenError, UsernameAlreadyTakenError, UserNotFoundError } from '@/errors/service-error';
 import type { UserRepo } from '@/repo/user-repo';

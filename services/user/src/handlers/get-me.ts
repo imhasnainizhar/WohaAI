@@ -7,6 +7,7 @@ import { AccessSessionExpiredError } from "@packages/errors";
 import { GetMeServiceResponse } from "@/services/get-me";
 import { asyncHandler } from "@/middlewares/async-handler";
 import tokenNames from "../../../../packages/config/token-names.json"
+import { GetMeResponse } from "@packages/contracts/user";
 
 export const getMeHandler = asyncHandler(async (req: Request, res: Response) => {
   const accessToken = req.cookies?.[tokenNames.ACCESS_TOKEN];
@@ -16,14 +17,14 @@ export const getMeHandler = asyncHandler(async (req: Request, res: Response) => 
   }) as AccessTokenPayload;
 
   // sub is user id, as per standards
-  const id = payload.sub
-  if (!id) throw new AccessSessionExpiredError()
+  const userID = payload.sub
+  if (!userID) throw new AccessSessionExpiredError()
 
   // Call service
-  const result = await userService.getMe({ id });
+  const result = await userService.getMe({ userID });
 
   // Send response
-  return sendResponse<GetMeServiceResponse>({
+  return sendResponse<GetMeResponse>({
     res,
     success: true,
     statusCode: 200,

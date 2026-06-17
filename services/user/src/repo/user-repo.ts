@@ -1,20 +1,17 @@
 import { User } from "@packages/models"
 
 export interface CreateUserParams {
-    firstName: string;
-    lastName: string;
     username: string;
     email: string;
     hashedPassword: string;
-    dateOfBirth?: Date | null;
 }
 
 export interface UpdateUserParams {
-    id: string;
-    firstName?: string;
-    lastName?: string;
+    userID: string;
+    fullName?: string;
     username?: string;
     dateOfBirth?: Date | null;
+    profilePicURI?: string;
 }
 
 export class UserRepo {
@@ -23,37 +20,31 @@ export class UserRepo {
     ) { }
 
     async createUser({
-        firstName,
-        lastName,
         username,
         email,
-        hashedPassword,
-        dateOfBirth
+        hashedPassword
     }: CreateUserParams) {
         return await this.user.create({
-            firstName,
-            lastName,
             username,
             email,
-            hashedPassword,
-            dateOfBirth
+            hashedPassword
         });
     }
 
     async updateUser({
-        id,
-        firstName,
-        lastName,
+        userID,
+        fullName,
         username,
-        dateOfBirth
+        dateOfBirth,
+        profilePicURI
     }: UpdateUserParams) {
         return await this.user.findOneAndUpdate(
-            { id },
+            { id: userID },
             {
-                firstName,
-                lastName,
+                fullName,
                 username,
-                dateOfBirth
+                dateOfBirth,
+                profilePicURI
             },
             {
                 new: true
@@ -73,9 +64,9 @@ export class UserRepo {
         });
     }
 
-    async getUserWithid(id: string) {
+    async getUserWithUserID(userID: string) {
         return await this.user.findOne({
-            id
+            id: userID
         });
     }
 }

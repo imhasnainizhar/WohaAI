@@ -2,13 +2,12 @@ import { UserRepo } from "@/repo/user-repo";
 import { UserNotFoundError } from "@/errors/service-error";
 
 export interface GetMeServiceParams {
-  id: string;
+  userID: string;
 }
 
 export interface GetMeServiceResponse {
-  id: string;
-  firstName: string;
-  lastName: string;
+  userID: string;
+  fullName: string;
   username: string;
   email: string;
   profilePicURI?: string;
@@ -24,19 +23,18 @@ export class GetMeService {
   ) { }
 
   async execute({
-    id
+    userID
   }: GetMeServiceParams): Promise<GetMeServiceResponse> {
     const user =
-      await this.userRepo.getUserWithid(id);
+      await this.userRepo.getUserWithUserID(userID);
 
     if (!user) {
       throw new UserNotFoundError();
     }
 
     return {
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      userID: user.id,
+      fullName: user.fullName,
       username: user.username,
       email: user.email,
       profilePicURI: user.profilePicURI ?? undefined,

@@ -1,12 +1,15 @@
 import { User } from "@packages/models";
 
 import {
-    UpdateUserService,
-    UpdateUserServiceParams
-} from "./update-user";
+    UpdateFullNameService,
+    UpdateFullNameServiceParams
+} from "./update-name";
+import { UpdateDOBService, UpdateDOBServiceParams } from "./update-dob";
+import { UpdateProfilePicService, UpdateProfilePicServiceParams } from "./update-profile-pic";
 import { CreateUserService, CreateUserServiceParams } from "./create-user";
 import { GetMeService, GetMeServiceParams, GetMeServiceResponse } from "./get-me";
 import { UserRepo } from "@/repo/user-repo";
+import { UpdateUsernameService, UpdateUsernameServiceParams } from './update-username';
 
 export class UserService {
     private static instance: UserService;
@@ -14,7 +17,10 @@ export class UserService {
     // Making constructor public for testing 
     constructor(
         private readonly createUserService: CreateUserService,
-        private readonly updateUserService: UpdateUserService,
+        private readonly updateFullNameService: UpdateFullNameService,
+        private readonly updateDOBService: UpdateDOBService,
+        private readonly updateProfilePicService: UpdateProfilePicService,
+        private readonly updateUsernameService: UpdateUsernameService,
         private readonly getMeService: GetMeService
     ) { }
 
@@ -25,15 +31,27 @@ export class UserService {
             const createUserService =
                 new CreateUserService(userRepo)
 
-            const updateUserService =
-                new UpdateUserService(userRepo)
+            const updateFullNameService =
+                new UpdateFullNameService(userRepo)
+
+            const updateDOBService =
+                new UpdateDOBService(userRepo)
+
+            const updateProfilePicService =
+                new UpdateProfilePicService(userRepo)
+
+            const updateUsernameService =
+                new UpdateUsernameService(userRepo)
 
             const getMeService =
                 new GetMeService(userRepo)
 
             UserService.instance = new UserService(
                 createUserService,
-                updateUserService,
+                updateFullNameService,
+                updateDOBService,
+                updateProfilePicService,
+                updateUsernameService,
                 getMeService
             );
         }
@@ -42,43 +60,61 @@ export class UserService {
     }
 
     public async createUser({
-        firstName,
-        lastName,
         username,
         email,
-        hashedPassword,
-        dateOfBirth
+        hashedPassword
     }: CreateUserServiceParams) {
         return this.createUserService.execute({
-            firstName,
-            lastName,
             username,
             email,
-            hashedPassword,
-            dateOfBirth
+            hashedPassword
         })
     }
-    public async updateUser({
-        id,
-        firstName,
-        lastName,
-        username,
+    public async updateFullName({
+        userID,
+        fullName
+    }: UpdateFullNameServiceParams) {
+        return this.updateFullNameService.execute({
+            userID,
+            fullName
+        });
+    }
+
+    public async updateDOB({
+        userID,
         dateOfBirth
-    }: UpdateUserServiceParams) {
-        return this.updateUserService.execute({
-            id,
-            firstName,
-            lastName,
-            username,
+    }: UpdateDOBServiceParams) {
+        return this.updateDOBService.execute({
+            userID,
             dateOfBirth
         });
     }
 
+    public async updateProfilePic({
+        userID,
+        profilePicURI
+    }: UpdateProfilePicServiceParams) {
+        return this.updateProfilePicService.execute({
+            userID,
+            profilePicURI
+        });
+    }
+
+    public async updateUsername({
+        userID,
+        username
+    }: UpdateUsernameServiceParams) {
+        return this.updateUsernameService.execute({
+            userID,
+            username
+        });
+    }
+
     public async getMe({
-        id
+        userID
     }: GetMeServiceParams): Promise<GetMeServiceResponse> {
         return this.getMeService.execute({
-            id
+            userID
         })
     }
 }

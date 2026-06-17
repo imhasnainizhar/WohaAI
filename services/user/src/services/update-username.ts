@@ -1,48 +1,39 @@
 import { UserRepo } from "@/repo/user-repo";
 import { UsernameAlreadyTakenError } from "@/errors/service-error";
 
-export interface UpdateUserServiceParams {
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    username?: string;
-    dateOfBirth?: Date;
+export interface UpdateUsernameServiceParams {
+    userID: string;
+    username: string;
 }
 
-export class UpdateUserService {
+export class UpdateUsernameService {
     constructor(
         private readonly userRepo: UserRepo
     ) { }
 
     async execute({
-        id,
-        firstName,
-        lastName,
+        userID,
         username,
-        dateOfBirth
-    }: UpdateUserServiceParams): Promise<{ userUpdated: boolean }> {
+    }: UpdateUsernameServiceParams): Promise<{ success: boolean }> {
         if (username) {
             const existingUser =
                 await this.userRepo.getUserWithUsername(username);
 
             if (
                 existingUser &&
-                existingUser.id !== id
+                existingUser.id !== userID
             ) {
                 throw new UsernameAlreadyTakenError();
             }
         }
 
         await this.userRepo.updateUser({
-            id,
-            firstName,
-            lastName,
+            userID,
             username,
-            dateOfBirth
         });
 
         return {
-            userUpdated: true
+            success: true
         }
     }
 }
