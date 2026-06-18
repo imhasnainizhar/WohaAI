@@ -32,7 +32,7 @@ RUN pnpm packages:build
 
 WORKDIR /app/apps/web
 
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "dev"]
 
 # ======================================================
 # BUILD STAGE
