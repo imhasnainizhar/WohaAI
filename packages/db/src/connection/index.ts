@@ -5,13 +5,13 @@ type DBCache = {
   promise: Promise<typeof mongoose> | null;
 };
 
-// Internal cache managed by createMongoConnection
+// Internal cache managed by createDBConnection
 const connectionCache = new Map<string, DBCache>();
 
 /**
  * CORE CONNECTOR (multi-db safe with internal cache)
  */
-export async function createMongoConnection(
+export async function createDBConnection(
   uri: string,
 ) {
   const cacheKey = `${uri}`;
