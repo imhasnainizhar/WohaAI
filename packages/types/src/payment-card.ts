@@ -1,4 +1,3 @@
-
 export enum CardBrand {
   visa = "visa",
   mastercard = "mastercard",

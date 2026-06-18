@@ -26,14 +26,14 @@
     },
     "exports": {
         "./jwt": {
+            "types": "./dist/jwt/index.d.ts",
             "import": "./dist/jwt/index.js",
-            "require": "./dist/jwt/index.js",
-            "types": "./dist/jwt/index.d.ts"
+            "require": "./dist/jwt/index.js"
         },
         "./jwe": {
+            "types": "./dist/jwe/index.d.ts",
             "import": "./dist/jwe/index.js",
-            "require": "./dist/jwe/index.js",
-            "types": "./dist/jwe/index.d.ts"
+            "require": "./dist/jwe/index.js"
         }
     },
     "dependencies": {

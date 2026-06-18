@@ -21,8 +21,8 @@ const PaymentCardSchema = new Schema(
 
     brand: {
       type: String,
-      enum: Object.values(CardBrand),
-      required: true,
+      enum: CardBrand,
+      required: true
     },
 
     expiryMonth: {

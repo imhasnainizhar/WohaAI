@@ -30,16 +30,13 @@ services:
   auth-service:
     build:
       context: ./
-      dockerfile: services/auth/Dockerfile
+      dockerfile: apps/services/auth/Dockerfile
       target: ${NODE_ENV}
     container_name: ${AUTH_SERVICE_CONTAINER_NAME}
     ports:
       - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     volumes:
-      - ./:/app
-      - /app/node_modules
-      - /app/services/auth/node_modules
-      - /app/packages
+      - ./apps/services/auth/src:/app/apps/services/auth/src
     restart: always
     env_file:
       - ./.env
@@ -56,16 +53,13 @@ services:
   user-service:
     build:
       context: ./
-      dockerfile: services/user/Dockerfile
+      dockerfile: apps/services/user/Dockerfile
       target: ${NODE_ENV}
     container_name: ${USER_SERVICE_CONTAINER_NAME}
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     volumes:
-      - ./:/app
-      - /app/node_modules
-      - /app/services/user/node_modules
-      - /app/packages
+      - ./apps/services/user/src:/app/apps/services/user/src
     restart: always
     env_file:
       - ./.env
@@ -79,31 +73,28 @@ services:
     profiles:
       - "services"
 
-# auth-mailer-service:
-#   build:
-#     context: ./
-#     dockerfile: services/auth-mailer/Dockerfile
-#     target: ${NODE_ENV}
-#   container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
-#   ports:
-#     - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
-#   volumes:
-#     - ./:/app
-#     - /app/node_modules
-#     - /app/services/auth/node_modules
-#     - /app/packages
-#   restart: always
-#   env_file:
-#     - ./.env
-#   networks:
-#     - WohaAI_dev_net
-#   healthcheck:
-#     test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"]
-#     interval: 30s
-#     timeout: 10s
-#     retries: 3
-#   profiles:
-#     - "services"
+  auth-mailer-service:
+    build:
+      context: ./
+      dockerfile: apps/services/auth-mailer/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
+    ports:
+      - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
+    volumes:
+      - ./apps/services/auth-mailer/src:/app/apps/services/auth-mailer/src
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
 
 
   ## ----------------------------- ##
@@ -240,15 +231,15 @@ services:
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
     networks:
       - WohaAI_dev_net
+    profiles:
+      - messaging
 
   ## Kafka Topic Creator Container for development
   kafka-init-topics:
     image: confluentinc/cp-kafka:7.5.3
     depends_on:
       - auth-kafka-broker
-
     entrypoint: ["/bin/sh", "-c"]
-
     command: >
       "
       echo 'Waiting for Kafka...'
@@ -259,22 +250,30 @@ services:
       kafka-topics --create \
         --if-not-exists \
         --bootstrap-server ${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT} \
-        --topic ${AUTH_KAFKA_FORGOT_PASSWORD_EVENTS_TOPIC} \
+        --topic auth.password.change.event \
         --partitions 1 \
         --replication-factor 1
 
       kafka-topics --create \
         --if-not-exists \
         --bootstrap-server ${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT} \
-        --topic ${AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC} \
+        --topic auth.email.verification.event \
+        --partitions 1 \
+        --replication-factor 1
+
+      kafka-topics --create \
+        --if-not-exists \
+        --bootstrap-server ${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT} \
+        --topic auth.change.email.event \
         --partitions 1 \
         --replication-factor 1
 
       echo 'Topics created successfully'
       "
-
     networks:
       - WohaAI_dev_net
+    profiles:
+      - messaging
 
 
   ## ----------------------------- ##
@@ -306,5 +305,4 @@ volumes:
   threads_redis_data:
   auth_redis_data:
 
-  pnpm-store:
   node_modules:

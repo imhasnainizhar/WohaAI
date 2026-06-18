@@ -39,7 +39,7 @@ const ThreadSchema = new Schema(
       {
         type: {
           type: String,
-          enum: Object.values(ThreadEventType),
+          enum: ThreadEventType,
           required: true,
         },
         content: String,

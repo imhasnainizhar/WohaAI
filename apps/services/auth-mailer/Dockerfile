@@ -16,7 +16,7 @@ COPY tsconfig.base.json ./
 COPY turbo.json ./
 
 COPY packages ./packages
-COPY apps/services/auth-mailer ./apps/services/auth-mailer/
+COPY apps/services/auth-mailer/package.json ./apps/services/auth-mailer/package.json
 
 RUN find packages -name package*.json
 
@@ -28,16 +28,18 @@ RUN pnpm install --frozen-lockfile
 # ======================================================
 FROM base AS development
 
+WORKDIR /app
+
 # Copy workspace packages and service
 COPY packages ./packages
-COPY apps/services/auth-mailer ./apps/services/auth-mailer
+COPY apps/services/auth-mailer/ ./apps/services/auth-mailer
 
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/packages/ ./packages/
 COPY --from=base /app/apps/services/auth-mailer/ ./apps/services/auth-mailer/
 
-# Put packagesv
-RUN pnpm --filter auth-mailer-service... build
+# Build all packages first (for type checking)
+RUN pnpm run packages:build
 
 WORKDIR /app/apps/services/auth-mailer
 
