@@ -16,7 +16,7 @@ COPY tsconfig.base.json ./
 COPY turbo.json ./
 
 COPY packages ./packages
-COPY apps/services/user ./apps/services/user/
+COPY apps/services/user/package.json ./apps/services/user/package.json
 
 RUN find packages -name package*.json
 
@@ -28,6 +28,8 @@ RUN pnpm install --frozen-lockfile
 # ======================================================
 FROM base AS development
 
+WORKDIR /app
+
 # Copy workspace packages and service
 COPY packages ./packages
 COPY apps/services/user ./apps/services/user
@@ -36,8 +38,8 @@ COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/packages/ ./packages/
 COPY --from=base /app/apps/services/user/ ./apps/services/user/
 
-# Put packages
-RUN pnpm --filter user-service... build
+# Build all packages first (for type checking)
+RUN pnpm run packages:build
 
 WORKDIR /app/apps/services/user
 

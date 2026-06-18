@@ -14,7 +14,9 @@ COPY turbo.json ./
 
 # Copy workspace packages and service
 COPY packages ./packages
-COPY apps/web ./apps/web
+COPY apps/web/package.json ./apps/web/package.json
+
+RUN find packages -name package*.json
 
 ## PNPM Install
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -26,6 +28,15 @@ RUN pnpm install --frozen-lockfile
 # DEVELOPMENT STAGE
 # ======================================================
 FROM base AS development
+
+WORKDIR /app
+
+COPY apps/web ./apps/web
+COPY packages ./packages
+
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/packages/ ./packages/
+COPY --from=base /app/apps/web/ ./apps/web/
 
 # Put packages
 RUN pnpm packages:build

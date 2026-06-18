@@ -16,7 +16,7 @@ COPY tsconfig.base.json ./
 COPY turbo.json ./
 
 COPY packages ./packages
-COPY apps/services/auth ./apps/services/auth/
+COPY apps/services/auth/package.json ./apps/services/auth/package.json
 
 RUN find packages -name package*.json
 
@@ -28,6 +28,8 @@ RUN pnpm install --frozen-lockfile
 # ======================================================
 FROM base AS development
 
+WORKDIR /app
+
 # Copy workspace packages and service
 COPY packages ./packages
 COPY apps/services/auth ./apps/services/auth
@@ -36,8 +38,8 @@ COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/packages/ ./packages/
 COPY --from=base /app/apps/services/auth/ ./apps/services/auth/
 
-# Put packages
-RUN pnpm --filter auth-service... build
+# Build all packages first (for type checking)
+RUN pnpm packages:build
 
 WORKDIR /app/apps/services/auth
 
