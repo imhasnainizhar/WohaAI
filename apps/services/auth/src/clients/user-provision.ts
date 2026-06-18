@@ -58,13 +58,14 @@ export class UserProvisioningClient {
                 }
             );
 
-            const data = CreatedUserResponseSchema.parse(response.data);
+            const parsed = 
+                CreatedUserResponseSchema.safeParse(response.data);
 
-            if (!data.success) {
+            if (!parsed.success) {
                 throw new ValidationError("User creation failed");
             }
 
-            return data.userData;
+            return parsed.data.userData;
         } catch (err: any) {
             authLogger.error({
                 message:

@@ -23,9 +23,7 @@ export const CreatedUserResponseSchema = z.object({
     userData: z.object({
         userID: z.string(),
         username: UsernameSchema,
-        email: EmailSchema,
-        fullName: FullNameSchema,
-        dateOfBirth: DateOfBirthSchema,
+        email: EmailSchema
     }),
 });
 
