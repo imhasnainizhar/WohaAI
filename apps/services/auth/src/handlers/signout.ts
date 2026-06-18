@@ -6,7 +6,7 @@ import { RefreshTokenPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { env } from "@wohaai/env-ts";
 import { authLogger } from "@wohaai/telemetry";
 import { SessionExpiredError } from "@wohaai/errors";
-import JwtTokenNames from "../../../../packages/config/token-names.json";
+import JwtTokenNames from "../../../../../packages/config/token-names.json";
 
 /**
  * Handler for user sign-out.

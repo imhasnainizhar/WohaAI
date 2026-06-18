@@ -2,24 +2,24 @@ import { randomUUID } from "crypto";
 import { createJwtToken, ChangePasswordSessionPayload } from "@wohaai/security/jwt";
 import { SignOptions } from "jsonwebtoken";
 import { getChangePasswordProducer } from "@/producer/change-password";
-import { ChangePasswordEvent } from "@wohaai/validations";
+import { ChangePasswordEvent } from "@wohaai/types";
 import argon2 from "argon2"
 import {
   SessionExpiredError
 } from "@wohaai/errors";
 
 import { AuthRepo } from "@/repo/auth-repo";
-import { Password, UsernameOrEmail } from "@wohaai/validations";
+import { TPassword, TUsernameOrEmail } from "@wohaai/validations";
 import { authLogger } from "@wohaai/telemetry";
 import { InvalidCredentialsError } from "@/errors/service-error";
 import { getChangePasswordSessionCache, setChangePasswordSessionCache } from "@/redis/redis";
-import exp from "../../../../packages/config/exp.json"
+import exp from "../../../../../packages/config/exp.json"
 import { env } from "@wohaai/env-ts";
-import kafka from "../../../../packages/config/kafka.json"
+import kafka from "../../../../../packages/config/kafka.json"
 
 // init()
 export interface ChangePasswordInitServiceParams {
-  usernameOrEmail: UsernameOrEmail;
+  usernameOrEmail: TUsernameOrEmail;
 }
 
 export interface VerifyChangePasswordServiceParams {
@@ -31,7 +31,7 @@ export interface VerifyChangePasswordServiceResponse {
 
 export interface CompleteChangePasswordServiceResponse {
   sessionID: string;
-  password: Password;
+  password: TPassword;
 }
 
 export class ChangePasswordService {

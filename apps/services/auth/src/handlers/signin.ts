@@ -7,9 +7,10 @@ import { ValidationError } from "@wohaai/errors";
 import { buildCookie } from "@wohaai/http";
 import { env } from "@wohaai/env-ts";
 import { authLogger } from "@wohaai/telemetry";
-import exp from "../../../../packages/config/exp.json";
-import { SigninCompleteRequest, SigninCompleteResponse, SigninCompleteRequestSchema, SigninInitRequest, SigninInitRequestSchema } from "@wohaai/validations";
-import JwtTokenNames from "../../../../packages/config/token-names.json";
+import exp from "../../../../../packages/config/exp.json";
+import { TSigninCompleteRequest, SigninCompleteRequestSchema, TSigninInitRequest, SigninInitRequestSchema } from "@wohaai/validations";
+import { SigninCompleteResponse } from "@wohaai/types";
+import JwtTokenNames from "../../../../../packages/config/token-names.json";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 
 
@@ -20,7 +21,7 @@ import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 export const signinInitHandler = asyncHandler(
     async (req: Request, res: Response) => {
         // Validate request body
-        const body: SigninInitRequest = req.body
+        const body: TSigninInitRequest = req.body
 
         const parsed = SigninInitRequestSchema.safeParse(body);
         if (!parsed.success) {
@@ -73,7 +74,7 @@ export const signinCompleteHandler = asyncHandler(
         }) as AuthSessionPayload;
 
         // Validate request body
-        const body: SigninCompleteRequest = req.body
+        const body: TSigninCompleteRequest = req.body
 
         const parsed = SigninCompleteRequestSchema.safeParse(body);
         if (!parsed.success) {
@@ -91,6 +92,7 @@ export const signinCompleteHandler = asyncHandler(
             username,
             fullName,
             email,
+            dateOfBirth,
             refreshToken,
             accessToken
         } = await authService.signinComplete({
@@ -140,6 +142,7 @@ export const signinCompleteHandler = asyncHandler(
                 username,
                 fullName,
                 email,
+                dateOfBirth
             },
             cookies: [refreshTokenCookie, accessTokenCookie],
             path: req.originalUrl,

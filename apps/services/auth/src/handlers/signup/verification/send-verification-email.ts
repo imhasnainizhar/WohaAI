@@ -4,7 +4,7 @@ import authService from "@/services/auth-service";
 import { env } from "@wohaai/env-ts";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { sendResponse } from "@wohaai/http";
-import tokenNames from "../../../../../../packages/config/token-names.json";
+import tokenNames from "../../../../../../../packages/config/token-names.json";
 
 /**
  * Handler for sending signup verification email to user.

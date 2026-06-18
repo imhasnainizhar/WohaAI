@@ -2,7 +2,7 @@ import { env } from "@wohaai/env-ts";
 import { getConsumer } from "@wohaai/kafka";
 import { authMailerLogger } from "@wohaai/telemetry";
 import { dispatchVerificationEmailService } from "@/services/dispatch-verification-email";
-import kafka from "../../../../packages/config/kafka.json"
+import kafka from "../../../../../packages/config/kafka.json"
 
 // TYPES
 interface VerificationEmailMessage {

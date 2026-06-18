@@ -3,8 +3,8 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "@/routes/user";
 import { env } from "@wohaai/env-ts";
-import { connectUsersDB } from "@wohaai/db";
 import { userLogger as logger } from "@wohaai/telemetry";
+import { connectUsersDB } from "./db";
 
 const app: Express = express();
 

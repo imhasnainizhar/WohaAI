@@ -5,9 +5,9 @@ import { userLogger as logger } from "@wohaai/telemetry";
 import { env } from "@wohaai/env-ts";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { AccessSessionExpiredError, SessionExpiredError, ValidationError } from "@wohaai/errors";
-import { CreateUserSchema } from '@wohaai/validations';
+import { CreateUserRequestSchema } from '@wohaai/validations';
 import { asyncHandler } from '../middlewares/async-handler';
-import tokenNames from "../../../../packages/config/token-names.json"
+import tokenNames from "../../../../../packages/config/token-names.json"
 
 export const createUserHandler = asyncHandler(async (req: Request, res: Response) => {
     // We are using signupToken cuz User Provision is done by auth service request through User Provision Client under Signup session. User do not request directly for provisioning.
@@ -18,7 +18,7 @@ export const createUserHandler = asyncHandler(async (req: Request, res: Response
     }) as AuthSessionPayload;
 
     // Validate input
-    const parsed = CreateUserSchema.safeParse(req.body);
+    const parsed = CreateUserRequestSchema.safeParse(req.body);
     if (!parsed.success) {
 
         logger.warn("Data integrity danger, auth service sent wrong invalid User Provision Request")

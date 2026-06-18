@@ -1,9 +1,6 @@
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { authLogger } from "@wohaai/telemetry";
-import {
-  ActiveSessionRecord,
-} from "@/types/session";
 import { InternalServerError, SessionExpiredError } from "@wohaai/errors";
 import {
   AccessTokenPayload,
@@ -12,7 +9,7 @@ import {
 } from "@wohaai/security/jwt";
 import { AuthRepo } from "@/repo/auth-repo";
 import { randomUUID } from "node:crypto";
-import exp from "../../../../packages/config/exp.json";
+import exp from "../../../../../packages/config/exp.json";
 import { env } from "@wohaai/env-ts";
 
 export interface RefreshSessionServiceParams {
@@ -28,6 +25,14 @@ export interface RefreshSessionServiceResponse {
 interface TokenJti {
   refreshTokenJti: string;
   accessTokenJti: string;
+}
+
+interface ActiveSessionRecord {
+  userSessionID: string;
+  refreshTokenHash: string;
+  user: {
+    userID: string;
+  };
 }
 
 export class RefreshSessionService {

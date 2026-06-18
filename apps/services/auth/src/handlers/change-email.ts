@@ -3,7 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@wohaai/http";
 
 import {
-    ChangeEmailRequest,
+    TChangeEmailRequest,
     ChangeEmailRequestSchema,
     SessionIDSchema,
 } from "@wohaai/validations";
@@ -11,14 +11,14 @@ import {
 import { ValidationError } from "@wohaai/errors";
 import authService from "@/services/auth-service";
 import { AccessTokenPayload, verifyJwtToken } from "@wohaai/security/jwt";
-import tokenNames from "../../../../packages/config/token-names.json"
+import tokenNames from "../../../../../packages/config/token-names.json"
 
 export const requestEmailChangeHandler = asyncHandler(
     async (req: Request, res: Response) => {
         const accessToken = req.cookies[tokenNames.ACCESS_TOKEN]
         const payload = verifyJwtToken(accessToken) as AccessTokenPayload
 
-        const body: ChangeEmailRequest = req.body;
+        const body: TChangeEmailRequest = req.body;
         const userID: string = payload.sub;
 
         const parsed =

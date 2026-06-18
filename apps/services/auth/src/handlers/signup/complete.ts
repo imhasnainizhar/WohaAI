@@ -6,10 +6,10 @@ import { env } from "@wohaai/env-ts";
 import { authLogger } from "@wohaai/telemetry";
 import authService from "@/services/auth-service";
 import { SessionExpiredError, ValidationError } from "@wohaai/errors";
-import { ClientData } from "@wohaai/validations";
-import exp from "../../../../../packages/config/exp.json";
+import { ClientData } from "@wohaai/types";
+import exp from "../../../../../../packages/config/exp.json";
 import { getClientData } from "@/ua/client-data";
-import tokenNames from "../../../../../packages/config/token-names.json";
+import tokenNames from "../../../../../../packages/config/token-names.json";
 
 /**
  * Handler for user signup complete.

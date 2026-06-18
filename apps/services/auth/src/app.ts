@@ -1,6 +1,5 @@
 import express, { Express } from "express";
 import authRoutes from "@/routes/auth.js";
-import { authLogger } from "@wohaai/telemetry";
 import { errorHandler } from "@/middlewares/error-handler";
 import cors from "cors";
 import cookieParser from "cookie-parser";

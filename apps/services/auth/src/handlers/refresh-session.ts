@@ -1,15 +1,15 @@
-import { ClientData } from '@wohaai/validations';
+import { ClientData } from '@wohaai/types';
 import { asyncHandler } from "@/middlewares/async-handler";
 import { getClientData } from "@/ua/client-data";
 import { buildCookie, sendResponse } from "@wohaai/http";
 import { Request, Response } from "express";
 import { env } from "@wohaai/env-ts";
 import { authLogger } from "@wohaai/telemetry";
-import exp from '../../../../packages/config/exp.json';
+import exp from '../../../../../packages/config/exp.json';
 import { RefreshTokenPayload, verifyJwtToken } from '@wohaai/security/jwt';
 import { ValidationError } from '@wohaai/errors';
 import authService from '@/services/auth-service';
-import JwtTokenNames from '../../../../packages/config//token-names.json';
+import JwtTokenNames from '../../../../../packages/config//token-names.json';
 
 
 /**

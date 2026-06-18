@@ -2,8 +2,8 @@ import { EmailAlreadyTakenError } from "@/errors/service-error";
 import { getChangeEmailProducer } from "@/producer/change-emai";
 import { setChangeEmailSessionCache } from "@/redis/redis";
 import { AuthRepo } from "@/repo/auth-repo";
-import { ChangeEmailEvent } from "@wohaai/validations";
-import kafka from "../../../../../packages/config/kafka.json"
+import { ChangeEmailEvent } from "@wohaai/types";
+import kafka from "../../../../../../packages/config/kafka.json"
 
 
 export interface RequestEmailChangeServiceParams {

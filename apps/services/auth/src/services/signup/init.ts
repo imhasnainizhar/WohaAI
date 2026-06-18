@@ -1,6 +1,6 @@
 import { AuthSessionPayload, createJwtToken } from "@wohaai/security/jwt";
 import { randomUUID } from "crypto";
-import exp from "../../../../../packages/config/exp.json"
+import exp from "../../../../../../packages/config/exp.json"
 import { SignOptions } from "jsonwebtoken";
 import { env } from "@wohaai/env-ts";
 import { setAuthSession } from "@/redis/redis";

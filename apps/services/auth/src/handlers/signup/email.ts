@@ -5,8 +5,8 @@ import authService from "@/services/auth-service";
 import { sendResponse } from "@wohaai/http";
 import { Request, Response } from "express";
 import { ValidationError } from "@wohaai/errors";
-import { ContinueWithEmailRequest, ContinueWithEmailRequestSchema } from "@wohaai/validations";
-import tokenNames from "../../../../../packages/config/token-names.json"
+import { TContinueWithEmailRequest, ContinueWithEmailRequestSchema } from "@wohaai/validations";
+import tokenNames from "../../../../../../packages/config/token-names.json"
 
 /**
  * Handler for user signup continue with email.
@@ -26,7 +26,7 @@ export const signupEmailValidationHandler =
         // Getting authSessionID from payload
         const authSessionID = payload.sub;
 
-        const body: ContinueWithEmailRequest = req.body
+        const body: TContinueWithEmailRequest = req.body
 
         // Validate input using Zod schema
         const parsed = ContinueWithEmailRequestSchema.safeParse(body);

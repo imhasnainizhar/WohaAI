@@ -9,9 +9,9 @@ import { MaliciousActivityError, SessionExpiredError } from "@wohaai/errors";
 import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@wohaai/security/jwt";
 import { randomUUID } from "crypto";
 import { env } from "@wohaai/env-ts";
-import exp from "../../../../../packages/config/exp.json";
+import exp from "../../../../../../packages/config/exp.json";
 import { SignOptions } from "jsonwebtoken";
-import { ClientData } from "@wohaai/validations";
+import { ClientData } from "@wohaai/types";
 import { AuthRepo } from "@/repo/auth-repo";
 import { EmailVerificationRequiredError } from "@/errors/service-error";
 

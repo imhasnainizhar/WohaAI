@@ -1,5 +1,5 @@
 import { UAParser } from "ua-parser-js";
-import { ClientData } from "@wohaai/validations";
+import { ClientData } from "@wohaai/types";
 import { Request } from "express";
 
 /**

@@ -7,7 +7,7 @@ import { AccessTokenPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { AccessSessionExpiredError, ValidationError } from "@wohaai/errors";
 import { UpdateDOBRequestSchema } from '@wohaai/validations';
 import { asyncHandler } from '../middlewares/async-handler';
-import tokenNames from "../../../../packages/config/token-names.json"
+import tokenNames from "../../../../../packages/config/token-names.json"
 
 export const updateDOBHandler = asyncHandler(async (req: Request, res: Response) => {
   const accessToken = req.cookies?.[tokenNames.ACCESS_TOKEN];

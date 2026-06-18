@@ -6,8 +6,8 @@ import { AccessTokenPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { AccessSessionExpiredError } from "@wohaai/errors";
 import { GetMeServiceResponse } from "@/services/get-me";
 import { asyncHandler } from "@/middlewares/async-handler";
-import tokenNames from "../../../../packages/config/token-names.json"
-import { GetMeResponse } from "@wohaai/validations";
+import tokenNames from "../../../../../packages/config/token-names.json"
+import { GetMeResponse } from "@wohaai/types";
 
 export const getMeHandler = asyncHandler(async (req: Request, res: Response) => {
   const accessToken = req.cookies?.[tokenNames.ACCESS_TOKEN];

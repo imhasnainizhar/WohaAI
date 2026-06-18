@@ -5,9 +5,9 @@ import { userLogger as logger } from "@wohaai/telemetry";
 import { env } from "@wohaai/env-ts";
 import { AccessTokenPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { AccessSessionExpiredError, ValidationError } from "@wohaai/errors";
-import { CreateUserSchema, UpdateProfilePicRequestSchema } from '@wohaai/validations';
+import { UpdateProfilePicRequestSchema } from '@wohaai/validations';
 import { asyncHandler } from '../middlewares/async-handler';
-import tokenNames from "../../../../packages/config/token-names.json"
+import tokenNames from "../../../../../packages/config/token-names.json"
 
 export const updateProfilePicHandler = asyncHandler(async (req: Request, res: Response) => {
     const accessToken = req.cookies?.[tokenNames.ACCESS_TOKEN];

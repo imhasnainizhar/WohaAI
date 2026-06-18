@@ -3,9 +3,9 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { env } from "@wohaai/env-ts";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { sendResponse } from "@wohaai/http";
-import { ContinueWithUsernameRequest, ContinueWithUsernameRequestSchema } from "@wohaai/validations";
+import { TContinueWithUsernameRequest, ContinueWithUsernameRequestSchema } from "@wohaai/validations";
 import { ValidationError } from "@wohaai/errors";
-import tokenNames from "../../../../../packages/config/token-names.json";
+import tokenNames from "../../../../../../packages/config/token-names.json";
 
 /**
  * Handler for user signup continue with username.
@@ -22,7 +22,7 @@ export const signupUsernameValidationHandler =
             secret: env.JWT_AUTH_SECRET_KEY
         });
 
-        const body: ContinueWithUsernameRequest = req.body
+        const body: TContinueWithUsernameRequest = req.body
 
         // Validate input using Zod schema
         const parsed =

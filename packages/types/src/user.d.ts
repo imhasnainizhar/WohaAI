@@ -1,7 +1,6 @@
-
 export interface GetMeResponse {
     userID: string;
-    fullName: string;
+    fullName?: string;
     username: string;
     email: string;
     profilePicURI?: string;

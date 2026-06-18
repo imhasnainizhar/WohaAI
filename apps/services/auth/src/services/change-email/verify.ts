@@ -1,9 +1,10 @@
 import { getChangeEmailSessionCache } from "@/redis/redis";
 import { AuthRepo } from "@/repo/auth-repo";
 import { authLogger as logger } from "@wohaai/telemetry";
+import { TSessionID } from "@wohaai/validations";
 
 export interface VerifyEmailChangeServiceParams {
-    sessionID: string;
+    sessionID: TSessionID;
 }
 
 export class VerifyEmailChangeService {

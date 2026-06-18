@@ -3,7 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@wohaai/http";
 
 import {
-  ChangePasswordInitRequest,
+  TChangePasswordInitRequest,
   ChangePasswordInitRequestSchema
 } from "@wohaai/validations";
 
@@ -14,7 +14,7 @@ import authService from "@/services/auth-service";
 export const changePasswordInitHandler = asyncHandler(
   async (req: Request, res: Response) => {
 
-    const body: ChangePasswordInitRequest = req.body;
+    const body: TChangePasswordInitRequest = req.body;
 
     const parsed =
       ChangePasswordInitRequestSchema.safeParse(body);

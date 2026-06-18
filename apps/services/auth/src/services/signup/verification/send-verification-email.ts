@@ -2,9 +2,9 @@ import { randomInt } from "crypto";
 import { authLogger } from "@wohaai/telemetry";
 import { getEmailVerificationProducer } from "@/producer/verify-email";
 import { MaliciousActivityError, SessionExpiredError } from "@wohaai/errors";
-import { VerifySignupEmailEvent } from "@wohaai/validations";
+import { VerifySignupEmailEvent } from "@wohaai/types";
 import { getAuthSession, setVerificationCodeCache } from "@/redis/redis";
-import kafka from "../../../../../../packages/config/kafka.json"
+import kafka from "../../../../../../../packages/config/kafka.json"
 
 export interface SendVerificationServiceParams {
   authSessionID: string

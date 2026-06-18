@@ -3,7 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@wohaai/http";
 import { env } from "@wohaai/env-ts";
 import {
-  ChangePasswordRequest,
+  TChangePasswordRequest,
   ChangePasswordRequestSchema
 } from "@wohaai/validations";
 
@@ -14,7 +14,7 @@ import {
 
 import authService from "@/services/auth-service";
 import { verifyJwtToken } from "@wohaai/security/jwt";
-import JwtTokenNames from "../../../../../packages/config/token-names.json";
+import JwtTokenNames from "../../../../../../packages/config/token-names.json";
 
 export const completeChangePasswordHandler = asyncHandler(
   async (req: Request, res: Response) => {
@@ -26,7 +26,7 @@ export const completeChangePasswordHandler = asyncHandler(
       secret: env.JWT_CHANGE_PASSWORD_SECRET_KEY
     })
 
-    const body: ChangePasswordRequest = req.body;
+    const body: TChangePasswordRequest = req.body;
 
     const parsed =
       ChangePasswordRequestSchema.safeParse(body);

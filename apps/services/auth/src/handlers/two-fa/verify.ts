@@ -4,9 +4,9 @@ import authService from "@/services/auth-service";
 import { Request, Response } from "express";
 import { sendResponse } from "@wohaai/http";
 import { verifyJwtToken, AccessTokenPayload } from "@wohaai/security/jwt";
-import { TwoFARequest, TwoFARequestSchema } from "@wohaai/validations";
+import { TTwoFARequest, TwoFARequestSchema } from "@wohaai/validations";
 import { ValidationError } from "@wohaai/errors";
-import JwtTokenNames from "../../../../../packages/config/token-names.json";
+import JwtTokenNames from "../../../../../../packages/config/token-names.json";
 
 
 export const verify2FAHandler = asyncHandler(
@@ -20,7 +20,7 @@ export const verify2FAHandler = asyncHandler(
         }) as AccessTokenPayload
 
         const userID = payload.sub
-        const body: TwoFARequest = req.body
+        const body: TTwoFARequest = req.body
 
         const parsed = TwoFARequestSchema.safeParse(body)
         if (!parsed.success) throw new ValidationError("Invalid Totp, use allowed characters");

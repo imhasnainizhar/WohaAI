@@ -4,8 +4,8 @@ import authService from "@/services/auth-service";
 import { buildCookie, Cookie, sendResponse } from "@wohaai/http";
 import { Request, Response } from "express";
 import { authLogger } from "@wohaai/telemetry";
-import tokenNames from "../../../../../packages/config/token-names.json";
-import exp from "../../../../../packages/config/exp.json";
+import tokenNames from "../../../../../../packages/config/token-names.json";
+import exp from "../../../../../../packages/config/exp.json";
 
 /**
  * Handler for user signup init.

@@ -115,6 +115,8 @@ export const ChangePasswordRequestSchema = z.object({
 
 // ----------- Infered Types ----------------
 
+export type TSigninInitRequest = z.infer<typeof SigninInitRequestSchema>;
+export type TSigninCompleteRequest = z.infer<typeof SigninCompleteRequestSchema>;
 export type TContinueWithUsernameRequest = z.infer<typeof ContinueWithUsernameRequestSchema>;
 export type TContinueWithEmailRequest = z.infer<typeof ContinueWithEmailRequestSchema>;
 export type TVerifyUserEmailRequest = z.infer<typeof VerifyUserEmailRequestSchema>;

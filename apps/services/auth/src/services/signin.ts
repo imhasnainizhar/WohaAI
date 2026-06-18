@@ -1,11 +1,11 @@
 import { SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import { AuthRepo } from '@/repo/auth-repo';
-import { ClientData } from "@wohaai/validations";
+import { ClientData } from "@wohaai/types";
 import { authLogger } from "@wohaai/telemetry";
 import { AccessTokenPayload, AuthSessionPayload, createJwtToken, RefreshTokenPayload } from "@wohaai/security/jwt";
 import { InvalidCredentialsError } from "@/errors/service-error";
-import exp from "../../../../packages/config/exp.json"
+import exp from "../../../../../packages/config/exp.json"
 import { env } from "@wohaai/env-ts";
 
 
@@ -32,11 +32,12 @@ export interface CompleteSigninServiceParams {
 }
 
 export interface CompleteSigninServiceResponse {
-  profilePicURI: string;
+  profilePicURI?: string;
   userID: string;
   username: string;
-  fullName: string;
+  fullName?: string;
   email: string;
+  dateOfBirth?: string;
   refreshToken: string;
   accessToken: string;
 }
@@ -117,7 +118,7 @@ export class SigninService {
 
     authLogger.debug({
       message: "✅ [SESSION] Created new user session",
-      userID: session.id,
+      userID: session.userID,
       ip: clientData.userIPAddress,
       device: clientData.userDeviceName,
     });

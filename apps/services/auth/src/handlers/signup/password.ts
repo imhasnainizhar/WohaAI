@@ -1,12 +1,12 @@
 import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
 import { env } from "@wohaai/env-ts";
-import { PasswordValidationRequestSchema, PasswordValidationRequest } from "@wohaai/validations";
+import { PasswordValidationRequestSchema, TPasswordValidationRequest } from "@wohaai/validations";
 import { Request, Response } from "express";
 import { ValidationError } from "@wohaai/errors";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { sendResponse } from "@wohaai/http";
-import tokenNames from "../../../../../packages/config/token-names.json";
+import tokenNames from "../../../../../../packages/config/token-names.json";
 
 export const passwordValidationHandler = asyncHandler(
     async (req: Request, res: Response) => {
@@ -16,7 +16,7 @@ export const passwordValidationHandler = asyncHandler(
             secret: env.JWT_AUTH_SECRET_KEY
         });
 
-        const body: PasswordValidationRequest = req.body
+        const body: TPasswordValidationRequest = req.body
 
         const parsed = PasswordValidationRequestSchema.safeParse(body)
 

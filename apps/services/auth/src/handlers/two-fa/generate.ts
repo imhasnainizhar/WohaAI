@@ -4,8 +4,8 @@ import authService from "@/services/auth-service";
 import { Request, Response } from "express";
 import { sendResponse } from "@wohaai/http";
 import { verifyJwtToken, AccessTokenPayload } from "@wohaai/security/jwt";
-import JwtTokenNames from "../../../../../packages/config/token-names.json";
-import { Generate2FASecretResponse } from "@wohaai/validations";
+import JwtTokenNames from "../../../../../../packages/config/token-names.json";
+import { Generate2FASecretResponse } from "@wohaai/types";
 
 
 export const generate2FASecretHandler = asyncHandler(

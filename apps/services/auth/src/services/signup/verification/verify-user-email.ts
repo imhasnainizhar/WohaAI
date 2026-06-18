@@ -1,5 +1,5 @@
 import { env } from "@wohaai/env-ts";
-import exp from "../../../../../../packages/config/exp.json";
+import exp from "../../../../../../../packages/config/exp.json";
 import { createJwtToken, AuthSessionPayload } from "@wohaai/security/jwt";
 import { authLogger } from "@wohaai/telemetry";
 import {

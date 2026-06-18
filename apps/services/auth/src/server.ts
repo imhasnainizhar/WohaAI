@@ -4,7 +4,7 @@ import { authLogger } from "@wohaai/telemetry";
 import app from "./app.js";
 import cors from "cors"
 import { env } from "@wohaai/env-ts";
-import { connectUsersDB } from "@wohaai/db";
+import { connectUsersDB } from "./db";
 
 // Connect to MongoDB
 (async () => {

@@ -413,6 +413,7 @@ export class AuthRepo {
 export type GetUserWithUsernameOrEmailResult = Awaited<ReturnType<AuthRepo["getUserWithUsernameOrEmail"]>>
 export type GetUserWithUsernameResult = Awaited<ReturnType<AuthRepo["getUserWithUsername"]>>
 export type GetUserWithEmailResult = Awaited<ReturnType<AuthRepo["getUserWithEmail"]>>
+export type GetUserWithUserIDResult = Awaited<ReturnType<AuthRepo["getUserWithUserID"]>>
 
 export type FindWithUsername = Awaited<ReturnType<AuthRepo["findUserWithUsername"]>>
 export type FindWithEmail = Awaited<ReturnType<AuthRepo["findUserWithEmail"]>>
@@ -420,10 +421,13 @@ export type FindWithUsernameOrEmail = Awaited<ReturnType<AuthRepo["findUserWithU
 
 export type CreateUserSessionResult = Awaited<ReturnType<AuthRepo["createUserSession"]>>;
 export type FindActiveSessionResult = Awaited<ReturnType<AuthRepo["findActiveSession"]>>
+export type RefreshSessionResult = Awaited<ReturnType<AuthRepo["refreshSession"]>>
 export type RevokeSessionResult = Awaited<ReturnType<AuthRepo["revokeSession"]>>
 
 export type ChangeUserPasswordResult = Awaited<ReturnType<AuthRepo["changeUserPassword"]>>
-export type EnableTwoFactorResutl = Awaited<ReturnType<AuthRepo["enableTwoFactor"]>>
+export type ChangeEmailResult = Awaited<ReturnType<AuthRepo["changeEmail"]>>
+export type EnableTwoFactorResult = Awaited<ReturnType<AuthRepo["enableTwoFactor"]>>
 export type DisableTwoFactorResult = Awaited<ReturnType<AuthRepo["disableTwoFactor"]>>
+export type GetUserTwoFactorSettingsResult = Awaited<ReturnType<AuthRepo["getUserTwoFactorSettings"]>>
 export type CreateBackupCodesResult = Awaited<ReturnType<AuthRepo["createBackupCodes"]>>
 export type SaveTwoFactorSecretResult = Awaited<ReturnType<AuthRepo["saveTwoFactorSecret"]>>

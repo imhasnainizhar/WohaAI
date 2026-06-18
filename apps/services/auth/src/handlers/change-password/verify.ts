@@ -4,14 +4,10 @@ import {
   buildCookie,
   sendResponse
 } from "@wohaai/http";
-
-import {
-  ValidationError
-} from "@wohaai/errors";
-
+import { ValidationError } from "@wohaai/errors";
 import authService from "@/services/auth-service";
 import { SessionIDSchema } from "@wohaai/validations";
-import tokenNames from "../../../../../packages/config/token-names.json"
+import tokenNames from "../../../../../../packages/config/token-names.json"
 import { env } from "@wohaai/env-ts";
 
 export const verifyChangePasswordHandler = asyncHandler(
