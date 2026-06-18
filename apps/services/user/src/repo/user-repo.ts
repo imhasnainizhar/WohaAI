@@ -1,4 +1,6 @@
 import { User } from "@wohaai/db"
+import { NormalizedError } from "@wohaai/errors";
+import { userLogger } from "@wohaai/telemetry";
 
 export interface CreateUserParams {
     username: string;
@@ -24,11 +26,17 @@ export class UserRepo {
         email,
         hashedPassword
     }: CreateUserParams) {
-        return await this.user.create({
-            username,
-            email,
-            hashedPassword
-        });
+        try {
+            return await this.user.create({
+                username,
+                email,
+                hashedPassword
+            });
+        }
+        catch (error) {
+            userLogger.debug("Error creating user" + JSON.stringify({ error }));
+            throw new NormalizedError(error);
+        }
     }
 
     async updateUser({

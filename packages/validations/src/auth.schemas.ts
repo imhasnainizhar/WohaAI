@@ -12,6 +12,13 @@ export const SigninCompleteRequestSchema = z.object({
     password: PasswordSchema,
 });
 
+// --------------- User Response Schemas ---------------
+
+export const UserProvisionResponseSchema = z.object({
+    userID: z.string(),
+    username: UsernameSchema,
+    email: EmailSchema
+});
 
 // --------- Schemas for Multi-Step Signup Requests ----------------
 
@@ -121,6 +128,7 @@ export type TContinueWithUsernameRequest = z.infer<typeof ContinueWithUsernameRe
 export type TContinueWithEmailRequest = z.infer<typeof ContinueWithEmailRequestSchema>;
 export type TVerifyUserEmailRequest = z.infer<typeof VerifyUserEmailRequestSchema>;
 export type TPasswordValidationRequest = z.infer<typeof PasswordValidationRequestSchema>;
+export type TUserProvisionResponse = z.infer<typeof UserProvisionResponseSchema>;
 export type TTotpCode = z.infer<typeof TotpCodeSchema>;
 export type TTwoFARequest = z.infer<typeof TwoFARequestSchema>;
 export type TChangeEmailRequest = z.infer<typeof ChangeEmailRequestSchema>;

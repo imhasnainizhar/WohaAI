@@ -1,0 +1,48 @@
+{
+  "name": "@wohaai/lib",
+  "version": "1.0.0",
+  "description": "Shared validation schemas for monorepo",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "typescript",
+    "openai",
+    "models"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imhasnainizhar/WohaAI.git"
+  },
+  "license": "MIT",
+  "author": "Hasnain Izhar",
+  "scripts": {
+    "package:dev": "tsc -b -w",
+    "package:build": "tsc -b",
+    "clean": "rimraf dist"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@wohaai/env-ts": "workspace:*",
+    "@wohaai/errors": "workspace:*",
+    "@wohaai/http": "workspace:*",
+    "@wohaai/types": "workspace:*",
+    "@wohaai/telemetry": "workspace:*",
+    "axios": "^1.16.1"
+  },
+  "devDependencies": {
+    "rimraf": "^6.1.3",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^6.0.3"
+  }
+}

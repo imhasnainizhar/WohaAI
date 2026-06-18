@@ -1,5 +1,5 @@
 import z from "zod";
-import { UsernameSchema, EmailSchema, FullNameSchema, DateOfBirthSchema } from "./fields.schemas";
+import { UsernameSchema, EmailSchema, DateOfBirthSchema } from "./fields.schemas";
 
 
 // -------- Create User Schema --------
@@ -13,18 +13,6 @@ export const CreateUserRequestSchema = z.object({
     // We used hashedPassword field directly because auth service can only reqquest user creation on successful signup request through User Provision Client. AuthService directly sends hashedPassword.
     hashedPassword: z.string(),
 
-});
-
-
-// --------------- User Response Schemas ---------------
-
-export const CreatedUserResponseSchema = z.object({
-    success: z.boolean(),
-    userData: z.object({
-        userID: z.string(),
-        username: UsernameSchema,
-        email: EmailSchema
-    }),
 });
 
 
@@ -50,7 +38,6 @@ export const UpdateProfilePicRequestSchema = z.object({
 // ----------- Infered Types ----------------
 
 export type TCreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
-export type TCreatedUserResponse = z.infer<typeof CreatedUserResponseSchema>;
 export type TUpdateUsernameRequest = z.infer<typeof UpdateUsernameRequestSchema>;
 export type TUpdateFullNameRequest = z.infer<typeof UpdateFullNameRequestSchema>;
 export type TUpdateDOBRequest = z.infer<typeof UpdateDOBRequestSchema>;

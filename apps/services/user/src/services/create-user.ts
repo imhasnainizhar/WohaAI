@@ -1,5 +1,6 @@
 import { UserRepo } from "@/repo/user-repo";
 import { EmailAlreadyTakenError, UsernameAlreadyTakenError } from '../errors/service-error';
+import { userLogger } from "@wohaai/telemetry";
 
 export interface CreateUserServiceParams {
     username: string;
@@ -7,22 +8,31 @@ export interface CreateUserServiceParams {
     hashedPassword: string;
 }
 
+export interface CreateUserServiceResponse {
+    userID: string;
+    username: string;
+    email: string;
+}
+
 export class CreateUserService {
     constructor(
         private readonly userRepo: UserRepo
-    ) {}
+    ) { }
 
     async execute({
         username,
         email,
         hashedPassword
-    }: CreateUserServiceParams): Promise<{userCreated: boolean}> {
+    }: CreateUserServiceParams): Promise<CreateUserServiceResponse> {
+        userLogger.debug("Creating user" + JSON.stringify({ username, email }));
         const existingEmail =
             await this.userRepo.getUserWithEmail(email);
 
         if (existingEmail) {
             throw new EmailAlreadyTakenError();
         }
+
+        userLogger.debug("Email check passed" + JSON.stringify({ email }));
 
         const existingUsername =
             await this.userRepo.getUserWithUsername(username);
@@ -31,14 +41,21 @@ export class CreateUserService {
             throw new UsernameAlreadyTakenError();
         }
 
-        await this.userRepo.createUser({
+        userLogger.debug("Username check passed" + JSON.stringify({ username }));
+
+        userLogger.debug("Creating user in database");
+        const createdUser = await this.userRepo.createUser({
             username,
             email,
             hashedPassword
         });
 
+        userLogger.debug("User created" + JSON.stringify({ username, email }));
+
         return {
-          userCreated: true
+            userID: createdUser.id,
+            username: createdUser.username,
+            email: createdUser.email
         }
     }
 }

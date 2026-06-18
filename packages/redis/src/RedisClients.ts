@@ -152,13 +152,10 @@ export class RedisClient {
     public async deleteCache(
         key: string,
     ): Promise<void> {
-        const result = await this.redis.del(key);
-
-        if (!result) throw new InternalServerError()
-        if (result === 0) throw new SessionExpiredError()
+        await this.redis.del(key);
 
         logger.debug(
-            `🧩 Redis DEL: ${key} → ${result === 1 ? "DELETED" : "NOT_FOUND"}`
+            `🧩 Redis DEL: ${key}}`
         );
     }
 }
