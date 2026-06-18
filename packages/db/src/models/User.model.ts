@@ -6,7 +6,7 @@ const UserSchema = new Schema(
   {
     profilePicURI: { type: String },
 
-    fullName: { type: String, required: true },
+    fullName: { type: String },
 
     email: { type: String, required: true, unique: true, index: true },
     username: { type: String, required: true, unique: true, index: true },

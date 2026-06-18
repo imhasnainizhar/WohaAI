@@ -10,7 +10,7 @@ const UserSessionSchema = new Schema(
       index: true,
     },
 
-    id: {
+    userID: {
       type: Types.ObjectId,
       ref: "User",
       required: true,

@@ -9,3 +9,9 @@ export interface GetMeResponse {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface UserCreatedResponse {
+    userID: string;
+    username: string;
+    email: string;
+}

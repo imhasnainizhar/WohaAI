@@ -1,5 +1,5 @@
 import { AuthRepo } from "@/repo/auth-repo";
-import { UserProvisioningClient } from "@/clients/user-provision";
+import { UserProvisioningClient } from "@wohaai/lib";
 import { authLogger } from "@wohaai/telemetry";
 
 import {
@@ -274,10 +274,11 @@ export class AuthService {
 
     public async completeSignup({
         authSessionID,
+        authToken,
         clientData
     }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
         authLogger.debug({ authSessionID, clientData }, "🎉 Signup completion requested");
-        return this.signupCompleteService.execute({ authSessionID, clientData })
+        return this.signupCompleteService.execute({ authSessionID, authToken, clientData })
     }
 
     public async changePasswordInit({

@@ -5,8 +5,8 @@ import { buildCookie, Cookie, sendResponse } from "@wohaai/http";
 import { env } from "@wohaai/env-ts";
 import { authLogger } from "@wohaai/telemetry";
 import authService from "@/services/auth-service";
-import { SessionExpiredError, ValidationError } from "@wohaai/errors";
-import { ClientData } from "@wohaai/types";
+import { SessionExpiredError } from "@wohaai/errors";
+import { ClientData, SignupCompletionResponse } from "@wohaai/types";
 import exp from "../../../../../../packages/config/exp.json";
 import { getClientData } from "@/ua/client-data";
 import tokenNames from "../../../../../../packages/config/token-names.json";
@@ -42,6 +42,7 @@ export const completeSignupHandler = asyncHandler(
 
     const result = await authService.completeSignup({
       authSessionID,
+      authToken: token,
       clientData
     });
 
@@ -73,12 +74,16 @@ export const completeSignupHandler = asyncHandler(
     authLogger.debug({ path: req.originalUrl, method: req.method, userID: result.userID }, "🎉 Signup complete successful");
 
     // send response
-    return sendResponse({
+    return sendResponse<SignupCompletionResponse>({
       res,
       success: true,
       statusCode: 200,
       message: "Signup completed successfully",
-      data: result,
+      data: {
+        userID: result.userID,
+        username: result.username,
+        email: result.email,
+      },
       path: req.originalUrl,
       cookies: [refreshTokenCookie, accessTokenCookie],
     });

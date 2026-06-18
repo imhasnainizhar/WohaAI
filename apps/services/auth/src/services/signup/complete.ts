@@ -4,7 +4,7 @@ import {
   deleteAuthSession,
   deleteVerificationCodeCache,
 } from "@/redis/redis";
-import { UserProvisioningClient } from "@/clients/user-provision";
+import { UserProvisioningClient } from "@wohaai/lib";
 import { MaliciousActivityError, SessionExpiredError } from "@wohaai/errors";
 import { AccessTokenPayload, createJwtToken, RefreshTokenPayload } from "@wohaai/security/jwt";
 import { randomUUID } from "crypto";
@@ -17,6 +17,7 @@ import { EmailVerificationRequiredError } from "@/errors/service-error";
 
 export interface SignupCompleteServiceParams {
   authSessionID: string;
+  authToken: string;
   clientData: ClientData
 }
 
@@ -40,6 +41,7 @@ export class SignupCompleteService {
    */
   async execute({
     authSessionID,
+    authToken,
     clientData
   }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
 
@@ -55,11 +57,30 @@ export class SignupCompleteService {
       session.email !== session.email
     ) throw new EmailVerificationRequiredError()
 
+    if (
+      !session.hashedPassword ||
+      !session.email ||
+      !session.username ||
+      !session.emailVerified
+    ) {
+      authLogger.warn({
+        message: "Session integrity check failed",
+        session: {
+          hashedPassword: !!session.hashedPassword,
+          email: !!session.email,
+          username: !!session.username,
+          emailVerified: session.emailVerified,
+        },
+      });
+      throw new MaliciousActivityError();
+    }
+
     // prepare user payload
     const userPayload = {
-      username: session.username!,
-      email: session.email!,
-      hashedPassword: session.hashedPassword!,
+      username: session.username,
+      email: session.email,
+      hashedPassword: session.hashedPassword,
+      authToken: authToken,
     };
 
     authLogger.info({
