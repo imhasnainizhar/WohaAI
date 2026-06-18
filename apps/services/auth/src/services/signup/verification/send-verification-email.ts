@@ -39,20 +39,20 @@ export class SendVerificationEmailService {
     pendingEmail = session.email;
 
     // generate OTP
-    const code = randomInt(
+    const verificationCode = randomInt(
       100000,
       999999
     ).toString();
 
     authLogger.debug(
-      `[VERIFICATION] Code generated for ${pendingEmail} -> ${code}`
+      `[VERIFICATION] Code generated for ${pendingEmail} -> ${verificationCode}`
     );
 
     // cache OTP
     await setVerificationCodeCache(
       {
         sessionID: authSessionID,
-        verificationCode: code,
+        verificationCode,
       },
     );
 
@@ -61,7 +61,7 @@ export class SendVerificationEmailService {
     {
       type: "signup_verification_code",
       email: pendingEmail!,
-      code,
+      verificationCode,
       authSessionID,
       createdAt: new Date(),
     };
