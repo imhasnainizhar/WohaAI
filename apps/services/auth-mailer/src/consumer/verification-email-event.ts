@@ -3,12 +3,7 @@ import { getConsumer } from "@wohaai/kafka";
 import { authMailerLogger } from "@wohaai/telemetry";
 import { dispatchVerificationEmailService } from "@/services/dispatch-verification-email";
 import kafka from "../../../../../packages/config/kafka.json"
-
-// TYPES
-interface VerificationEmailMessage {
-  email: string;
-  verificationCode: string;
-}
+import { VerifySignupEmailEvent } from "@wohaai/types";
 
 // CONSUMER
 const consumer = getConsumer({
@@ -48,7 +43,7 @@ export async function consumeVerificationEmail() {
         }
 
         // PARSE MESSAGE
-        let parsedMessage: VerificationEmailMessage;
+        let parsedMessage: VerifySignupEmailEvent;
 
         try {
           parsedMessage =

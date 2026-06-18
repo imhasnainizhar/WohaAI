@@ -11,7 +11,7 @@ export interface ChangePasswordEvent {
 export interface VerifySignupEmailEvent {
     type: string,
     email: string,
-    code: string,
+    verificationCode: string,
     authSessionID: string,
     createdAt: Date
 }
