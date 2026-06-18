@@ -4,9 +4,12 @@ import { useCallback, useEffect } from "react";
 import { create } from "zustand";
 import {
   DEFAULT_SETTINGS,
+} from "@wohaai/constants";
+
+import {
   ISettingsValues,
-  StorableSettingKey,
-} from "@wohaai/db/client";
+  StorableSettingKey
+} from "@wohaai/types";
 
 // ─── Cache keys ───────────────────────────────────────────────────────────────
 const LS_SETTINGS_KEY = "app:settings";

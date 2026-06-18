@@ -323,6 +323,9 @@ importers:
       '@types/dotenv':
         specifier: ^8.2.3
         version: 8.2.3
+      '@wohaai/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
       '@wohaai/db':
         specifier: workspace:*
         version: link:../../packages/db

@@ -1,8 +1,8 @@
 import {
     Settings,
-    DEFAULT_SETTINGS,
-    StorableSettingKey,
 } from "@wohaai/db";
+import { StorableSettingKey } from "@wohaai/types";
+import { DEFAULT_SETTINGS } from "@wohaai/constants";
 
 function toMongoPath(
     key: StorableSettingKey

@@ -1,10 +1,10 @@
 import {
     STORABLE_KEYS,
-    StorableSettingKey,
 } from "@wohaai/db";
+import { StorableSettingKey } from "@wohaai/types";
 
 type RawUpdate = {
-    key: unknown;
+    key: StorableSettingKey;
     value: unknown;
 };
 
@@ -45,10 +45,7 @@ export function normalizeUpdates(
             key: StorableSettingKey;
             value: unknown;
         } =>
-            typeof u.key === "string" &&
-            STORABLE_KEYS.has(
-                u.key as StorableSettingKey
-            )
+            STORABLE_KEYS.has(u.key)
     );
 
     if (!valid.length) {

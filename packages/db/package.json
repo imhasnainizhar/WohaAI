@@ -23,19 +23,13 @@
   "author": "Hasnain Izhar",
   "scripts": {
     "package:dev": "tsc -b -w",
-    "package:build": "tsc -b",
-    "build:types": "tsc --emitDeclarationOnly"
+    "package:build": "tsc -b"
   },
   "exports": {
-    "./connection": {
-      "import": "./dist/connection/index.js",
-      "require": "./dist/connection/index.js",
-      "types": "./dist/connection/index.d.ts"
-    },
-    "./models": {
-      "import": "./dist/models/index.js",
-      "require": "./dist/models/index.js",
-      "types": "./dist/models/index.d.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "dependencies": {

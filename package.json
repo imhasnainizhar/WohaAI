@@ -8,7 +8,7 @@
     "lint": "turbo run lint",
     "clean": "turbo run clean",
     "clean:install": "rm -rf pnpm-lock.yaml node_modules && pnpm --recursive exec rm -rf node_modules && pnpm install",
-    "packages:dev": "turbo run package:dev --filter=./packages/**/* --concurrency=11",
+    "packages:dev": "turbo run package:dev --filter=./packages/**/* --concurrency=15",
     "packages:build": "turbo run package:build --filter=./packages/*",
     "typecheck": "turbo run typecheck",
     "docker:apps": "docker compose --env-file .env -f ./infra/compose/compose.apps.yml --profile apps up",

@@ -13,9 +13,8 @@ const connectionCache = new Map<string, DBCache>();
  */
 export async function createMongoConnection(
   uri: string,
-  dbName: string
 ) {
-  const cacheKey = `${uri}:${dbName}`;
+  const cacheKey = `${uri}`;
 
   // Return existing connection if available
   let cache = connectionCache.get(cacheKey);
@@ -29,9 +28,7 @@ export async function createMongoConnection(
 
   // Create connection promise if not exists
   if (!cache.promise) {
-    cache.promise = mongoose.connect(uri, {
-      dbName,
-    } as any); // 👈 TS-safe workaround (Mongoose typings are overstrict)
+    cache.promise = mongoose.connect(uri);
   }
 
   cache.conn = await cache.promise;

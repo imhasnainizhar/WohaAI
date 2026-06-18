@@ -16,6 +16,8 @@ export const env = createEnv({
             
         ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET!,
 
+        NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
+
         // Mailer
         MAILER_HOST: process.env.MAILER_HOST!,
         MAILER_PORT: process.env.MAILER_PORT!,
@@ -124,6 +126,7 @@ export const env = createEnv({
         NEXT_PUBLIC_AUTH_API_URI: z.string(),
         NEXT_PUBLIC_AUTH_MAILER_API_URI: z.string(),
         NEXT_PUBLIC_USER_API_URI: z.string(),
+        NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string(),
     },
 
     // TODO: Fix env load on local env

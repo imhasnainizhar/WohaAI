@@ -1,4 +1,4 @@
-import { connectUsersDB } from "@wohaai/db";
+import { connectUsersDB } from "../../lib/db";
 import { nextAppLogger as logger } from "@wohaai/telemetry";
 import {
   findOrCreateSettings,
@@ -10,7 +10,7 @@ import {
 } from "../validators/settings";
 
 export async function getUserSettings(userId: string) {
-  await connectUsersDB(env.USERS_MONGO_URI);
+  await connectUsersDB();
 
   const doc = await findOrCreateSettings(userId);
 
@@ -26,7 +26,7 @@ export async function updateUserSettings(
 ) {
   try {
     logger.debug("Mongo URI:" + env.USERS_MONGO_URI);
-    await connectUsersDB(env.USERS_MONGO_URI);
+    await connectUsersDB();
 
     const updates = normalizeUpdates(body);
 
