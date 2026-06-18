@@ -3,13 +3,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { VerifyUserEmailRequestSchema } from "@packages/contracts/auth";
+import { VerifyUserEmailRequestSchema } from "@wohaai/validations";
 import z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FieldGroup, Field, FieldDescription } from "@/components/ui/field";
 import { FloatingInput } from "@/components/input/fields/FloatingInput";
-import { env } from "@packages/env-ts";
+import { env } from "@wohaai/env-ts";
 
 type EmailVerificationInput = z.input<typeof VerifyUserEmailRequestSchema>;
 type EmailVerificationOutput = z.output<typeof VerifyUserEmailRequestSchema>;

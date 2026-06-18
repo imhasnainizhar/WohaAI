@@ -3,14 +3,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { ContinueWithUsernameRequestSchema } from "@packages/contracts/auth";
+import { ContinueWithUsernameRequestSchema } from "@wohaai/validations";
 import z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FieldGroup, Field, FieldDescription } from "@/components/ui/field";
 import { FloatingInput } from "@/components/input/fields/FloatingInput";
-import { env } from "@packages/env-ts";
-import { ApiResponseOptions } from "@packages/http";
+import { env } from "@wohaai/env-ts";
+import { ApiResponseOptions } from "@wohaai/http";
 
 type SignupUsernameInput = z.input<typeof ContinueWithUsernameRequestSchema>;
 type SignupUsernameOutput = z.output<typeof ContinueWithUsernameRequestSchema>;

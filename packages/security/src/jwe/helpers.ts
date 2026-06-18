@@ -1,5 +1,5 @@
 import { seal, unseal, defaults, Password, algorithms } from 'iron-webcrypto';
-import { env } from "@packages/env-ts";
+import { env } from "@wohaai/env-ts";
 
 const SECRET = env.ENCRYPTION_SECRET!;
 

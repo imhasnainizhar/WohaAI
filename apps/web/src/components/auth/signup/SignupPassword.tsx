@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { PasswordValidationRequestSchema } from "@packages/contracts/auth";
+import { PasswordValidationRequestSchema } from "@wohaai/validations";
 import z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

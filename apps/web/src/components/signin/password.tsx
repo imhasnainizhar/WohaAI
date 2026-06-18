@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PasswordValidationRequestSchema } from "@packages/contracts/auth";
+import { PasswordValidationRequestSchema } from "@wohaai/validations";
 import z from "zod";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";

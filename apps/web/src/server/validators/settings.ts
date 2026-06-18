@@ -1,7 +1,7 @@
 import {
     STORABLE_KEYS,
     StorableSettingKey,
-} from "@packages/models";
+} from "@wohaai/db";
 
 type RawUpdate = {
     key: unknown;

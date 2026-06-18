@@ -6,7 +6,7 @@ import {
   DEFAULT_SETTINGS,
   ISettingsValues,
   StorableSettingKey,
-} from "@packages/models/client";
+} from "@wohaai/db/client";
 
 // ─── Cache keys ───────────────────────────────────────────────────────────────
 const LS_SETTINGS_KEY = "app:settings";

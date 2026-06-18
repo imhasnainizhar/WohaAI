@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { UsernameOrEmailSchema } from "@packages/contracts/auth";
+import { UsernameOrEmailSchema } from "@wohaai/validations";
 import z from "zod";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -13,8 +13,8 @@ import Link from "next/link";
 import { FloatingInput } from "../input/fields/FloatingInput";
 import Image from "next/image";
 import { FaApple } from "react-icons/fa";
-import { env } from "@packages/env-ts";;
-import { ApiResponseOptions } from '@packages/http';
+import { env } from "@wohaai/env-ts";;
+import { ApiResponseOptions } from '@wohaai/http';
 
 const SigninInitRequestSchema = z.object({
     usernameOrEmail: UsernameOrEmailSchema,

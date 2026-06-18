@@ -1,7 +1,7 @@
 {
-  "name": "@packages/db",
+  "name": "@wohaai/db",
   "version": "1.0.0",
-  "description": "MondoDB Shared stuff for repo",
+  "description": "Package for WohaAI DB",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "files": [
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "WohaAI"
+    "url": "https://github.com/imhasnainizhar/WohaAI.git"
   },
   "license": "MIT",
   "author": "Hasnain Izhar",
@@ -27,17 +27,25 @@
     "build:types": "tsc --emitDeclarationOnly"
   },
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "./connection": {
+      "import": "./dist/connection/index.js",
+      "require": "./dist/connection/index.js",
+      "types": "./dist/connection/index.d.ts"
+    },
+    "./models": {
+      "import": "./dist/models/index.js",
+      "require": "./dist/models/index.js",
+      "types": "./dist/models/index.d.ts"
     }
   },
   "dependencies": {
-    "@packages/observability": "workspace:*",
+    "@wohaai/telemetry": "workspace:*",
+    "@wohaai/constants": "workspace:*",
+    "@wohaai/types": "workspace:*",
     "mongoose": "^9.6.3"
   },
   "devDependencies": {
+    "rimraf": "^6.1.3",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.3"
   }

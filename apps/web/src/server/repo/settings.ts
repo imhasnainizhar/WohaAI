@@ -2,7 +2,7 @@ import {
     Settings,
     DEFAULT_SETTINGS,
     StorableSettingKey,
-} from "@packages/models";
+} from "@wohaai/db";
 
 function toMongoPath(
     key: StorableSettingKey

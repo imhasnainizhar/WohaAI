@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "incremental": true,
+        "declaration": true,
+        "declarationMap": true,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo", 
+        /* Language and Environment */
+        "target": "ES2022",
+        "lib": [
+            "ES2022"
+        ],
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "allowSyntheticDefaultImports": true,
+        /* Project Structure */
+        "outDir": "dist",
+        "rootDir": "src",
+        /* Type Checking */
+        "strict": true,
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        /* Module + Imports */
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        /* Output + Debugging */
+        "sourceMap": true
+    },
+    "include": ["src"],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

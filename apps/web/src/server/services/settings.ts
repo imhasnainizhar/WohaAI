@@ -1,10 +1,10 @@
-import { connectUsersDB } from "@packages/db";
-import { nextAppLogger as logger } from "@packages/observability";
+import { connectUsersDB } from "@wohaai/db";
+import { nextAppLogger as logger } from "@wohaai/telemetry";
 import {
   findOrCreateSettings,
   patchSettings,
 } from "../repo/settings";
-import { env } from "@packages/env-ts";
+import { env } from "@wohaai/env-ts";
 import {
   normalizeUpdates,
 } from "../validators/settings";

@@ -1,5 +1,4 @@
 import { Kafka } from 'kafkajs';
-import { envConfigs as env } from '@packages/config';
 
 // KAFKA
 export const kafkaClient = (

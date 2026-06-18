@@ -106,13 +106,13 @@ export const env = createEnv({
         USERS_MONGO_URI: z.string(),
         THREADS_MONGO_URI: z.string(),
 
-        AUTH_SESSION_REDIS_PORT: z.number(),
+        AUTH_SESSION_REDIS_PORT: z.string(),
         AUTH_SESSION_REDIS_URI: z.string(),
 
-        THREADS_HISTORY_REDIS_PORT: z.number(),
+        THREADS_HISTORY_REDIS_PORT: z.string(),
         THREADS_HISTORY_REDIS_URI: z.string(),
 
-        AUTH_KAFKA_BROKER_PORT: z.number(),
+        AUTH_KAFKA_BROKER_PORT: z.string(),
         AUTH_KAFKA_BROKER_URI: z.string(),
         AUTH_KAFKA_BROKER: z.string(),
         AUTH_KAFKA_CLIENT_ID: z.string(),
@@ -126,5 +126,5 @@ export const env = createEnv({
         NEXT_PUBLIC_USER_API_URI: z.string(),
     },
 
-    skipValidation: true,
+    // TODO: Fix env load on local env
 });

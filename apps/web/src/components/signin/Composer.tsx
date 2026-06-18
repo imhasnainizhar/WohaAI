@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LeftArrowButton } from "@/components/ui/buttons/LeftArrowButton";
 import { useAuthCache } from "@/providers/AuthCacheProvider";
 import { SigninForm } from "@/types/auth";
-import { SigninInitRequestSchema, SigninCompleteRequestSchema } from "@packages/contracts/auth";
+import { SigninInitRequestSchema, SigninCompleteRequestSchema } from "@wohaai/validations";
 import SigninUsernameOrEmail from "./UsernameOrEmail";
 import SigninPassword from "./Password";
 

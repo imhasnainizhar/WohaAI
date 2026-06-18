@@ -45,9 +45,6 @@
             "dependsOn": [
                 "^typecheck"
             ]
-        },
-        "clean:deep": {
-            "cache": false
         }
     }
 }

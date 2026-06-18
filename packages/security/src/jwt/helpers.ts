@@ -1,9 +1,9 @@
 import { randomUUID } from "crypto";
 import { BaseJwtPayload } from "./payload";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
-import { NormalizedError } from "@packages/errors";
+import { NormalizedError } from "@wohaai/errors";
 
-export interface CreateJwtTokenParams<T>{
+export interface CreateJwtTokenParams<T> {
   payload: T;
   secret: string;
   options: SignOptions
