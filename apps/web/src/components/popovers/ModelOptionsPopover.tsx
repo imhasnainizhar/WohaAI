@@ -23,7 +23,7 @@ export default function ModelOptionsPopover() {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                    <motion.button layout className={`flex gap-1 items-center cursor-pointer text-fluid-base px-3 py-2 rounded-lg hover:bg-black ${open ? "bg-black" : ""}`}>
+                <motion.button layout className={`flex gap-1 items-center cursor-pointer text-fluid-base px-3 py-2 rounded-lg hover:bg-black ${open ? "bg-black" : ""}`}>
                     {getModelName(modelSelected)}
                     <span
                         className={`
@@ -47,9 +47,9 @@ export default function ModelOptionsPopover() {
                         Thinking
                     </span>
                     <span className={
-                        `-rotate-90 text-muted-foreground`
+                        `${open ? "rotate-90" : "-rotate-90"} transition-transform duration-150 ease-in-out text-muted-foreground`
                     }>›</span>
-                    </motion.button>
+                </motion.button>
             </PopoverTrigger>
             <PopoverContent align="center" className={
                 `px-2.5 py-3 rounded-popover`
@@ -65,13 +65,13 @@ export default function ModelOptionsPopover() {
 
                     {MODELS.map((model) => (
                         <Button key={model.id} className={
-                            `w-full h-12 flex justify-start px-2 cursor-pointer`
+                            `w-full h-auto flex justify-start px-2 py-1 cursor-pointer`
                         } variant="ghost" onClick={() => setModelSelected(model.id)}>
                             <span className={
                                 `flex flex-col gap-0.5 text-left`
                             }>
                                 <span className={
-                                    `text-foreground text-fluid-base`
+                                    `text-foreground font-medium text-fluid-sm`
                                 }>
                                     {model.name}
                                 </span>

@@ -1,0 +1,6 @@
+{
+  "ACCESS_TOKEN": "__wohaai.access",
+  "REFRESH_TOKEN": "__wohaai.refresh",
+  "AUTH_SESSION_TOKEN": "__wohaai.auth-session",
+  "CHANGE_PASSWORD_TOKEN": "__wohaai.password-change"
+}

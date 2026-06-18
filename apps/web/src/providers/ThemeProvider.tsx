@@ -5,17 +5,19 @@ import {
   ThemeProvider as NextThemesProvider,
   useTheme,
 } from "next-themes"
-
 function ThemeProvider({
   children,
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
+  const scriptProps = typeof window === "undefined" ? undefined : ({ type: "application/json" } as const);
+
   return (
     <NextThemesProvider
       attribute="class"
       defaultTheme="dark"
       disableTransitionOnChange
       {...props}
+      scriptProps={scriptProps}
     >
       <ThemeHotkey />
       {children}
@@ -46,6 +48,8 @@ export function useThemeUtils() {
     setTheme(resolvedTheme === "dark" ? "light" : "dark")
   }, [resolvedTheme, setTheme])
 
+  console.log("resolvedTheme", resolvedTheme);
+
   const isDarkTheme = resolvedTheme === "dark"
 
   return {
@@ -67,6 +71,10 @@ function ThemeHotkey() {
         event.ctrlKey ||
         event.altKey
       ) {
+        return
+      }
+
+      if (!event.key) {
         return
       }
 

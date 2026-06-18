@@ -79,6 +79,7 @@ export default function ThemePopover({ className }: { className?: string }) {
                   py-2
                   text-sm
                   hover:bg-accent
+                  cursor-pointer
                 "
               >
                 <div className="flex items-center gap-2">

@@ -1,0 +1,51 @@
+{
+    "name": "@wohaai/security",
+    "version": "1.0.0",
+    "description": "Shared security utilities for monorepo",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "keywords": [
+        "ai",
+        "agents",
+        "typescript",
+        "openai",
+        "models"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "WohaAI"
+    },
+    "license": "MIT",
+    "author": "Hasnain Izhar",
+    "scripts": {
+        "package:dev": "tsc -b -w",
+        "package:build": "tsc -b"
+    },
+    "exports": {
+        "./jwt": {
+            "import": "./dist/jwt/index.js",
+            "require": "./dist/jwt/index.js",
+            "types": "./dist/jwt/index.d.ts"
+        },
+        "./jwe": {
+            "import": "./dist/jwe/index.js",
+            "require": "./dist/jwe/index.js",
+            "types": "./dist/jwe/index.d.ts"
+        }
+    },
+    "dependencies": {
+        "@wohaai/env-ts": "workspace:*",
+        "@wohaai/errors": "workspace:*",
+        "iron-webcrypto": "^2.0.0",
+        "jsonwebtoken": "^9.0.3"
+    },
+    "devDependencies": {
+        "@types/jsonwebtoken": "^9.0.10",
+        "rimraf": "^6.1.3",
+        "tsconfig-paths": "^4.2.0",
+        "typescript": "^6.0.3"
+    }
+}

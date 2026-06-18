@@ -1,22 +1,11 @@
-export type AuthForm = {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  dateOfBirth: Date;
-  usernameOrEmail: string;
+export type SigninForm = {
+    usernameOrEmail: string;
+    password?: string;
 };
 
-export interface UsernameData {
-    username: string
-}
-
-export interface EmailData {
-    email: string
-}
-
-export interface PersonalData {
-    firstName: string;
-    lastName: string;
-    dateOfBirth: Date;
-}
+export type SignupForm = {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+};

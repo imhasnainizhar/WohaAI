@@ -10,7 +10,7 @@ export default function UsernamePlate() {
   const [userInfo] = useState<User | null>(null);
 
   const guestUser: User = {
-    userID: "",
+    id: "",
     profilePicture: "/images/profile.png",
     email: "Not Signed In",
     username: "guestuser",

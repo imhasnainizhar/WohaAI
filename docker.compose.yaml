@@ -1,0 +1,310 @@
+services:
+
+  ## ----------------------------- ##
+  ## Web App
+  ## ----------------------------- ##
+
+  web-app:
+    build:
+      context: ./
+      dockerfile: apps/web/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${NEXTJS_APP_CONTAINER_NAME}
+    ports:
+      - "${NEXTJS_APP_PORT}:3000"
+    volumes:
+      - ./:/app
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - WohaAI_dev_net
+    profiles:
+      - "apps"
+
+
+  ## ----------------------------- ##
+  ## Service
+  ## ----------------------------- ##
+
+  auth-service:
+    build:
+      context: ./
+      dockerfile: services/auth/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AUTH_SERVICE_CONTAINER_NAME}
+    ports:
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/services/auth/node_modules
+      - /app/packages
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://auth-service:${AUTH_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
+
+  user-service:
+    build:
+      context: ./
+      dockerfile: services/user/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${USER_SERVICE_CONTAINER_NAME}
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/services/user/node_modules
+      - /app/packages
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://user-service:${USER_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
+
+# auth-mailer-service:
+#   build:
+#     context: ./
+#     dockerfile: services/auth-mailer/Dockerfile
+#     target: ${NODE_ENV}
+#   container_name: ${AUTH_MAILER_SERVICE_CONTAINER_NAME}
+#   ports:
+#     - "${AUTH_MAILER_SERVICE_PORT}:${AUTH_MAILER_SERVICE_PORT}"
+#   volumes:
+#     - ./:/app
+#     - /app/node_modules
+#     - /app/services/auth/node_modules
+#     - /app/packages
+#   restart: always
+#   env_file:
+#     - ./.env
+#   networks:
+#     - WohaAI_dev_net
+#   healthcheck:
+#     test: ["CMD", "curl", "-f", "http://auth-mailer-service:${AUTH_MAILER_SERVICE_PORT}/health"]
+#     interval: 30s
+#     timeout: 10s
+#     retries: 3
+#   profiles:
+#     - "services"
+
+
+  ## ----------------------------- ##
+  ## Repository
+  ## ----------------------------- ##
+
+  # Users MongoDB
+  users-mongo-db:
+    image: mongo:7
+    container_name: ${USERS_MONGO_DB_HOST}
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USERS_MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${USERS_MONGO_DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${USERS_MONGO_DB_DATABASE}
+    ports:
+      - "${USERS_MONGO_DB_HOST_PORT}:${USERS_MONGO_DB_PORT}"
+    volumes:
+      - users_mongo_data:/data/db
+    networks:
+      - WohaAI_dev_net
+    profiles:
+      - "repo"
+
+  # Threads MongoDB
+  threads-mongo-db:
+    image: mongo:7
+    container_name: ${THREADS_MONGO_DB_HOST}
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${THREADS_MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${THREADS_MONGO_DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${THREADS_MONGO_DB_DATABASE}
+    ports:
+      - "${THREADS_MONGO_DB_HOST_PORT}:${THREADS_MONGO_DB_PORT}"
+    volumes:
+      - threads_mongo_data:/data/db
+    networks:
+      - WohaAI_dev_net
+    profiles:
+      - "repo"
+
+  auth-redis-store:
+    image: redis:7
+    container_name: ${AUTH_SESSION_REDIS_HOST}
+    ports:
+      - "${AUTH_SESSION_REDIS_HOST_PORT}:${AUTH_SESSION_REDIS_PORT}"
+    command: >
+      redis-server --requirepass "${AUTH_SESSION_REDIS_PASSWORD}"
+    restart: always
+    networks:
+      - WohaAI_dev_net
+    volumes:
+      - auth_redis_data:/data
+    profiles:
+      - "repo"
+
+  # threads-redis-store:
+  #   image: redis:7
+  #   container_name: ${THREADS_HISTORY_REDIS_HOST}
+  #   ports:
+  #     - "${THREADS_HISTORY_REDIS_PORT}:6379"
+  #   command: >
+  #     redis-server --requirepass "${THREADS_HISTORY_REDIS_PASSWORD}"
+  #   restart: always
+  #   networks:
+  #     - WohaAI_dev_net
+  #   volumes:
+  #     - threads_redis_data:/data
+  #   profiles:
+  #     - "repo"
+
+
+  ## ----------------------------- ##
+  ## Agentic
+  ## ----------------------------- ##
+
+  wohaai-agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${AGENT_CONTAINER_NAME}
+    ports: 
+      - "${AI_AGENT_PORT}:${AI_AGENT_PORT}"
+    volumes:
+      - ./agent:/app/agent
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - WohaAI_dev_net
+    profiles:
+      - "agentic"
+
+
+  ## ----------------------------- ##
+  ## Messaging
+  ## ----------------------------- ##
+
+  auth-kafka-broker:
+    image: confluentinc/cp-kafka:7.5.3
+    container_name: ${AUTH_KAFKA_BROKER_HOST}
+
+    ports:
+      - "${AUTH_KAFKA_BROKER_PORT}:${AUTH_KAFKA_BROKER_PORT}"
+
+    environment:
+      # KRaft mode
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@localhost:9093"
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+
+      # =========================
+      # Listeners
+      # =========================
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:${AUTH_KAFKA_BROKER_PORT},CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT}"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      # =========================
+      # Single node dev settings
+      # =========================
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # =========================
+      # Dev safety
+      # =========================
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    networks:
+      - WohaAI_dev_net
+
+  ## Kafka Topic Creator Container for development
+  kafka-init-topics:
+    image: confluentinc/cp-kafka:7.5.3
+    depends_on:
+      - auth-kafka-broker
+
+    entrypoint: ["/bin/sh", "-c"]
+
+    command: >
+      "
+      echo 'Waiting for Kafka...'
+      cub kafka-ready -b ${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT} 1 30
+
+      echo 'Creating topics...'
+
+      kafka-topics --create \
+        --if-not-exists \
+        --bootstrap-server ${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT} \
+        --topic ${AUTH_KAFKA_FORGOT_PASSWORD_EVENTS_TOPIC} \
+        --partitions 1 \
+        --replication-factor 1
+
+      kafka-topics --create \
+        --if-not-exists \
+        --bootstrap-server ${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT} \
+        --topic ${AUTH_KAFKA_EMAIL_VERIFICATION_EVENTS_TOPIC} \
+        --partitions 1 \
+        --replication-factor 1
+
+      echo 'Topics created successfully'
+      "
+
+    networks:
+      - WohaAI_dev_net
+
+
+  ## ----------------------------- ##
+  ## Monitoring
+  ## ----------------------------- ##
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-kafka-broker
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${AUTH_KAFKA_BROKER_HOST}:${AUTH_KAFKA_BROKER_PORT}
+    profiles:
+      - "debug"
+
+
+networks:
+  WohaAI_dev_net:
+
+volumes:
+  users_mongo_data:
+  threads_mongo_data:
+
+  memory_redis_data:
+  threads_redis_data:
+  auth_redis_data:
+
+  pnpm-store:
+  node_modules:

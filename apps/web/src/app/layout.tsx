@@ -6,14 +6,10 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AppProvider } from "@/providers/AppProvider";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-});
+import { SettingsProvider } from "@/providers/SettingsProvider";
 
 export const metadata: Metadata = {
-  title: "WoahGPT",
+  title: "WohaAI",
   icons: {
     icon: "./logos/white_triangle.png",
   },
@@ -24,20 +20,22 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}) {  
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-w-95 max-w-480 h-full
       no-underline bg-background font-reading
       ">
         <AppProvider>
-          <ThemeProvider>
-            <LenisProvider>
-              <TooltipProvider>
-                {children}
-              </TooltipProvider>
-            </LenisProvider>
-          </ThemeProvider>
+          <SettingsProvider>
+            <ThemeProvider>
+              <LenisProvider>
+                <TooltipProvider>
+                  {children}
+                </TooltipProvider>
+              </LenisProvider>
+            </ThemeProvider>
+          </SettingsProvider>
         </AppProvider>
       </body>
     </html>

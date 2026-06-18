@@ -6,24 +6,20 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "clean:dist": "turbo run clean:dist",
+    "clean": "turbo run clean",
     "clean:install": "rm -rf pnpm-lock.yaml node_modules && pnpm --recursive exec rm -rf node_modules && pnpm install",
-    "packages:dev": "turbo run package:dev --filter=./packages/* --concurrency=11",
+    "packages:dev": "turbo run package:dev --filter=./packages/**/* --concurrency=15",
     "packages:build": "turbo run package:build --filter=./packages/*",
-    "prisma:generate": "turbo run prisma:generate",
     "typecheck": "turbo run typecheck",
     "docker:apps": "docker compose --env-file .env -f ./infra/compose/compose.apps.yml --profile apps up",
     "docker:repo": "docker compose --env-file .env -f ./infra/compose/compose.repo.yml --profile repo up",
     "docker:queue": "docker compose --env-file .env -f ./infra/compose/compose.queue.yml --profile queue up",
-    "docker:services": "docker compose --env-file .env -f ./infra/compose/compose.services.yml --profile services up",
+    "docker:services": "docker compose --env-file .env -f ./infra/compose/compose.services.yml --profile services build --no-cache && docker compose --env-file .env -f ./infra/compose/compose.services.yml --profile services up",
     "docker:agentic": "docker compose --env-file .env -f ./infra/compose/compose.agentic.yml --profile agentic up",
     "docker:debug": "docker compose --env-file .env -f ./infra/compose/compose.debug.yml --profile debug up",
     "docker:all": "pnpm run docker:apps && pnpm run docker:repo && pnpm run docker:services && pnpm run docker:agentic && pnpm run docker:debug"
   },
-  "devDependencies": {
-    "@types/node": "^25.9.1",
-    "turbo": "^2.9.15",
-    "typescript": "^6.0.3"
+  "dependencies": {
   },
   "overrides": {
     "zod": "^3.23.8",
@@ -31,8 +27,9 @@
     "openai": "^4.62.1",
     "react": "^18.2.0"
   },
-  "dependencies": {
-    "@prisma/client": "7.8.0",
-    "prisma": "7.8.0"
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "turbo": "^2.9.15",
+    "typescript": "^6.0.3"
   }
 }

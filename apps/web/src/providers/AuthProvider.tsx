@@ -1,12 +1,12 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { env } from "@/config/env";
+import { env } from "@wohaai/env-ts";
 
 //* Types
 /** User type is used for those specifiers who uses auth info from this auth Context. */
 export type User = {
-  userID: string;
+  id: string;
   profilePicture: string;
   email: string;
   username: string;

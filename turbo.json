@@ -30,7 +30,7 @@
             "cache": false
         },
         "package:dev": {
-            "cache": false,
+            "cache": true,
             "persistent": true
         },
         "package:build": {
@@ -41,16 +41,10 @@
                 "dist/**"
             ]
         },
-        "prisma:generate": {
-            "cache": false
-        },
         "typecheck": {
             "dependsOn": [
                 "^typecheck"
             ]
-        },
-        "clean:deep": {
-            "cache": false
         }
     }
 }

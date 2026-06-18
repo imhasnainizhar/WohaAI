@@ -1,0 +1,48 @@
+import { connectUsersDB } from "../../lib/db";
+import { nextAppLogger as logger } from "@wohaai/telemetry";
+import {
+  findOrCreateSettings,
+  patchSettings,
+} from "../repo/settings";
+import { env } from "@wohaai/env-ts";
+import {
+  normalizeUpdates,
+} from "../validators/settings";
+
+export async function getUserSettings(userId: string) {
+  await connectUsersDB();
+
+  const doc = await findOrCreateSettings(userId);
+
+  return {
+    settings: doc.values,
+    updatedAt: doc.updatedAt.getTime(),
+  };
+}
+
+export async function updateUserSettings(
+  userId: string,
+  body: unknown
+) {
+  try {
+    logger.debug("Mongo URI:" + env.USERS_MONGO_URI);
+    await connectUsersDB();
+
+    const updates = normalizeUpdates(body);
+
+    logger.debug("[updateUserSettings] Updates:" + JSON.stringify(updates));
+
+    const doc = await patchSettings(
+      userId,
+      updates
+    );
+
+    return {
+      settings: doc.values,
+      updatedAt: doc.updatedAt.getTime(),
+    };
+  } catch (error) {
+    console.error("[updateUserSettings] Error:", error);
+    throw error;
+  }
+}

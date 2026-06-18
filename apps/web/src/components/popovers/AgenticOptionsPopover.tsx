@@ -1,5 +1,6 @@
 "use client"
 
+
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -49,7 +50,7 @@ export default function AgenticOptionsPopover() {
       >
         <DropdownMenuGroup>
           <DropdownMenuItem
-            onSelect={(e) => e.preventDefault()}
+            onSelect={(e) => e.preventDefault()} className={`p-1`}
           >
             <label className={`flex items-center justify-between w-full cursor-pointer`}>
             <span>Web Search</span>
@@ -63,7 +64,7 @@ export default function AgenticOptionsPopover() {
           </DropdownMenuItem>
 
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className={`cursor-pointer flex items-center justify-between w-full`}>
+            <DropdownMenuSubTrigger className={`cursor-pointer flex items-center justify-between w-full p-1`}>
               <span>Style</span>
               <span className={`text-muted-foreground text-fluid-sm capitalize`}>{styleSelected}</span>
             </DropdownMenuSubTrigger>
@@ -73,7 +74,7 @@ export default function AgenticOptionsPopover() {
                 <DropdownMenuItem
                   key={style}
                   onClick={() => setStyleSelected(style)}
-                  className="flex items-center justify-between cursor-pointer"
+                  className="flex items-center justify-between cursor-pointer p-1"
                 >
                   <span className="capitalize">
                     {style}

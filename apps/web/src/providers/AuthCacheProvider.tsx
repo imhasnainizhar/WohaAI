@@ -1,36 +1,46 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { SignupFormCache } from "@packages/contracts/auth";
+import { SigninForm, SignupForm } from "@/types/auth";
 
-type SignupContextType = {
+export type SigninNextStep = "usernameOrEmail" | "password" | null;
+export type SignupNextStep = "username" | "email" | "email_verification" | "password" | "complete_signup"
+export type AuthNextStep = SigninNextStep | SignupNextStep
+
+type AuthContextType = {
   step: number;
   setStep: (step: number) => void;
-  nextStep: "username" | "email" | "password" | null;
-  setNextStep: (step: "username" | "email" | "password" | null) => void;
-  form: SignupFormCache;
-  setForm: (form: Partial<SignupFormCache>) => void;
+  nextStep: AuthNextStep;
+  setNextStep: (step: AuthNextStep) => void;
+  form: SigninForm | SignupForm;
+  setForm: (form: Partial<SigninForm | SignupForm>) => void;
 };
 
-const AuthCacheContext = createContext<SignupContextType | undefined>(undefined);
+const AuthCacheContext =
+  createContext<AuthContextType | undefined>(undefined);
 
 export function AuthCacheProvider({ children }: { children: ReactNode }) {
   const [step, setStepState] = useState(0);
-  const [nextStep, setNextStepState] = useState<"username" | "email" | "password" | null>(null);
-  const [form, setFormState] = useState<SignupFormCache>({
-    firstName: "",
-    lastName: "",
+  const [nextStep, setNextStepState] = useState<AuthNextStep>(null);
+
+  /**
+   * State is set for both signup and signin form and only
+   * relavent state is used in component forms.
+   */
+  const [form, setFormState] = useState<SigninForm | SignupForm>({
+    usernameOrEmail: "",
+    password: "",
     username: "",
     email: "",
-    dateOfBirth: new Date(),
-  });
+    confirmPassword: "",
+  } as SigninForm | SignupForm);
 
-  const setForm = (values: Partial<SignupFormCache>) => {
+  const setForm = (values: Partial<SigninForm | SignupForm>) => {
     setFormState((prev) => ({ ...prev, ...values }));
   };
 
   const setStep = (s: number) => setStepState(s);
-  const setNextStep = (s: "username" | "email" | "password" | null) => setNextStepState(s);
+  const setNextStep = (s: AuthNextStep) => setNextStepState(s);
 
   return (
     <AuthCacheContext.Provider value={{ step, setStep, nextStep, setNextStep, form, setForm }}>

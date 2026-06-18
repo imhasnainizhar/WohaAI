@@ -1,0 +1,6 @@
+{
+    "agent": {
+        "temperature": 0.1,
+        "maxIterations": 10
+    }
+}

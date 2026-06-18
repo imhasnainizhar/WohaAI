@@ -1,9 +1,5 @@
 packages:
-  - "./agent"
   - "./apps/*"
-  - "./mcp/*"
-  - "./mcp/servers/*"
-  - "./services/*"
-  - "./tooling/*"
+  - "./apps/**/*"
   - "./packages/*"
-  - "./infra/*"
+  - "./packages/**/*"

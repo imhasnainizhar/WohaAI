@@ -1,85 +1,70 @@
 import { useState } from "react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-
-interface InputFieldProps {
-  label: string;
-  name: string;
-  register: any;
-  error?: any;
-  theme?: string;
-  className?: string;
-  cacheBeingUsed?: boolean;
-}
+import { InputFieldProps } from "@/types/input-props";
 
 export const RoundedInputField = ({
   label,
-  name,
-  register,
   error,
-  theme,
   className,
-  cacheBeingUsed,
+  ...props
 }: InputFieldProps) => {
-  const [inputValue, setInputValue] = useState("")
-
-  const hasValue = inputValue.length > 0
 
   return (
+    <div className={`flex flex-col items-start gap-2`}>
     <div
       className={`w-full max-w-[340px] h-[50px] rounded-[50px] 
         flex items-center justify-center 
-        border border-border-secondary border-solid 
+        border border-border border-solid 
         text-text
-        ${error ? "border-[rgb(255,53,53)]" : ""}
-        ${className || ""}`}
-      data-theme={theme}
+        ${error ? "border-[#FF657B] focus:border-[#FF657B]" : null}
+        ${className || null}`}
     >
       <div className="relative flex items-center justify-start w-full max-w-[340px] h-[50px] pl-4">
         <input
           placeholder="   "
-          type="text"
-          {...register(name)}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)} // 👈 track input dynamically
           className="
             peer w-full h-full bg-transparent cursor-pointer z-20 
             rounded-[50px] font-sans font-small 
             focus:outline-none
           "
+          {...props}
         />
 
-        <label
-          className={`
-            absolute left-6 text-gray-primary transition-all duration-300
-            spacing-[2px] w-auto p-1
-            ${hasValue || cacheBeingUsed ? "top-0 -translate-y-1/2 text-[12px] text-text-primary left-[25px]" : "top-1/2 -translate-y-1/2"}
-            peer-focus:top-0
-            peer-focus:-translate-y-1/2
-            peer-focus:text-[12px]
-            peer-focus:text-text-primary
-            peer-focus:left-[25px]
-            bg-secondary rounded-[6px] w-10
-            text-center
-          `}
-        >
-          {label}
-        </label>
+            <label
+                htmlFor={props.id}
+                className={`
+                    whitespace-nowrap
+                    absolute top-1/2 -translate-y-1/2 left-3 px-2 bg-background! text-muted-foreground
+                    transition-all [transition:all_300ms_ease,color_100ms_ease] pointer-events-none
+                    rounded-[20px]
 
-        {error && (
+                    peer-focus:top-0
+                    peer-focus:text-xs
+                    peer-focus:text-foreground
+
+                    peer-not-placeholder-shown:top-0
+                    peer-not-placeholder-shown:text-xs
+
+                    ${error ? "text-[#FF657B]!" : null}
+                `}
+            >
+                {label}
+            </label>
+      </div>
+    </div>
+            {error && (
           <Alert
             variant="destructive"
             className="
-              absolute top-[40px] left-1
               bg-transparent border-none 
-              w-auto h-[25px] text-[13px] my-1
+              w-auto my-1
             "
           >
             <AlertCircleIcon />
-            <AlertTitle>{error.message}</AlertTitle>
+            <AlertTitle className={`text-[11px]! pt-0.5`}>{error.message}</AlertTitle>
           </Alert>
         )}
-      </div>
     </div>
   )
 }

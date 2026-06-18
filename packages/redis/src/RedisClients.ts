@@ -1,5 +1,5 @@
-import { authLogger as logger } from "@packages/observability";
-import { InternalServerError, ServiceError, SessionExpiredError } from "@packages/errors";
+import { authLogger as logger } from "@wohaai/telemetry";
+import { InternalServerError, ServiceError, SessionExpiredError } from "@wohaai/errors";
 import Redis from "ioredis";
 
 export class RedisClient {

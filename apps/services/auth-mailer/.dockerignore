@@ -1,0 +1,43 @@
+# 1. Dependencies (Crucial for Monorepos)
+**/node_modules
+node_modules
+
+# 2. Build Outputs
+**/dist
+**/build
+**/.next
+
+# 3. Logs
+npm-debug.log
+pnpm-debug.log*
+yarn-error.log
+yarn.lock
+
+# 4. Git & OS Files (Massive context savers)
+.git
+.gitignore
+.DS_Store
+Thumbs.db
+
+# 5. Docker Files
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# 6. Security & Local Configs
+.env
+.env.*
+!.env.example # (It is okay to keep example templates)
+
+# 7. Editor/IDE
+.vscode
+.idea
+
+# 8. Testing & Coverage
+**/tests
+**/coverage
+
+# Package Manager Stores
+**/.pnpm-store
+.yarn/cache
+**/.turbo

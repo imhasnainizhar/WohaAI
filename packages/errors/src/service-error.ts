@@ -115,8 +115,6 @@ export class FetchError extends ServiceError {
     }
 }
 
-
-
 // Bad gateway error
 export class BadGatewayError extends ServiceError {
     constructor(params?: {
@@ -132,6 +130,43 @@ export class BadGatewayError extends ServiceError {
         );
 
         this.name = "BadGatewayError";
+    }
+}
+
+// Bad request error
+export class BadRequestError extends ServiceError {
+    constructor(params?: {
+        message?: string;
+        errorType?: string;
+        errors?: Record<string, string[]>;
+    }) {
+        super(
+            params?.message ?? "Bad request",
+            params?.errorType ?? "bad_request",
+            400,
+            params?.errors
+        );
+
+        this.name = "BadRequestError";
+    }
+}
+
+
+// Unauthorized request error
+export class UnauthorizedRequestError extends ServiceError {
+    constructor(params?: {
+        message?: string;
+        errorType?: string;
+        errors?: Record<string, string[]>;
+    }) {
+        super(
+            params?.message ?? "Unauthorized request",
+            params?.errorType ?? "unauthorized_request",
+            401,
+            params?.errors
+        );
+
+        this.name = "UnauthorizedRequestError";
     }
 }
 
