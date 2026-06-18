@@ -16,7 +16,7 @@ COPY tsconfig.base.json ./
 COPY turbo.json ./
 
 COPY packages ./packages
-COPY services/user ./services/user/
+COPY apps/services/user ./apps/services/user/
 
 RUN find packages -name package*.json
 
@@ -30,16 +30,16 @@ FROM base AS development
 
 # Copy workspace packages and service
 COPY packages ./packages
-COPY services/user ./services/user
+COPY apps/services/user ./apps/services/user
 
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/packages/ ./packages/
-COPY --from=base /app/services/user/ ./services/user/
+COPY --from=base /app/apps/services/user/ ./apps/services/user/
 
 # Put packages
 RUN pnpm --filter user-service... build
 
-WORKDIR /app/services/user
+WORKDIR /app/apps/services/user
 
 CMD ["pnpm", "dev"]
 
@@ -53,7 +53,7 @@ WORKDIR /app
 # Build shared packages first
 RUN pnpm --filter user-service... build
 
-WORKDIR /app/services/user
+WORKDIR /app/apps/services/user
 
 # Build only user service
 RUN pnpm build
@@ -72,7 +72,7 @@ WORKDIR /app
 COPY --from=build /app/package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages ./packages
-COPY --from=build /app/services/user/dist ./services/user/dist
+COPY --from=build /app/apps/services/user/dist ./apps/services/user/dist
 
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
@@ -80,6 +80,6 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 # Switch user
 USER appuser
 
-WORKDIR /app/services/user
+WORKDIR /app/apps/services/user
 
 CMD ["pnpm", "start"]

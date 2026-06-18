@@ -16,7 +16,7 @@ COPY tsconfig.base.json ./
 COPY turbo.json ./
 
 COPY packages ./packages
-COPY services/auth-mailer ./services/auth-mailer/
+COPY apps/services/auth-mailer ./apps/services/auth-mailer/
 
 RUN find packages -name package*.json
 
@@ -30,16 +30,16 @@ FROM base AS development
 
 # Copy workspace packages and service
 COPY packages ./packages
-COPY services/auth-mailer ./services/auth-mailer
+COPY apps/services/auth-mailer ./apps/services/auth-mailer
 
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/packages/ ./packages/
-COPY --from=base /app/services/auth-mailer/ ./services/auth-mailer/
+COPY --from=base /app/apps/services/auth-mailer/ ./apps/services/auth-mailer/
 
-# Put packages
+# Put packagesv
 RUN pnpm --filter auth-mailer-service... build
 
-WORKDIR /app/services/auth-mailer
+WORKDIR /app/apps/services/auth-mailer
 
 CMD ["pnpm", "dev"]
 
@@ -53,7 +53,7 @@ WORKDIR /app
 # Build shared packages first
 RUN pnpm --filter auth-mailer-service... build
 
-WORKDIR /app/services/auth-mailer
+WORKDIR /app/apps/services/auth-mailer
 
 # Build only auth service
 RUN pnpm build
@@ -72,7 +72,7 @@ WORKDIR /app
 COPY --from=build /app/package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages ./packages
-COPY --from=build /app/services/auth-mailer/dist ./services/auth-mailer/dist
+COPY --from=build /app/apps/services/auth-mailer/dist ./apps/services/auth-mailer/dist
 
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
@@ -80,6 +80,6 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 # Switch user
 USER appuser
 
-WORKDIR /app/services/auth-mailer
+WORKDIR /app/apps/services/auth-mailer
 
 CMD ["pnpm", "start"]
