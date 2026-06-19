@@ -31,6 +31,7 @@ export default function SigninPassword({
     });
 
     const [error, setError] = useState<string>("");
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
     const router = useRouter();
 
     const onSubmit = async (formData: SigninPasswordOutput) => {
@@ -91,6 +92,9 @@ export default function SigninPassword({
                                         error={errors.confirmPassword}
                                         {...register("confirmPassword")}
                                     />
+                                </Field>
+                                <Field>
+                                    <CAPTCHA onVerify={setRecaptchaToken} />
                                 </Field>
                                 <Field>
                                     <Button type="submit" className={`bg-primary text-primary-foreground! text-fluid-base font-semibold hover:bg-primary/70! transition-all ease-in-out duration-300 cursor-pointer`}>Sign In</Button>

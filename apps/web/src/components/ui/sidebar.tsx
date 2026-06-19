@@ -201,7 +201,7 @@ function Sidebar({
               : "pointer-events-none opacity-0"
           )}
           onClick={() => setOpenMobile(false)}
-        > 
+        >
         </div>
       </>
     )

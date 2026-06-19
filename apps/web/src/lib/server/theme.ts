@@ -1,3 +1,4 @@
+"use server";
 import { cookies } from "next/headers";
 
 // Theme cookie name

@@ -1,4 +1,4 @@
-import { connectUsersDB } from "../../lib/db";
+import { connectUsersDB } from "@/lib/server/db";
 import { nextAppLogger as logger } from "@wohaai/telemetry";
 import {
   findOrCreateSettings,

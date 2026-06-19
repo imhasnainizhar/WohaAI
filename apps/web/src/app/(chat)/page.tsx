@@ -1,6 +1,6 @@
 "use client";
 
-import PathChecker from "@/lib/get-page-url";
+import PathChecker from "@/lib/client/get-page-url";
 import ChatTextArea from "@/components/ui/ChatTextArea";
 import "boxicons/css/boxicons.min.css";
 import { useThemeUtils } from '@/providers/ThemeProvider';

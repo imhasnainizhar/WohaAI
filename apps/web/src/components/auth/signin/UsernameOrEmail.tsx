@@ -12,7 +12,6 @@ import Link from "next/link";
 import { FloatingInput } from "../../input/fields/FloatingInput";
 import Image from "next/image";
 import { FaApple } from "react-icons/fa";
-import { env } from "@wohaai/env-ts";;
 import { ApiResponseOptions } from '@wohaai/http';
 
 const SigninInitRequestSchema = z.object({
@@ -52,7 +51,11 @@ export default function SigninUsernameOrEmail({
 
         // Check if the user exists
         try {
-            const authURI = env.NEXT_PUBLIC_AUTH_API_URI;
+            const authURI = process.env.NEXT_PUBLIC_AUTH_API_URI;
+            if (!authURI) {
+                throw new Error("AUTH_API_URI is not defined");
+            }
+
             const rawRes = await fetch(`${authURI}/api/auth/signin-init`, {
                 method: "POST",
                 credentials: "include",
