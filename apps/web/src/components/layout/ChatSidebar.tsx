@@ -15,11 +15,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { RecentChats } from "../ui/RecentChats"
 import { RoundedCornersPencilIcon } from "../ui/pencil"
 import { WohaLogo } from '../ui/WohaLogo';
+import { useThemeUtils } from "@/providers/ThemeProvider";
 
 const fakeUser = {
   name: "shadcn",
@@ -54,14 +56,18 @@ const recentSessions = [
 ]
 
 export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { isDarkTheme } = useThemeUtils();
+  const { open } = useSidebar();
+
   return (
-    <Sidebar collapsible="icon" {...props} className={`relative border-none!`} >
+    <Sidebar collapsible="icon" {...props} className={`relative
+    ${(isDarkTheme && open) ? 'bg-sidebar border-none' : (!isDarkTheme && open) ? 'bg-background border border-border' : 'bg-background border-none'}`} >
       <SidebarHeader className={`pt-3!`}>
         <SidebarMenu>
-          <SidebarMenuItem className={`hover:bg-none!`}>
+          <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5! cursor-none"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <Link href="/">
                 <WohaLogo />

@@ -1,4 +1,4 @@
-import SigninFlow from "@/components/signin/Composer";
+import SigninComposer from "@/components/auth/signin/Composer";
 
 export default function SignIn() {
 
@@ -19,7 +19,7 @@ export default function SignIn() {
           </div>
           <div className={`w-full flex items-center justify-center`}>
             <div className="w-full max-w-90">
-              <SigninFlow />
+              <SigninComposer />
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserIdFromRequest } from "@/lib/auth";
+import { getUserIdFromRequest } from "@/lib/server/get-user-id";
 import {
   getUserSettings,
   updateUserSettings,

@@ -7,10 +7,11 @@ import { useRouter } from "next/navigation";
 import { PasswordValidationRequestSchema } from "@wohaai/validations";
 import z from "zod";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { FieldGroup, Field, FieldDescription } from "../ui/field";
-import { FloatingInput } from "../input/fields/FloatingInput";
+import { Button } from "../../ui/button";
+import { Card, CardContent } from "../../ui/card";
+import { FieldGroup, Field, FieldDescription } from "../../ui/field";
+import { FloatingInput } from "../../input/fields/FloatingInput";
+import { config } from "@/lib/config";
 
 type SigninPasswordInput = z.input<typeof PasswordValidationRequestSchema>;
 type SigninPasswordOutput = z.output<typeof PasswordValidationRequestSchema>;
@@ -32,12 +33,13 @@ export default function SigninPassword({
 
     const [error, setError] = useState<string>("");
     const router = useRouter();
+    const API_AUTH_URI = config.NEXT_PUBLIC_AUTH_API_URI;
 
     const onSubmit = async (formData: SigninPasswordOutput) => {
         setError("");
-
+        
         try {
-            const res = await fetch("/api/auth/signin", {
+            const res = await fetch(`${API_AUTH_URI}/signin/init`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -91,6 +93,8 @@ export default function SigninPassword({
                                         error={errors.confirmPassword}
                                         {...register("confirmPassword")}
                                     />
+                                </Field>
+                                <Field>
                                 </Field>
                                 <Field>
                                     <Button type="submit" className={`bg-primary text-primary-foreground! text-fluid-base font-semibold hover:bg-primary/70! transition-all ease-in-out duration-300 cursor-pointer`}>Sign In</Button>

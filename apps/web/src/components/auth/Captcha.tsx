@@ -2,9 +2,9 @@
 
 import ReCAPTCHA from "react-google-recaptcha";
 import { useRef } from "react";
-import { env } from "@wohaai/env-ts";
+import { config } from "@/lib/config";
 
-const RECAPTCHA_SITE_KEY = env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+const RECAPTCHA_SITE_KEY = config.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export default function CAPTCHA ({ onVerify }: { onVerify: (token: string | null) => void }) {
     const recaptchaRef  = useRef<ReCAPTCHA  | null>(null);
