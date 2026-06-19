@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 import { PasswordValidationRequestSchema } from "@wohaai/validations";
 import z from "zod";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { FieldGroup, Field, FieldDescription } from "../ui/field";
-import { FloatingInput } from "../input/fields/FloatingInput";
+import { Button } from "../../ui/button";
+import { Card, CardContent } from "../../ui/card";
+import { FieldGroup, Field, FieldDescription } from "../../ui/field";
+import { FloatingInput } from "../../input/fields/FloatingInput";
 
 type SigninPasswordInput = z.input<typeof PasswordValidationRequestSchema>;
 type SigninPasswordOutput = z.output<typeof PasswordValidationRequestSchema>;

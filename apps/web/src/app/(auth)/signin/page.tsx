@@ -1,4 +1,4 @@
-import SigninFlow from "@/components/signin/Composer";
+import SigninFlow from "@/components/auth/signin/Composer";
 
 export default function SignIn() {
 
