@@ -13,6 +13,7 @@ import { FloatingInput } from "../../input/fields/FloatingInput";
 import Image from "next/image";
 import { FaApple } from "react-icons/fa";
 import { ApiResponseOptions } from '@wohaai/http';
+import CAPTCHA from "../Captcha";
 
 const SigninInitRequestSchema = z.object({
     usernameOrEmail: UsernameOrEmailSchema,
@@ -44,10 +45,16 @@ export default function SigninUsernameOrEmail({
     });
 
     const [error, setError] = useState<string>("");
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     const onSubmit = async (formData: SigninInitOutput) => {
         setError("");
         const { usernameOrEmail } = formData;
+
+        if (!recaptchaToken) {
+            setError("Please complete the reCAPTCHA verification.");
+            return;
+        }
 
         // Check if the user exists
         try {
@@ -61,6 +68,7 @@ export default function SigninUsernameOrEmail({
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
+                    "x-recaptcha-token": recaptchaToken,
                 },
                 body: JSON.stringify({ usernameOrEmail }),
             });
@@ -115,6 +123,9 @@ export default function SigninUsernameOrEmail({
                                         {...register("usernameOrEmail")}
                                     />
                                 </Field>
+                                {/* <Field>
+                                    <CAPTCHA onVerify={setRecaptchaToken} />
+                                </Field> */}
                                 <Field>
                                     <Button type="submit" className={`bg-primary text-primary-foreground! text-fluid-base font-semibold hover:bg-primary/70! transition-all ease-in-out duration-300 cursor-pointer`}>Continue</Button>
                                 </Field>
