@@ -13,7 +13,7 @@ export const env = createEnv({
         JWT_AUTH_SECRET_KEY: process.env.JWT_AUTH_SECRET_KEY!,
         JWT_CHANGE_PASSWORD_SECRET_KEY:
             process.env.JWT_CHANGE_PASSWORD_SECRET_KEY!,
-            
+
         ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET!,
 
         NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
@@ -35,19 +35,28 @@ export const env = createEnv({
         USER_SERVICE_PORT: process.env.USER_SERVICE_PORT!,
         AUTH_MAILER_SERVICE_PORT: process.env.AUTH_MAILER_SERVICE_PORT!,
         AI_AGENT_PORT: process.env.AI_AGENT_PORT!,
+        USER_GRPC_PORT: process.env.USER_GRPC_PORT!,
+
+        // Service Host Names
+        NEXTJS_APP_HOST_NAME: process.env.NEXTJS_APP_HOST_NAME!,
+        AUTH_SERVICE_HOST_NAME: process.env.AUTH_SERVICE_HOST_NAME!,
+        USER_SERVICE_HOST_NAME: process.env.USER_SERVICE_HOST_NAME!,
+        AUTH_MAILER_SERVICE_HOST_NAME: process.env.AUTH_MAILER_SERVICE_HOST_NAME!,
+        AGENT_HOST_NAME: process.env.AGENT_HOST_NAME!,
+        AI_AGENT_HOST: process.env.AI_AGENT_HOST!,
 
         // Network / CORS
         CLIENT_ORIGIN: process.env.CLIENT_ORIGIN!,
 
-        // Service URIs (derived)
-        // Using name NEXT_PUBLIC_* env from .env files, as they have same value.
-        AUTH_API_URI: process.env.NEXT_PUBLIC_AUTH_API_URI!,
-        AUTH_MAILER_API_URI: process.env.NEXT_PUBLIC_AUTH_MAILER_API_URI!,
-        USER_API_URI: process.env.NEXT_PUBLIC_USER_API_URI!,
+        // Service URIs
+        AUTH_API_URI: process.env.AUTH_API_URI!,
+        USER_API_URI: process.env.USER_API_URI!,
+        AUTH_MAILER_API_URI: process.env.AUTH_MAILER_API_URI!,
 
+        // Client-side public URIs
         NEXT_PUBLIC_AUTH_API_URI: process.env.NEXT_PUBLIC_AUTH_API_URI!,
-        NEXT_PUBLIC_AUTH_MAILER_API_URI: process.env.NEXT_PUBLIC_AUTH_MAILER_API_URI!,
         NEXT_PUBLIC_USER_API_URI: process.env.NEXT_PUBLIC_USER_API_URI!,
+        NEXT_PUBLIC_AUTH_MAILER_API_URI: process.env.NEXT_PUBLIC_AUTH_MAILER_API_URI!,
 
         // MongoDB
         USERS_MONGO_URI: process.env.USERS_MONGO_URI!,
@@ -98,6 +107,14 @@ export const env = createEnv({
         USER_SERVICE_PORT: z.coerce.number(),
         AUTH_MAILER_SERVICE_PORT: z.coerce.number(),
         AI_AGENT_PORT: z.coerce.number(),
+        USER_GRPC_PORT: z.coerce.number(),
+
+        NEXTJS_APP_HOST_NAME: z.string(),
+        AUTH_SERVICE_HOST_NAME: z.string(),
+        USER_SERVICE_HOST_NAME: z.string(),
+        AUTH_MAILER_SERVICE_HOST_NAME: z.string(),
+        AGENT_HOST_NAME: z.string(),
+        AI_AGENT_HOST: z.string(),
 
         CLIENT_ORIGIN: z.string(),
 

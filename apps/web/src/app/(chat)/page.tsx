@@ -21,12 +21,12 @@ export default function ChatPage() {
       <div className={
         `w-full h-full relative max-w-160`
       }>
-        <div className={
+        {/* <div className={
           `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center
              text-fluid-2xl font-gerogia-sans tracking-tighter`
         }>
           How can I help U?
-        </div>
+        </div> */}
 
         {/* Chat Box */}
         <div className={

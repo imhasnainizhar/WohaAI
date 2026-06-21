@@ -14,6 +14,7 @@ import { SignOptions } from "jsonwebtoken";
 import { ClientData } from "@wohaai/types";
 import { AuthRepo } from "@/repo/auth-repo";
 import { EmailVerificationRequiredError } from "@/errors/service-error";
+import { UserGrpcClient } from "@/grpc/client";
 
 export interface SignupCompleteServiceParams {
   authSessionID: string;
@@ -33,7 +34,8 @@ export class SignupCompleteService {
   constructor(
     private readonly authRepo: AuthRepo,
     private readonly userProvisioningClient:
-      UserProvisioningClient
+      UserProvisioningClient,
+    private readonly userGrpcClient?: UserGrpcClient
   ) { }
 
   /**
@@ -85,22 +87,43 @@ export class SignupCompleteService {
 
     authLogger.info({
       message:
-        "Creating user through provisioning service",
+        "Creating user through gRPC service",
 
       username:
         userPayload.username,
 
-      email:
-        userPayload.email,
+      email: userPayload.email,
     });
 
     /**
      * Future:
      * REST / gRPC / Kafka / NATS
      */
-    const createdUser =
-      await this.userProvisioningClient
-        .createUser(userPayload);
+    // const createdUser =
+    //   await this.userProvisioningClient
+    //     .createUser(userPayload);
+    let createdUser;
+    if (this.userGrpcClient) {
+      try {
+        const grpcResponse = await this.userGrpcClient.createUser({
+          username: userPayload.username,
+          email: userPayload.email,
+          hashed_password: userPayload.hashedPassword,
+          auth_token: userPayload.authToken,
+        });
+
+        createdUser = {
+          userID: grpcResponse.user_id,
+          username: grpcResponse.username,
+          email: grpcResponse.email,
+        };
+      } catch (error) {
+        authLogger.warn('⚠️ gRPC user creation failed, falling back to REST' + error);
+        createdUser = await this.userProvisioningClient.createUser(userPayload);
+      }
+    } else {
+      createdUser = await this.userProvisioningClient.createUser(userPayload);
+    }
 
     authLogger.debug("User created")
 

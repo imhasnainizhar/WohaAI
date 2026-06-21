@@ -1,5 +1,14 @@
 import nodemailer from "nodemailer";
 import { env } from "@wohaai/env-ts";
+import { authMailerLogger } from "@wohaai/telemetry";
+
+authMailerLogger.debug(
+  {
+    host: env.MAILER_HOST,
+    port: env.MAILER_PORT,
+  },
+  "Initializing mailer transport",
+);
 
 export const mailerTransport = nodemailer.createTransport({
   host: env.MAILER_HOST,
@@ -11,3 +20,7 @@ export const mailerTransport = nodemailer.createTransport({
     pass: env.MAILER_USER_PASSWORD,
   },
 });
+
+authMailerLogger.debug(
+  "Mailer transport initialized successfully",
+);

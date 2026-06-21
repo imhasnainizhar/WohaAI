@@ -1,3 +1,3 @@
 
-export * from "./RedisClients"
-export * from "./RedisHelpers"
+export * from "./redis-client"
+export * from "./keys"

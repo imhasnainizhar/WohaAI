@@ -92,6 +92,7 @@ import { RequestEmailChangeService, RequestEmailChangeServiceParams } from "./ch
 import { VerifyEmailChangeService, VerifyEmailChangeServiceParams } from "./change-email/verify";
 import { env } from "@wohaai/env-ts";
 import { Router } from 'express';
+import { UserGrpcClient } from "@/grpc/client";
 
 export class AuthService {
     private static instance: AuthService;
@@ -147,7 +148,14 @@ export class AuthService {
 
             const passwordValidationService = new PasswordValidationService();
 
-            const signupCompleteService = new SignupCompleteService(authRepo, userProvisioningClient);
+            let userGrpcClient: UserGrpcClient | undefined;
+            try {
+                userGrpcClient = new UserGrpcClient();
+            } catch (error) {
+                authLogger.warn('⚠️ Failed to initialize UserGrpcClient, will use REST fallback' + error);
+            }
+
+            const signupCompleteService = new SignupCompleteService(authRepo, userProvisioningClient, userGrpcClient);
 
             const changePasswordService = new ChangePasswordService(authRepo);
 
@@ -193,7 +201,7 @@ export class AuthService {
     public async signinInit({
         usernameOrEmail,
     }: SigninInitServiceParams): Promise<SigninInitServiceResponse> {
-        authLogger.debug({ usernameOrEmail }, "🔐 Signin init requested");
+        authLogger.debug({ usernameOrEmail }, "Signin init requested");
         return this.signinService.init({
             usernameOrEmail,
         });
@@ -204,7 +212,7 @@ export class AuthService {
         password,
         clientData
     }: CompleteSigninServiceParams): Promise<CompleteSigninServiceResponse> {
-        authLogger.debug({ usernameOrEmail, clientData }, "✅ Signin complete requested");
+        authLogger.debug({ usernameOrEmail, clientData }, "Signin complete requested");
         return this.signinService.complete({
             usernameOrEmail,
             password,
@@ -216,7 +224,7 @@ export class AuthService {
         userID,
         userSessionID
     }: SignoutServiceParams) {
-        authLogger.debug({ userID, userSessionID }, "👋 Signout requested");
+        authLogger.debug({ userID, userSessionID }, "Signout requested");
         return this.signoutService.execute({ userID, userSessionID })
     }
 
@@ -224,12 +232,12 @@ export class AuthService {
         refreshToken,
         userIPAddress
     }: RefreshSessionServiceParams): Promise<RefreshSessionServiceResponse> {
-        authLogger.debug({ userIPAddress }, "🔄 Session refresh requested");
+        authLogger.debug({ userIPAddress }, "Session refresh requested");
         return this.refreshSessionService.execute({ refreshToken, userIPAddress })
     }
 
     public async signupInit(): Promise<SignupInitServiceResponse> {
-        authLogger.debug("🚀 Signup init requested");
+        authLogger.debug("Signup init requested");
         return this.signupInitService.execute()
     }
 
@@ -237,7 +245,7 @@ export class AuthService {
         authSessionID,
         username
     }: SignupUsernameValidationServiceParams) {
-        authLogger.debug({ authSessionID, username }, "👤 Username validation requested");
+        authLogger.debug({ authSessionID, username }, "Username validation requested");
         return this.signupUsernameValidationService.execute({ authSessionID, username })
     }
 
@@ -245,14 +253,14 @@ export class AuthService {
         authSessionID,
         email
     }: SignupEmailValidationServiceParams) {
-        authLogger.debug({ authSessionID, email }, "📧 Email validation requested");
+        authLogger.debug({ authSessionID, email }, "Email validation requested");
         return this.signupEmailValidationService.execute({ authSessionID, email })
     }
 
     public async sendVerificationEmail({
         authSessionID
     }: SendVerificationServiceParams) {
-        authLogger.debug({ authSessionID }, "📨 Verification email send requested");
+        authLogger.debug({ authSessionID }, "Verification email send requested");
         return this.sendVerificationEmailService.execute({ authSessionID })
     }
 
@@ -260,7 +268,7 @@ export class AuthService {
         authSessionID,
         verificationCode
     }: VerifyUserEmailServiceParams): Promise<VerifyUserEmailServiceResponse> {
-        authLogger.debug({ authSessionID }, "✅ Email verification requested");
+        authLogger.debug({ authSessionID }, "Email verification requested");
         return this.verifyUserEmailService.execute({ authSessionID, verificationCode })
     }
 
@@ -268,7 +276,7 @@ export class AuthService {
         authSessionID,
         zodValidatedPassword
     }: PasswordValidationServiceParams) {
-        authLogger.debug({ authSessionID }, "🔑 Password validation requested");
+        authLogger.debug({ authSessionID }, "Password validation requested");
         return this.passwordValidationService.execute({ authSessionID, zodValidatedPassword })
     }
 
@@ -277,21 +285,21 @@ export class AuthService {
         authToken,
         clientData
     }: SignupCompleteServiceParams): Promise<SignupCompleteServiceResponse> {
-        authLogger.debug({ authSessionID, clientData }, "🎉 Signup completion requested");
+        authLogger.debug({ authSessionID, clientData }, "Signup completion requested");
         return this.signupCompleteService.execute({ authSessionID, authToken, clientData })
     }
 
     public async changePasswordInit({
         usernameOrEmail
     }: ChangePasswordInitServiceParams) {
-        authLogger.debug({ usernameOrEmail }, "🔒 Password change init requested");
+        authLogger.debug({ usernameOrEmail }, "Password change init requested");
         return this.changePasswordService.init({ usernameOrEmail })
     }
 
     public async verifyChangePasswordRequest({
         sessionID
     }: VerifyChangePasswordServiceParams): Promise<VerifyChangePasswordServiceResponse> {
-        authLogger.debug({ sessionID }, "🔍 Password change verification requested");
+        authLogger.debug({ sessionID }, "Password change verification requested");
         return this.changePasswordService.verify({ sessionID })
     }
 
@@ -299,14 +307,14 @@ export class AuthService {
         sessionID,
         password
     }: CompleteChangePasswordServiceResponse) {
-        authLogger.debug({ sessionID }, "✅ Password change completion requested");
+        authLogger.debug({ sessionID }, "Password change completion requested");
         return this.changePasswordService.complete({ sessionID, password })
     }
 
     public async generate2FASecret({
         userID
     }: Generate2FASecretServiceParams): Promise<Generate2FASecretServiceResponse> {
-        authLogger.debug({ userID }, "🔐 2FA secret generation requested");
+        authLogger.debug({ userID }, "2FA secret generation requested");
         return this.generate2FASecretService.execute({ userID })
     }
 
@@ -314,7 +322,7 @@ export class AuthService {
         userID,
         token
     }: Verify2FAServiceParams): Promise<{ success: boolean }> {
-        authLogger.debug({ userID }, "🔑 2FA verification requested");
+        authLogger.debug({ userID }, "2FA verification requested");
         return this.verify2FAService.execute({
             userID,
             token
@@ -325,7 +333,7 @@ export class AuthService {
         userID,
         token
     }: Enable2FAServiceParams) {
-        authLogger.debug({ userID }, "✅ 2FA enable requested");
+        authLogger.debug({ userID }, "2FA enable requested");
         return this.enable2FAService.execute({
             userID,
             token
@@ -336,7 +344,7 @@ export class AuthService {
         userID,
         token
     }: Disable2FAServiceParams) {
-        authLogger.debug({ userID }, "❌ 2FA disable requested");
+        authLogger.debug({ userID }, "2FA disable requested");
         return this.disable2FAService.execute({
             userID,
             token
@@ -347,7 +355,7 @@ export class AuthService {
         userID,
         newEmail
     }: RequestEmailChangeServiceParams) {
-        authLogger.debug({ userID, newEmail }, "📧 Email change request initiated");
+        authLogger.debug({ userID, newEmail }, "Email change request initiated");
         return this.requestEmailChangeService.execute({
             userID,
             newEmail
@@ -357,7 +365,7 @@ export class AuthService {
     public async verifyEmailChange({
         sessionID
     }: VerifyEmailChangeServiceParams) {
-        authLogger.debug({ sessionID }, "✅ Email change verification requested");
+        authLogger.debug({ sessionID }, "Email change verification requested");
         return this.verifyEmailChangeService.execute({
             sessionID
         })

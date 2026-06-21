@@ -1,5 +1,6 @@
 node_modules
 .env
+.env.prod
 .env.local
 .env.docker
 /venv

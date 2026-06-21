@@ -11,13 +11,22 @@
     "packages:dev": "turbo run package:dev --filter=./packages/**/* --concurrency=15",
     "packages:build": "turbo run package:build --filter=./packages/*",
     "typecheck": "turbo run typecheck",
+    "proto:generate": "pnpm --filter @wohaai/proto generate",
+    "proto:watch": "pnpm --filter @wohaai/proto watch",
+    "proto:clean": "pnpm --filter @wohaai/proto clean",
     "docker:apps": "docker compose --env-file .env --profile apps up",
     "docker:repo": "docker compose --env-file .env --profile repo up",
     "docker:messaging": "docker compose --env-file .env --profile messaging up",
     "docker:services": "docker compose --env-file .env --profile services build && docker compose --env-file .env --profile services up",
     "docker:agentic": "docker compose --env-file .env --profile agentic up",
     "docker:debug": "docker compose --env-file .env --profile debug up",
-    "docker:all": "docker compose --env-file .env --profile all up"
+    "docker:all": "docker compose --env-file .env --profile all up",
+    "docker:build:apps": "docker compose --env-file .env --profile apps build",
+    "docker:build:repo": "docker compose --env-file .env --profile repo build",
+    "docker:build:messaging": "docker compose --env-file .env --profile messaging build",
+    "docker:build:services": "docker compose --env-file .env --profile services build",
+    "docker:build:agentic": "docker compose --env-file .env --profile agentic build",
+    "docker:build:all": "docker compose --env-file .env --profile all build"
   },
   "dependencies": {},
   "overrides": {

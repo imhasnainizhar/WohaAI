@@ -50,7 +50,7 @@ export class CreateUserService {
             hashedPassword
         });
 
-        userLogger.debug("User created" + JSON.stringify({ username, email }));
+        userLogger.info("✅ User created successfully" + JSON.stringify({ username, email }));
 
         return {
             userID: createdUser.id,
