@@ -20,14 +20,16 @@ const consumer = getConsumer({
 });
 
 export async function consumeChangePasswordEmail() {
+  authMailerLogger.debug("✅ Connecting to Kafka for change password consumer");
   await consumer.connect();
 
+  authMailerLogger.debug("✅ Subscribing to change password topic");
   await consumer.subscribe({
     topic: kafka.topics.changePassword
   });
 
   authMailerLogger.info(
-    "Change password email consumer started",
+    "✅ Change password email consumer started",
   );
 
   await consumer.run({
@@ -37,10 +39,13 @@ export async function consumeChangePasswordEmail() {
       message,
     }) => {
       try {
+        authMailerLogger.debug({ topic, partition, offset: message.offset }, "Received change password message");
+
         const rawMessage = message.value?.toString();
 
         // EMPTY MESSAGE
         if (!rawMessage) {
+          authMailerLogger.debug("Empty message value received");
           throw new Error(
             "Kafka change password message value is empty",
           );
@@ -48,11 +53,13 @@ export async function consumeChangePasswordEmail() {
 
         // PARSE MESSAGE
         let parsedMessage: ForgotPasswordEmailMessage;
+        authMailerLogger.debug("✅ Parsed change password message JSON");
 
         try {
           parsedMessage =
             JSON.parse(rawMessage);
         } catch {
+          authMailerLogger.debug("Failed to parse change password message JSON");
           throw new Error(
             "Invalid change password kafka JSON payload",
           );
@@ -68,10 +75,15 @@ export async function consumeChangePasswordEmail() {
           !email ||
           !resetPasswordCode
         ) {
+          authMailerLogger.debug("Missing required change password payload fields");
           throw new Error(
             "Missing required change password payload fields",
           );
         }
+
+        authMailerLogger.debug({ email }, "✅ Validated change password payload fields");
+
+        authMailerLogger.debug({ email }, "Dispatching change password email");
 
         // DISPATCH EMAIL
         await dispatchChangePasswordEmailService(
@@ -81,6 +93,8 @@ export async function consumeChangePasswordEmail() {
           },
         );
 
+        authMailerLogger.debug({ email }, "✅ Change password email dispatched");
+
         authMailerLogger.info(
           {
             topic,
@@ -88,7 +102,7 @@ export async function consumeChangePasswordEmail() {
             offset: message.offset,
             email,
           },
-          "Change password email processed successfully",
+          "✅ Change password email processed successfully",
         );
       } catch (error) {
         authMailerLogger.error(
@@ -99,7 +113,7 @@ export async function consumeChangePasswordEmail() {
             offset: message.offset,
             rawMessage: message.value?.toString()
           },
-          "Change password email consumer failed"
+          "❌ Change password email consumer failed"
         );
 
         /**

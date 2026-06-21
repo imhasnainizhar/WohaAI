@@ -45,6 +45,19 @@
             "dependsOn": [
                 "^typecheck"
             ]
+        },
+        "proto:generate": {
+            "outputs": [
+                "packages/proto/generated/**"
+            ],
+            "cache": true
+        },
+        "proto:watch": {
+            "cache": false,
+            "persistent": true
+        },
+        "proto:clean": {
+            "cache": false
         }
     }
 }

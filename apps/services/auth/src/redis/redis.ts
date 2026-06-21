@@ -1,7 +1,7 @@
 import { InternalServerError, SessionExpiredError } from "@wohaai/errors";
 import { authLogger } from "@wohaai/telemetry";
 import { RedisClient } from '@wohaai/redis';
-import redisKeys from "../../../../../packages/config/redis-keys.json";
+import { redisKeys } from "@wohaai/redis";
 import exp from "../../../../../packages/config/exp.json";
 import { env } from "@wohaai/env-ts";
 
@@ -13,22 +13,6 @@ export interface AuthCacheData {
   hashedPassword?: string;
 }
 
-export const RedisKeys = {
-  authSession: (sessionID: string) =>
-    `${redisKeys.AUTH_SESSION_REDIS_KEY_PREFIX}:${sessionID}`,
-
-  verificationCode: (email: string) =>
-    `${redisKeys.VERIFICATION_CODE_REDIS_KEY_PREFIX}:${email}`,
-
-  confirmedEmail: (sessionID: string) =>
-    `${redisKeys.CONFIRMED_EMAIL_REDIS_KEY_PREFIX}:${sessionID}`,
-
-  changeEmailSession: (sessionID: string) =>
-    `${redisKeys.CHANGE_EMAIL_SESSION_REDIS_KEY_PREFIX}:${sessionID}`,
-
-  changePasswordSession: (sessionID: string) =>
-    `${redisKeys.CHANGE_PASSWORD_SESSION_REDIS_KEY_PREFIX}:${sessionID}`,
-} as const;
 
 const redisClient = new RedisClient(env.AUTH_SESSION_REDIS_URI)
 
@@ -42,7 +26,7 @@ export async function setVerificationCodeCache({
   verificationCode
 }: VerificationCodeCacheParams): Promise<"OK"> {
   return await redisClient.setCache(
-    RedisKeys.verificationCode(sessionID),
+    redisKeys.verificationCode(sessionID),
     JSON.stringify({ verificationCode })
   )
 }
@@ -52,7 +36,7 @@ export async function getVerificationCodeCache(
   sessionID: string
 ): Promise<{ verificationCode: string }> {
   return JSON.parse(await redisClient.getCache(
-    RedisKeys.verificationCode(sessionID)
+    redisKeys.verificationCode(sessionID)
   ))
 }
 
@@ -60,7 +44,7 @@ export async function deleteVerificationCodeCache(
   id: string
 ): Promise<void> {
   return await redisClient.deleteCache(
-    RedisKeys.verificationCode(id)
+    redisKeys.verificationCode(id)
   );
 }
 
@@ -70,7 +54,7 @@ export async function setAuthSession(
   data: AuthCacheData
 ): Promise<"OK"> {
   return await redisClient.setCache(
-    RedisKeys.authSession(authSessionID),
+    redisKeys.authSession(authSessionID),
     JSON.stringify(data),
     exp.REDIS_AUTH_SESSION_TTL
   )
@@ -82,7 +66,7 @@ export async function getAuthSession(
 ): Promise<AuthCacheData> {
 
   const key =
-    RedisKeys.authSession(authSessionID);
+    redisKeys.authSession(authSessionID);
 
   const rawSession =
     await redisClient.getCache(key);
@@ -123,7 +107,7 @@ export async function deleteAuthSession(
   );
 
   const key =
-    RedisKeys.authSession(authSessionID);
+    redisKeys.authSession(authSessionID);
 
   return await redisClient.deleteCache(key);
 }
@@ -145,7 +129,7 @@ export async function setChangePasswordSessionCache(
 ): Promise<"OK"> {
 
   return await redisClient.setCache(
-    RedisKeys.changePasswordSession(sessionID),
+    redisKeys.changePasswordSession(sessionID),
     JSON.stringify({
       userID,
       username,
@@ -166,7 +150,7 @@ export async function getChangePasswordSessionCache(
   sessionID: string
 ): Promise<ChangePasswordSessionCache> {
   return JSON.parse(await redisClient.getCache(
-    RedisKeys.changePasswordSession(sessionID),
+    redisKeys.changePasswordSession(sessionID),
   ));
 }
 
@@ -175,7 +159,7 @@ export async function deleteChangePasswordSessionCache(
 ) {
 
   await redisClient.deleteCache(
-    RedisKeys.changePasswordSession(sessionID),
+    redisKeys.changePasswordSession(sessionID),
   );
 }
 
@@ -201,7 +185,7 @@ export async function setChangeEmailSessionCache(
 ): Promise<"OK"> {
 
   return await redisClient.setCache(
-    RedisKeys.changeEmailSession(sessionID),
+    redisKeys.changeEmailSession(sessionID),
     JSON.stringify({
       userID,
       newEmail,
@@ -215,7 +199,7 @@ export async function getChangeEmailSessionCache(
   sessionID: string
 ): Promise<ChangeEmailSessionCache> {
   return JSON.parse(await redisClient.getCache(
-    RedisKeys.changeEmailSession(sessionID),
+    redisKeys.changeEmailSession(sessionID),
   ));
 }
 
@@ -224,6 +208,6 @@ export async function deleteChangeEmailSessionCache(
 ) {
 
   await redisClient.deleteCache(
-    RedisKeys.changeEmailSession(sessionID),
+    redisKeys.changeEmailSession(sessionID),
   );
 }

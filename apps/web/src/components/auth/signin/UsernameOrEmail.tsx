@@ -14,6 +14,8 @@ import Image from "next/image";
 import { FaApple } from "react-icons/fa";
 import { ApiResponseOptions } from '@wohaai/http';
 import CAPTCHA from "../Captcha";
+import { logger } from "@/lib/logger";
+import { config } from "@/lib/config";
 
 const SigninInitRequestSchema = z.object({
     usernameOrEmail: UsernameOrEmailSchema,
@@ -45,30 +47,31 @@ export default function SigninUsernameOrEmail({
     });
 
     const [error, setError] = useState<string>("");
-    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+    // const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+    
+    if (!config.NEXT_PUBLIC_AUTH_API_URI) {
+        throw new Error("AUTH_API_URI is not defined");
+    }
+    const authURI = `${config.NEXT_PUBLIC_AUTH_API_URI}/api/auth/signin-init`;
+    logger.debug("authURI" + authURI);
 
     const onSubmit = async (formData: SigninInitOutput) => {
         setError("");
         const { usernameOrEmail } = formData;
 
-        if (!recaptchaToken) {
-            setError("Please complete the reCAPTCHA verification.");
-            return;
-        }
+        // if (!recaptchaToken) {
+        //     setError("Please complete the reCAPTCHA verification.");
+        //     return;
+        // }
 
         // Check if the user exists
         try {
-            const authURI = process.env.NEXT_PUBLIC_AUTH_API_URI;
-            if (!authURI) {
-                throw new Error("AUTH_API_URI is not defined");
-            }
-
-            const rawRes = await fetch(`${authURI}/api/auth/signin-init`, {
+            const rawRes = await fetch(authURI, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-recaptcha-token": recaptchaToken,
+                    // "x-recaptcha-token": recaptchaToken,
                 },
                 body: JSON.stringify({ usernameOrEmail }),
             });
@@ -86,7 +89,7 @@ export default function SigninUsernameOrEmail({
                 setNextStep("password");
                 next({ usernameOrEmail });
             } else {
-                setError("Username or Email doesn't exist.");
+                setError(body.message || "Something went wrong.");
             }
         } catch (err) {
             console.error("Check user error:", err);

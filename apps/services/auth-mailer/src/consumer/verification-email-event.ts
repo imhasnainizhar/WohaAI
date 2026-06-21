@@ -14,15 +14,17 @@ const consumer = getConsumer({
 });
 
 export async function consumeVerificationEmail() {
+  authMailerLogger.debug("✅ Connecting to Kafka for verification email consumer");
   await consumer.connect();
 
+  authMailerLogger.debug("✅ Subscribing to verification email topic");
   await consumer.subscribe({
     topic: kafka.topics.emailVerification,
     fromBeginning: false,
   });
 
   authMailerLogger.info(
-    "Verification email consumer started",
+    "✅ Verification email consumer started",
   );
 
   await consumer.run({
@@ -49,10 +51,13 @@ export async function consumeVerificationEmail() {
           parsedMessage =
             JSON.parse(rawMessage);
         } catch {
+          authMailerLogger.debug("❌ Failed to parse verification email message JSON");
           throw new Error(
             "Invalid kafka message JSON payload",
           );
         }
+
+        authMailerLogger.debug("✅ Parsed verification email message JSON");
 
         const {
           email,
@@ -64,16 +69,23 @@ export async function consumeVerificationEmail() {
           !email ||
           !verificationCode
         ) {
+          authMailerLogger.debug("❌ Missing required verification email payload fields");
           throw new Error(
             "Missing required verification email payload fields",
           );
         }
+
+        authMailerLogger.debug({ email }, "✅ Validated verification email payload fields");
+
+        authMailerLogger.debug({ email }, "Dispatching verification email");
 
         // DISPATCH EMAIL
         await dispatchVerificationEmailService({
           email,
           verificationCode,
         });
+
+        authMailerLogger.debug({ email }, "✅ Verification email dispatched");
 
         authMailerLogger.info(
           {
@@ -82,7 +94,7 @@ export async function consumeVerificationEmail() {
             offset: message.offset,
             email,
           },
-          "Verification email processed successfully",
+          "✅ Verification email processed successfully",
         );
       } catch (error) {
         authMailerLogger.error(
@@ -94,7 +106,7 @@ export async function consumeVerificationEmail() {
             rawMessage:
               message.value?.toString(),
           },
-          "Verification email consumer failed",
+          "❌ Verification email consumer failed",
         );
 
         /**
