@@ -92,7 +92,7 @@ import { RequestEmailChangeService, RequestEmailChangeServiceParams } from "./ch
 import { VerifyEmailChangeService, VerifyEmailChangeServiceParams } from "./change-email/verify";
 import { env } from "@wohaai/env-ts";
 import { Router } from 'express';
-import { UserGrpcClient } from "@/grpc/client";
+import { UserGrpcClient } from "@/grpc/grpc";
 
 export class AuthService {
     private static instance: AuthService;

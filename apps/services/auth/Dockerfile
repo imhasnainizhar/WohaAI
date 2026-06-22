@@ -10,6 +10,15 @@ WORKDIR /app
 RUN corepack enable
 RUN corepack prepare pnpm@latest --activate
 
+# Install protoc for proto generation
+RUN apt-get update && \
+    apt-get install -y unzip wget && \
+    wget https://github.com/protocolbuffers/protobuf/releases/download/v25.1/protoc-25.1-linux-x86_64.zip -O /tmp/protoc.zip && \
+    unzip /tmp/protoc.zip -d /usr/local && \
+    rm /tmp/protoc.zip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # COPY MONOREPO ROOT MANIFESTS FIRST (CACHE LAYER)
 COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY tsconfig.base.json ./
@@ -40,6 +49,10 @@ COPY --from=base /app/apps/services/auth/ ./apps/services/auth/
 
 # Build all packages first (for type checking)
 RUN pnpm packages:build
+
+# Generate proto files
+WORKDIR /app/packages/proto
+RUN pnpm generate
 
 WORKDIR /app/apps/services/auth
 
