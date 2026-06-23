@@ -1,7 +1,14 @@
 
 // Interface for HTTP cookies
 
-import { CookieOptions } from "express";
+export type CookieOptions = {
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: "lax" | "strict" | "none";
+  path?: string;
+  maxAge?: number;
+  domain?: string;
+};
 
 export interface Cookie {
   name: string;
