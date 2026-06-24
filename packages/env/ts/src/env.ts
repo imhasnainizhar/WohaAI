@@ -11,8 +11,6 @@ export const env = createEnv({
 
         // JWT + Security
         JWT_AUTH_SECRET_KEY: process.env.JWT_AUTH_SECRET_KEY!,
-        JWT_CHANGE_PASSWORD_SECRET_KEY:
-            process.env.JWT_CHANGE_PASSWORD_SECRET_KEY!,
 
         ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET!,
 
@@ -36,6 +34,7 @@ export const env = createEnv({
         AUTH_MAILER_SERVICE_PORT: process.env.AUTH_MAILER_SERVICE_PORT!,
         AI_AGENT_PORT: process.env.AI_AGENT_PORT!,
         USER_GRPC_PORT: process.env.USER_GRPC_PORT!,
+        API_GATEWAY_PORT: process.env.API_GATEWAY_PORT!,
 
         // Service Host Names
         NEXTJS_APP_HOST_NAME: process.env.NEXTJS_APP_HOST_NAME!,
@@ -44,6 +43,7 @@ export const env = createEnv({
         AUTH_MAILER_SERVICE_HOST_NAME: process.env.AUTH_MAILER_SERVICE_HOST_NAME!,
         AGENT_HOST_NAME: process.env.AGENT_HOST_NAME!,
         AI_AGENT_HOST: process.env.AI_AGENT_HOST!,
+        API_GATEWAY_HOST_NAME: process.env.API_GATEWAY_HOST_NAME!,
 
         // Network / CORS
         CLIENT_ORIGIN: process.env.CLIENT_ORIGIN!,
@@ -89,7 +89,6 @@ export const env = createEnv({
         LOG_LEVEL: z.string().default("info"),
 
         JWT_AUTH_SECRET_KEY: z.string().min(20),
-        JWT_CHANGE_PASSWORD_SECRET_KEY: z.string().min(20),
 
         ENCRYPTION_SECRET: z.string().min(20),
 
@@ -108,6 +107,7 @@ export const env = createEnv({
         AUTH_MAILER_SERVICE_PORT: z.coerce.number(),
         AI_AGENT_PORT: z.coerce.number(),
         USER_GRPC_PORT: z.coerce.number(),
+        API_GATEWAY_PORT: z.coerce.number(),
 
         NEXTJS_APP_HOST_NAME: z.string(),
         AUTH_SERVICE_HOST_NAME: z.string(),
@@ -115,6 +115,7 @@ export const env = createEnv({
         AUTH_MAILER_SERVICE_HOST_NAME: z.string(),
         AGENT_HOST_NAME: z.string(),
         AI_AGENT_HOST: z.string(),
+        API_GATEWAY_HOST_NAME: z.string(),
 
         CLIENT_ORIGIN: z.string(),
 
@@ -145,6 +146,4 @@ export const env = createEnv({
         NEXT_PUBLIC_USER_API_URI: z.string(),
         NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string(),
     },
-
-    // TODO: Fix env load on local env
 });

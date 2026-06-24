@@ -5,7 +5,7 @@
 // source: user/user.proto
 
 /* eslint-disable */
-import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf";
 import {
   type CallOptions,
   type ChannelCredentials,

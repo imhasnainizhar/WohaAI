@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
-import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter, sendResponse } from "@wohaai/http";
 import { env } from "@wohaai/env-ts";
 import {
   TChangePasswordRequest,
@@ -23,7 +23,7 @@ export const completeChangePasswordHandler = asyncHandler(
     // Issue to be opened to give generic type to verify token
     const payload = verifyJwtToken({
       token,
-      secret: env.JWT_CHANGE_PASSWORD_SECRET_KEY
+      secret: env.JWT_AUTH_SECRET_KEY
     })
 
     const body: TChangePasswordRequest = req.body;
@@ -44,7 +44,7 @@ export const completeChangePasswordHandler = asyncHandler(
     });
 
     return sendResponse({
-      res,
+      res: new ExpressAdapter(res),
       success: true,
       statusCode: 200,
       message: "Password changed successfully.",

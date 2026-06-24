@@ -2,7 +2,7 @@ import { env } from "@wohaai/env-ts";
 import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
 import { Request, Response } from "express";
-import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter, sendResponse } from "@wohaai/http";
 import { verifyJwtToken, AccessTokenPayload } from "@wohaai/security/jwt";
 import JwtTokenNames from "../../../../../../packages/config/token-names.json";
 import { Generate2FASecretResponse } from "@wohaai/types";
@@ -24,7 +24,7 @@ export const generate2FASecretHandler = asyncHandler(
             await authService.generate2FASecret({ userID })
 
         return sendResponse<Generate2FASecretResponse>({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             data: {

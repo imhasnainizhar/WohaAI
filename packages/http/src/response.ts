@@ -1,11 +1,23 @@
-import { Response } from "express";
-import { Cookie } from "./cookie";
+import { Cookie, CookieOptions } from "./cookie";
+
+export interface HttpResponse {
+  status(code: number): this;
+  json(payload: unknown): this;
+
+  cookie?(
+    name: string,
+    value: string,
+    options?: unknown
+  ): this;
+
+  setCookie?(cookie: Cookie): this;
+}
 
 /**
  * @http Options with which handlers call sendResponse 
  */
 export interface ApiResponseOptions<T = unknown> {
-  res: Response;
+  res: HttpResponse;
   statusCode: number;
   success: boolean; // defaults handled inside sendResponse
   message: string;
@@ -42,11 +54,11 @@ export const sendResponse = <T>({
   errors,
   errorType,
   path,
-}: ApiResponseOptions<T>): Response => {
+}: ApiResponseOptions<T>): HttpResponse => {
   // Attach cookies if any
   if (cookies && cookies.length > 0) {
     cookies.forEach((cookie) => {
-      res.cookie(cookie.name, cookie.value, cookie.options);
+      res.setCookie?.(cookie);
     });
   }
 

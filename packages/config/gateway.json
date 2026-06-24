@@ -1,0 +1,23 @@
+{
+  "routes": [
+    {
+      "path": "/auth",
+      "service": "auth",
+      "target": "AUTH_API_URI",
+      "requiresAuth": false,
+      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"]
+    },
+    {
+      "path": "/user",
+      "service": "user",
+      "target": "USER_API_URI",
+      "requiresAuth": true,
+      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"]
+    }
+  ],
+  "security": {
+    "jwtSecret": "JWT_AUTH_SECRET_KEY",
+    "tokenHeader": "authorization",
+    "tokenPrefix": "Bearer"
+  }
+}

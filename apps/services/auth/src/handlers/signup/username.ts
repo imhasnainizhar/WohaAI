@@ -2,7 +2,7 @@ import authService from "@/services/auth-service";
 import { asyncHandler } from "@/middlewares/async-handler";
 import { env } from "@wohaai/env-ts";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
-import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter, sendResponse } from "@wohaai/http";
 import { TContinueWithUsernameRequest, ContinueWithUsernameRequestSchema } from "@wohaai/validations";
 import { ValidationError } from "@wohaai/errors";
 import tokenNames from "../../../../../../packages/config/token-names.json";
@@ -38,11 +38,11 @@ export const signupUsernameValidationHandler =
 
         // Handler only returns response
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Username successfully validated",
-            path: req.originalUrl,
+            path: req.originalUrl
         });
     }
     );

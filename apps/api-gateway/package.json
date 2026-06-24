@@ -1,0 +1,25 @@
+{
+    "name": "@wohaai/api-gateway",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "tsx watch src/server.ts",
+        "build": "tsc",
+        "start": "node dist/server.js"
+    },
+    "dependencies": {
+        "@fastify/cookie": "^11.0.2",
+        "@fastify/cors": "^11.2.0",
+        "@fastify/http-proxy": "^11.5.0",
+        "@wohaai/env-ts": "workspace:*",
+        "@wohaai/errors": "workspace:*",
+        "@wohaai/security": "workspace:*",
+        "@wohaai/telemetry": "workspace:*",
+        "fastify": "^5.8.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "tsx": "^4.7.0",
+        "typescript": "^5.3.0"
+    }
+}

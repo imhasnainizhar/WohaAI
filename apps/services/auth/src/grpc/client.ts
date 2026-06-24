@@ -38,18 +38,18 @@ export class UserGrpcClient {
   private client: any;
 
   constructor() {
-    const userServiceHost = env.USER_SERVICE_HOST_NAME || 'localhost';
+    const grpcHost = env.USER_SERVICE_HOST_NAME || 'localhost';
     const grpcPort = env.USER_GRPC_PORT || 50051;
     if (!userProto) {
       throw new InternalServerError('User proto not loaded');
     }
     // typing userProto as any here
     this.client = new (userProto as any).UserService(
-      `${userServiceHost}:${grpcPort}`,
+      `${grpcHost}:${grpcPort}`,
       grpc.credentials.createInsecure()
     );
 
-    authLogger.info(`✅ User gRPC client connected to ${userServiceHost}:${grpcPort}`);
+    authLogger.info(`✅ User gRPC client connected to ${grpcHost}:${grpcPort}`);
   }
 
   async createUser(request: CreateUserGrpcRequest): Promise<CreateUserGrpcResponse> {

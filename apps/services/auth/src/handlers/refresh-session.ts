@@ -2,6 +2,7 @@ import { ClientData } from '@wohaai/types';
 import { asyncHandler } from "@/middlewares/async-handler";
 import { getClientData } from "@/ua/client-data";
 import { buildCookie, sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 import { Request, Response } from "express";
 import { env } from "@wohaai/env-ts";
 import { authLogger } from "@wohaai/telemetry";
@@ -76,7 +77,7 @@ export const refreshSessionHandler = asyncHandler(
         // Handler only returns response
         // Cookies are under the hood set as Express Cookies with name having token as value in this refresh token context. Cookie options are used to configure security and exp options.
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "user session refreshed",

@@ -1,6 +1,7 @@
+import { serialize } from "cookie";
+
 
 // Interface for HTTP cookies
-
 export type CookieOptions = {
   httpOnly?: boolean;
   secure?: boolean;
@@ -39,3 +40,24 @@ export const buildCookie = ({
     },
   };
 };
+
+export function serializeCookie(
+  cookie: Cookie
+): string {
+  return serialize(
+    cookie.name,
+    cookie.value,
+    {
+      httpOnly: cookie.options?.httpOnly,
+      secure: cookie.options?.secure,
+      path: cookie.options?.path,
+      sameSite: cookie.options?.sameSite,
+      maxAge: cookie.options?.maxAge,
+      expires:
+        cookie.options?.maxAge
+          ? new Date(Date.now() + cookie.options.maxAge * 1000)
+          : undefined,
+      domain: cookie.options?.domain,
+    }
+  );
+}

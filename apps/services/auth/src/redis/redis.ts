@@ -53,6 +53,7 @@ export async function setAuthSession(
   authSessionID: string,
   data: AuthCacheData
 ): Promise<"OK"> {
+  authLogger.debug("Auth session set")
   return await redisClient.setCache(
     redisKeys.authSession(authSessionID),
     JSON.stringify(data),

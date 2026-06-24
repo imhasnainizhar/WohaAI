@@ -2,7 +2,6 @@
 
 import { authLogger } from "@wohaai/telemetry";
 import app from "./app.js";
-import cors from "cors"
 import { env } from "@wohaai/env-ts";
 import { connectUsersDB } from "./db";
 
@@ -11,17 +10,6 @@ import { connectUsersDB } from "./db";
   await connectUsersDB(env.USERS_MONGO_URI);
   authLogger.info("✅ Auth Service connected to MongoDB" + env.USERS_MONGO_URI);
 })();
-
-// CORS configuration
-const corsOptions = {
-  origin: env.CLIENT_ORIGIN || "http://localhost:3000", // frontend origin
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // if using cookies or auth headers
-};
-
-// Apply CORS middleware
-app.use(cors(corsOptions));
 
 const PORT = env.AUTH_SERVICE_PORT;
 

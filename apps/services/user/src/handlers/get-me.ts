@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 import { userService } from "@/services/user-service";
 import { env } from "@wohaai/env-ts";
 import { AccessTokenPayload, verifyJwtToken } from "@wohaai/security/jwt";
@@ -25,7 +26,7 @@ export const getMeHandler = asyncHandler(async (req: Request, res: Response) => 
 
   // Send response
   return sendResponse<GetMeResponse>({
-    res,
+    res: new ExpressAdapter(res),
     success: true,
     statusCode: 200,
     message: "user created",

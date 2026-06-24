@@ -54,7 +54,7 @@ export class RedisClient {
 
         this.redis.on("error", (err: Error) => {
             logger.error(`❌ Redis error: ${err.message}`);
-            throw new InternalServerError(err)
+            // Do not throw here, let the service handle it gracefully
         });
     }
 

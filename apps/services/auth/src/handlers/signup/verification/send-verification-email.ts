@@ -3,7 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
 import { env } from "@wohaai/env-ts";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
-import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter, sendResponse } from "@wohaai/http";
 import tokenNames from "../../../../../../../packages/config/token-names.json";
 
 /**
@@ -26,7 +26,7 @@ export const sendVerificationEmailHandler = asyncHandler(
 
         // Handler only returns response
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "verification email sent",

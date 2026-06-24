@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 import { userService } from "@/services/user-service";
 import { userLogger as logger } from "@wohaai/telemetry";
 import { env } from "@wohaai/env-ts";
@@ -54,7 +55,7 @@ export const createUserHandler = asyncHandler(async (req: Request, res: Response
 
     // Send response
     return sendResponse<UserCreatedResponse>({
-        res,
+        res: new ExpressAdapter(res),
         success: true,
         statusCode: 200,
         message: "user created",

@@ -7,6 +7,7 @@ import {
 import { authLogger } from "@wohaai/telemetry";
 import { ServiceError } from "@wohaai/errors";
 import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 
 export const errorHandler = (
     err: unknown,
@@ -28,7 +29,7 @@ export const errorHandler = (
         });
 
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: false,
             statusCode: err.statusCode,
             message: err.message,
@@ -50,7 +51,7 @@ export const errorHandler = (
     });
 
     return sendResponse({
-        res,
+        res: new ExpressAdapter(res),
         success: false,
         statusCode: 500,
         message:

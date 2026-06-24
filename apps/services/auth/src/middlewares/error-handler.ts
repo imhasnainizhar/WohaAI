@@ -7,6 +7,7 @@ import {
 import { authLogger } from "@wohaai/telemetry";
 import { ServiceError } from "@wohaai/errors";
 import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 
 export const errorHandler = (
     err: unknown,
@@ -28,7 +29,7 @@ export const errorHandler = (
         }, `[${err.errorType.toUpperCase()}] ${err.message}`);
 
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: false,
             statusCode: err.statusCode,
             message: err.message,
@@ -49,7 +50,7 @@ export const errorHandler = (
     }, "🚨 UNHANDLED ERROR");
 
     return sendResponse({
-        res,
+        res: new ExpressAdapter(res),
         success: false,
         statusCode: 500,
         message: "Internal server error",

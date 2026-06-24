@@ -5,7 +5,7 @@ import { PasswordValidationRequestSchema, TPasswordValidationRequest } from "@wo
 import { Request, Response } from "express";
 import { ValidationError } from "@wohaai/errors";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
-import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter, sendResponse } from "@wohaai/http";
 import tokenNames from "../../../../../../packages/config/token-names.json";
 
 export const passwordValidationHandler = asyncHandler(
@@ -28,7 +28,7 @@ export const passwordValidationHandler = asyncHandler(
         })
 
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Password validated successfully",

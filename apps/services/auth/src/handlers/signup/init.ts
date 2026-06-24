@@ -1,7 +1,7 @@
 import { asyncHandler } from "@/middlewares/async-handler";
 import { env } from "@wohaai/env-ts";
 import authService from "@/services/auth-service";
-import { buildCookie, Cookie, sendResponse } from "@wohaai/http";
+import { buildCookie, Cookie, ExpressAdapter, sendResponse } from "@wohaai/http";
 import { Request, Response } from "express";
 import { authLogger } from "@wohaai/telemetry";
 import tokenNames from "../../../../../../packages/config/token-names.json";
@@ -15,7 +15,7 @@ export const signupInitHandler =
 
         const { authToken } = await authService.signupInit();
 
-        const accessTokenCookie: Cookie = buildCookie({
+        const authTokenCookie: Cookie = buildCookie({
             name: tokenNames.AUTH_SESSION_TOKEN,
             value: authToken,
             options: {
@@ -31,12 +31,12 @@ export const signupInitHandler =
 
         // Handler only returns response
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Auth session initialized successfully",
             path: req.originalUrl,
-            cookies: [accessTokenCookie]
+            cookies: [authTokenCookie]
         });
     }
     );

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 
 import {
     TChangeEmailRequest,
@@ -37,7 +38,7 @@ export const requestEmailChangeHandler = asyncHandler(
         });
 
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Email sent to verify email change request.",
@@ -58,7 +59,7 @@ export const verifyEmailChangeHandler = asyncHandler(
         });
 
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Email successfully verified and changed.",
