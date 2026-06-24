@@ -40,10 +40,17 @@ export function loadEnv() {
   }
 
   const envPath = path.join(root, ".env");
+  const localEnvPath = path.join(root, ".env.local");
 
   if (fs.existsSync(envPath)) {
     dotenvExpand.expand(
       dotenv.config({ path: envPath })
+    );
+  }
+
+  if (fs.existsSync(localEnvPath)) {
+    dotenvExpand.expand(
+      dotenv.config({ path: localEnvPath })
     );
   }
 

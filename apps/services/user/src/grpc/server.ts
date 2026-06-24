@@ -3,6 +3,7 @@ import * as protoLoader from '@grpc/proto-loader';
 import { CreateUserService } from '../services/create-user';
 import { UserRepo } from '../repo/user-repo';
 import { userLogger } from '@wohaai/telemetry';
+import { User } from '@wohaai/db';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -27,12 +28,12 @@ const userProto = grpc.loadPackageDefinition(packageDefinition).user;
 
 export class UserGrpcServer {
   private server: grpc.Server;
-  private userService: CreateUserService;
+  private createUserService: CreateUserService;
 
   constructor() {
     this.server = new grpc.Server();
-    const userRepo = new UserRepo();
-    this.userService = new CreateUserService(userRepo);
+    const userRepo = new UserRepo(User);
+    this.createUserService = new CreateUserService(userRepo);
   }
 
   start(port: number): void {
@@ -42,7 +43,7 @@ export class UserGrpcServer {
         try {
           userLogger.debug('gRPC CreateUser request received', call.request);
 
-          const result = await this.userService.execute({
+          const result = await this.createUserService.execute({
             username: call.request.username,
             email: call.request.email,
             hashedPassword: call.request.hashed_password,

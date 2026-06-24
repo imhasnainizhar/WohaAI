@@ -14,7 +14,7 @@ import { SignOptions } from "jsonwebtoken";
 import { ClientData } from "@wohaai/types";
 import { AuthRepo } from "@/repo/auth-repo";
 import { EmailVerificationRequiredError } from "@/errors/service-error";
-import { UserGrpcClient } from "@/grpc/client";
+import { UserGrpcClient } from "@/grpc/grpc";
 
 export interface SignupCompleteServiceParams {
   authSessionID: string;
