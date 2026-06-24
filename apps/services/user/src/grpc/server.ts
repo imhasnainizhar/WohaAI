@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const PROTO_PATH =
   path.resolve(
     __dirname,
-    '../../../../packages/proto/services/user/user.proto'
+    '../../../../../packages/proto/services/user/user.proto'
   );
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {

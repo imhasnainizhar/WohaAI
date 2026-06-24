@@ -42,15 +42,17 @@ export function loadEnv() {
   const envPath = path.join(root, ".env");
   const localEnvPath = path.join(root, ".env.local");
 
+  // Load base .env first
   if (fs.existsSync(envPath)) {
     dotenvExpand.expand(
       dotenv.config({ path: envPath })
     );
   }
 
+  // Load .env.local with override to ensure local values take precedence
   if (fs.existsSync(localEnvPath)) {
     dotenvExpand.expand(
-      dotenv.config({ path: localEnvPath })
+      dotenv.config({ path: localEnvPath, override: true })
     );
   }
 

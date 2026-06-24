@@ -1,7 +1,7 @@
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
-import { buildCookie, Cookie, sendResponse } from "@wohaai/http";
+import { buildCookie, Cookie, ExpressAdapter, sendResponse } from "@wohaai/http";
 import { env } from "@wohaai/env-ts";
 import { authLogger } from "@wohaai/telemetry";
 import authService from "@/services/auth-service";
@@ -75,7 +75,7 @@ export const completeSignupHandler = asyncHandler(
 
     // send response
     return sendResponse<SignupCompletionResponse>({
-      res,
+      res: new ExpressAdapter(res),
       success: true,
       statusCode: 200,
       message: "Signup completed successfully",

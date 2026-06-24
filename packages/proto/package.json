@@ -2,13 +2,16 @@
   "name": "@wohaai/proto",
   "version": "1.0.0",
   "description": "Proto files and generated TypeScript types for gRPC services",
-  "main": "index.ts",
   "scripts": {
-    "generate": "pnpm generate:user && pnpm generate:auth",
-    "generate:user": "protoc --ts_proto_out=./generated --ts_proto_opt=outputServices=grpc-js,esModuleInterop=true,forceLong=long,useOptionals=messages -I./services ./services/user/user.proto",
-    "generate:auth": "protoc --ts_proto_out=./generated --ts_proto_opt=outputServices=grpc-js,esModuleInterop=true,forceLong=long,useOptionals=messages -I./services ./services/auth/auth.proto",
+    "generate": "pnpm generate:user",
+    "generate:user": "node -e \"require('fs').mkdirSync('./generated', { recursive: true })\" && protoc --ts_proto_out=./generated --ts_proto_opt=outputServices=grpc-js,esModuleInterop=true,forceLong=long,useOptionals=messages,outputBinaryMethods=false -I./services ./services/user/user.proto",
     "watch": "chokidar \"./services/**/*.proto\" -c \"pnpm generate\"",
     "clean": "rimraf generated"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^0.1.1",
+    "@grpc/grpc-js": "^1.10.0",
+    "long": "^5.2.3"
   },
   "devDependencies": {
     "chokidar-cli": "^3.0.0",

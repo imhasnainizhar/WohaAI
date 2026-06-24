@@ -2,7 +2,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import { AuthSessionPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { env } from "@wohaai/env-ts";
 import authService from "@/services/auth-service";
-import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter, sendResponse } from "@wohaai/http";
 import { Request, Response } from "express";
 import { ValidationError } from "@wohaai/errors";
 import { TContinueWithEmailRequest, ContinueWithEmailRequestSchema } from "@wohaai/validations";
@@ -39,7 +39,7 @@ export const signupEmailValidationHandler =
 
         // Handler only returns response
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Email validated successfully",

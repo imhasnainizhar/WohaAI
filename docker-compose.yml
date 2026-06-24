@@ -97,6 +97,29 @@ services:
     profiles:
       - "services"
 
+  api-gateway:
+    build:
+      context: ./
+      dockerfile: apps/api-gateway/Dockerfile
+      target: ${NODE_ENV}
+    container_name: ${API_GATEWAY_HOST_NAME}
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+    volumes:
+      - ./apps/api-gateway/src:/app/apps/api-gateway/src
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - WohaAI_dev_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://api-gateway:${API_GATEWAY_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - "services"
+
 
   ## ----------------------------- ##
   ## Repository
@@ -112,7 +135,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${USERS_MONGO_DB_PASSWORD}
       MONGO_INITDB_DATABASE: ${USERS_MONGO_DB_DATABASE}
     ports:
-      - "${USERS_MONGO_DB_PORT}:${USERS_MONGO_DB_PORT}"
+      - "${USERS_MONGO_DB_HOST_PORT}:${USERS_MONGO_DB_PORT}"
     volumes:
       - users_mongo_data:/data/db
     networks:

@@ -13,18 +13,18 @@ const app: Express = express();
     logger.info("✅ User Service connected to MongoDB" + env.USERS_MONGO_URI);
 })();
 
-// Middleware
-app.use(
-    cors({
-        origin: env.CLIENT_ORIGIN,
-        credentials: true,
-    })
-);
-
 app.use(express.json());
 
+// CORS configuration - flexible for local development
+const corsOptions = {
+    origin: env.NODE_ENV === "development" ? true : (env.CLIENT_ORIGIN || "http://localhost:3000"),
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    credentials: true,
+};
+
 // Routes
-app.use("/", userRoutes);
+app.use("/", cors(corsOptions), userRoutes);
 
 // Health check route
 app.get("/health", (_, res) => {

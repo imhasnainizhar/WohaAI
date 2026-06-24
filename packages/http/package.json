@@ -33,6 +33,11 @@
     }
   },
   "dependencies": {
+    "@fastify/cookie": "^9.4.0",
+    "@types/express": "^5.0.6",
+    "cookie": "^1.1.1",
+    "express": "^5.2.1",
+    "fastify": "^4.25.0",
     "fs": "0.0.1-security",
     "jsonwebtoken": "^9.0.3",
     "zod": "^4.4.3"

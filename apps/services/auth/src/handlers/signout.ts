@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "@/middlewares/async-handler";
 import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 import authService from "@/services/auth-service";
 import { RefreshTokenPayload, verifyJwtToken } from "@wohaai/security/jwt";
 import { env } from "@wohaai/env-ts";
@@ -56,7 +57,7 @@ export const signoutHandler = asyncHandler(
 
         // Handler only returns response
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "user signed out",

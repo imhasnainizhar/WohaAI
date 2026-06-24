@@ -19,17 +19,15 @@ app.use(express.urlencoded({ extended: true }));
 // Global error handler
 app.use(errorHandler);
 
+// CORS configuration - flexible for local development
 const corsOptions = {
-  origin: env.CLIENT_ORIGIN || "http://localhost:3000", // frontend origin
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // if using cookies or auth headers
+    origin: env.NODE_ENV === "development" ? true : (env.CLIENT_ORIGIN || "http://localhost:3000"),
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    credentials: true,
 };
 
 // Mount auth-related routes
 app.use("/", cors(corsOptions), authRoutes);
-app.use("/hi", cors(corsOptions), (req, res) => {
-  res.json({ status: 200, text: "hello" })
-})
 
 export default app;

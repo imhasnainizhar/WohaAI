@@ -98,7 +98,7 @@ export class ChangePasswordService {
         jti,
         sub: sessionID
       },
-      secret: env.JWT_CHANGE_PASSWORD_SECRET_KEY,
+      secret: env.JWT_AUTH_SECRET_KEY,
       options: {
         expiresIn: exp.JWT_AUTH_SESSION_TOKEN
       } as SignOptions

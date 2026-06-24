@@ -14,7 +14,7 @@ import { SignOptions } from "jsonwebtoken";
 import { ClientData } from "@wohaai/types";
 import { AuthRepo } from "@/repo/auth-repo";
 import { EmailVerificationRequiredError } from "@/errors/service-error";
-import { UserGrpcClient } from "@/grpc/grpc";
+import { UserGrpcClient } from "@/grpc/client";
 
 export interface SignupCompleteServiceParams {
   authSessionID: string;
@@ -95,13 +95,6 @@ export class SignupCompleteService {
       email: userPayload.email,
     });
 
-    /**
-     * Future:
-     * REST / gRPC / Kafka / NATS
-     */
-    // const createdUser =
-    //   await this.userProvisioningClient
-    //     .createUser(userPayload);
     let createdUser;
     if (this.userGrpcClient) {
       try {

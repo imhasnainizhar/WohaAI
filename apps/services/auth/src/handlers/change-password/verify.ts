@@ -4,6 +4,7 @@ import {
   buildCookie,
   sendResponse
 } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 import { ValidationError } from "@wohaai/errors";
 import authService from "@/services/auth-service";
 import { SessionIDSchema } from "@wohaai/validations";
@@ -38,7 +39,7 @@ export const verifyChangePasswordHandler = asyncHandler(
     });
 
     return sendResponse({
-      res,
+      res: new ExpressAdapter(res),
       success: true,
       statusCode: 200,
       message: "Change password session verified.",

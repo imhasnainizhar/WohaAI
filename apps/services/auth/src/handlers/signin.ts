@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/async-handler";
 import { Cookie, sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 import authService from "@/services/auth-service";
 import { getClientData } from "../ua/client-data";
 import { ValidationError } from "@wohaai/errors";
@@ -55,7 +56,7 @@ export const signinInitHandler = asyncHandler(
         // Handler only returns response
         // Cookies are under the hood set as Express Cookies with name having token as value in this sign-in context. Cookie options are used to configure security and exp options.
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Sign-in initialized",
@@ -132,12 +133,11 @@ export const signinCompleteHandler = asyncHandler(
 
         // responding to client
         return sendResponse<SigninCompleteResponse>({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "Signin successful",
             data: {
-                profilePicURI,
                 userID,
                 username,
                 fullName,

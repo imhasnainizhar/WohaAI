@@ -3,6 +3,7 @@ import { asyncHandler } from "@/middlewares/async-handler";
 import authService from "@/services/auth-service";
 import { Request, Response } from "express";
 import { sendResponse } from "@wohaai/http";
+import { ExpressAdapter } from "@wohaai/http";
 import { verifyJwtToken, AccessTokenPayload } from "@wohaai/security/jwt";
 import { TTwoFARequest, TwoFARequestSchema } from "@wohaai/validations";
 import { ValidationError } from "@wohaai/errors";
@@ -28,7 +29,7 @@ export const disable2FAHandler = asyncHandler(
         await authService.disable2FA({ userID, token: parsed.data.totp })
 
         return sendResponse({
-            res,
+            res: new ExpressAdapter(res),
             success: true,
             statusCode: 200,
             message: "2FA Secret Generated",

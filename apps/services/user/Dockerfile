@@ -65,6 +65,12 @@ FROM base AS build
 
 WORKDIR /app
 
+# Generate proto files
+WORKDIR /app/packages/proto
+RUN pnpm generate
+
+WORKDIR /app
+
 # Build shared packages first
 RUN pnpm --filter user-service... build
 
